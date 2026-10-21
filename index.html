@@ -3,6 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content, viewport-fit=cover">
+<script>
+/* La app Android nueva abre con ?comprobar_partida=1. Antes de cargar el juego,
+   comprobamos una sola vez si la partida sigue en el dominio anterior. */
+(function(){
+  try{
+    const comprobado="dominio_origen_comprobado_v1";
+    const regreso="dominio_origen_regreso_v1";
+    const parametros=new URLSearchParams(location.search);
+    const sinPartida=parametros.get("sin_partida_anterior")==="1";
+    const verificar=parametros.get("comprobar_partida")==="1";
+    if(sinPartida){
+      localStorage.setItem(comprobado,"ok");
+      parametros.delete("sin_partida_anterior");
+    }
+    const destino=sessionStorage.getItem(regreso);
+    if(!verificar&&!sinPartida&&!destino)return;
+    if(sinPartida||localStorage.getItem("dominio_migracion_v1")==="ok"||localStorage.getItem(comprobado)==="ok"||localStorage.getItem("gya_nombre")){
+      if(destino){
+        sessionStorage.removeItem(regreso);
+        const url=new URL(destino,location.origin);
+        if(url.origin===location.origin)history.replaceState(null,"",url.pathname+url.search+url.hash);
+      }else if(sinPartida){
+        const query=parametros.toString();
+        history.replaceState(null,"",location.pathname+(query?"?"+query:"")+location.hash);
+      }
+      return;
+    }
+    sessionStorage.setItem(regreso,location.pathname+location.search+location.hash);
+    document.documentElement.style.visibility="hidden";
+    location.replace("https://gvelazcamp.github.io/gira-y-adivina-rioplatense/");
+  }catch(e){}
+})();
+</script>
 <link rel="manifest" href="manifest.json">
 <!-- Idioma de los menús (Español / English): va primero para traducir mientras se dibuja. -->
 <script src="i18n.js?v=1"></script>
