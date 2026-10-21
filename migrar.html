@@ -2,6 +2,15 @@
 <html lang="es">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<script>
+// La partida ya está en este dominio: evitamos mostrar otra pantalla de recuperación.
+try {
+  if(localStorage.getItem("dominio_migracion_v1")==="ok"){
+    document.documentElement.style.visibility="hidden";
+    location.replace("./index.html");
+  }
+} catch (_) {}
+</script>
 <title>Recuperando Girá y Adiviná</title>
 <style>body{font:18px system-ui;background:#160b24;color:#f6efe2;min-height:100vh;display:grid;place-items:center;margin:0;padding:24px;text-align:center}main{max-width:440px}a{color:#37d6c0}</style>
 <main><h1>Girá y Adiviná</h1><p id="estado">Recuperando tu partida…</p><p id="alternativa" hidden>Dejá esta pantalla abierta e intentá de nuevo cuando vuelva la conexión. Si persiste, pedile ayuda a Gonzalo. Tu partida anterior sigue guardada.</p></main>
