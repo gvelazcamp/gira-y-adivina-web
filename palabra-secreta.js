@@ -36,7 +36,7 @@ const PalabraSecreta=(()=>{
     return`🟩 Palabra Secreta ${d}: ${partida.gano?"la saqué en "+partida.intentos.length+"/6 ✅":"no la saqué ❌"}`;}
   async function compartirResultado(){const txt=textoCompartir()+"\n¿Me ganás? 👉 "+linkJuego();try{await navigator.clipboard.writeText(txt);mensaje("Resultado copiado. ¡Compartilo!");}catch(e){const a=document.createElement("textarea");a.value=txt;document.body.appendChild(a);a.select();const ok=document.execCommand("copy");a.remove();mensaje(ok?"Resultado copiado. ¡Compartilo!":"No se pudo copiar el resultado.");}}
   /* Link corto (ps.html): WhatsApp muestra una tarjeta chica de Palabra Secreta y abre el juego directo. */
-  function linkJuego(){try{return location.origin+location.pathname.replace(/[^/]*$/,"")+"ps.html?v=2";}catch(e){return"https://gvelazcamp.github.io/gira-y-adivina-rioplatense/ps.html?v=2";}}
+  function linkJuego(){try{return location.origin+location.pathname.replace(/[^/]*$/,"")+"ps.html?v=2";}catch(e){return"https://girayadivina.com/ps.html?v=2";}}
   function compartirWhatsApp(){try{window.open("https://wa.me/?text="+encodeURIComponent(textoCompartir()+"\n¿Me ganás? 👉 "+linkJuego()),"_blank");}catch(e){}}
   /* Duelo 1 vs 1: los dos adivinan la MISMA palabra (no la del día).
      Puntos = 7 − intentos si la encontrás (0 si no): gana quien la saca en menos intentos. */
