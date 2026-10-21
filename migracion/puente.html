@@ -14,8 +14,8 @@ const SUPA_URL="https://qfeubudlnoogwzozywph.supabase.co";
 const SUPA_KEY="sb_publishable_NHKQdADMpHSaSDW9WAlRGA_QLLJkeR7";
 const MARCA="dominio_migracion_v1";
 const estado=document.getElementById("estado"),alternativa=document.getElementById("alternativa");
-const base64url=bytes=>btoa(String.fromCharCode(...bytes)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");
-function clavePermitida(k){return k.startsWith("gya_")||k.startsWith("larueda_")||["dispositivo_gya","regllave_priv","regllave_pub"].includes(k);}
+const base64url=bytes=>{let bin="";for(let i=0;i<bytes.length;i+=32768)bin+=String.fromCharCode(...bytes.subarray(i,i+32768));return btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");};
+function clavePermitida(k){return k.startsWith("gya_")||k.startsWith("larueda_")||k.startsWith("mj_")||k.startsWith("ps-")||["dispositivo_gya","regllave_priv","regllave_pub","pz_partida","sopa-best","rueda-best","rosco-best","ga_ultima_apertura"].includes(k);}
 function leerPartida(){
   const datos={};
   for(let i=0;i<localStorage.length;i++){

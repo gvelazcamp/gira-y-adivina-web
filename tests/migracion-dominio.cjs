@@ -38,6 +38,10 @@ async function escenario({fallarEnvio=false,otroPerfil=false}={}){
     localStorage.setItem('gya_monedas','857');
     localStorage.setItem('larueda_mundo','["Montevideo"]');
     localStorage.setItem('regllave_priv','clave-sensible');
+    localStorage.setItem('ps-dia','{"day":1,"guesses":["SOL"]}');
+    localStorage.setItem('rosco-best','27');
+    localStorage.setItem('mj_racha','{"d":1,"n":3}');
+    localStorage.setItem('pz_partida','x'.repeat(200000));
     localStorage.setItem('otro_sitio','no copiar');
   });
   if(otroPerfil){
@@ -59,6 +63,10 @@ async function escenario({fallarEnvio=false,otroPerfil=false}={}){
     assert.equal(await page.evaluate(()=>localStorage.getItem('gya_monedas')),'857');
     assert.equal(await page.evaluate(()=>localStorage.getItem('larueda_mundo')),'["Montevideo"]');
     assert.equal(await page.evaluate(()=>localStorage.getItem('regllave_priv')),'clave-sensible');
+    assert.equal(await page.evaluate(()=>localStorage.getItem('ps-dia')),'{"day":1,"guesses":["SOL"]}');
+    assert.equal(await page.evaluate(()=>localStorage.getItem('rosco-best')),'27');
+    assert.equal(await page.evaluate(()=>localStorage.getItem('mj_racha')),'{"d":1,"n":3}');
+    assert.equal(await page.evaluate(()=>localStorage.getItem('pz_partida')?.length),200000);
     assert.equal(await page.evaluate(()=>localStorage.getItem('otro_sitio')),null);
     assert.equal(await page.evaluate(()=>localStorage.getItem('dominio_migracion_v1')),'ok');
     assert.equal(envios,1);

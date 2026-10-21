@@ -14,7 +14,7 @@ const SUPA_KEY="sb_publishable_NHKQdADMpHSaSDW9WAlRGA_QLLJkeR7";
 const MARCA="dominio_migracion_v1";
 const estado=document.getElementById("estado"),alternativa=document.getElementById("alternativa");
 const bytes=s=>Uint8Array.from(atob(s.replace(/-/g,"+").replace(/_/g,"/").padEnd(Math.ceil(s.length/4)*4,"=")),c=>c.charCodeAt(0));
-function clavePermitida(k){return k.startsWith("gya_")||k.startsWith("larueda_")||["dispositivo_gya","regllave_priv","regllave_pub"].includes(k);}
+function clavePermitida(k){return k.startsWith("gya_")||k.startsWith("larueda_")||k.startsWith("mj_")||k.startsWith("ps-")||["dispositivo_gya","regllave_priv","regllave_pub","pz_partida","sopa-best","rueda-best","rosco-best","ga_ultima_apertura"].includes(k);}
 async function recibir(){
   try{
     if(location.protocol!=="https:")throw Error("Esperá a que este dominio tenga HTTPS.");

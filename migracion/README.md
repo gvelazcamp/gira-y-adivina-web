@@ -20,8 +20,8 @@ La TWA instalada abre `https://gvelazcamp.github.io/gira-y-adivina-rioplatense/i
 ## Límites importantes
 
 - La copia está cifrada con AES-GCM de 256 bits. Supabase solo recibe el texto cifrado; la clave va en el fragmento de URL y queda en el almacenamiento del origen viejo para reintentos. No enviar capturas ni copiar esa URL completa a otras personas.
-- El puente transfiere claves `gya_*`, `larueda_*`, `dispositivo_gya` y el par de claves de respaldo `regllave_*`. La página receptora impide reemplazar el perfil de otra persona y no inicia el juego hasta restaurar todo.
-- No se ha comprobado la política real de `gya_ranking` en Supabase ni el proceso de GitHub Pages en dos repositorios desde este entorno. La prueba automatizada usa respuestas simuladas.
+- El puente transfiere claves `gya_*`, `larueda_*`, `mj_*`, `ps-*`, `dispositivo_gya`, `regllave_*`, la partida de Puzzle (`pz_partida`) y los récords de los minijuegos independientes. La página receptora impide reemplazar el perfil de otra persona y no inicia el juego hasta restaurar todo.
+- El 21/10/2026 se comprobó que GitHub Pages sirve el repositorio nuevo y que Supabase permite insertar y leer una copia de prueba en `gya_ranking` con grupo `migra`. La política anónima no permitió borrar la fila ficticia de prueba. Todavía falta probar el recorrido completo con un teléfono real después del cambio de dominio.
 - No publicar el puente en el repositorio original mientras el dominio personalizado siga allí: produciría un ciclo o dejaría la página receptora inaccesible.
 
 ## Prueba local
