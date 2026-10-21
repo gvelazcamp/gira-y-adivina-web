@@ -71,7 +71,7 @@ async function escenario({fallarEnvio=false,otroPerfil=false}={}){
     assert.equal(await page.evaluate(()=>localStorage.getItem('dominio_migracion_v1')),'ok');
     assert.equal(envios,1);
     assert(!JSON.stringify(fila).includes('clave-sensible'));
-    assert(!JSON.stringify(fila).includes('Vale'));
+    assert(!JSON.stringify(fila).includes('"gya_nombre"'));
     await page.goto(vieja+'index.html');
     await page.waitForURL(nueva+'index.html');
     assert.equal(await page.evaluate(()=>localStorage.getItem('gya_monedas')),'857');
