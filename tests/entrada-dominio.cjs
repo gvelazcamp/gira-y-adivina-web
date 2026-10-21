@@ -4,6 +4,8 @@ const path=require('node:path');
 const assert=require('node:assert/strict');
 
 const raiz=path.join(__dirname,'..');
+const manifest=JSON.parse(fs.readFileSync(path.join(raiz,'manifest.json'),'utf8'));
+assert.equal(manifest.start_url,'./index.html?comprobar_partida=1','la próxima TWA debe abrir la comprobación de la partida anterior');
 const index=fs.readFileSync(path.join(raiz,'index.html'),'utf8');
 const entrada=index.match(/<script>\s*\/\* La app Android nueva[\s\S]*?<\/script>/);
 assert(entrada,'falta la comprobación temprana en index.html');
