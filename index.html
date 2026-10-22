@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content, viewport-fit=cover">
 <style>html{background:#160B24}html.cargando body>*:not(#splash){visibility:hidden}</style>
+<script>/* Versión de la app de Play Store que abrió el juego: ?app=N (la 16 llega así desde el puente de github.io;
+   desde la 18 conviene que el start_url de la app traiga ?app=18) o ?comprobar_partida=1 (la 17). En el navegador no hay número. */
+(function(){try{const q=new URLSearchParams(location.search),n=+q.get("app")||(q.get("comprobar_partida")==="1"?17:0);
+  if(n){localStorage.setItem("gya_app_version",String(n));if(q.has("app")){q.delete("app");const t=q.toString();history.replaceState(null,"",location.pathname+(t?"?"+t:"")+location.hash);}}}catch(e){}})();</script>
 <script>/* Mientras carga no se ve nada del juego, solo la pantalla de carga (22/10/2026). */
 document.documentElement.classList.add("cargando");setTimeout(()=>document.documentElement.classList.remove("cargando"),12000);</script>
 <script>
@@ -1317,6 +1321,15 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
   </div>
 </section>
 
+<div class="capa" id="capaActualizar">
+  <div class="caja" style="max-width:380px;padding:22px 18px;text-align:center">
+    <img src="icono-192.png" alt="" width="84" height="84" style="border-radius:20px;box-shadow:0 10px 26px #0008,0 0 24px #F5B30155;margin:0 auto 12px;display:block">
+    <h2 style="margin:0 0 8px;color:var(--oro)">¡Hay una versión nueva!</h2>
+    <p class="sub" style="margin:0 0 16px;line-height:1.45">Actualizá Girá y Adiviná en Play Store para tener todo lo nuevo y que el juego ande mejor. Es gratis y tu partida no se pierde.</p>
+    <button class="btn-grande" id="actualizarYa" style="width:100%;margin-bottom:10px">📲 Actualizar ahora</button>
+    <button class="no" id="actualizarLuego" style="width:100%;border-radius:12px;padding:13px;font-weight:700">Más tarde</button>
+  </div>
+</div>
 <div class="capa" id="capaSocial">
   <div class="caja" style="max-width:420px;padding:16px">
     <img src="assets/social/promo-redes.webp" alt="Girá y Adiviná Rioplatense en redes" style="width:100%;border-radius:14px;display:block;margin-bottom:14px" loading="lazy">
@@ -3221,6 +3234,21 @@ function tutMarcarBienvenidaVista(){try{localStorage.setItem("gya_bienvenida_vis
    que ver el tutorial — nada de Partida Diaria ni video de la tienda
    encima. Recién al otro día arranca todo lo demás con normalidad. */
 function esMismoDiaDeAlta(){try{return localStorage.getItem("gya_dia_alta")===fechaHoy();}catch(e){return false;}}
+/* Aviso "hay una versión nueva en Play Store" (Gonzalo, 22/10/2026). VERSION_APP_PLAY = la versión que está
+   en PRODUCCIÓN en Play Store: subirla recién cuando Google la apruebe. Se muestra solo dentro de la app de Android
+   con una versión más vieja, una vez por día como máximo. */
+const VERSION_APP_PLAY=16;
+const URL_PLAY_STORE="https://play.google.com/store/apps/details?id=io.github.gvelazcamp.twa";
+function avisoActualizarApp(siguiente){
+  let v=0,visto="",hoy=String(Math.floor(Date.now()/86400000));
+  try{v=+localStorage.getItem("gya_app_version")||0;visto=localStorage.getItem("gya_aviso_actualizar_dia")||"";}catch(e){}
+  let forzar=false;try{forzar=new URLSearchParams(location.search).get("probaractualizar")==="1";}catch(e){}
+  if(!forzar&&(!v||v>=VERSION_APP_PLAY||visto===hoy)){siguiente();return;}
+  try{localStorage.setItem("gya_aviso_actualizar_dia",hoy);}catch(e){}
+  const c=$("capaActualizar");c.classList.add("ver");
+  $("actualizarYa").onclick=()=>{location.href=URL_PLAY_STORE;};
+  $("actualizarLuego").onclick=()=>{c.classList.remove("ver");siguiente();};
+}
 function tutChequearBienvenida(){
   if(tutEsPrimeraVez()){
     tutMarcarBienvenidaVista();
@@ -3234,7 +3262,7 @@ function tutChequearBienvenida(){
     abrirPerfil(()=>{$("setup").style.display="block";pdChequearAutoPopup();empujarRanking();},true);
     return;
   }
-  pdChequearAutoPopup();empujarRanking();
+  empujarRanking();avisoActualizarApp(pdChequearAutoPopup);
 }
 let esPartidaDiaria=false;
 /* Solo cambia cómo se nombra en los mensajes de fin de partida: si se

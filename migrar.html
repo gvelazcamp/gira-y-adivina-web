@@ -3,11 +3,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <script>
+var APP_Q=(/[?&]app=\d+/.exec(location.search)||[""])[0].replace("&","?");   /* versión de la app de Play Store que la abrió (para avisar que actualice) */
 // La partida ya está en este dominio: evitamos mostrar otra pantalla de recuperación.
 try {
   if(localStorage.getItem("dominio_migracion_v1")==="ok"){
     
-    location.replace("./index.html");
+    location.replace("./index.html"+APP_Q);
   }
 } catch (_) {}
 </script>
@@ -27,7 +28,7 @@ function clavePermitida(k){return k.startsWith("gya_")||k.startsWith("larueda_")
 async function recibir(){
   try{
     if(location.protocol!=="https:")throw Error("Esperá a que este dominio tenga HTTPS.");
-    if(localStorage.getItem(MARCA)==="ok"){location.replace("./index.html");return;}
+    if(localStorage.getItem(MARCA)==="ok"){location.replace("./index.html"+APP_Q);return;}
     const enlace=location.hash.slice(1);
     if(!/^[A-Za-z0-9_-]{24}\.[A-Za-z0-9_-]{43}$/.test(enlace))throw Error("El enlace de traslado no es válido.");
     const [id,secreto]=enlace.split(".");
@@ -54,7 +55,7 @@ async function recibir(){
       throw Error("El teléfono no pudo guardar la partida completa.");
     }
     history.replaceState(null,"",location.pathname);
-    location.replace("./index.html");
+    location.replace("./index.html"+APP_Q);
   }catch(e){
     estado.textContent=e&&e.message||"No se pudo recuperar la partida.";
     alternativa.hidden=false;

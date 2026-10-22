@@ -1141,3 +1141,7 @@ Fecha: 22/10/2026 — Carga, según el video de Gonzalo (versión 17): Android m
 ```text
 Fecha: 22/10/2026 — Fin de la carga (Gonzalo: "que termine el splash y entre al juego, no que desaparezca y aparezca"): ya no pasa por el violeta. El menú queda listo atrás y la ilustración se abre con un zoom suave (opacidad 0 y escala 1,08 en 0,5 s), entrando directo al juego. sw v354.
 ```
+
+```text
+Fecha: 22/10/2026 — Aviso "¡Hay una versión nueva!" para la app de Android (Gonzalo). Ventana #capaActualizar (logo, texto, "📲 Actualizar ahora" → https://play.google.com/store/apps/details?id=io.github.gvelazcamp.twa, "Más tarde"), una vez por día como máximo (gya_aviso_actualizar_dia), después del splash y antes del popup diario (avisoActualizarApp en tutChequearBienvenida). Cómo sabe la versión instalada (gya_app_version): la 16 abre github.io y el puente (repo gira-y-adivina-rioplatense, si document.referrer es android-app://) agrega ?app=16 → migrar.html lo pasa → index.html lo guarda; la 17 abre con ?comprobar_partida=1 (= 17); desde la 18 el start_url de la app debería traer ?app=18 (además de comprobar_partida). En el navegador no hay número y no se avisa. VERSION_APP_PLAY (index.html) = la versión que está en PRODUCCIÓN: hoy 16 → nadie ve el aviso. Cuando Google apruebe la 17 en producción, poner 17 y los de la 16 lo ven. Prueba: index.html?probaractualizar=1. No se puede actualizar "adentro" del juego: el aviso de actualización nativo de Google (In-App Updates) necesita código Android en la app. sw v355.
+```
