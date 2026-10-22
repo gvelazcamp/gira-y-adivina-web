@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="GyaLaunchTheme" parent="android:style/Theme.Translucent.NoTitleBar">
+        <item name="android:windowBackground">@color/backgroundColor</item>
+        <item name="android:statusBarColor">@color/backgroundColor</item>
+        <item name="android:navigationBarColor">@color/backgroundColor</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowSplashScreenBackground">@color/backgroundColor</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash</item>
+    </style>
+</resources>

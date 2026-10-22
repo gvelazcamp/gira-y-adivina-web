@@ -2,3 +2,10 @@ node_modules/
 test-results/
 playwright-report/
 .env
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/signing.keystore
+android/*.aab
+android/*.apk

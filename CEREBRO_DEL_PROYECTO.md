@@ -27,7 +27,7 @@ En el proyecto, las entradas son el pedido de Gonzalo, el árbol del repositorio
 - Juego de ruleta y frases con cultura rioplatense, mapas, progreso, cosméticos, colecciones, eventos, torneos, opciones sociales y extensiones.
 - Aplicación estática de HTML, CSS y JavaScript sin framework ni compilación de producción. El núcleo sigue en `index.html`, con estilos y lógica embebidos; las extensiones tienen módulos propios.
 - PWA: `manifest.json`, `sw.js`, iconos y página principal. El manifiesto declara idioma `es-UY`, presentación `standalone`, orientación `portrait` y color `#160B24`.
-- Android: `.well-known/assetlinks.json` vincula `io.github.gvelazcamp.twa`. El proyecto Android y sus permisos no están en este árbol; no afirmar que un cambio del empaquetado está resuelto aquí.
+- Android: `.well-known/assetlinks.json` vincula `io.github.gvelazcamp.twa`. Desde el 22/10/2026 hay una reconstrucción del proyecto Android en `android/`, basada en el AAB v16 y preparada como v17. **No está firmada ni publicada**; no afirmar que el arranque de Play quedó comprobado sin probar un AAB firmado en un teléfono.
 - Existe `package.json` para pruebas con Playwright. No implica un proceso de build del juego.
 
 ### Qué examinar ante un pedido
@@ -1115,4 +1115,9 @@ Pedido de Gonzalo: entrar con pantalla oscura completa, sin el logo y la barra i
 Cambio: index.html precarga el splash y los iconos visibles, elimina el logo y la barra HTML, y deja de esperar los fondos de MUNDO antes de mostrar el menú. sw.js incorpora esas imágenes a la caché.
 Comprobación: Chromium móvil con carga demorada del icono de Tienda; pantalla oscura al comienzo, menú descubierto con iconos cargados y sin errores JS. Pruebas entrada-dominio y migracion-dominio OK.
 Límite: el primer logo grande está en res/drawable/splash.png del AAB Android v16; el cambio web no lo modifica. La barra de URL en una TWA depende de la verificación Android del dominio y requiere comprobación en dispositivo.
+```
+
+```text
+Fecha: 22/10/2026 — Proyecto Android v17 preparado, aún sin firmar ni publicar.
+Se reconstruyó `android/` con el mismo paquete io.github.gvelazcamp.twa, versionCode 17, minSdk 24, targetSdk 36, Play Billing y notificaciones. El splash nativo lleva fondo #08070D y PNG transparentes de 1 píxel (sin logo grande); Android 12+ usa el mismo fondo/icono transparente al iniciar. LauncherActivity omite ?comprobar_partida=1 únicamente cuando firstInstallTime == lastUpdateTime: la instalación nueva no salta al dominio antiguo, y las actualizaciones conservan el traslado automático de partidas. Se declara gvelazcamp.github.io como origen confiable adicional y se comprobó que ambos assetlinks.json públicos incluyen la huella de firma de Play. Se compiló app-release.aab y pasó bundletool validate; el recurso assetStatements es JSON válido y declara ambos orígenes. Falta firmar con la clave de subida original y probar en un Android recién instalado desde Play. El ZIP adjunto supera el límite de lectura de esta sesión y la clave no está accesible como archivo separado; no usar el AAB sin firmar para publicación.
 ```
