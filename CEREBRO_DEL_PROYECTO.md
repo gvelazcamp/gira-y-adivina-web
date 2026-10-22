@@ -1137,3 +1137,7 @@ Fecha: 22/10/2026 — Extensiones: al girar (mudanza de Sopa Fugaz, botón Girar
 ```text
 Fecha: 22/10/2026 — Carga, según el video de Gonzalo (versión 17): Android muestra su pantalla oscura y después la de la TWA en violeta #160B24 (sale del AAB, no del juego); después el juego pasaba a negro, se asomaba la fila de abajo del menú (Ruleta de premios / Ranking / Objetivos) y al final la ilustración y el menú se veían encimados. Arreglo: (1) el fondo de la carga del juego es el mismo violeta #160B24 que la pantalla de Android, así no hay salto violeta→negro; (2) html.cargando oculta todo el juego (visibility, sin tocar el deslizado) hasta que termina la carga, con tope de 12 s; (3) al cerrar, primero la ilustración y la barra se apagan al violeta y recién después aparece el menú (nunca los dos encimados). Si en la versión 18 se cambia el color de la pantalla de carga de Android, cambiar también #160B24 en el head de index.html (html, #splash y la tapa de comprobar_partida). sw v353.
 ```
+
+```text
+Fecha: 22/10/2026 — Fin de la carga (Gonzalo: "que termine el splash y entre al juego, no que desaparezca y aparezca"): ya no pasa por el violeta. El menú queda listo atrás y la ilustración se abre con un zoom suave (opacidad 0 y escala 1,08 en 0,5 s), entrando directo al juego. sw v354.
+```
