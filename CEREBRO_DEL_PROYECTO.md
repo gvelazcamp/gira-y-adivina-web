@@ -1107,3 +1107,12 @@ Fecha: 20/10/2026 — Memoria en Giro con dibujos. Hoja 4x3 (mismo estilo; perso
 ```text
 Fecha: 20/10/2026 — El Rosco con dibujos. Hoja 4x4 (mismo estilo; personaje: conductor de camisa celeste y moño dorado) recortada en assets/rosco/. Se usan: logo, aciertos, errores, reloj (HUD), pista y escuchar (cuadro de la pista), pasapalabra (botón), personaje (inicio), perfecto / terminado / tiempo (paneles finales). La ruleta y las burbujas de letras con imagen (aro, azul, verde, roja, actual) se probaron y Gonzalo dijo que quedaban mal: el rosco y sus letras quedan como antes (CSS original) y esas imágenes no se subieron. Estilos bajo .rr-game. rosco-rioplatense.js v12, extensiones.css v94, sw v346.
 ```
+
+
+```text
+Fecha: 22/10/2026 — Inicio web más fluido (fff5a2c, publicado en main).
+Pedido de Gonzalo: entrar con pantalla oscura completa, sin el logo y la barra intermedios; evitar que los iconos del menú aparezcan después.
+Cambio: index.html precarga el splash y los iconos visibles, elimina el logo y la barra HTML, y deja de esperar los fondos de MUNDO antes de mostrar el menú. sw.js incorpora esas imágenes a la caché.
+Comprobación: Chromium móvil con carga demorada del icono de Tienda; pantalla oscura al comienzo, menú descubierto con iconos cargados y sin errores JS. Pruebas entrada-dominio y migracion-dominio OK.
+Límite: el primer logo grande está en res/drawable/splash.png del AAB Android v16; el cambio web no lo modifica. La barra de URL en una TWA depende de la verificación Android del dominio y requiere comprobación en dispositivo.
+```
