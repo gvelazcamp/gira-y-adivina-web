@@ -605,7 +605,10 @@ const TuttiFrutti=(()=>{
     if(on.pend&&on.pend.length&&q("tfInput")){const v=(q("tfInput").value||"").trim();if(v.length>=2&&N(v)[0]===on.letra)guardarCampo();}
     on.fase="cortada";
     const nombre=(on.jug.find(j=>j.pid===quien)||{}).nombre;
-    if(typeof sonidoErrorExt==="function"&&quien&&quien!==on.pid)sonidoErrorExt();
+    /* El "¡BASTA!" suena siempre (se había perdido al sacar el modo papel y lápiz): ta-taaa para todos;
+       si lo cantó otro, además el sonido de "uy". */
+    if(quien&&typeof bip==="function"){bip(523,.14,"square",.06);setTimeout(()=>bip(392,.3,"square",.06),150);if(quien===on.pid)setTimeout(()=>[523,659,784].forEach((f,i)=>setTimeout(()=>bip(f,.16,"triangle",.05),i*110)),420);}
+    if(typeof sonidoErrorExt==="function"&&quien&&quien!==on.pid)setTimeout(sonidoErrorExt,450);
     if(typeof vibrar==="function")vibrar([80,50,80]);
     pantalla(`<div class="imp-centro">${quien?`<img class="tf-basta-img" src="${ARTE("basta")}" alt="¡BASTA!" draggable="false">`:`<div class="imp-rol">⏰ ¡Tiempo!</div>`}
       <p class="imp-ayuda">${quien?(quien===on.pid?"¡Completaste todo primero!":"<b>"+esc(nombre||"Alguien")+"</b> completó todo primero."):"Nadie llegó a completar todo."}</p>
