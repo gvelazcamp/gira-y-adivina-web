@@ -22,8 +22,9 @@ En el proyecto, las entradas son el pedido de Gonzalo, el árbol del repositorio
 
 ### Identidad y arquitectura comprobadas
 
-- Repositorio: https://github.com/gvelazcamp/gira-y-adivina-rioplatense
-- Web referenciada por el proyecto: https://gvelazcamp.github.io/gira-y-adivina-rioplatense/
+- Repositorio VIVO (desde el 21/10/2026): https://github.com/gvelazcamp/gira-y-adivina-web → sirve el juego en https://girayadivina.com (archivo `CNAME`). Todo cambio del juego va acá (rama + PR a `main`).
+- Repositorio anterior: https://github.com/gvelazcamp/gira-y-adivina-rioplatense → ahora su `index.html` es el puente de traslado (`migracion/puente.html`) que cifra la partida guardada en github.io y la manda a `girayadivina.com/migrar.html`; el juego viejo quedó como `juego-anterior.html`. No publicar cambios del juego ahí (ver `migracion/README.md`).
+- Play Store: producción versión 16 aprobada (la TWA vieja abre github.io y el puente traslada la partida); versión 17 en prueba interna (TWA con el dominio nuevo). Dato de Gonzalo, 22/10/2026.
 - Juego de ruleta y frases con cultura rioplatense, mapas, progreso, cosméticos, colecciones, eventos, torneos, opciones sociales y extensiones.
 - Aplicación estática de HTML, CSS y JavaScript sin framework ni compilación de producción. El núcleo sigue en `index.html`, con estilos y lógica embebidos; las extensiones tienen módulos propios.
 - PWA: `manifest.json`, `sw.js`, iconos y página principal. El manifiesto declara idioma `es-UY`, presentación `standalone`, orientación `portrait` y color `#160B24`.
