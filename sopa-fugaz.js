@@ -222,7 +222,7 @@ const SopaFugaz=(()=>{
   function mudar(ahora){
     if(!jugando||mudando)return;
     mudando=true;cancelarArrastre();
-    sonarRuletaGiro();gridEl.classList.add("spin");raiz.querySelector("#sfGridCaja").classList.add("mudando");
+    if(typeof sonarGiroExt==="function")sonarGiroExt();gridEl.classList.add("spin");raiz.querySelector("#sfGridCaja").classList.add("mudando");
     celdas.forEach(c=>c.classList.add("gone"));
     const esteToken=token;
     trasladoTimer=setTimeout(()=>{
