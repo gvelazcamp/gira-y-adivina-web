@@ -1125,3 +1125,7 @@ Fecha: 22/10/2026 — Pantalla de carga (Gonzalo, versión 17 prueba interna: "v
 ```text
 Fecha: 22/10/2026 — Carga como cualquier juego (Gonzalo: "entro al juego, pantalla negra como todos los juegos, y este splash"): negro → la ilustración grande (assets/splash.webp?v=4, recomprimida de 310 a 180 KB para que aparezca antes) con la barra dorada → menú. Sin el logo chico ni fondo violeta en la carga; la barra aparece junto con la ilustración. La ilustración se ve SIEMPRE (también al reabrir antes de 20 min): mínimo 1,8 s la primera vez, 0,8 s al reabrir. El splash va arriba de todo (z-index máximo): ningún aviso (racha, logros) se ve encima. El ida y vuelta al dominio anterior también es negro. sw v350.
 ```
+
+```text
+Fecha: 22/10/2026 — El Rosco: se quejaron de que no veían "Pasapalabra" (con el teclado abierto quedaba debajo, tapado). Ahora el botón va en la misma fila que la respuesta y "Enviar" (ícono arriba, texto chico), siempre a la vista arriba del teclado. Placeholder "Tu palabra" (el anterior se cortaba). rosco-rioplatense.js v13, extensiones.css v95, sw v351.
+```
