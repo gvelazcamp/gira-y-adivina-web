@@ -1169,3 +1169,7 @@ Fecha: 22/10/2026 — Ahorcado Rioplatense con dibujos. Hoja 4x3 (mismo estilo; 
 ```text
 Fecha: 22/10/2026 — El Rosco: reclamo de un jugador ("pronóstico del tiempo" le daba mal; la respuesta es PRONOSTICO). Ahora vale(d,valor) acepta la palabra, sus alternativas y también la palabra seguida de un complemento corto "de/del/de la/de los…" (máx. 12 letras más). PRONOSTICO además tiene alternativas explícitas (del tiempo / de tiempo / del clima). Si llegan más reclamos de palabras del Rosco: agregar alternativas en rosco-rioplatense-datos.js (6.º elemento) y correr node tests/auditar-palabras.cjs --md.
 ```
+
+```text
+Fecha: 22/10/2026 — Impostor: la elección de categoría ahora son tarjetas ilustradas (hoja 4x2 de ChatGPT recortada en assets/impostor/cat_<id>.webp, 300x340; también cat_bloqueada sin usar). Grilla de 3 columnas, "Mezcla" centrada abajo, nombre corto en la franja oscura (CORTO en impostor.js), la última elegida brilla dorada. Tocar una sigue arrancando la ronda como antes. impostor.js v7, extensiones.css v99, sw v361.
+```

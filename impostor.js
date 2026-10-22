@@ -20,6 +20,9 @@ const Impostor=(()=>{
   /* Dibujos en assets/impostor/ (hoja hecha con ChatGPT, recortada en 9). */
   const ARTE=["logo","pasar","carta_dorso","carta_palabra","carta_impostor","ronda","votar","atrapado","gano_impostor"];
   const src=n=>"assets/impostor/"+n+".webp";
+  /* Tarjetas de categorías (assets/impostor/cat_<id>.webp, 22/10/2026): nombre corto en la franja de abajo. */
+  const CORTO={lugares:"Lugares",comidas:"Comidas",deportes:"Deportes",transporte:"Transportes",ropa:"Ropa",situaciones:"Momentos"};
+  const tarjeta=(id,nom)=>`<button type="button" class="imp-tarjeta${id===catId?" ultima":""}" data-cat="${id}" style="background-image:url(${src("cat_"+id)})"><span>${esc(nom)}</span></button>`;
   const img=n=>`<img class="imp-arte imp-a-${n}" src="${src(n)}" alt="" draggable="false">`;
 
   function abrir(contenedor){
@@ -38,7 +41,7 @@ const Impostor=(()=>{
       <div class="qs-sub">🕵️ Impostores</div>
       <div class="qns-rangos imp-dos" id="impImp"><button type="button" data-n="1">1 impostor</button><button type="button" data-n="2">2 impostores</button></div>
       <div class="qs-sub">🗂️ Tocá una categoría para repartir las palabras</div>
-      <div class="qs-cats imp-cats" id="impCats">${cats().map(c=>`<button type="button" data-cat="${c.id}">${c.emoji} ${esc(c.nombre)}</button>`).join("")}<button type="button" data-cat="mezcla">🎲 Mezcla</button></div>
+      <div class="imp-tarjetas" id="impCats">${cats().map(c=>tarjeta(c.id,CORTO[c.id]||c.nombre)).join("")}${tarjeta("mezcla","Mezcla")}</div>
       <button type="button" id="impWpp">💬 Invitar por WhatsApp</button>
     </div>`;
     const pintar=()=>{
