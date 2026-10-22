@@ -31,6 +31,7 @@ async function escenario(browser,{partidaAnterior=false,partidaNueva=false,sala=
   });
   await context.route('https://girayadivina.com/**',route=>route.fulfill({status:200,contentType:'text/html',body:route.request().url().includes('/migrar.html')?recibir:juego}));
   await context.route('https://gvelazcamp.github.io/gira-y-adivina-rioplatense/**',route=>{
+    if(route.request().resourceType()!=='document')return route.fulfill({status:404});   /* el logo del puente no cuenta como otra visita */
     if(route.request().url().includes('juego-anterior.html'))return route.fulfill({status:200,contentType:'text/html',body:'<title>Juego anterior</title>'});
     puenteAbierto++;
     return route.fulfill({status:200,contentType:'text/html',body:puente});
