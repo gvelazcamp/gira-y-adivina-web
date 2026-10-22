@@ -55,7 +55,8 @@ public class LauncherActivity
                 && "1".equals(uri.getQueryParameter("comprobar_partida"))) {
             try {
                 PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
-                if (info.lastUpdateTime <= info.firstInstallTime) {
+                if (info.firstInstallTime > 0
+                        && info.lastUpdateTime == info.firstInstallTime) {
                     return uri.buildUpon().clearQuery().build();
                 }
             } catch (PackageManager.NameNotFoundException ignored) {
