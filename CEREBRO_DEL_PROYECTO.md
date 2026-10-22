@@ -1133,3 +1133,7 @@ Fecha: 22/10/2026 — El Rosco: se quejaron de que no veían "Pasapalabra" (con 
 ```text
 Fecha: 22/10/2026 — Extensiones: al girar (mudanza de Sopa Fugaz, botón Girar de Rueda de Letras) sonaba el ruido de la ruleta del juego principal (sonarRuletaGiro, a propósito desde el diseño original) y Gonzalo lo vio como bug. Ahora usan sonarGiroExt() (index.html): un "fiuu" corto y suave sintetizado (respeta el sonido del juego). El ruido de la ruleta queda solo para la ruleta principal. No reusar sonarRuletaGiro en extensiones. sopa-fugaz.js v9, rueda-de-letras.js v16, sw v352.
 ```
+
+```text
+Fecha: 22/10/2026 — Carga, según el video de Gonzalo (versión 17): Android muestra su pantalla oscura y después la de la TWA en violeta #160B24 (sale del AAB, no del juego); después el juego pasaba a negro, se asomaba la fila de abajo del menú (Ruleta de premios / Ranking / Objetivos) y al final la ilustración y el menú se veían encimados. Arreglo: (1) el fondo de la carga del juego es el mismo violeta #160B24 que la pantalla de Android, así no hay salto violeta→negro; (2) html.cargando oculta todo el juego (visibility, sin tocar el deslizado) hasta que termina la carga, con tope de 12 s; (3) al cerrar, primero la ilustración y la barra se apagan al violeta y recién después aparece el menú (nunca los dos encimados). Si en la versión 18 se cambia el color de la pantalla de carga de Android, cambiar también #160B24 en el head de index.html (html, #splash y la tapa de comprobar_partida). sw v353.
+```
