@@ -1149,3 +1149,11 @@ Fecha: 22/10/2026 — Aviso "¡Hay una versión nueva!" para la app de Android (
 ```text
 Fecha: 22/10/2026 — Silabario Rioplatense con dibujos. Hoja 4x3 (mismo estilo; personaje: chica morena de rodetes con enterito de jean) recortada en assets/silabario/: logo, ficha, ficha_sel, ficha_usada, mezcla, reloj, aciertos, errores, personaje, perfecto, terminado, tiempo. Logo arriba; íconos en el HUD; fichas del tablero con border-image (crema; elegida = magenta; usada = gris); remolino "mezcla" sobre el tablero mientras se reordena; paneles: inicio = personaje, final = perfecto / terminado / tiempo. Estilos bajo .sb-game. silabario-rioplatense.js v15, extensiones.css v96, sw v356.
 ```
+
+```text
+Fecha: 22/10/2026 — 100 Rioplatenses Dicen con dibujos. Hoja 4x5 (mismo estilo; personaje: conductora de saco azul con hombreras doradas y micrófono) recortada en assets/cien/: logo, oculta, revelada, error, c_<id de CIEN_CATEGORIAS> (12 temas), personaje, gano, perdio, record. Logo arriba; íconos dibujados en los gajos de la ruleta y en el chip del tema (en vez de los emojis); cruces de error en imagen (apagadas hasta usarse); filas del panel con border-image (azul oculta, dorada descubierta); conductora en la pantalla de inicio; final con record (mejor marca) / gano (alguna ronda con 4+) / perdio. Estilos bajo .cr-game. cien-rioplatenses.js v8, extensiones.css v97, sw v357.
+```
+
+```text
+Fecha: 22/10/2026 — Tutti Frutti: volvió el sonido del "¡BASTA!" (Gonzalo: "se fue"). Se había perdido el 04/10 al sacar el modo papel y lápiz (#824): el modo online solo hacía sonar el "uy" cuando lo cantaba otro y nada si lo cantabas vos. Ahora en cortarRonda suena siempre el ta-taaa de antes (523 → 392 Hz); si lo cantaste vos, además una fanfarria corta; si fue otro, después el "uy". tutti-frutti.js v65.
+```
