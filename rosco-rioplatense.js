@@ -22,6 +22,14 @@ const RoscoRioplatense=(()=>{
   function detenerMusicaJuego(){try{if(audioMusica&&!audioMusica.paused)audioMusica.pause();}catch(e){}}
   const $=s=>raiz?.querySelector(s);
   const normalizar=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/\s+/g,"");
+  /* Vale la palabra, sus alternativas, y también la palabra con un complemento corto "de/del…"
+     (ej. "pronóstico del tiempo" para PRONOSTICO): reclamos de jugadores, 22/10/2026. */
+  function vale(d,valor){
+    const opciones=[d.palabra,...(d.alternativas||[])].map(normalizar);
+    if(opciones.includes(valor))return true;
+    const base=normalizar(d.palabra),resto=valor.startsWith(base)?valor.slice(base.length):"";
+    return resto.length>0&&resto.length<=12&&/^(DEL?|DELA|DELOS|DELAS)[A-Z]{3,}$/.test(resto);
+  }
   const numero=(v,base=0)=>Number.isFinite(v)&&v>=0?v:base;
   function cargar(){
     try{const d=JSON.parse(localStorage.getItem(CLAVE));if(d&&typeof d==="object")return{
@@ -125,7 +133,7 @@ const RoscoRioplatense=(()=>{
     tic();if(fase!=="resolver")return;
     const crudo=$("#rrEntrada").value.trim().slice(0,30);
     const valor=normalizar($("#rrEntrada").value);if(!valor){mensaje("Escribí una palabra o tocá Pasapalabra.");enfocar();return;}
-    const d=items[actual],ok=[d.palabra,...(d.alternativas||[])].some(p=>normalizar(p)===valor);
+    const d=items[actual],ok=vale(d,valor);
     estados[actual]=ok?"acierto":"error";respuestas[actual]=crudo;fase="respuesta";espera=ROSCO_CONFIG.pausaMs;
     $("#rrEntrada").value="";sonido(ok);mensaje(ok?"¡Bien! +100 puntos · "+d.palabra:"Era "+d.palabra,ok?"acierto":"error");
     if(typeof objSumar==="function")objSumar("roscoLetras",1);
@@ -149,7 +157,7 @@ const RoscoRioplatense=(()=>{
   /* Resumen final: por letra, la palabra correcta, lo que escribiste vos y
      (en duelo) lo que escribió el rival. ✓ acertó · ✕ erró · — no respondió. */
   const escH=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-  function marcaDe(d,txt){if(!txt)return["nada","—"];const ok=[d.palabra,...(d.alternativas||[])].some(p=>normalizar(p)===normalizar(txt));return[ok?"ok":"mal",escH(txt.toLowerCase())+(ok?" ✓":" ✕")];}
+  function marcaDe(d,txt){if(!txt)return["nada","—"];const ok=vale(d,normalizar(txt));return[ok?"ok":"mal",escH(txt.toLowerCase())+(ok?" ✓":" ✕")];}
   function tablaRespuestas(mias,rival,nombreRival){
     const yo=(typeof perfil!=="undefined"&&perfil&&perfil.nombre)||"Vos";
     return'<div class="rr-resumen">'+items.map((d,i)=>{
