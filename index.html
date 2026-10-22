@@ -2421,6 +2421,16 @@ function sonarRuletaGiro(){
     audioRuletaGiro.currentTime=0;audioRuletaGiro.play().catch(()=>{});
   }catch(e){}
 }
+/* Giro de los juegos de Extensiones (Sopa Fugaz, Rueda de Letras): un "fiuu" corto y suave.
+   El ruido de la ruleta queda solo para la ruleta del juego principal (Gonzalo, 22/10/2026). */
+function sonarGiroExt(){
+  if(!sonidoPermitido())return;
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume().catch(()=>{});
+    const t=ac.currentTime,o=ac.createOscillator(),v=ac.createGain();o.type="sine";
+    o.frequency.setValueAtTime(380,t);o.frequency.exponentialRampToValueAtTime(950,t+.22);o.frequency.exponentialRampToValueAtTime(520,t+.42);
+    v.gain.setValueAtTime(.0001,t);v.gain.exponentialRampToValueAtTime(.05,t+.06);v.gain.exponentialRampToValueAtTime(.0001,t+.45);
+    o.connect(v);v.connect(ac.destination);o.start(t);o.stop(t+.46);}catch(e){}
+}
 /* ---- Efectos de sonido cortos (mp3), aparte de los bips sintéticos ---- */
 const SFX={
   aplausos:"assets/audio/aplausos.mp3",
@@ -11433,10 +11443,10 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 </script>
 <script src="duelo-extensiones.js?v=16"></script>
 <script src="sopa-fugaz-datos.js?v=3"></script>
-<script src="sopa-fugaz.js?v=8"></script>
+<script src="sopa-fugaz.js?v=9"></script>
 <script src="rueda-de-letras-datos.js?v=4"></script>
 <script src="rueda-de-letras-diccionario.js?v=1"></script>
-<script src="rueda-de-letras.js?v=15"></script>
+<script src="rueda-de-letras.js?v=16"></script>
 <script src="palabra-secreta-datos.js?v=2"></script>
 <script src="palabra-secreta.js?v=17"></script>
 <script src="frases-en-giro-datos.js?v=1"></script>

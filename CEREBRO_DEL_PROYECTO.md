@@ -1129,3 +1129,7 @@ Fecha: 22/10/2026 — Carga como cualquier juego (Gonzalo: "entro al juego, pant
 ```text
 Fecha: 22/10/2026 — El Rosco: se quejaron de que no veían "Pasapalabra" (con el teclado abierto quedaba debajo, tapado). Ahora el botón va en la misma fila que la respuesta y "Enviar" (ícono arriba, texto chico), siempre a la vista arriba del teclado. Placeholder "Tu palabra" (el anterior se cortaba). rosco-rioplatense.js v13, extensiones.css v95, sw v351.
 ```
+
+```text
+Fecha: 22/10/2026 — Extensiones: al girar (mudanza de Sopa Fugaz, botón Girar de Rueda de Letras) sonaba el ruido de la ruleta del juego principal (sonarRuletaGiro, a propósito desde el diseño original) y Gonzalo lo vio como bug. Ahora usan sonarGiroExt() (index.html): un "fiuu" corto y suave sintetizado (respeta el sonido del juego). El ruido de la ruleta queda solo para la ruleta principal. No reusar sonarRuletaGiro en extensiones. sopa-fugaz.js v9, rueda-de-letras.js v16, sw v352.
+```
