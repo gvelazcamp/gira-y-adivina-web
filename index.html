@@ -92,12 +92,13 @@
  --safe-bottom:env(safe-area-inset-bottom,0px);--safe-left:env(safe-area-inset-left,0px)}
 *{box-sizing:border-box;margin:0;padding:0}
 #splash{position:fixed;inset:0;z-index:50;background:#08070D;
- display:grid;place-items:center;transition:opacity .7s ease;overflow:hidden}
+ display:grid;place-items:center;transition:opacity .4s ease;overflow:hidden}
 #splash.ido{opacity:0;pointer-events:none}
 #splash::before{content:"";position:absolute;inset:0;background-image:url('assets/splash.webp?v=3');
  background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transform:scale(1.018);
  transition:opacity .75s ease,transform 1.1s ease}
 #splash.img-lista::before{opacity:1;transform:scale(1)}
+#splash.img-saliendo::before{opacity:0;transition:opacity .35s ease}
 .pios-ico{width:56px;height:56px;border-radius:15px;box-shadow:0 8px 18px -6px #000000AA;margin-bottom:10px}
 .pios-intro{margin:0 0 14px;opacity:.78;font-size:.9rem;line-height:1.45}
 .pios-pasos{display:flex;flex-direction:column;gap:9px;text-align:left}
@@ -1223,9 +1224,9 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
     <span class="estrella e1">✦</span><span class="estrella e2">✧</span><span class="estrella e3">✦</span>
     <span class="estrella e4">✧</span><span class="estrella e5">✦</span><span class="estrella e6">✧</span>
   </div>
-  <img src="assets/decor/mate.png" alt="" class="deco-mate" aria-hidden="true">
-  <img src="assets/decor/banderas.png" alt="" class="deco-banderas" aria-hidden="true">
-  <img src="assets/logo.webp" alt="Girá y Adiviná Rioplatense" class="logo-inicio">
+  <img src="assets/decor/mate.png" alt="" class="deco-mate" aria-hidden="true" loading="lazy">
+  <img src="assets/decor/banderas.png" alt="" class="deco-banderas" aria-hidden="true" loading="lazy">
+  <img src="assets/logo.webp" alt="Girá y Adiviná Rioplatense" class="logo-inicio" loading="lazy">
   <p class="sub">Girá, pedí una consonante y adiviná la frase antes que el otro.</p>
   <div class="setup-topbar">
     <div class="perfil-chip" id="perfilChip">
@@ -1289,7 +1290,7 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
 
 <div class="capa" id="capaSocial">
   <div class="caja" style="max-width:420px;padding:16px">
-    <img src="assets/social/promo-redes.webp" alt="Girá y Adiviná Rioplatense en redes" style="width:100%;border-radius:14px;display:block;margin-bottom:14px">
+    <img src="assets/social/promo-redes.webp" alt="Girá y Adiviná Rioplatense en redes" style="width:100%;border-radius:14px;display:block;margin-bottom:14px" loading="lazy">
     <p class="sub" id="socialCiudadInfo" style="margin:0 0 8px"></p>
     <button class="btn-grande" id="socialContinuar" style="margin-bottom:10px">Ver el avance de los jugadores</button>
     <button class="no" id="socialCerrar" style="width:100%;border-radius:12px;padding:13px;font-weight:700">Cerrar</button>
@@ -1446,13 +1447,13 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
   <div class="dz-viewport-wrap">
     <div id="duraznoViewport" class="dz-viewport">
       <div id="duraznoCanvas" class="dz-canvas">
-        <img src="assets/worlds/durazno.webp" id="duraznoImg" draggable="false" alt="Durazno">
+        <img src="assets/worlds/durazno.webp" id="duraznoImg" draggable="false" alt="Durazno" loading="lazy">
         <video id="duraznoVideo" src="assets/worlds/durazno-loop.mp4" muted loop autoplay playsinline preload="auto" draggable="false" style="display:none"></video>
         <div id="dzNodos"></div>
       </div>
     </div>
     <button class="dz-pasaporte-fab" id="dzPasaporte" title="Pasaporte de Durazno" aria-label="Abrir pasaporte">
-      <img src="assets/passport/passport-icon.webp" alt="" draggable="false">
+      <img src="assets/passport/passport-icon.webp" alt="" draggable="false" loading="lazy">
     </button>
     <button class="dz-coleccion-fab" id="dzColeccionBtn" title="Colección Durazno" aria-label="Abrir colección">🎒</button>
   </div>
@@ -11254,7 +11255,7 @@ $("fBoton").onclick=()=>{
   /* Mostrar primero un fondo oscuro, luego la imagen de entrada y finalmente
      el menú con sus iconos listos. Los fondos del mapa se cargan al jugarlos. */
   let volvio=false;try{volvio=Date.now()-(+localStorage.getItem("ga_ultima_apertura")||0)<20*60000;localStorage.setItem("ga_ultima_apertura",String(Date.now()));}catch(e){}
-  const MIN_ESPERA=volvio?250:450,MIN_SPLASH_GRANDE=volvio?0:700;
+  const MIN_ESPERA=volvio?250:450,MIN_SPLASH_GRANDE=700;
   const cap=$("splash");
   const splashPrincipal=matchMedia("(min-width:900px)").matches?"assets/splash-tv.webp?v=1":"assets/splash.webp?v=3";
   let yaCerrado=false,tSplashGrande=0,imagenLista=false,iconosListos=false;
@@ -11264,7 +11265,11 @@ $("fBoton").onclick=()=>{
     const desdeInicio=performance.now()-t0;
     const desdeSplash=tSplashGrande?performance.now()-tSplashGrande:0;
     const espera=Math.max(0,MIN_ESPERA-desdeInicio,MIN_SPLASH_GRANDE-desdeSplash);
-    setTimeout(()=>{cap.classList.add("ido");setTimeout(()=>cap.remove(),800);mostrarPromptIOS();
+    setTimeout(()=>{
+      // Primero desaparece la ilustración sobre el negro. Solo después se
+      // descubre el menú: así nunca se ven ambos dibujos superpuestos.
+      cap.classList.add("img-saliendo");
+      setTimeout(()=>{cap.classList.add("ido");setTimeout(()=>cap.remove(),450);mostrarPromptIOS();
       /* Debug para revisar el video promo y el tutorial en una cuenta ya
          creada (que normalmente nunca los vuelve a ver): abrir el juego
          con ?revisar=1 en la URL los fuerza a los dos, sin tocar el
@@ -11281,17 +11286,23 @@ $("fBoton").onclick=()=>{
          nada (es solo para mirar). */
       let probarperfil=false;try{probarperfil=new URLSearchParams(location.search).get("probarperfil")==="1";}catch(e){}
       if(probarperfil){setTimeout(previsualizarPerfilVacio,900);return;}
-      tutChequearBienvenida();},espera);
+      tutChequearBienvenida();},volvio?0:380);
+    },espera);
   };
   const intentarCerrar=()=>{if(imagenLista&&iconosListos)cerrar();};
-  const im=new Image();
-  im.onload=()=>{im.decode().catch(()=>{}).then(()=>{
-    if(yaCerrado)return;
-    cap.classList.add("img-lista");tSplashGrande=performance.now();
-    imagenLista=true;intentarCerrar();
-  });};
-  im.onerror=()=>{imagenLista=true;intentarCerrar();};
-  im.src=splashPrincipal;
+  if(volvio){
+    // En aperturas seguidas, negro → menú; evita que el afiche parpadee.
+    imagenLista=true;
+  }else{
+    const im=new Image();
+    im.onload=()=>{im.decode().catch(()=>{}).then(()=>{
+      if(yaCerrado)return;
+      cap.classList.add("img-lista");tSplashGrande=performance.now();
+      imagenLista=true;intentarCerrar();
+    });};
+    im.onerror=()=>{imagenLista=true;intentarCerrar();};
+    im.src=splashPrincipal;
+  }
   Promise.all(Array.from(document.querySelectorAll(".menu-grid img"))
     .filter(icono=>!icono.closest("#bTV"))
     .map(icono=>icono.decode().catch(()=>{})))
