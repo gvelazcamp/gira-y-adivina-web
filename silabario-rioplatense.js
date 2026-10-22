@@ -15,6 +15,8 @@ const SilabarioRioplatense=(()=>{
   let datos=cargar(),raiz=null,items=[],estados=[],fichas=[],elegidas=[],actual=-1,bloqueado=false,tiempoPregunta=0,usadasSesion=new Set();
   let nivel=1,config=null,fase="inicio",tiempo=0,tiempoTotal=0,espera=0,ultimo=0,intervalo=null,duelo=false;
   let audioMusica=null;
+  /* Dibujos en assets/silabario/ (hoja de ChatGPT recortada). */
+  const ARTE=n=>"assets/silabario/"+n+".webp",ico=n=>'<img class="sb-ico" src="'+ARTE(n)+'" alt="" draggable="false">';
   function iniciarMusicaJuego(){
     try{
       if(typeof sonidoPermitido==="function"&&!sonidoPermitido())return;
@@ -186,8 +188,8 @@ const SilabarioRioplatense=(()=>{
       else Duelo.onRondaRecibida(datos=>{config=datos.config;items=datos.items;arrancarRonda();});
     }});
   }
-  function panel(titulo,detalle,acciones){
-    const p=$("#sbPanel");p.innerHTML='<div class="sf-panel"><h3></h3><p></p><div class="sf-acciones"></div></div>';
+  function panel(titulo,detalle,acciones,dibujo){
+    const p=$("#sbPanel");p.innerHTML='<div class="sf-panel">'+(dibujo?'<img class="sb-panel-dibujo" src="'+ARTE(dibujo)+'" alt="" draggable="false">':"")+'<h3></h3><p></p><div class="sf-acciones"></div></div>';
     p.querySelector("h3").textContent=titulo;p.querySelector("p").textContent=detalle;
     const cont=p.querySelector(".sf-acciones");
     acciones.forEach(([texto,accion],i)=>{const b=document.createElement("button");b.type="button";b.textContent=texto;if(i===0)b.className="sf-principal";b.onclick=()=>accion(b);cont.appendChild(b);});
@@ -211,7 +213,7 @@ const SilabarioRioplatense=(()=>{
     if(avanzar)acciones.push(["Siguiente nivel",()=>{nivel++;iniciar();}]);
     acciones.push(["Otra ronda · nivel "+nivel,iniciar]);
     panel(faltan?"¡Se terminó el tiempo!":errores?"Tablero terminado":"¡Tablero perfecto!",
-      aciertos+" aciertos · "+errores+" errores · "+faltan+" sin responder. "+puntos+" puntos"+(bonus?" ("+bonus+" por tiempo)":"")+". Récord: "+datos.mejor+"."+(avanzar?" ¡Desbloqueaste el nivel "+(nivel+1)+"!":" Acertá al menos "+Math.ceil(items.length*SILABARIO_CONFIG.proporcionAvance)+" y respondé todas para avanzar."),acciones);
+      aciertos+" aciertos · "+errores+" errores · "+faltan+" sin responder. "+puntos+" puntos"+(bonus?" ("+bonus+" por tiempo)":"")+". Récord: "+datos.mejor+"."+(avanzar?" ¡Desbloqueaste el nivel "+(nivel+1)+"!":" Acertá al menos "+Math.ceil(items.length*SILABARIO_CONFIG.proporcionAvance)+" y respondé todas para avanzar."),acciones,faltan?"tiempo":errores?"terminado":"perfecto");
   }
   function tic(){
     const ahora=performance.now(),dt=Math.max(0,ahora-ultimo);ultimo=ahora;
@@ -228,7 +230,7 @@ const SilabarioRioplatense=(()=>{
   function abrir(contenedor){
     salir();datos=cargar();nivel=datos.nivelMax;config=configNivel(nivel);fase="inicio";usadasSesion=new Set();
     raiz=document.createElement("div");raiz.className="sb-game";
-    raiz.innerHTML='<button type="button" class="ext-volver" id="sbVolver">⟵ Extensiones</button><div class="sb-titulo"><img src="logo-silabario-rioplatense.svg" alt=""><div><h2>Silabario Rioplatense</h2><p>Un tablero con todas las sílabas. Armá cada respuesta con las que estén.</p></div></div><div id="sbJuego" hidden><div class="sf-hud"><div><small>Nivel</small><b id="sbNivel"></b></div><div><small>Aciertos</small><b id="sbAciertos"></b></div><div><small>Errores</small><b id="sbErrores"></b></div><div><small>Tiempo</small><b id="sbTiempo"></b></div></div><div class="sf-bar"><i id="sbBarra"></i></div><div class="sb-pista" role="status" aria-live="polite"><div class="voz-fila"><p id="sbPista"></p><button type="button" class="voz-btn" id="sbEscuchar" aria-label="Escuchar la pista">🔊</button></div><small id="sbSilabasCant"></small></div><div class="sb-respuesta" id="sbRespuesta"></div><p id="sbMensaje" class="sb-mensaje" role="status"></p><div class="sb-tablero" id="sbTablero"></div><div class="sf-acciones"><button type="button" id="sbBorrar">⌫ Borrar</button><button type="button" id="sbPasar">Pasar ↻</button></div></div><div class="sf-panel-capa" id="sbPanel" hidden></div>';
+    raiz.innerHTML='<button type="button" class="ext-volver" id="sbVolver">⟵ Extensiones</button><div class="sb-titulo sb-titulo-arte"><h2 class="sb-logo-h"><img class="sb-logo" src="'+ARTE("logo")+'" alt="Silabario Rioplatense" draggable="false"></h2><p>Un tablero con todas las sílabas. Armá cada respuesta con las que estén.</p></div><div id="sbJuego" hidden><div class="sf-hud"><div><small>Nivel</small><b id="sbNivel"></b></div><div><small>'+ico("aciertos")+'Aciertos</small><b id="sbAciertos"></b></div><div><small>'+ico("errores")+'Errores</small><b id="sbErrores"></b></div><div><small>'+ico("reloj")+'Tiempo</small><b id="sbTiempo"></b></div></div><div class="sf-bar"><i id="sbBarra"></i></div><div class="sb-pista" role="status" aria-live="polite"><div class="voz-fila"><p id="sbPista"></p><button type="button" class="voz-btn" id="sbEscuchar" aria-label="Escuchar la pista">🔊</button></div><small id="sbSilabasCant"></small></div><div class="sb-respuesta" id="sbRespuesta"></div><p id="sbMensaje" class="sb-mensaje" role="status"></p><div class="sb-tablero-caja"><div class="sb-tablero" id="sbTablero"></div><img class="sb-mezcla" src="'+ARTE("mezcla")+'" alt="" draggable="false"></div><div class="sf-acciones"><button type="button" id="sbBorrar">⌫ Borrar</button><button type="button" id="sbPasar">Pasar ↻</button></div></div><div class="sf-panel-capa" id="sbPanel" hidden></div>';
     contenedor.appendChild(raiz);
     $("#sbVolver").onclick=()=>Extensiones.abrirLobby();
     $("#sbBorrar").onclick=borrar;$("#sbPasar").onclick=pasar;
@@ -236,7 +238,7 @@ const SilabarioRioplatense=(()=>{
     document.addEventListener("visibilitychange",visibilidad);ultimo=performance.now();intervalo=setInterval(tic,SILABARIO_CONFIG.ticMs);iniciarMusicaJuego();
     const acciones=[["Jugar nivel "+nivel,iniciar]];if(nivel>1)acciones.push(["Practicar desde el nivel 1",()=>{nivel=1;iniciar();}]);
     acciones.push(["Jugar con un amigo 👥",iniciarDuelo]);
-    panel("Silabario Rioplatense","Un tablero de "+config.columnas+"×"+config.columnas+" con todas las sílabas de las respuestas de este nivel. Tocá en orden las sílabas que arman cada respuesta, estén donde estén — las que ya usaste quedan marcadas. El tablero se reordena entre pregunta y pregunta, y también si te quedás trabado mucho rato. Si no sabés, tocá Pasar. Respondé bien la mayoría para avanzar de nivel. Jugás gratis, sin gastar vidas ni monedas. Mejor: "+datos.mejor+" puntos.",acciones);
+    panel("Silabario Rioplatense","Un tablero de "+config.columnas+"×"+config.columnas+" con todas las sílabas de las respuestas de este nivel. Tocá en orden las sílabas que arman cada respuesta, estén donde estén — las que ya usaste quedan marcadas. El tablero se reordena entre pregunta y pregunta, y también si te quedás trabado mucho rato. Si no sabés, tocá Pasar. Respondé bien la mayoría para avanzar de nivel. Jugás gratis, sin gastar vidas ni monedas. Mejor: "+datos.mejor+" puntos.",acciones,"personaje");
   }
   function salir(){
     clearInterval(intervalo);intervalo=null;document.removeEventListener("visibilitychange",visibilidad);
