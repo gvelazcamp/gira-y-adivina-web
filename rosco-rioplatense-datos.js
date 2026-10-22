@@ -173,7 +173,7 @@ const ROSCO_DATOS=[
   ["P","PARACAIDAS","Tela que se abre para bajar despacio después de saltar de un avión.","costumbres",1],
   ["P","PIRAMIDE","Construcción enorme de base cuadrada, famosa en Egipto.","costumbres",1],
   ["P","PASAPORTE","Documento que necesitás para viajar a otros países.","costumbres",1],
-  ["P","PRONOSTICO","Anuncio de cómo va a estar el tiempo en los próximos días.","costumbres",2],
+  ["P","PRONOSTICO","Anuncio de cómo va a estar el tiempo en los próximos días.","costumbres",2,["PRONOSTICO DEL TIEMPO","PRONOSTICO DE TIEMPO","PRONOSTICO DEL CLIMA"]],
   ["P","PIANO","Instrumento de teclas blancas y negras.","costumbres",1],
   ["Q","QUIROFANO","Sala del hospital donde se hacen las operaciones.","costumbres",2],
   ["Q","QUIMICA","Ciencia que estudia las sustancias y cómo se transforman.","costumbres",2],

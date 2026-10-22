@@ -1165,3 +1165,7 @@ Fecha: 22/10/2026 — 100 Rioplatenses Dicen con dibujos (salió publicado junto
 ```text
 Fecha: 22/10/2026 — Ahorcado Rioplatense con dibujos. Hoja 4x3 (mismo estilo; personaje: gaucho joven con boina, pañuelo rojo y mate) recortada en assets/ahorcado/: logo, horca (estructura de madera sin muñeco), casilla, casilla_ok, vida, vida_perdida, pista, ruleta, personaje, gano, perdio, record (vida/vida_perdida/pista/ruleta quedan para usar). Logo arriba; ruleta y chip de categoría con los íconos de 100 Rioplatenses (assets/cien/c_<id>: mismos 6 temas); el muñeco (p0..p5, misma lógica) se dibuja en SVG encima de la estructura de madera (viewBox 315x309, cuelga en x=245); letras de la palabra en casillas (violeta vacía, crema descubierta); paneles: inicio = personaje, fin = record / gano / perdio. El modo por turnos sigue con los mini muñecos SVG de antes. Estilos bajo .ah-game. ahorcado-rioplatense.js v12, extensiones.css v98, sw v359.
 ```
+
+```text
+Fecha: 22/10/2026 — El Rosco: reclamo de un jugador ("pronóstico del tiempo" le daba mal; la respuesta es PRONOSTICO). Ahora vale(d,valor) acepta la palabra, sus alternativas y también la palabra seguida de un complemento corto "de/del/de la/de los…" (máx. 12 letras más). PRONOSTICO además tiene alternativas explícitas (del tiempo / de tiempo / del clima). Si llegan más reclamos de palabras del Rosco: agregar alternativas en rosco-rioplatense-datos.js (6.º elemento) y correr node tests/auditar-palabras.cjs --md.
+```
