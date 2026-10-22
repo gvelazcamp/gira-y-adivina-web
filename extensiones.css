@@ -451,6 +451,16 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .cr-game .cr-respuesta.pendiente{background:none;border-image-source:url(assets/cien/oculta.webp);opacity:.75}
 .cr-game .cr-conductora{display:block;width:auto;max-width:min(44vw,170px);max-height:24vh;margin:4px auto 0;filter:drop-shadow(0 8px 14px #0009)}
 .cr-game .cr-final-dibujo{display:block;width:auto;max-width:min(52vw,200px);max-height:26vh;margin:-6px auto 6px;filter:drop-shadow(0 8px 14px #0009)}
+/* Ahorcado con dibujos (assets/ahorcado/ + íconos de temas de assets/cien/), todo bajo .ah-game */
+.ah-game .ah-titulo-arte{flex-direction:column;gap:2px}.ah-game .ah-logo-h{margin:0;line-height:0}.ah-game .ah-logo{width:auto;height:clamp(56px,10vh,84px);border-radius:0;filter:drop-shadow(0 5px 8px #0009)}
+.ah-game .ah-cat .ah-ico-tema{display:block;width:clamp(18px,5.5vw,24px);height:auto;margin:0 auto 1px}
+.ah-game .ah-pregunta .ah-ico-tema{width:22px;height:22px;vertical-align:-6px}
+.ah-game .ah-figura{position:relative;aspect-ratio:315/309}.ah-game .ah-figura>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 10px #0008)}.ah-game .ah-figura>svg{position:absolute;inset:0;width:100%;height:100%}
+.ah-game .ah-figura.perdida g{stroke:#FF7E8B}
+.ah-game .ah-letra{border:0;border-image:none;background:url(assets/ahorcado/casilla.webp) center/100% 100% no-repeat;min-width:30px;width:30px;height:30px;padding:0;border-radius:6px}
+.ah-game .ah-letra:not(:empty){background-image:url(assets/ahorcado/casilla_ok.webp);color:#241237}
+.ah-game .ah-letra.x{background-image:url(assets/ahorcado/casilla.webp);color:#FF7E8B}
+.ah-game .ah-panel-dibujo{display:block;width:auto;height:auto;max-width:min(56vw,210px);max-height:28vh;margin:-6px auto 8px;filter:drop-shadow(0 8px 14px #0009)}
 .tf .tf-campo input{padding:10px 12px;margin:2px 0}.tf .tf-campo .imp-ayuda:empty{display:none}.tf .tf-campo .mim-btns .bb-pasar{min-height:52px}
 .tf .tf-basta-img{display:block;width:min(78vw,330px);height:auto;margin:0 auto;filter:drop-shadow(0 10px 16px #000a);animation:bbNueva .35s}
 .tf .tf-trofeo{display:block;width:min(40vw,170px);height:auto;margin:0 auto 4px;filter:drop-shadow(0 8px 14px #0009)}
