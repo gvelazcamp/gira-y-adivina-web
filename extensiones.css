@@ -429,6 +429,17 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 /* Pasapalabra va en la misma fila que la respuesta: con el teclado abierto no quedaba a la vista (22/10/2026) */
 .rr-game .rr-fila #rrPasar{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:auto;flex:none;margin-top:0;padding:4px 8px;font-size:.66rem;line-height:1.1;background:#352146;border:1px solid #F5B30188}.rr-game .rr-fila #rrPasar .rr-ico{width:22px;height:22px;margin:0}.rr-game .rr-fila button{flex:none}
 .rr-game .rr-panel-dibujo{display:block;width:auto;height:auto;max-width:min(56vw,210px);max-height:26vh;margin:-6px auto 8px;filter:drop-shadow(0 8px 14px #0009)}
+/* Silabario con dibujos (assets/silabario/), todo bajo .sb-game. Fichas con border-image para que el borde no se deforme */
+.sb-game .sb-titulo-arte{flex-direction:column;gap:1px}.sb-game .sb-logo-h{margin:0;line-height:0}.sb-game .sb-logo{width:auto;height:clamp(50px,9vh,78px);border-radius:0;filter:drop-shadow(0 5px 8px #0009)}
+.sb-game .sb-ico{width:14px;height:14px;object-fit:contain;vertical-align:-3px;margin-right:2px}
+.sb-game .sb-ficha{background:none;border:9px solid transparent;border-image:url(assets/silabario/ficha.webp) 36 fill/9px stretch;box-shadow:none;color:#241237;padding:0 2px;filter:drop-shadow(0 3px 2px #0006)}
+.sb-game .sb-ficha.elegida{border-image-source:url(assets/silabario/ficha_sel.webp);color:#fff;outline:0}
+.sb-game .sb-ficha.usada{border-image-source:url(assets/silabario/ficha_usada.webp);color:#BFAFD1;opacity:.8;filter:none}
+.sb-game .sb-ficha:not(:disabled):active{transform:translateY(3px);box-shadow:none}
+.sb-game .sb-tablero-caja{position:relative}
+.sb-game .sb-mezcla{position:absolute;left:50%;top:50%;width:min(50%,200px);transform:translate(-50%,-50%) scale(.4);opacity:0;pointer-events:none;transition:opacity .2s,transform .3s;filter:drop-shadow(0 8px 16px #000a)}
+.sb-game .sb-tablero.girando+.sb-mezcla{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-25deg)}
+.sb-game .sb-panel-dibujo{display:block;width:auto;height:auto;max-width:min(56vw,210px);max-height:28vh;margin:-6px auto 8px;filter:drop-shadow(0 8px 14px #0009)}
 .tf .tf-campo input{padding:10px 12px;margin:2px 0}.tf .tf-campo .imp-ayuda:empty{display:none}.tf .tf-campo .mim-btns .bb-pasar{min-height:52px}
 .tf .tf-basta-img{display:block;width:min(78vw,330px);height:auto;margin:0 auto;filter:drop-shadow(0 10px 16px #000a);animation:bbNueva .35s}
 .tf .tf-trofeo{display:block;width:min(40vw,170px);height:auto;margin:0 auto 4px;filter:drop-shadow(0 8px 14px #0009)}
