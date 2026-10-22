@@ -89,8 +89,8 @@ document.documentElement.classList.add("cargando");setTimeout(()=>document.docum
 <!-- Hojas de estilo sin bloquear el primer dibujo (con internet lento la
      pantalla de carga quedaba oscura y vacía hasta que bajaban). El juego
      queda tapado por la pantalla de carga hasta que termina de cargar. -->
-<link rel="preload" as="style" href="extensiones.css?v=97" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="extensiones.css?v=97"></noscript>
+<link rel="preload" as="style" href="extensiones.css?v=98" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="extensiones.css?v=98"></noscript>
 <!-- mqtt.js guardado en el propio juego (lib/): si unpkg anda mal, las salas igual conectan. Si el archivo local fallara, se prueba unpkg. -->
 <script src="lib/mqtt.min.js?v=5.10.1" defer onerror="(function(){var s=document.createElement('script');s.src='https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js';document.head.appendChild(s);})()"></script>
 <!-- supabase-js también guardado en el juego (lib/): si jsdelivr anda lento o bloqueado en algún país, el registro en Social igual llega. Si el archivo local fallara, se prueba jsdelivr. -->
@@ -11490,7 +11490,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="cien-rioplatenses-datos.js?v=1"></script>
 <script src="cien-rioplatenses.js?v=8"></script>
 <script src="ahorcado-rioplatense-datos.js?v=1"></script>
-<script src="ahorcado-rioplatense.js?v=11"></script>
+<script src="ahorcado-rioplatense.js?v=12"></script>
 <script src="contra-reloj-rioplatense-datos.js?v=2"></script>
 <script src="contra-reloj-rioplatense-voz.js?v=3"></script>
 <script src="contra-reloj-rioplatense-online.js?v=12"></script>
