@@ -155,7 +155,7 @@ body.limpio #ayuda{display:block;opacity:.0}
       </div>
       <div id="e2salio" style="position:absolute;left:0;right:0;top:132cqw;text-align:center;font:900 10cqw 'Archivo Black';color:#F5B301;text-shadow:0 .9cqw 0 #7a4b00">Girando…</div>
     </div>
-    <div class="titulo" id="e2quiebra" style="top:70cqw;font-size:19cqw;color:#ff2d55;text-shadow:0 1cqw 0 #000,0 0 6cqw #ff2d55">QUIEBRA</div>
+    <div class="titulo" id="e2quiebra" style="top:72cqw;font-size:16cqw;color:#ff2d55;text-shadow:0 1cqw 0 #000,0 0 6cqw #ff2d55">QUIEBRA</div>
     <div class="titulo" id="e2pierde" style="top:72cqw;font-size:12cqw;color:#fff;text-shadow:0 1cqw 0 #000,0 0 6cqw #7B3FE4">PIERDE<br>EL TURNO</div>
     <div class="titulo oro" id="e2resuelto" style="top:7.5cqw;font-size:10cqw">¡RESUELTO!</div>
     <div class="capa" id="e2rojo" style="inset:0;background:#ff0033;mix-blend-mode:multiply;opacity:0;z-index:16"></div>
@@ -362,7 +362,8 @@ escena("e2","Ruleta",20,t=>{
   GIROS.forEach(([a,b,dest],i)=>{const prev=i?GIROS[i-1][2]:0;if(t>=a)g=t<b?lerp(prev,dest,eOut(pr(t,a,b))):dest;
     if(t>=a-.2&&t<b+.9){enCapa=true;if(t>=b){const sg=SEG[[19,21,16][i]];salio=sg.t?ETI[sg.t]:"$"+sg.v;col=sg.t==="QUIEBRA"?"#ff2d55":sg.t?"#F6EFE2":"#F5B301";}}});
   $("rueda").style.transform=`rotate(${g}deg)`;
-  const capaO=GIROS.reduce((m,[a,b])=>Math.max(m,pr(t,a-.2,a)*(1-pr(t,b+.6,b+.85))),0);
+  /* en el reel la ruleta se va de golpe (corte seco) para que no quede encimada con QUIEBRA / PIERDE TURNO */
+  const capaO=GIROS.reduce((m,[a,b])=>Math.max(m,pr(t,a-.2,a)*(1-pr(t,b+.55,b+.6))),0);
   $("e2capa").style.opacity=capaO;$("e2capa").style.display=capaO>0?"block":"none";
   $("e2salio").textContent=salio;$("e2salio").style.color=col;
   // plata, turno y aviso
@@ -525,7 +526,7 @@ escena("e0esc","Escudo",2.2,t=>{
 });
 const TODAS={};ESC.forEach(e=>TODAS[e.id]=e);
 const clip=(id,nombre,desde,hasta,vel)=>({id,nombre,dur:(hasta-desde)/vel,render:lt=>TODAS[id].render(desde+lt*vel),cues:[]});
-const REEL=[TODAS.e0,clip("e2","Quiebra",9.9,13.9,2),clip("e2","Pierde turno",14.1,17.6,2),TODAS.e0esc,clip("e3","Tío del Asado",.4,7.6,2.4),clip("e4","Uruguay",0,7.5,3),clip("e5","Argentina",0,7,3),
+const REEL=[TODAS.e0,clip("e2","Quiebra",9.9,13.7,2),clip("e2","Pierde turno",14.1,16.7,2),TODAS.e0esc,clip("e3","Tío del Asado",.4,7.6,2.4),clip("e4","Uruguay",0,7.5,3),clip("e5","Argentina",0,7,3),
   clip("e6","Puzzle de a dos",.8,8.6,2.6),clip("e8","Tutti Frutti",1.8,9.6,2.6),clip("e9","Extensiones",.3,6,2.2),clip("e10","Final",0,3.4,1)];
 ESC.length=0;REEL.forEach(e=>ESC.push(e));
 
@@ -535,7 +536,8 @@ let tocando=false,ult=null;
 function cual(t){for(let i=ESC.length-1;i>=0;i--)if(t>=INI[i])return i;return 0;}
 function pintar(){
   const i=cual(T),e=ESC[i],lt=T-INI[i];
-  ESC.forEach((s,k)=>{$(s.id).style.display=k===i?"block":"none";});
+  /* dos clips pueden usar la misma escena (e2): primero se ocultan todas y después se muestra la actual */
+  document.querySelectorAll("#escenario .esc").forEach(el=>{el.style.display="none";});$(e.id).style.display="block";
   e.render(lt);
   // corte a negro entre escenas (estilo trailer)
   const fin=e.dur-lt;$("negro").style.opacity=i===0?0:Math.max(lt<.1?1-lt/.1:0,fin<.08?1-fin/.08:0);
