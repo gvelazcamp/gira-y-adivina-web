@@ -657,3 +657,16 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .kar .kar-juez:has(button.activo) button:not(.activo){opacity:.3;filter:grayscale(.8)}
 .kar .kar-oir{display:inline-flex;align-items:center;gap:8px}
 .kar .kar-resultado{width:min(44%,170px);height:auto;filter:drop-shadow(0 6px 12px #000a);animation:bbBoom .5s}
+/* Mímica: arte (assets/mimica), tema teatro */
+.mim .mim-logo{display:block;width:min(66%,240px);height:auto;margin:0 auto;filter:drop-shadow(0 6px 10px #0009)}
+.mim .mim-como-img{display:block;width:min(86%,300px);height:auto;margin:4px auto 6px;filter:drop-shadow(0 6px 10px #0008)}
+.mim .mim-nv-img{width:auto;height:46px;max-width:90%;object-fit:contain;margin:2px 0;filter:drop-shadow(0 3px 4px #0007)}
+.mim .mim-ico{width:1.35em;height:1.35em;object-fit:contain;vertical-align:-.32em}
+.mim .qns-pantalla.mim-escena{background:#160B24 url(assets/mimica/fondo.webp) center/cover no-repeat}
+.mim .qns-pantalla.mim-escena::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,#160B24CC 0%,#160B2499 50%,#160B2420 100%);pointer-events:none;z-index:0}
+.mim .qns-pantalla.mim-escena .mim-telon{display:none}
+.mim .mim-foco{background:none;border-bottom:0;padding:0 10px 18px}
+.mim .mim-foco-img{display:block;width:min(30%,110px);height:auto;margin:0 auto -6px;filter:drop-shadow(0 6px 10px #000a)}
+.mim .mim-btn-img{height:1.7em;width:auto;vertical-align:-.45em;margin-right:8px;filter:drop-shadow(0 2px 3px #0006)}
+.mim .mim-final-img{display:block;width:min(40%,150px);height:auto;margin:0 auto 2px;filter:drop-shadow(0 6px 10px #000a)}
+.mim .imp-fin h3{text-align:center}

@@ -21,15 +21,20 @@ const Mimica=(()=>{
   const mezclar=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
   const sonar=(f,d,t,v)=>{if(typeof bip==="function")bip(f,d,t,v);};
   const vib=n=>{if(typeof vibrar==="function")vibrar(n);};
-  function abrir(contenedor){salir();cargar();raiz=document.createElement("section");raiz.className="mim";contenedor.appendChild(raiz);PantallaFija.entrar();configurar();}
+  /* Arte en assets/mimica/ (hoja de ChatGPT recortada), tema teatro. */
+  const src=n=>"assets/mimica/"+n+".webp";
+  const img=(n,c)=>`<img class="${c}" src="${src(n)}" alt="" draggable="false">`;
+  function abrir(contenedor){salir();cargar();raiz=document.createElement("section");raiz.className="mim";contenedor.appendChild(raiz);PantallaFija.entrar();
+    ["fondo","foco","accion","aplausos","pasar","telon","trofeo"].forEach(n=>{const i=new Image();i.src=src(n);});
+    configurar();}
   function configurar(){
     parar();PantallaFija.desactivar();
     raiz.innerHTML=`<div class="mim-escena"><div class="mim-telon"></div>
-      <div class="mim-cartel"><div class="mim-focos">🎭</div><h3>Mímica rioplatense</h3><p>Actuá <b>sin hablar</b>. Tu equipo adivina.</p></div>
+      <div class="mim-cartel"><h3 class="imp-logo-h"><img class="mim-logo" src="${src("logo")}" alt="Mímica rioplatense" draggable="false"></h3>${img("como","mim-como-img")}<p>Actuá <b>sin hablar</b>. Tu equipo adivina.</p></div>
       <div class="mg-panel mim-caja"><div class="qs-sub">👥 Equipos</div>
       <div class="mim-equipos">${[0,1].map(i=>`<label class="mim-eq" style="--c:${COLORES[i]}"><i></i><input id="mimE${i}" maxlength="14" placeholder="${POR_DEF[i]}" value="${esc(equipos[i])}"></label>`).join("")}</div>
       <div class="qs-sub">🃏 Dificultad <small>(tocá para elegir, podés marcar varias)</small></div>
-      <div class="mim-niveles" id="mimN">${NIVELES.map((n,i)=>`<button type="button" class="mim-nv n${i}" data-n="${i}"><i>✔</i><span>${n.icono}</span><b>${n.nombre}</b><em>+${n.pts}</em><small>${n.ej}</small></button>`).join("")}</div>
+      <div class="mim-niveles" id="mimN">${NIVELES.map((n,i)=>`<button type="button" class="mim-nv n${i}" data-n="${i}"><i>✔</i>${img(n.id,"mim-nv-img")}<b>${n.nombre}</b><em>+${n.pts}</em><small>${n.ej}</small></button>`).join("")}</div>
       <div class="qs-sub">⏱️ Tiempo por turno</div>
       <div class="qns-rangos imp-dos" id="mimT">${TIEMPOS.map(t=>`<button type="button" data-v="${t}">${t} s</button>`).join("")}</div>
       <div class="qs-sub">🏆 Gana el que llega a</div>
@@ -55,9 +60,9 @@ const Mimica=(()=>{
   const anillo=()=>`<div class="mim-reloj"><svg viewBox="0 0 120 120"><circle class="kar-aro" cx="60" cy="60" r="52"/><circle class="kar-avance" id="mimAro" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="0"/></svg><b id="mimReloj">${Math.max(0,Math.ceil((fin-Date.now())/1000))}</b></div>`;
   function previa(){
     pantalla(`<div class="mim-telon"></div><div class="imp-centro">${marcador()}
-      <div class="mim-foco"><div class="imp-quien">🎭 Sube al escenario</div><div class="imp-nombre mim-eqnom">${esc(nom(turno))}</div></div>
+      <div class="mim-foco">${img("foco","mim-foco-img")}<div class="imp-quien">Sube al escenario</div><div class="imp-nombre mim-eqnom">${esc(nom(turno))}</div></div>
       <p class="imp-ayuda">Pasale el celular al que actúa. Que su equipo <b>no mire</b> la pantalla.<br>Tienen <b>${tiempo} segundos</b>.</p>
-      <button type="button" class="bb-pasar mim-listo" id="mimVer">🎬 ¡Acción!</button></div>`,"mim-previa");
+      <button type="button" class="bb-pasar mim-listo" id="mimVer">${img("accion","mim-btn-img")}¡Acción!</button></div>`,"mim-previa");
     q("mimVer").onclick=()=>{hechas=[];jugando=true;fin=Date.now()+tiempo*1000;elegir();reloj();};
   }
   function elegir(){
@@ -69,9 +74,9 @@ const Mimica=(()=>{
     actual={n,t:m[idx[n]%m.length]};idx[n]++;
     const t=actual.t,tam=t.length>30?"min(7.5vw,1.9rem)":t.length>20?"min(8.5vw,2.2rem)":t.length>12?"min(10vw,2.7rem)":"min(13vw,3.3rem)";
     pantalla(`<div class="mim-tope">${anillo()}<div><small>${esc(nom(turno))}</small><b>+${hechas.filter(h=>h.ok).reduce((s,h)=>s+h.pts,0)}</b></div></div>
-      <div class="imp-centro mim-centro"><div class="mim-carta-abierta n${n}"><div class="mim-nivel">${NIVELES[n].icono} ${NIVELES[n].nombre} · +${NIVELES[n].pts}</div>
+      <div class="imp-centro mim-centro"><div class="mim-carta-abierta n${n}"><div class="mim-nivel">${img(NIVELES[n].id,"mim-ico")} ${NIVELES[n].nombre} · +${NIVELES[n].pts}</div>
       <div class="mim-frase" style="font-size:${tam}">${esc(t)}</div><small>Sin hablar · sin señalar cosas</small></div>
-      <div class="mim-btns"><button type="button" class="bb-pasar imp-gris" id="mimPasar">Pasar</button><button type="button" class="bb-pasar mim-ok" id="mimOk">✔ ¡Adivinaron! +${NIVELES[n].pts}</button></div></div>`,"mim-jugando");
+      <div class="mim-btns"><button type="button" class="bb-pasar imp-gris" id="mimPasar">${img("pasar","mim-btn-img")}Pasar</button><button type="button" class="bb-pasar mim-ok" id="mimOk">${img("aplausos","mim-btn-img")}¡Adivinaron! +${NIVELES[n].pts}</button></div></div>`,"mim-jugando");
     q("mimPasar").addEventListener("pointerdown",e=>{e.preventDefault();responder(false);});
     q("mimOk").addEventListener("pointerdown",e=>{e.preventDefault();responder(true);});
     pintarReloj();
@@ -98,8 +103,8 @@ const Mimica=(()=>{
     const n=hechas.filter(h=>h.ok).reduce((s,h)=>s+h.pts,0);
     const gano=turnos%2===0&&(pts[0]>=meta||pts[1]>=meta)&&pts[0]!==pts[1]?(pts[0]>pts[1]?0:1):-1;
     if(gano>=0){ganador(gano);return;}
-    pantalla(`<div class="mg-panel imp-panel imp-fin mim-resumen"><h3>⏰ ¡Se cierra el telón!</h3><p><b>${esc(nom(turno))}</b> sumó <b>${n}</b> ${n===1?"punto":"puntos"}.</p>
-      ${hechas.length?`<ul class="mim-lista">${hechas.map(h=>`<li class="${h.ok?"ok":"no"}"><span class="n${h.n}">${NIVELES[h.n].icono}</span>${esc(h.t)}<em>${h.ok?"+"+h.pts:"pasó"}</em></li>`).join("")}</ul>`:`<p class="imp-ayuda">No llegaron a adivinar ninguna.</p>`}
+    pantalla(`<div class="mg-panel imp-panel imp-fin mim-resumen">${img("telon","mim-final-img")}<h3>¡Se cierra el telón!</h3><p><b>${esc(nom(turno))}</b> sumó <b>${n}</b> ${n===1?"punto":"puntos"}.</p>
+      ${hechas.length?`<ul class="mim-lista">${hechas.map(h=>`<li class="${h.ok?"ok":"no"}"><span class="n${h.n}">${img(NIVELES[h.n].id,"mim-ico")}</span>${esc(h.t)}<em>${h.ok?"+"+h.pts:"pasó"}</em></li>`).join("")}</ul>`:`<p class="imp-ayuda">No llegaron a adivinar ninguna.</p>`}
       ${marcador()}<p class="imp-ayuda">Gana el primero que llega a ${meta} puntos.</p>
       <button type="button" class="mg-principal" id="mimSig">▶ Le toca a ${esc(nom(1-turno))}</button></div>`);
     q("mimSig").onclick=()=>{turno=1-turno;previa();};
@@ -107,7 +112,7 @@ const Mimica=(()=>{
   function ganador(g){
     partidas++;guardar();turno=g;
     [523,659,784,1047].forEach((f,i)=>setTimeout(()=>sonar(f,.22,"triangle",.05),i*140));
-    pantalla(`<div class="mg-panel imp-panel imp-fin"><div class="bb-icono">🏆</div><h3>¡Ganaron los ${esc(nom(g))}!</h3><p class="imp-ayuda">Aplausos de pie 👏</p>
+    pantalla(`<div class="mg-panel imp-panel imp-fin">${img("trofeo","mim-final-img")}<h3>¡Ganaron los ${esc(nom(g))}!</h3><p class="imp-ayuda">Aplausos de pie 👏</p>
       <ol class="kar-podio">${[g,1-g].map((i,k)=>`<li><span>${k+1}</span><i style="--c:${COLORES[i]}">${esc(nom(i)[0].toUpperCase())}</i><b>${esc(nom(i))}</b><em>${pts[i]} pts</em></li>`).join("")}</ol>
       <button type="button" class="mg-principal" id="mimRevancha">🔄 Revancha</button><button type="button" id="mimCambiar">⚙️ Cambiar equipos</button></div>`);
     q("mimRevancha").onclick=empezar;q("mimCambiar").onclick=configurar;
