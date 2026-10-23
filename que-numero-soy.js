@@ -20,8 +20,7 @@ const QueNumeroSoy=(()=>{
   function abrir(contenedor){
     salir();cargar();
     raiz=document.createElement("section");raiz.className="qns";
-    raiz.innerHTML=`<div class="mg-panel qns-panel"><h3 class="imp-logo-h"><img class="qn-logo" src="${src("logo")}" alt="¿Qué número soy?" draggable="false"></h3>
-      <img class="qn-como" src="${src("como")}" alt="" draggable="false">
+    raiz.innerHTML=`<div class="mg-panel qns-panel"><img class="qn-como" src="${src("como")}" alt="" draggable="false">
       <p>El celular muestra un número gigante. Ponételo en la frente: los demás te dan pistas y vos adiviná tu número.</p>
       <p class="qns-nota qn-nota"><img src="${src("candado")}" alt="" draggable="false"><span>Mientras juegan la pantalla no se apaga y los toques no hacen nada. Para terminar tocá <b>✕ Salir</b>.</span></p>
       <div class="qns-rangos qn-rangos" id="qnsRangos">${RANGOS.map(r=>`<button type="button" data-max="${r}"><img src="${src(ARTE_RANGO[r])}" alt="" draggable="false"><span>1 a ${r}</span></button>`).join("")}</div>
@@ -39,7 +38,8 @@ const QueNumeroSoy=(()=>{
         <button type="button" id="qnsTerminar">Terminar</button>
       </div>
     </div>`;
-    contenedor.appendChild(raiz);PantallaFija.entrar();
+    contenedor.appendChild(raiz);
+    PantallaFija.bienvenida(contenedor,{logo:src("logo"),alt:"¿Qué número soy?",items:[["📱","El celular muestra un <b>número gigante</b>: ponételo en la frente sin mirar."],["🗣️","Los demás te dan <b>pistas</b> y vos adivinás tu número."],["🎯","Elegí si el número va de <b>1 a 10</b>, <b>1 a 50</b> o <b>1 a 100</b>."],["🔒","Mientras juegan la pantalla no se apaga. Para terminar tocá <b>✕ Salir</b>."]]});
     ["bolilla","fondo","revela"].forEach(n=>{const i=new Image();i.src=src(n);});
     pintarRangos();
     q("qnsRangos").onclick=e=>{const b=e.target.closest("button[data-max]");if(!b)return;max=Number(b.dataset.max);guardar();pintarRangos();};

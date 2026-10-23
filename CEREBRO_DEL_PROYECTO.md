@@ -1239,3 +1239,7 @@ Fecha: 23/10/2026 — Tutti Frutti vuelve a pantalla completa (Gonzalo la prefie
 ```text
 Fecha: 23/10/2026 — PantallaFija.entrar() ya no pide pantalla completa si la app abre en modo fullscreen (display-mode: fullscreen). Preparado para la v18 de Play: al generar el paquete en PWABuilder elegir Display mode "Fullscreen" (o "Fullscreen sticky"); así toda la app es pantalla completa y el aviso de Chrome "Para salir de la pantalla completa…" no aparece en ningún juego. Mientras tanto (v16/v17) el aviso sigue saliendo unos segundos al entrar a los juegos de previa. pantalla-fija.js v7, sw v377.
 ```
+
+```text
+Fecha: 23/10/2026 — Juegos de previa (¿Quién soy?, ¿Qué número soy?, Bomba, Mímica, Canta la Canción, Impostor) igual que Tutti Frutti: al entrar sale un popup de bienvenida (PantallaFija.bienvenida(contenedor,{logo,alt,items})) con el logo grande y 4 renglones de cómo se juega + "¡A jugar!". La pantalla completa se pide al cerrarlo (no al abrir), así el aviso de Chrome no tapa botones. Se sacó el logo de las pantallas de inicio (ya está en el popup). PantallaFija.salir() borra el popup si quedó abierto. Contra Reloj (solo Gonzalo) sigue como estaba. pantalla-fija.js v8, quien-soy v11, que-numero-soy v8, bomba v14, mimica v7, canta-la-cancion v13, impostor v8, extensiones.css v111, sw v378.
+```

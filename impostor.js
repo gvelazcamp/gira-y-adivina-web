@@ -29,11 +29,12 @@ const Impostor=(()=>{
     salir();cargar();puntos={};
     ARTE.forEach(n=>{const i=new Image();i.src=src(n);});   /* precarga: las dos cartas aparecen igual de rápido y nadie sospecha */
     raiz=document.createElement("section");raiz.className="imp";
-    contenedor.appendChild(raiz);PantallaFija.entrar();configurar();
+    contenedor.appendChild(raiz);
+    PantallaFija.bienvenida(contenedor,{logo:src("logo"),alt:"Impostor",items:[["🃏","Pasen el celular: cada uno ve su <b>carta en secreto</b>."],["🕵️","Todos tienen la <b>misma palabra</b> menos el impostor, que solo ve la categoría."],["🗣️","Por turnos, cada uno dice una palabra <b>relacionada</b> sin regalarla."],["🗳️","Al final <b>votan</b> quién es el impostor."]]});configurar();
   }
   function configurar(){
     PantallaFija.desactivar();ronda=null;
-    raiz.innerHTML=`<div class="mg-panel imp-panel"><h3 class="imp-logo-h"><img class="imp-logo" src="${src("logo")}" alt="Impostor" draggable="false"></h3>
+    raiz.innerHTML=`<div class="mg-panel imp-panel">
       <p>Todos ven la misma palabra menos el impostor. Cada uno dice una palabra relacionada y votan quién es.</p>
       <div class="qs-sub">👥 Jugadores</div>
       <div class="imp-cant"><button type="button" id="impMenos">−</button><b id="impCant">${cant}</b><button type="button" id="impMas">+</button></div>

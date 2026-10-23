@@ -703,3 +703,13 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .mg-panel.tf-config>.ext-panel-volver{min-height:38px;margin-top:6px;padding:6px}
 .tf .tf-config .imp-ayuda:empty{display:none}
 .tf .tf-bienv-caja>.ext-panel-volver{display:none}
+/* PantallaFija.bienvenida: popup de inicio de los juegos de previa */
+.pf-bienv{position:fixed;inset:0;z-index:9990;display:grid;place-items:center;background:#0A0412E0;padding:max(14px,var(--safe-top)) max(14px,var(--safe-right)) max(14px,var(--safe-bottom)) max(14px,var(--safe-left));overflow-y:auto}
+.pf-bienv-caja{position:relative;width:min(100%,370px);background:#2A1A3C;border:1px solid #F5B30177;border-radius:22px;padding:14px 14px 16px;box-shadow:0 18px 45px #0008;text-align:center;color:#FFF9E9;animation:crBienv .45s cubic-bezier(.2,.8,.3,1.2) backwards}
+.pf-bienv-logo{display:block;width:min(72%,250px);max-height:30vh;object-fit:contain;height:auto;margin:0 auto 10px;filter:drop-shadow(0 6px 10px #0009)}
+.pf-bienv ul{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:7px;text-align:left}
+.pf-bienv li{display:flex;gap:9px;align-items:flex-start;background:#FFFFFF0D;border-radius:12px;padding:8px 10px;color:#E4D8EB;font-size:.82rem;line-height:1.35}
+.pf-bienv li span{flex:none;font-size:1rem;line-height:1.2}.pf-bienv li em{font-style:normal}.pf-bienv li b{color:#F6EFE2}
+.pf-bienv-x{position:absolute;top:10px;right:10px;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:#FFFFFF14;color:#F6EFE2;font-weight:900;z-index:2}
+.pf-bienv-ok{display:block;width:100%;min-height:48px;border:0;border-radius:12px;background:#E5197C;color:#fff;font-weight:900;font-size:1.05rem;box-shadow:0 5px 0 #8E0F4C}
+.pf-bienv-ok:active{transform:translateY(3px);box-shadow:0 2px 0 #8E0F4C}

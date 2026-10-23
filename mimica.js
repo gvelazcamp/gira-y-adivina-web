@@ -24,13 +24,14 @@ const Mimica=(()=>{
   /* Arte en assets/mimica/ (hoja de ChatGPT recortada), tema teatro. */
   const src=n=>"assets/mimica/"+n+".webp";
   const img=(n,c)=>`<img class="${c}" src="${src(n)}" alt="" draggable="false">`;
-  function abrir(contenedor){salir();cargar();raiz=document.createElement("section");raiz.className="mim";contenedor.appendChild(raiz);PantallaFija.entrar();
+  function abrir(contenedor){salir();cargar();raiz=document.createElement("section");raiz.className="mim";contenedor.appendChild(raiz);
+    PantallaFija.bienvenida(contenedor,{logo:src("logo"),alt:"Mímica rioplatense",items:[["👥","Dos equipos: uno <b>actúa sin hablar</b> y su equipo adivina."],["🃏","Las frases dan puntos según la dificultad: <b>Fácil +1</b>, <b>Media +2</b>, <b>Difícil +3</b>."],["✔️","Si adivinan sale otra; si se traban, <b>Pasar</b> (no suma)."],["🏆","Gana el primer equipo que llega a los <b>puntos elegidos</b>."]]});
     ["fondo","foco","accion","aplausos","pasar","telon","trofeo"].forEach(n=>{const i=new Image();i.src=src(n);});
     configurar();}
   function configurar(){
     parar();PantallaFija.desactivar();
     raiz.innerHTML=`<div class="mim-escena"><div class="mim-telon"></div>
-      <div class="mim-cartel"><h3 class="imp-logo-h"><img class="mim-logo" src="${src("logo")}" alt="Mímica rioplatense" draggable="false"></h3>${img("como","mim-como-img")}<p>Actuá <b>sin hablar</b>. Tu equipo adivina.</p></div>
+      <div class="mim-cartel">${img("como","mim-como-img")}<p>Actuá <b>sin hablar</b>. Tu equipo adivina.</p></div>
       <div class="mg-panel mim-caja"><div class="qs-sub">👥 Equipos</div>
       <div class="mim-equipos">${[0,1].map(i=>`<label class="mim-eq" style="--c:${COLORES[i]}"><i></i><input id="mimE${i}" maxlength="14" placeholder="${POR_DEF[i]}" value="${esc(equipos[i])}"></label>`).join("")}</div>
       <div class="qs-sub">🃏 Dificultad <small>(tocá para elegir, podés marcar varias)</small></div>
