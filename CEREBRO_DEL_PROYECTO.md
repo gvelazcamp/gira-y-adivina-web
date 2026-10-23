@@ -1301,3 +1301,7 @@ Nota: hay un error viejo (no de las fichas) en Ahorcado: si se sale y se vuelve 
 ```text
 Fecha: 23/10/2026 — Tutti Frutti: las categorías del campo, revisión y resultados muestran texto sin íconos; las tarjetas ilustradas para elegir categorías se conservan. Contra bots, la propia respuesta dudosa muestra «🙋 Apelar» y abre una revisión donde quien juega elige 0, 5, 10 o 20 puntos; se pueden cambiar mientras siga en resultados. Con amigos, Apelar sigue pidiendo revisión a los demás. En Tutti Frutti ya no se solicita Fullscreen API al cerrar el popup ni al entrar a una partida; así el navegador no muestra el aviso «Para salir de la pantalla completa…» con el dominio. La app conserva su presentación según la configuración de Android. Los bots conservan la probabilidad existente de error de tipeo del 5 % para respuestas de más de 6 caracteres. tutti-frutti.js v75, pantalla-fija.js v9, extensiones.css v115, sw v388.
 ```
+
+```text
+Fecha: 23/10/2026 — Tutti Frutti: por pedido de Gonzalo se retiró la ❌ roja que aparecía en las respuestas válidas de otros jugadores. Nadie puede anular una respuesta validada ni quitarle los puntos mediante votos u objeciones; los mensajes de ese tipo de clientes viejos se ignoran. La apelación de respuestas dudosas se conserva (contra amigos deciden los demás; contra bots el jugador elige los puntos). tutti-frutti.js v76, sw v389.
+```
