@@ -49,7 +49,7 @@ document.documentElement.classList.add("cargando");setTimeout(()=>document.docum
 </script>
 <link rel="manifest" href="manifest.json">
 <!-- Idioma de los menús (Español / English): va primero para traducir mientras se dibuja. -->
-<script src="i18n.js?v=1"></script>
+<script src="i18n.js?v=2"></script>
 <meta name="theme-color" content="#160B24">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -89,8 +89,8 @@ document.documentElement.classList.add("cargando");setTimeout(()=>document.docum
 <!-- Hojas de estilo sin bloquear el primer dibujo (con internet lento la
      pantalla de carga quedaba oscura y vacía hasta que bajaban). El juego
      queda tapado por la pantalla de carga hasta que termina de cargar. -->
-<link rel="preload" as="style" href="extensiones.css?v=116" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="extensiones.css?v=116"></noscript>
+<link rel="preload" as="style" href="extensiones.css?v=117" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="extensiones.css?v=117"></noscript>
 <!-- mqtt.js guardado en el propio juego (lib/): si unpkg anda mal, las salas igual conectan. Si el archivo local fallara, se prueba unpkg. -->
 <script src="lib/mqtt.min.js?v=5.10.1" defer onerror="(function(){var s=document.createElement('script');s.src='https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js';document.head.appendChild(s);})()"></script>
 <!-- supabase-js también guardado en el juego (lib/): si jsdelivr anda lento o bloqueado en algún país, el registro en Social igual llega. Si el archivo local fallara, se prueba jsdelivr. -->
@@ -1322,7 +1322,7 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
   </div>
   <button class="btn-grande cta-jugar ext-cta" id="bExtensiones" type="button" hidden>
     <span class="cta-play">✦</span>
-    <span class="cta-txt"><b>Extensiones Girá y Adiviná</b><small>Más juegos para descubrir</small></span>
+    <span class="cta-txt"><b>Jugá a las extensiones de Girá y Adiviná</b><small>Más juegos para descubrir</small></span>
   </button>
   <div class="mini-tit-fila">
     <img src="assets/decor/mas-disfrutar.webp" alt="Más para disfrutar" class="deco-mas-disfrutar">
@@ -11690,8 +11690,8 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="canta-la-cancion-datos.js?v=1"></script>
 <script src="canta-la-cancion.js?v=13"></script>
 <script src="tutti-frutti-datos.js?v=34"></script>
-<script src="tutti-frutti.js?v=76"></script>
-<script src="extensiones.js?v=61"></script>
+<script src="tutti-frutti.js?v=77"></script>
+<script src="extensiones.js?v=62"></script>
 <script src="sala-tv.js?v=1"></script>
 </body>
 </html>

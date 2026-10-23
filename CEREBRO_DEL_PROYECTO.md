@@ -1353,3 +1353,11 @@ Fecha: 23/10/2026 — El video de Extensiones ya está EN EL JUEGO: sale UNA sol
 ```text
 Fecha: 23/10/2026 — Video de Extensiones: el celular de Gonzalo mostraba el botón dibujado del video y además los botones reales (versión vieja del video en caché). Se subió el iframe a ?embed=1&v=2: al cambiar el video hay que subir ese v. sw v399.
 ```
+
+```text
+Fecha: 23/10/2026 — Tutti Frutti: recuperado el aviso fuerte de ¡BASTA! al cortar una ronda. Ahora sonidoErrorExt suena de inmediato para todos los participantes cuando cualquiera canta BASTA, incluido quien lo canta; antes solo sonaba (450 ms tarde) para los rivales y quien terminaba oía solo los bips suaves. Se conservan los tonos y la revisión de respuestas previa al botón ¡BASTA!. Si se agota el tiempo sin que nadie cante, no se reproduce el aviso. tutti-frutti.js v77, sw v400.
+```
+
+```text
+Fecha: 23/10/2026 — Inicio y lobby de Extensiones: el título "Extensiones Girá y Adiviná" pasa a "Jugá a las extensiones de Girá y Adiviná" tanto en el botón del inicio como dentro del lobby. El título del lobby puede ocupar varias líneas para no cortarse en teléfonos chicos y se actualizó la traducción al inglés. extensiones.js v62, extensiones.css v117, i18n.js v2, sw v400.
+```
