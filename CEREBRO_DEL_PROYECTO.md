@@ -1222,3 +1222,7 @@ Pendiente: la conductora de 100 Rioplatenses (assets/cien/personaje.webp) vino c
 ```text
 Fecha: 23/10/2026 — 100 Rioplatenses: conductora nueva y completa (Gonzalo la regeneró sola en ChatGPT; assets/cien/personaje.webp, 207x520, reemplaza la que venía cortada en la frente) y un poco más grande en el popup de bienvenida. Resuelve el pendiente anterior. extensiones.css v109, sw v373.
 ```
+
+```text
+Fecha: 23/10/2026 — Tutti Frutti: la pantalla de inicio entra entera sin scroll en cualquier celular (iPhone incluido). Categorías en 4 columnas x 3 filas con ancho que se achica según la altura de pantalla (calc con 100dvh - 340px), nombres cortos en las tarjetas (País / ciudad, Fruta/verdura, Peli / serie, Animal, Famoso), "Cómo se juega" al lado del título de categorías, Tiempo en una fila, y "Crear sala" + código + Unirme en una sola fila. No se tocó el deslizado: solo se achicó el contenido. Probado en 320x568, 360x640, 360x740, 375x548, 390x664, 414x715 y 430x750. tutti-frutti.js v69, extensiones.css v110, sw v374.
+```

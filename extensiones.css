@@ -687,3 +687,19 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .tf .tf-bienv-dibujo b{position:absolute;left:51.5%;top:16.2%;transform:translate(-50%,-50%);font-family:'Archivo Black',sans-serif;font-size:clamp(1.2rem,7vw,1.9rem);color:#E5197C;line-height:1}
 .tf .tf-bienv ul{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:7px;text-align:left}.tf .tf-bienv li{display:flex;gap:9px;align-items:flex-start;background:#FFFFFF0D;border-radius:12px;padding:8px 10px;color:#E4D8EB;font-size:.8rem;line-height:1.35}.tf .tf-bienv li span{flex:none;font-size:1rem;line-height:1.2}.tf .tf-bienv li em{font-style:normal}.tf .tf-bienv li b{color:#F6EFE2}
 .tf .tf-bienv-x{position:absolute;top:10px;right:10px;width:32px;height:32px;min-height:0;padding:0;border-radius:50%;background:#FFFFFF14;color:#F6EFE2;font-weight:900;margin:0;z-index:2}
+/* Tutti Frutti: inicio en una sola pantalla (sin scroll) en cualquier celular */
+.tf .tf-cab{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 0 4px}.tf .tf-cab .qs-sub{margin:0}
+.tf .tf-cab .tf-ayuda-btn{margin:0;padding:2px 4px;font-size:.76rem;white-space:nowrap}
+.tf .tf-config{padding:12px 12px 10px}
+.tf .tf-config .tf-tarjetas{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 auto 8px;width:min(100%,calc((100dvh - 340px) * 0.815 * 4 / 3 + 18px));min-width:180px}
+.tf .tf-config .tf-tarjeta{border-radius:9px}
+.tf .tf-config .tf-tarjeta span{left:7%;right:7%;font-size:clamp(.46rem,2.2vw,.66rem);white-space:nowrap;letter-spacing:-.01em}
+.tf .tf-config .tf-tarjeta i{width:19px;height:19px;font-size:.66rem;top:-4px;right:-4px}
+.tf .tf-tiempo{display:flex;align-items:center;gap:8px;margin-bottom:2px}.tf .tf-tiempo .qs-sub{margin:0;white-space:nowrap}.tf .tf-tiempo .qns-rangos{flex:1;margin:0;gap:6px}
+.mg-panel.tf-config .tf-tiempo .qns-rangos button{min-height:36px;padding:4px 6px}
+.mg-panel.tf-config #tfZona>button,.mg-panel.tf-config .tf-unirse button{min-height:42px;margin-top:6px}
+.tf .tf-config .tf-unirse{grid-template-columns:auto 1fr auto;gap:6px;margin-top:0}
+.mg-panel.tf-config .tf-unirse button{margin-top:6px}.tf .tf-config .tf-unirse input{margin-top:6px;padding:8px 10px;font-size:.9rem;letter-spacing:.12em}
+.mg-panel.tf-config>.ext-panel-volver{min-height:38px;margin-top:6px;padding:6px}
+.tf .tf-config .imp-ayuda:empty{display:none}
+.tf .tf-bienv-caja>.ext-panel-volver{display:none}

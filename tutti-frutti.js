@@ -31,10 +31,11 @@ const TuttiFrutti=(()=>{
   const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
   const nom=i=>PantallaFija.nombreJugador(est,i);
   function abrir(contenedor){salir();cargar();cargarAprobadas();["ficha","basta","trofeo","como"].forEach(n=>{const i=new Image();i.src=ARTE(n);});raiz=document.createElement("section");raiz.className="tf";contenedor.appendChild(raiz);PantallaFija.entrar();bienvPendiente=true;configurar();}
-  const ajustesHtml=()=>`<div class="qs-sub">🗂️ Categorías · <b id="tfCuenta"></b> <small>(tocá para elegir)</small></div>
-      <div class="tf-tarjetas" id="tfCats">${CATEGORIAS.map(c=>`<button type="button" class="tf-tarjeta" data-c="${esc(c)}" style="background-image:url(${tarjeta(c)})"><i>✓</i><span>${esc(etiq(c))}</span></button>`).join("")}</div>
-      <div class="qs-sub">⏱️ Tiempo máximo por letra</div>
-      <div class="qns-rangos" id="tfT">${TIEMPOS.map(t=>`<button type="button" data-v="${t}">${t} s</button>`).join("")}</div>`;
+  /* Nombre corto en la tarjeta (entra en una línea aunque la tarjeta sea chica). */
+  const CORTO={"País o ciudad":"País / ciudad","Animal":"Animal","Fruta o verdura":"Fruta/verdura","Famoso":"Famoso","Película o serie":"Peli / serie"};
+  const ajustesHtml=(extra="")=>`<div class="tf-cab"><div class="qs-sub">🗂️ Categorías · <b id="tfCuenta"></b></div>${extra}</div>
+      <div class="tf-tarjetas" id="tfCats">${CATEGORIAS.map(c=>`<button type="button" class="tf-tarjeta" data-c="${esc(c)}" style="background-image:url(${tarjeta(c)})" aria-label="${esc(etiq(c))}"><i>✓</i><span>${esc(CORTO[c]||etiq(c))}</span></button>`).join("")}</div>
+      <div class="tf-tiempo"><div class="qs-sub">⏱️ Tiempo</div><div class="qns-rangos" id="tfT">${TIEMPOS.map(t=>`<button type="button" data-v="${t}">${t} s</button>`).join("")}</div></div>`;
   function ajustesEventos(){
     const pintar=()=>{raiz.querySelectorAll("#tfT button").forEach(b=>b.classList.toggle("activo",Number(b.dataset.v)===tiempo));raiz.querySelectorAll("#tfCats button").forEach(b=>b.classList.toggle("tf-on",cats.includes(b.dataset.c)));const n=q("tfCuenta");if(n)n.textContent=cats.length+" de "+CATEGORIAS.length;};pintar();
     const avisar=()=>{if(on&&on.host){on.cats=cats.slice();on.tiempo=tiempo;difundirSala();}};
@@ -52,12 +53,10 @@ const TuttiFrutti=(()=>{
   document.addEventListener("visibilitychange",()=>{if(document.hidden)detenerMusica();else if(raiz&&on&&on.fase==="jugando"&&on.fin)iniciarMusica();});
   function configurar(){
     detenerMusica();parar();cerrarSala();PantallaFija.desactivar();
-    raiz.innerHTML=`<div class="mg-panel imp-panel">
-      <button type="button" class="tf-ayuda-btn" id="tfAyudaBtn">❓ Cómo se juega</button>
-      ${ajustesHtml()}
+    raiz.innerHTML=`<div class="mg-panel imp-panel tf-config">
+      ${ajustesHtml(`<button type="button" class="tf-ayuda-btn" id="tfAyudaBtn">❓ Cómo se juega</button>`)}
       <div id="tfZona"><button type="button" class="mg-principal" id="tfBots">🌐 Jugar online</button>
-      <button type="button" class="mg-principal tf-sec" id="tfCrear">📱 Crear sala con amigos (cada uno con su celular)</button>
-      <div class="tf-unirse"><input id="tfCodigo" maxlength="4" placeholder="CÓDIGO" autocomplete="off" autocapitalize="characters"><button type="button" id="tfUnirse">🔑 Unirme</button></div>
+      <div class="tf-unirse"><button type="button" class="mg-principal tf-sec" id="tfCrear">📱 Crear sala</button><input id="tfCodigo" maxlength="4" placeholder="CÓDIGO" autocomplete="off" autocapitalize="characters"><button type="button" id="tfUnirse">🔑 Unirme</button></div>
       <p class="imp-ayuda" id="tfEstado" role="status"></p></div></div>
       <div class="tf-bienv" id="tfBienvenida" hidden><div class="tf-bienv-caja mg-panel"><button type="button" class="tf-bienv-x" id="tfBienvX" aria-label="Cerrar">✕</button>
         <img class="tf-bienv-logo" src="${ARTE("logo")}" alt="Tutti Frutti" draggable="false">
