@@ -1361,3 +1361,7 @@ Fecha: 23/10/2026 — Tutti Frutti: recuperado el aviso fuerte de ¡BASTA! al co
 ```text
 Fecha: 23/10/2026 — Inicio y lobby de Extensiones: el título "Extensiones Girá y Adiviná" pasa a "Jugá a las extensiones de Girá y Adiviná" tanto en el botón del inicio como dentro del lobby. El título del lobby puede ocupar varias líneas para no cortarse en teléfonos chicos y se actualizó la traducción al inglés. extensiones.js v62, extensiones.css v117, i18n.js v2, sw v400.
 ```
+
+```text
+Fecha: 23/10/2026 — Video de Extensiones: se trababa un poquito al arrancar. Ahora (1) se empieza a cargar invisible apenas gana el 3er paso (videoExtPrecargar, clase .precarga opacity .01, se limpia sola a los 3 min), mientras mira el cartel de fin; (2) en ?embed=1 el video decodifica todas las imágenes, espera fuentes y música, pinta cada escena una vez tapada con negro, avisa "video-ext-listo" y arranca recién con el mensaje "play" del juego (o solo con &auto=1, como en la vista previa); (3) el "Saltar en 5" cuenta desde que el video empieza de verdad ("video-ext-empezo"). Iframe v=3, sw v400.
+```
