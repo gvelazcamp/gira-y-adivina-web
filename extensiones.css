@@ -299,7 +299,18 @@ body.qns-bloqueado{overscroll-behavior:none}
 
 .qs-zona{position:absolute;top:0;bottom:0;width:50%;display:flex;align-items:flex-end;justify-content:center;padding-bottom:max(56px,var(--safe-bottom));font-weight:900;font-size:1rem;color:#FFFFFF44;z-index:1}.qs-paso{left:0;background:linear-gradient(90deg,#FF8A1A14,transparent)}.qs-ok{right:0;background:linear-gradient(270deg,#2ED18A14,transparent)}
 .qs-palabra{position:relative;z-index:2;pointer-events:none;font-family:'Archivo Black',sans-serif;color:#FFD65C;text-align:center;line-height:1.05;padding:0 4vw;text-shadow:0 5px 0 #B38600;word-break:break-word}.qs-palabra.qns-cuenta{color:#FFFFFF66;text-shadow:none;font-size:min(40vw,40vh)!important}
-.qs-juego.flash-ok{animation:qsOk .45s}.qs-juego.flash-paso{animation:qsPaso .45s}@keyframes qsOk{0%{background:#1FA866}100%{background:#0B0614}}@keyframes qsPaso{0%{background:#C9640F}100%{background:#0B0614}}
+.qs-juego{background:#160B24 url(assets/quien-soy/fondo.webp) center/cover no-repeat}.qs-juego::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,#160B24E6 0%,#160B24B3 55%,#160B2440 100%);pointer-events:none}
+.qs-juego::after{content:"";position:absolute;inset:0;opacity:0;pointer-events:none;z-index:1}.qs-juego.flash-ok::after{background:#1FA866;animation:qsFlash .45s}.qs-juego.flash-paso::after{background:#C9640F;animation:qsFlash .45s}@keyframes qsFlash{0%{opacity:.85}100%{opacity:0}}
+/* ¿Quién soy?: arte (assets/quien-soy) */
+.qs .qs-ico{width:1.35em;height:1.35em;object-fit:contain;vertical-align:-.32em;flex:none}
+.qs .qs-logo{width:min(56%,200px)}
+.qs .qs-como{display:block;width:min(92%,330px);height:auto;margin:0 auto 6px;filter:drop-shadow(0 6px 10px #0008)}
+.qs .qs-gestos{display:flex;flex-direction:column;gap:6px;margin:0 0 6px}.qs .qs-gestos>span{display:flex;align-items:center;gap:9px;text-align:left;line-height:1.25}.qs .qs-gestos .qs-ico{width:30px;height:30px}
+.qs-crono{display:flex;align-items:center;gap:6px}.qs-crono .qs-ico{width:30px;height:30px}
+.qs-zona.qs-toda{gap:22px}.qs-zona.qs-toda>span{display:flex;align-items:center;gap:6px}.qs-zona .qs-ico{width:24px;height:24px;opacity:.6}
+.qs-frente{position:relative;z-index:2;width:min(34vw,26vh);height:auto;margin-bottom:-2vh;pointer-events:none;filter:drop-shadow(0 6px 12px #0009)}.qs-juego.en-juego .qs-frente{display:none}
+.qs-marca{position:absolute;left:max(18px,var(--safe-left));top:50%;width:min(22vw,22vh);height:auto;margin-top:calc(min(22vw,22vh) / -2);z-index:3;opacity:0;pointer-events:none}.qs-marca.pop{animation:qsMarca .6s ease-out}@keyframes qsMarca{0%{opacity:0;transform:scale(.4)}25%{opacity:1;transform:scale(1.15)}60%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+.qs .qs-final{display:block;width:min(42%,150px);height:auto;margin:0 auto -4px;filter:drop-shadow(0 6px 10px #0009)}.qs .qs-final-t{text-align:center}
 .qs-total{text-align:center;color:#E4D8EB;font-weight:800;margin:4px 0 8px}.qs-total b{font-family:'Archivo Black',sans-serif;font-size:2.6rem;color:#FFD65C;margin-right:6px}
 .qs-lista{list-style:none;margin:0 0 10px;padding:0;max-height:38vh;overflow-y:auto;display:flex;flex-wrap:wrap;gap:6px}.qs-lista li{padding:5px 9px;border-radius:9px;font-size:.82rem;font-weight:800}.qs-lista li.ok{background:#1FA86633;color:#7DF0B4}.qs-lista li.no{background:#FFFFFF12;color:#FFFFFF77}
 .bb-icono{font-size:3rem;text-align:center;line-height:1}.bb-icono-boom{font-size:4.2rem;animation:bbBoom .5s}

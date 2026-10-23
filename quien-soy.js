@@ -13,18 +13,24 @@ const QuienSoy=(()=>{
   cargar();
   const q=id=>raiz.querySelector("#"+id);
   const mezclar=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+  const ARTE=["logo","como","frente","ok","paso","reloj","tiempo","trofeo","fondo"];
+  const src=n=>"assets/quien-soy/"+n+".webp";
+  const ico=(n,c="qs-ico")=>`<img class="${c}" src="${src(n)}" alt="" draggable="false">`;
   const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
   function abrir(contenedor){
     salir();cargar();
     raiz=document.createElement("section");raiz.className="qs";
-    contenedor.appendChild(raiz);PantallaFija.entrar();inicio();
+    contenedor.appendChild(raiz);PantallaFija.entrar();
+    ARTE.forEach(n=>{const i=new Image();i.src=src(n);});
+    inicio();
   }
   function inicio(){
     const cats=window.QUIEN_SOY_CATEGORIAS||[];
-    raiz.innerHTML=`<div class="mg-panel qs-panel"><h3>¿Quién soy?</h3>
+    raiz.innerHTML=`<div class="mg-panel qs-panel"><h3 class="imp-logo-h"><img class="imp-logo qs-logo" src="${src("logo")}" alt="¿Quién soy?" draggable="false"></h3>
+      ${ico("como","qs-como")}
       <p>Ponete el celular en la frente. Los demás te describen la palabra sin decirla y vos adiviná.</p>
-      <p class="qns-nota">👉 <b>Un toque</b> en cualquier lado si acertaste · <b>dos toques rápidos</b> para pasar.</p>
-      <div class="qs-sub">⏱️ Tiempo</div>
+      <div class="qns-nota qs-gestos"><span>${ico("ok")}<span><b>Un toque</b> en cualquier lado si acertaste</span></span><span>${ico("paso")}<span><b>Dos toques rápidos</b> para pasar</span></span></div>
+      <div class="qs-sub">${ico("reloj")} Tiempo</div>
       <div class="qns-rangos" id="qsTiempos">${TIEMPOS.map(t=>`<button type="button" data-t="${t}">${t} s</button>`).join("")}</div>
       <div class="qs-sub">Elegí la categoría para empezar</div>
       <div class="qs-cats">${cats.map(c=>`<button type="button" data-cat="${c.id}">${c.emoji} ${esc(c.nombre)}</button>`).join("")}<button type="button" data-cat="mezcla">🎲 Mezcla</button></div>
@@ -47,8 +53,10 @@ const QuienSoy=(()=>{
     cat=id==="mezcla"?{id:"mezcla",nombre:"Mezcla",emoji:"🎲"}:cats.find(c=>c.id===id);if(!cat)return;
     palabras=elegirPalabras(id);idx=0;resultados=[];
     raiz.innerHTML=`<div class="qns-pantalla qs-juego" id="qsJuego">
-      <div class="qs-tope"><span id="qsCat">${cat.emoji} ${esc(cat.nombre)}</span><b id="qsReloj">${tiempo}</b><button type="button" class="pf-salir" id="qsSalir">✕ Salir</button></div>
-      <div class="qs-zona qs-toda"><span>👆 1 toque = ¡Acerté! · 👆👆 2 toques = Paso</span></div>
+      <div class="qs-tope"><span id="qsCat">${cat.emoji} ${esc(cat.nombre)}</span><span class="qs-crono">${ico("reloj")}<b id="qsReloj">${tiempo}</b></span><button type="button" class="pf-salir" id="qsSalir">✕ Salir</button></div>
+      <div class="qs-zona qs-toda"><span>${ico("ok")} 1 toque = ¡Acerté!</span><span>${ico("paso")} 2 toques = Paso</span></div>
+      ${ico("frente","qs-frente")}
+      <img class="qs-marca" id="qsMarca" alt="" draggable="false">
       <div class="qs-palabra" id="qsPalabra"></div>
       <div class="qns-pie" id="qsPie"></div>
     </div>`;
@@ -64,7 +72,7 @@ const QuienSoy=(()=>{
     /* Cuenta regresiva para llegar a ponérselo en la frente. */
     let n=3;jugando=false;const pal=q("qsPalabra");pal.classList.add("qns-cuenta");q("qsPie").textContent="Ponete el celular en la frente";q("qsPie").hidden=false;
     const paso=()=>{if(!raiz)return;if(n>0){pal.textContent=n;if(typeof bip==="function")bip(520,.08);n--;cuenta=setTimeout(paso,1000);return;}
-      pal.classList.remove("qns-cuenta");q("qsPie").hidden=true;jugando=true;fin=Date.now()+tiempo*1000;mostrar();reloj();};
+      pal.classList.remove("qns-cuenta");q("qsPie").hidden=true;q("qsJuego").classList.add("en-juego");jugando=true;fin=Date.now()+tiempo*1000;mostrar();reloj();};
     paso();
   }
   function mostrar(){
@@ -84,6 +92,7 @@ const QuienSoy=(()=>{
     bloqueoToque=Date.now()+250;
     resultados.push({w:palabras[idx],ok});Vistas.marcar("quien_soy_"+cat.id,palabras[idx]);idx++;
     const j=q("qsJuego");j.classList.remove("flash-ok","flash-paso");void j.offsetWidth;j.classList.add(ok?"flash-ok":"flash-paso");
+    const m=q("qsMarca");m.src=src(ok?"ok":"paso");m.classList.remove("pop");void m.offsetWidth;m.classList.add("pop");
     if(typeof bip==="function"){if(ok){bip(660,.15,"sine",.06);bip(990,.22,"triangle",.04);}}
     if(typeof vibrar==="function")vibrar(ok?30:15);
     mostrar();
@@ -95,7 +104,7 @@ const QuienSoy=(()=>{
     if(!habiaJugado){inicio();return;}
     const aciertos=resultados.filter(r=>r.ok).length;partidas++;
     const record=aciertos>mejor;if(record)mejor=aciertos;guardar();
-    raiz.innerHTML=`<div class="mg-panel qs-panel"><h3>${record&&aciertos?"🏆 ¡Récord!":"⏰ ¡Tiempo!"}</h3>
+    raiz.innerHTML=`<div class="mg-panel qs-panel">${ico(record&&aciertos?"trofeo":"tiempo","qs-final")}<h3 class="qs-final-t">${record&&aciertos?"¡Récord!":"¡Tiempo!"}</h3>
       <div class="qs-total"><b>${aciertos}</b> acierto${aciertos===1?"":"s"}</div>
       <ul class="qs-lista">${resultados.map(r=>`<li class="${r.ok?"ok":"no"}">${r.ok?"✔":"✘"} ${esc(r.w)}</li>`).join("")}</ul>
       <button type="button" class="mg-principal" id="qsOtra">🔄 Otra ronda</button>

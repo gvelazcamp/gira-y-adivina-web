@@ -1173,3 +1173,7 @@ Fecha: 22/10/2026 — El Rosco: reclamo de un jugador ("pronóstico del tiempo" 
 ```text
 Fecha: 22/10/2026 — Impostor: la elección de categoría ahora son tarjetas ilustradas (hoja 4x2 de ChatGPT recortada en assets/impostor/cat_<id>.webp, 300x340; también cat_bloqueada sin usar). Grilla de 3 columnas, "Mezcla" centrada abajo, nombre corto en la franja oscura (CORTO en impostor.js), la última elegida brilla dorada. Tocar una sigue arrancando la ronda como antes. impostor.js v7, extensiones.css v99, sw v361.
 ```
+
+```text
+Fecha: 23/10/2026 — ¿Quién soy?: arte nuevo (hoja 3x3 de ChatGPT recortada en assets/quien-soy/: logo, como, frente, ok, paso, reloj, tiempo, trofeo, fondo). Inicio con logo + dibujo de cómo se juega + íconos de acerté/paso; la partida tiene de fondo el escenario de TV (oscurecido al centro para que la palabra se lea), cronómetro al lado del tiempo, el chico con el celular en la frente durante la cuenta 3-2-1 y un ícono que salta al acertar/pasar (el destello verde/naranja ahora es una capa encima). Final con trofeo si es récord o despertador si no. Las categorías siguen como botones hasta que Gonzalo mande la hoja de tarjetas (prompt 1). quien-soy.js v9, extensiones.css v100, sw v362.
+```
