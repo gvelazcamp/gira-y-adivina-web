@@ -115,6 +115,7 @@ body.limpio #ctrl,body.limpio #escenas{display:none}
   <button id="bLimpio" title="Ocultar controles para grabar">⛶</button>
 </div>
 <div id="escenas"></div>
+<audio id="musica" src="video-extensiones-musica.mp3" preload="auto"></audio>
 <script>
 const $=id=>document.getElementById(id);
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
@@ -232,19 +233,21 @@ function pintar(){
   document.querySelectorAll("#escenas button").forEach((b,k)=>b.classList.toggle("activa",k===i));
 }
 const MUSICA=armarMusica(TOTAL);
-function cuesEntre(a,b){ESC.forEach((e,i)=>e.cues.forEach(([ct,n])=>{const g=INI[i]+ct;if(g>a&&g<=b&&SFX[n])SFX[n]();}));
+/* La música es el mp3 (Grand Prize Fanfare, editado a 18 s); los sonidos sintetizados quedan apagados. */
+const SINTE=false;
+function cuesEntre(a,b){if(!SINTE)return;ESC.forEach((e,i)=>e.cues.forEach(([ct,n])=>{const g=INI[i]+ct;if(g>a&&g<=b&&SFX[n])SFX[n]();}));
   MUSICA.forEach(([t,fn])=>{if(t>a&&t<=b)fn();});}
-function loop(now){if(tocando){const dt=ult==null?0:(now-ult)/1000;const a=T;T=Math.min(TOTAL,T+dt);cuesEntre(a,T);if(T>=TOTAL){tocando=false;$("bPlay").textContent="▶";}}
+function loop(now){if(tocando){const dt=ult==null?0:(now-ult)/1000;const a=T;T=Math.min(TOTAL,T+dt);cuesEntre(a,T);if(T>=TOTAL){tocando=false;$("bPlay").textContent="▶";$("musica").pause();}}
   ult=now;pintar();requestAnimationFrame(loop);}
-function play(){ac();if(T>=TOTAL)T=0;if(T===0)cuesEntre(-1,0);tocando=true;$("bPlay").textContent="⏸";}
-function pausa(){tocando=false;$("bPlay").textContent="▶";}
-function ir(t){T=clamp(t,0,TOTAL);}
+function play(){if(T>=TOTAL)T=0;if(SINTE){ac();if(T===0)cuesEntre(-1,0);}const m=$("musica");m.muted=!sonido;try{m.currentTime=T;}catch(e){}m.play().catch(()=>{});tocando=true;$("bPlay").textContent="⏸";}
+function pausa(){tocando=false;$("bPlay").textContent="▶";$("musica").pause();}
+function ir(t){T=clamp(t,0,TOTAL);try{$("musica").currentTime=T;}catch(e){}}
 $("bPlay").onclick=()=>tocando?pausa():play();
 $("bStop").onclick=()=>{pausa();T=0;};
 $("bAnt").onclick=()=>{const i=cual(T);ir(T-INI[i]>1?INI[i]:INI[Math.max(0,i-1)]);};
 $("bSig").onclick=()=>{const i=cual(T);ir(INI[Math.min(ESC.length-1,i+1)]);};
 $("barra").oninput=e=>ir(e.target.value/1000*TOTAL);
-$("bSon").onclick=()=>{sonido=!sonido;$("bSon").textContent=sonido?"🔊":"🔇";};
+$("bSon").onclick=()=>{sonido=!sonido;$("bSon").textContent=sonido?"🔊":"🔇";$("musica").muted=!sonido;};
 $("bLimpio").onclick=()=>{document.body.classList.add("limpio");if(!tocando)play();};
 $("escenario").onclick=()=>{if(document.body.classList.contains("limpio")){document.body.classList.remove("limpio");pausa();}};
 ESC.forEach((e,i)=>{const b=document.createElement("button");b.textContent=(i+1)+" · "+e.nombre;b.onclick=()=>ir(INI[i]);$("escenas").appendChild(b);});

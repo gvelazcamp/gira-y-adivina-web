@@ -1341,3 +1341,7 @@ Fecha: 23/10/2026 — CORRECCIÓN del popup del pase: Gonzalo quería reemplazar
 ```text
 Fecha: 23/10/2026 — Video corto promo/video-extensiones.html (~17 s, 9:16, mismo motor que trailer.html): gancho de 3 s "¿Solo jugás a la ruleta? → el tablero RULETA se rompe → HAY 18 JUEGOS MÁS" + desfile de 8 extensiones + puzzle en vivo de a dos (Vos/Sofi con marcador) + "Entrá a Extensiones". Idea de Gonzalo: mostrarlo después de jugar 3 partidas del juego principal. PENDIENTE: NO está en el juego todavía; primero lo revisa Gonzalo.
 ```
+
+```text
+Fecha: 23/10/2026 — Video de Extensiones con la música que eligió Gonzalo ("Grand Prize Fanfare", hecha con Gemini): promo/video-extensiones-musica.mp3 = 0:00.55–0:13.55 + final 0:53.1–0:58.6 con fundido (≈18 s; el golpe final cae cuando aparece el logo). El video toca el mp3 sincronizado con T y los sonidos sintetizados quedan apagados (SINTE=false). A Gonzalo no le gustan los efectos tipo "psh psh" en la música. Versión para ver también en el artifact https://claude.ai/artifact/Y1c7QfJV91NKAqcCyiK3eb.
+```
