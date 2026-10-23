@@ -160,7 +160,7 @@ const RuedaDeLetras=(()=>{
   function girar(){if(!jugando||arrastrando||girando)return;girando=true;const r=raiz.querySelector("#rlRueda");r.classList.add("spin");sonido();const t=++token;giroTimer=setTimeout(()=>{if(t!==token)return;letras=ronda&&ronda.centro?[...mezclar(letras.slice(0,-1)),letras.at(-1)]:mezclar(letras);rueda();r.classList.remove("spin");girando=false;giroTimer=null;},RUEDA_CONFIG.giroMs);}
   function tic(){if(!jugando||document.hidden)return;const ahora=performance.now();tiempoMs=Math.max(0,tiempoMs-(ahora-ultimo));ultimo=ahora;hud();if(!tiempoMs)terminar(false);}
   function visibilidad(){if(document.hidden){detenerMusicaJuego();ocultoDesde=performance.now();}else{iniciarMusicaJuego();if(jugando){ultimo=performance.now();ocultoDesde=0;}}}
-  function comenzar(){duelo=false;token++;ronda=elegir(nivel);arrancarRonda();}
+  function comenzar(){if(window.Fichas&&!Fichas.usar("rueda-de-letras",comenzar))return;duelo=false;token++;ronda=elegir(nivel);arrancarRonda();}
   function arrancarRonda(){
     clearInterval(intervalo);clearTimeout(giroTimer);
     if(ronda.centro){const resto=[...ronda.base];resto.splice(resto.indexOf(ronda.centro),1);letras=[...mezclar(resto),ronda.centro];}else letras=mezclar([...ronda.base]);

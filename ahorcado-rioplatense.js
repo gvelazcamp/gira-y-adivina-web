@@ -190,7 +190,7 @@ const AhorcadoRioplatense=(()=>{
     if(n<AHORCADO_CONFIG.palabras)setTimeout(()=>{$("#ahSiguiente").hidden=false;},AHORCADO_CONFIG.pausaMs);
     else setTimeout(terminar,1200);
   }
-  function iniciar(){duelo=false;turnos=false;palabrasDuelo=null;n=0;puntos=0;usadas=[];fase="girando";$("#ahPanel").hidden=true;siguientePalabra();}
+  function iniciar(){if(window.Fichas&&!Fichas.usar("ahorcado-rioplatense",iniciar))return;duelo=false;turnos=false;palabrasDuelo=null;n=0;puntos=0;usadas=[];fase="girando";$("#ahPanel").hidden=true;siguientePalabra();}
   // modo: "turnos" (misma palabra, de a una letra cada uno) o "carrera"
   // (mismas palabras, cada uno en su tablero). Lo decide quien crea la sala.
   function iniciarDuelo(modo){

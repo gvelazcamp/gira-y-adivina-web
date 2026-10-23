@@ -168,7 +168,7 @@ const SilabarioRioplatense=(()=>{
     renderRespuesta(items[actual]);hud();
     reordenar(()=>{bloqueado=false;hud();});
   }
-  function iniciar(){duelo=false;config=configNivel(nivel);items=armarRonda();arrancarRonda();}
+  function iniciar(){if(window.Fichas&&!Fichas.usar("silabario-rioplatense",iniciar))return;duelo=false;config=configNivel(nivel);items=armarRonda();arrancarRonda();}
   function arrancarRonda(){
     estados=items.map(()=>"pendiente");fichas=construirFichas(config.fichas);
     actual=-1;tiempoTotal=Math.round(items.length*SILABARIO_CONFIG.segundosPorPalabra*config.margen)*1000;tiempo=tiempoTotal;

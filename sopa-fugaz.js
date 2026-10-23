@@ -175,6 +175,7 @@ const SopaFugaz=(()=>{
       },true,null,gano?"gano":"tiempo");
   }
   function iniciarRonda(){
+    if(window.Fichas&&!Fichas.usar("sopa-fugaz",iniciarRonda))return;
     duelo=false;
     token++;clearTimeout(trasladoTimer);mudando=false;arrastre=null;camino=[];halladas.clear();
     const c=configNivel(nivel);

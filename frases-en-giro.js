@@ -133,6 +133,7 @@ const FrasesEnGiro=(()=>{
     espacios=Array(palabras.length).fill(null);
   }
   function comenzar(){
+    if(window.Fichas&&!Fichas.usar("frases-en-giro",comenzar))return;
     duelo=false;token++;clearTimeout(giroTimer);
     frase=elegir(nivel);datos.recientes.push(frase.id);datos.recientes=datos.recientes.slice(-FRASES_GIRO_CONFIG.recientesMax);guardar();
     arrancarRonda();

@@ -274,7 +274,7 @@ function loop(now){const dt=Math.min(.035,(now-last)/1000||.016);last=now;elapse
     acciones.forEach(([t,f],i)=>{const b=document.createElement("button");b.type="button";b.textContent=t;if(i===0)b.className="sf-principal";b.onclick=f;cont.appendChild(b);});
     p.hidden=false;
   }
-  function jugar(){q("mtPanel").hidden=true;api.reset();api.bloquear(false);}
+  function jugar(){if(window.Fichas&&!Fichas.usar("moon-tap",jugar))return;q("mtPanel").hidden=true;api.reset();api.bloquear(false);}
   function abrir(contenedor){
     salir();cargar();
     raiz=document.createElement("div");raiz.className="mt-game";

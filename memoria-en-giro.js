@@ -105,7 +105,7 @@ const MemoriaEnGiro=(()=>{
     (Array.isArray(alternativas)?alternativas:[alternativas]).forEach(alt=>{if(!alt)return;const otro=document.createElement("button");otro.type="button";otro.textContent=alt.texto;otro.onclick=alt.accion;tarjeta.appendChild(otro);});
     capa.appendChild(tarjeta);
   }
-  function comenzar(){duelo=false;config=configNivel(nivel);nuevasCartas();arrancarRonda();}
+  function comenzar(){if(window.Fichas&&!Fichas.usar("memoria-en-giro",comenzar))return;duelo=false;config=configNivel(nivel);nuevasCartas();arrancarRonda();}
   function arrancarRonda(){
     pares=0;racha=0;fallos=0;girosRestantes=MEMORIA_GIRO_GIROS;
     primera=null;segunda=null;tiempoMs=config.segundos*1000;vistaMs=config.vista*1000;
