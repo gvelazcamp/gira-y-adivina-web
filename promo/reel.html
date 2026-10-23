@@ -525,8 +525,10 @@ escena("e0esc","Escudo",3.0,t=>{
   $("flash").style.opacity=t>=.7&&t<.9?.6*(1-pr(t,.7,.9)):0;
 });
 const TODAS={};ESC.forEach(e=>TODAS[e.id]=e);
+/* tramos: [[desde,hasta,duración],…]; si desde==hasta, la imagen queda quieta (para que se lea QUIEBRA / PIERDE EL TURNO) */
+const tramos=(id,nombre,tr)=>{const dur=tr.reduce((m,x)=>m+x[2],0);return{id,nombre,dur,cues:[],render:lt=>{let acc=0;for(const [a,b,d] of tr){if(lt<=acc+d||d===tr[tr.length-1][2]&&acc+d>=dur-1e-9){const x=d?clamp((lt-acc)/d):1;return TODAS[id].render(a+(b-a)*x);}acc+=d;}}};};
 const clip=(id,nombre,desde,hasta,vel)=>({id,nombre,dur:(hasta-desde)/vel,render:lt=>TODAS[id].render(desde+lt*vel),cues:[]});
-const REEL=[TODAS.e0,clip("e2","Quiebra",9.9,13.7,1.6),clip("e2","Pierde turno",14.1,16.7,1.6),TODAS.e0esc,clip("e3","Tío del Asado",.4,7.6,1.9),clip("e4","Uruguay",0,7.5,2.2),clip("e5","Argentina",0,7,2.2),
+const REEL=[TODAS.e0,tramos("e2","Quiebra",[[9.9,12.9,1.9],[12.9,13.45,.55],[13.45,13.45,.865]]),tramos("e2","Pierde turno",[[14.1,16.6,1.5625],[16.6,17.1,.5],[17.1,17.1,.5]]),TODAS.e0esc,clip("e3","Tío del Asado",.4,7.6,1.9),clip("e4","Uruguay",0,7.5,2.2),clip("e5","Argentina",0,7,2.2),
   clip("e6","Puzzle de a dos",.8,8.6,2),clip("e8","Tutti Frutti",1.8,9.6,2),clip("e9","Extensiones",.3,6,1.7),clip("e10","Final",0,4.8,1)];
 ESC.length=0;REEL.forEach(e=>ESC.push(e));
 
