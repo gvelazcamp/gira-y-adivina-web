@@ -256,8 +256,27 @@ document.addEventListener("keydown",e=>{if(e.code==="Space"){e.preventDefault();
 const q=new URLSearchParams(location.search);if(q.get("e"))T=INI[clamp(+q.get("e")-1,0,ESC.length-1)];if(q.get("t"))T=clamp(+q.get("t"),0,TOTAL);
 /* ?embed=1: lo abre el juego (index.html) en un iframe. Sin controles, arranca solo cuando cargaron las imágenes y avisa al terminar. */
 if(q.get("embed")==="1"){document.body.classList.add("limpio","embed");$("escenario").onclick=null;
-  addEventListener("load",()=>{play();const m=$("musica");m.play().catch(()=>{m.muted=true;m.play().catch(()=>{});});});
-  setInterval(()=>{if(T>=TOTAL&&!window._avisado){window._avisado=true;try{parent.postMessage({gya:"video-ext-fin"},"*");}catch(e){}}},200);}
+  /* Para que no se trabe al arrancar: antes de tocar ▶ decodifica todas las imágenes, espera las
+     fuentes y la música, y pinta una vez cada escena tapada con negro (así el celular ya las tiene
+     dibujadas). Recién ahí avisa "listo" y arranca cuando el juego le dice "play". */
+  const avisar=m=>{try{parent.postMessage({gya:m},"*");}catch(e){}};
+  let listo=false,pedido=q.get("auto")==="1",arrancado=false;
+  const arrancar=()=>{if(arrancado||!listo||!pedido)return;arrancado=true;$("negro").style.transition="";T=0;ult=null;play();
+    const m=$("musica");m.play().catch(()=>{m.muted=true;m.play().catch(()=>{});});avisar("video-ext-empezo");};
+  addEventListener("message",e=>{if(e.data&&e.data.gya==="play"){pedido=true;arrancar();}});
+  const conTope=(p,ms)=>Promise.race([p,new Promise(r=>setTimeout(r,ms))]);
+  async function preparar(){
+    const imgs=[...document.querySelectorAll("img")];
+    const fondos=[...document.querySelectorAll("[style*='background-image']")].map(el=>{const u=(el.style.backgroundImage.match(/url\(["']?([^"')]+)/)||[])[1];if(!u)return null;const i=new Image();i.src=u;return i;}).filter(Boolean);
+    await conTope(Promise.all([...imgs,...fondos].map(i=>i.decode?i.decode().catch(()=>{}):null)),6000);
+    await conTope(document.fonts?document.fonts.ready:null,3000);
+    const m=$("musica");if(m.readyState<4)await conTope(new Promise(r=>m.addEventListener("canplaythrough",r,{once:true})),5000);
+    // pintar cada escena una vez, tapada
+    const tapa=document.createElement("div");tapa.style.cssText="position:absolute;inset:0;background:#000;z-index:80";$("escenario").appendChild(tapa);
+    for(const t of [0.2,1.6,2.4,4,6,9.6,12,15.5,17.5]){T=t;pintar();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));}
+    T=0;pintar();tapa.remove();listo=true;avisar("video-ext-listo");arrancar();}
+  addEventListener("load",preparar);
+  setInterval(()=>{if(T>=TOTAL&&!window._avisado){window._avisado=true;avisar("video-ext-fin");}},200);}
 requestAnimationFrame(loop);
 </script>
 </body>
