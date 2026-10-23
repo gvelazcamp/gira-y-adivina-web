@@ -1382,3 +1382,7 @@ Fecha: 23/10/2026 — REEL para Instagram (lanzamiento en redes): promo/reel.htm
 ```text
 Fecha: 23/10/2026 — Reel: el título del gancho se cortaba a los costados (ahora 7.6cqw y sin zoom de entrada). Después de QUIEBRA se agregó "Pierde turno" (clip e2 14.1–17.6 ×2) y una escena nueva "¿Te tocó PIERDE TURNO? 🛡️ USÁ UN ESCUDO y seguí jugando · Escudos en la Tienda" (e0esc, 2.2 s). Reel ≈ 29 s; música recortada de nuevo (0:00.55–0:24.3 + final 0:53.1–0:58.6) para que el golpe final siga cayendo con el logo.
 ```
+
+```text
+Fecha: 23/10/2026 — Reel con música nueva de Gonzalo ("The Big Reveal", Gemini, 40 s): promo/reel-musica.mp3 = 0:05.05–0:08.25 (suspenso del gancho; el golpe de 0:07.5 cae justo en "¡DULCE DE LECHE!") + 0:14.4–0:39.6 (desde el golpe de 0:15 sube hasta el final; el golpe grande de 0:37 cae con el logo), cruce de 0,3 s. Reemplaza a Grand Prize Fanfare en el Reel (el video de Extensiones sigue con Grand Prize Fanfare).
+```
