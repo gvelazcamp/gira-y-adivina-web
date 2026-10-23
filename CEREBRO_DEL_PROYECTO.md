@@ -1390,3 +1390,7 @@ Fecha: 23/10/2026 — Reel con música nueva de Gonzalo ("The Big Reveal", Gemin
 ```text
 Fecha: 23/10/2026 — Reel auditado: entre 0:03 y 0:05 se veía negro porque los dos clips de la ruleta usan la misma escena (e2) y pintar() la volvía a ocultar; ahora oculta todas las escenas y muestra la actual. La ruleta se va con corte seco antes de QUIEBRA / PIERDE TURNO (no quedan capas encimadas), QUIEBRA más chico (16cqw) para que no se corte. Clips: Quiebra 9.9–13.7, Pierde turno 14.1–16.7; música The Big Reveal recortada 0:05.05–0:08.25 + 0:14.9–0:39.6.
 ```
+
+```text
+Fecha: 23/10/2026 — Reel: el cierre dura 4,8 s para que girayadivina.com se lea bien (≈30 s en total). Se exportó a MP4 1080×1920 (30 fps, H.264 + AAC) cuadro por cuadro con Playwright (T fijo por cuadro, body.limpio) + ffmpeg con promo/reel-musica.mp3, para pasarlo por WhatsApp o subirlo a Instagram. El MP4 no se guarda en el repo (pesa ~18 MB).
+```
