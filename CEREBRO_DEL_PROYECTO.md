@@ -1386,3 +1386,7 @@ Fecha: 23/10/2026 — Reel: el título del gancho se cortaba a los costados (aho
 ```text
 Fecha: 23/10/2026 — Reel con música nueva de Gonzalo ("The Big Reveal", Gemini, 40 s): promo/reel-musica.mp3 = 0:05.05–0:08.25 (suspenso del gancho; el golpe de 0:07.5 cae justo en "¡DULCE DE LECHE!") + 0:14.4–0:39.6 (desde el golpe de 0:15 sube hasta el final; el golpe grande de 0:37 cae con el logo), cruce de 0,3 s. Reemplaza a Grand Prize Fanfare en el Reel (el video de Extensiones sigue con Grand Prize Fanfare).
 ```
+
+```text
+Fecha: 23/10/2026 — Reel auditado: entre 0:03 y 0:05 se veía negro porque los dos clips de la ruleta usan la misma escena (e2) y pintar() la volvía a ocultar; ahora oculta todas las escenas y muestra la actual. La ruleta se va con corte seco antes de QUIEBRA / PIERDE TURNO (no quedan capas encimadas), QUIEBRA más chico (16cqw) para que no se corte. Clips: Quiebra 9.9–13.7, Pierde turno 14.1–16.7; música The Big Reveal recortada 0:05.05–0:08.25 + 0:14.9–0:39.6.
+```
