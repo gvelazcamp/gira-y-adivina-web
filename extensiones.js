@@ -138,7 +138,7 @@ const Extensiones=(()=>{
       const lista=ext.grupo==="previa"?previa:resto;
       const b=document.createElement("button");b.type="button";b.className="ext-tarjeta";
       b.disabled=ext.estado!=="disponible";
-      const img=document.createElement("img");img.src=ext.icono;img.alt="";img.loading="lazy";
+      const img=document.createElement("img");img.src=ext.icono;img.alt="";img.decoding="async";
       const txt=document.createElement("span");txt.className="ext-tarjeta-texto";
       const nombre=document.createElement("b");nombre.textContent=ext.nombre;
       const desc=document.createElement("small");desc.textContent=ext.descripcion;
