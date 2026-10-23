@@ -1209,3 +1209,7 @@ Fecha: 23/10/2026 — Mímica rioplatense: arte nuevo tema teatro (hoja 4x3 de C
 ```text
 Fecha: 23/10/2026 — Tutti Frutti: categorías como tarjetas ilustradas (hoja 4x3 de ChatGPT recortada en assets/tutti/k_<id>.webp, 300x368; la elegida brilla con ✓ verde, la no elegida queda gris; contador "N de 12"). Logo chico arriba y popup de bienvenida (#tfBienvenida) con el logo grande, el dibujo de los amigos (assets/tutti/como.webp, con una letra al azar escrita en la ficha) y la explicación (letra, ¡BASTA!, puntos 10/5/20, mejor de 3). Sale solo la primera vez (gya_tutti_bienvenida) y se reabre con "❓ Cómo se juega". tutti-frutti.js v66, extensiones.css v108, sw v370.
 ```
+
+```text
+Fecha: 23/10/2026 — Tutti Frutti: se sacó el logo chico de la pantalla de inicio (Gonzalo: ya está en el popup de bienvenida). Arriba queda solo "❓ Cómo se juega". tutti-frutti.js v67, sw v371.
+```
