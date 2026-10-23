@@ -1189,3 +1189,7 @@ Fecha: 23/10/2026 — 100 Rioplatenses Dicen: la conductora ya no queda abajo de
 ```text
 Fecha: 23/10/2026 — ¿Quién soy?: logo re-recortado entero (el corte entre columnas le comía el borde del signo de pregunta) y centrado en el inicio. El ícono del juego en Extensiones ahora es ese logo sobre un cuadrado violeta (assets/quien-soy/icono.webp, reemplaza logo-quien-soy.svg). Ojo: como assets/ es cache-first, se bumpeó CACHE_NAME para que llegue el logo nuevo. extensiones.js v47, extensiones.css v103, sw v365.
 ```
+
+```text
+Fecha: 23/10/2026 — ¿Qué número soy?: arte nuevo con tema bingo (hoja 3x3 de ChatGPT recortada en assets/que-numero-soy/: logo, como, bolilla, facil, medio, dificil, candado, revela, fondo; la bolilla se redondeó con espejo porque venía achatada). Inicio con logo + dibujo de cómo se juega + candado en el aviso; los rangos 1 a 10/50/100 tienen una bolilla, tres bolillas o el bombo. El número sale escrito dentro de una bolilla dorada gigante sobre el estudio de bingo (más chico si es 100). Final con el chico sorprendido y la bolilla con el número. Ícono en Extensiones: assets/que-numero-soy/icono.webp (reemplaza logo-que-numero-soy.svg). que-numero-soy.js v7, extensiones.js v48, extensiones.css v104, sw v366.
+```
