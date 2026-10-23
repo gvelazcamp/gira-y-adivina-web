@@ -1267,3 +1267,7 @@ Fecha: 23/10/2026 — Tutti Frutti resultados: con 4 o más jugadores las column
 ```text
 Fecha: 23/10/2026 — Tutti Frutti contra bots: arreglo de "los bots quedan todos en 0". Los bots entregaban sus respuestas con 0,4–1,1 s de demora después del BASTA; si se tocaba "▶ Continuar" rápido (o el anfitrión publicaba antes), los resultados salían sin sus palabras. Ahora respuestasBots() las entrega al instante. Además, con 4+ jugadores la letra de las casillas es más chica y las palabras largas se cortan con guion en vez de por la mitad. tutti-frutti.js v74, extensiones.css v113, sw v381.
 ```
+
+```text
+Fecha: 23/10/2026 — Lobby de Extensiones: Tutti Frutti y Puzzle pasan a ser los dos primeros de "Más juegos" (intercambiados en el catálogo de extensiones.js con Sopa Fugaz y Rueda de Letras, que quedan donde estaban ellos). extensiones.js v52, sw v382.
+```
