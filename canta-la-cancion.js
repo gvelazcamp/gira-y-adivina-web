@@ -24,13 +24,19 @@ const CantaLaCancion=(()=>{
   const COLORES=["#E5197C","#1F6FB2","#1E9B7A","#F5B301","#7B3FE4","#FF6B3D","#00A8B5","#C2185B","#5C6BC0","#43A047","#8D6E63","#EC407A"];
   const ficha=(i,extra="")=>`<span class="kar-ficha ${extra}" style="--c:${COLORES[i%COLORES.length]}"><i>${esc(iniciales(i))}</i><b>${esc(nom(i))}</b><em>${pts[i]||0}</em></span>`;
 
-  function abrir(contenedor){salir();cargar();raiz=document.createElement("section");raiz.className="kar";contenedor.appendChild(raiz);PantallaFija.entrar();configurar();}
+  /* Arte en assets/canta/ (hoja de ChatGPT recortada), tema karaoke. */
+  const src=n=>"assets/canta/"+n+".webp";
+  const img=(n,c)=>`<img class="${c}" src="${src(n)}" alt="" draggable="false">`;
+  function abrir(contenedor){salir();cargar();raiz=document.createElement("section");raiz.className="kar";contenedor.appendChild(raiz);PantallaFija.entrar();
+    ["micro","fondo","jurado","arriba","abajo","parlante","vale","novale","trofeo","crono"].forEach(n=>{const i=new Image();i.src=src(n);});
+    configurar();}
   function configurar(){
     parar();PantallaFija.desactivar();
-    raiz.innerHTML=`<div class="mg-panel imp-panel kar-panel"><h3>🎤 Canta la Canción</h3>
+    raiz.innerHTML=`<div class="mg-panel imp-panel kar-panel"><h3 class="imp-logo-h"><img class="kar-logo" src="${src("logo")}" alt="Canta la Canción" draggable="false"></h3>
+      ${img("como","kar-como")}
       <p>Sale una palabra y tenés que <b>cantar un pedacito de una canción</b> que la tenga. Cuando termina el tiempo, <b>el jurado</b> (los demás) vota si valió.${GRABA?" Se graba lo que cantás para que el jurado lo escuche de nuevo.":""}</p>
       <div class="qs-sub">👥 Jugadores</div><div id="ctaJug"></div>
-      <div class="qs-sub">⏱️ Tiempo para cantar</div>
+      <div class="qs-sub">${img("crono","kar-ico")} Tiempo para cantar</div>
       <div class="qns-rangos" id="ctaT">${TIEMPOS.map(t=>`<button type="button" data-v="${t}">${t} s</button>`).join("")}</div>
       <div class="qs-sub">🔁 Vueltas</div>
       <div class="qns-rangos" id="ctaV">${VUELTAS.map(t=>`<button type="button" data-v="${t}">${t} vueltas</button>`).join("")}</div>
@@ -61,7 +67,7 @@ const CantaLaCancion=(()=>{
       <div class="kar-turno" style="--c:${COLORES[turno%COLORES.length]}"><i>${esc(iniciales(turno))}</i></div>
       <div class="kar-le">Le toca cantar a</div><div class="kar-nombre">${esc(nom(turno))}</div>
       <p class="kar-ayuda">Tocá el micrófono y cantá un pedacito de una canción con la palabra. Tenés <b>${tiempo} s</b>; si terminás antes, tocá <b>Terminé</b>.</p>
-      <button type="button" class="kar-mic" id="ctaListo" aria-label="Empezar a cantar"><span>🎤</span></button>
+      <button type="button" class="kar-mic" id="ctaListo" aria-label="Empezar a cantar">${img("micro","kar-mic-img")}</button>
       ${marcador()}</div>`);
     q("ctaListo").onclick=jugar;
   }
@@ -71,7 +77,7 @@ const CantaLaCancion=(()=>{
     pantalla(`<div class="kar-centro">
       <div class="kar-le">🎤 ${esc(nom(turno))} · cantá una canción con</div>
       <div class="kar-cartel"><span>${esc(palabra)}</span></div>
-      <div class="kar-reloj"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="54" class="kar-aro"/><circle cx="60" cy="60" r="54" class="kar-avance" id="ctaAro" style="stroke-dasharray:${C};stroke-dashoffset:0"/></svg><b id="ctaReloj">${tiempo}</b></div>
+      <div class="kar-reloj">${img("crono","kar-crono")}<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="54" class="kar-aro"/><circle cx="60" cy="60" r="54" class="kar-avance" id="ctaAro" style="stroke-dasharray:${C};stroke-dashoffset:0"/></svg><b id="ctaReloj">${tiempo}</b></div>
       <div class="kar-eq" id="ctaEq"><i></i><i></i><i></i><i></i><i></i></div>
       <div class="kar-oido" id="ctaOido">${GRABA?"🔴 Grabando… cantá tranquilo hasta el final":"Cantá tranquilo hasta el final"}</div>
       <button type="button" class="bb-pasar imp-gris kar-termine" id="ctaFin">✋ Terminé</button></div>`,"cantando");
@@ -128,11 +134,11 @@ const CantaLaCancion=(()=>{
     const jueces=pts.map((_,i)=>i).filter(i=>i!==turno);
     pantalla(`<div class="kar-centro">
       <div class="kar-vuelta">Vuelta ${Math.floor(jugados/est.cant)+1} de ${vueltas} · canta ${turno+1} de ${est.cant}</div>
-      <div class="kar-veredicto">🧑‍⚖️ ¿Vale?</div>
+      ${img("jurado","kar-jurado-img")}<div class="kar-veredicto">¿Vale?</div>
       <div class="kar-le">${esc(nom(turno))} tenía que cantar</div><div class="kar-cartel chico"><span>${esc(palabra)}</span></div>
-      <button type="button" class="kar-oir" id="ctaOir" ${audioURL?"":"hidden"}>▶ Escuchar de nuevo</button>
+      <button type="button" class="kar-oir" id="ctaOir" ${audioURL?"":"hidden"}>${img("parlante","kar-ico")} Escuchar de nuevo</button>
       <div class="kar-le">Jurado: ¿era una canción con la palabra?</div>
-      <div class="kar-jurado">${jueces.map(i=>`<div class="kar-juez" data-i="${i}" style="--c:${COLORES[i%COLORES.length]}"><i>${esc(iniciales(i))}</i><b>${esc(nom(i))}</b><button type="button" data-v="1">👍</button><button type="button" data-v="0">👎</button></div>`).join("")}</div>
+      <div class="kar-jurado">${jueces.map(i=>`<div class="kar-juez" data-i="${i}" style="--c:${COLORES[i%COLORES.length]}"><i>${esc(iniciales(i))}</i><b>${esc(nom(i))}</b><button type="button" data-v="1" aria-label="Vale">${img("arriba","kar-voto")}</button><button type="button" data-v="0" aria-label="No vale">${img("abajo","kar-voto")}</button></div>`).join("")}</div>
       <p class="kar-ayuda">Cada uno del jurado toca 👍 o 👎. Cuando votan todos, sigue el juego (gana la mayoría; empate vale).</p>
       ${marcador()}</div>`);
     q("ctaOir").onclick=()=>{if(!audioURL)return;if(audio){audio.pause();}audio=new Audio(audioURL);audio.play().catch(()=>{});};
@@ -150,7 +156,7 @@ const CantaLaCancion=(()=>{
     jugados++;
     const ultimo=jugados>=est.cant*vueltas;
     pantalla(`<div class="kar-centro">
-      <div class="kar-veredicto ${ok?"bien":"mal"}">${ok?"🎶 ¡Vale!":"✘ No vale"}</div>
+      ${img(ok?"vale":"novale","kar-resultado")}<div class="kar-veredicto ${ok?"bien":"mal"}">${ok?"¡Vale!":"No vale"}</div>
       <div class="kar-le">El jurado votó ${si} 👍 · ${v.length-si} 👎</div><div class="kar-cartel chico"><span>${esc(palabra)}</span></div>
       <p class="kar-ayuda"><b>${esc(nom(turno))}</b> ${ok?"suma 1 punto.":"no suma."}</p>
       ${marcador()}
@@ -163,7 +169,7 @@ const CantaLaCancion=(()=>{
     const top=orden[0][1],ganan=orden.filter(o=>o[1]===top).map(o=>nom(o[0]));
     [523,659,784,1047].forEach((f,i)=>setTimeout(()=>sonar(f,.22,"triangle",.05),i*140));
     pantalla(`<div class="kar-centro">
-      <div class="kar-veredicto bien">🏆 ${ganan.length>1?"¡Empate!":"¡Ganó!"}</div>
+      ${img("trofeo","kar-resultado")}<div class="kar-veredicto bien">${ganan.length>1?"¡Empate!":"¡Ganó!"}</div>
       <div class="kar-nombre">${esc(ganan.join(" y "))}</div>
       <ol class="kar-podio">${orden.map(([i,p],k)=>`<li style="--c:${COLORES[i%COLORES.length]}"><span>${k+1}</span><i>${esc(iniciales(i))}</i><b>${esc(nom(i))}</b><em>${p} ${p===1?"punto":"puntos"}</em></li>`).join("")}</ol>
       <button type="button" class="bb-pasar" id="ctaRevancha">🔄 Revancha</button>

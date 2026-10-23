@@ -639,3 +639,21 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .bb .bb-perdedor{position:absolute;left:50%;bottom:-6%;width:62%;height:auto;transform:translateX(-50%);filter:drop-shadow(0 6px 10px #000a)}
 .bb .bb-boom-t{text-align:center;margin-top:14px!important}
 @media (orientation:landscape) and (max-height:500px){.bb-juego{padding-top:max(56px,var(--safe-top))}.bb-mecha{height:18vh;margin-bottom:0}.bb-pasar{margin-top:3vh}}
+/* Canta la Canción: arte (assets/canta), tema karaoke */
+.kar .kar-logo{display:block;width:min(60%,220px);height:auto;margin:0 auto;filter:drop-shadow(0 6px 10px #0009)}
+.kar .kar-como{display:block;width:min(92%,330px);height:auto;margin:2px auto 6px;filter:drop-shadow(0 6px 10px #0008)}
+.kar .kar-ico{width:1.4em;height:1.4em;object-fit:contain;vertical-align:-.35em}
+.kar .kar-escena{background:#160B24 url(assets/canta/fondo.webp) center/cover no-repeat}
+.kar .kar-escena::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,#160B24D9 0%,#160B24A6 55%,#160B2440 100%);pointer-events:none}
+.kar .kar-escena.festeja{background:#160B24 url(assets/canta/fondo.webp) center/cover no-repeat}.kar .kar-escena.festeja::after{background:radial-gradient(ellipse at center,#0F2A20D9 0%,#160B24A6 55%,#160B2440 100%)}
+.kar .kar-escena>.pf-salir{z-index:5}
+.kar .kar-mic{background:radial-gradient(circle at 40% 35%,#3A1D55,#1B0F2A 70%);box-shadow:0 10px 0 #0B0614,0 0 0 4px #F5B30188,0 0 50px #E5197C88}
+.kar .kar-mic-img{width:82%;height:auto;filter:drop-shadow(0 4px 6px #000a)}
+.kar .kar-reloj .kar-crono{position:absolute;inset:-14%;width:128%;height:128%;object-fit:contain;opacity:.22;pointer-events:none}
+.kar .kar-jurado-img{width:min(60%,210px);height:auto;filter:drop-shadow(0 6px 10px #000a)}
+.kar .kar-juez button{display:grid;place-items:center;padding:0;background:transparent;border-color:transparent}
+.kar .kar-voto{width:42px;height:42px;object-fit:contain}
+.kar .kar-juez button.activo{opacity:1}.kar .kar-juez button[data-v="1"].activo,.kar .kar-juez button[data-v="0"].activo{background:transparent;border-color:transparent}
+.kar .kar-juez:has(button.activo) button:not(.activo){opacity:.3;filter:grayscale(.8)}
+.kar .kar-oir{display:inline-flex;align-items:center;gap:8px}
+.kar .kar-resultado{width:min(44%,170px);height:auto;filter:drop-shadow(0 6px 12px #000a);animation:bbBoom .5s}
