@@ -100,7 +100,7 @@ body.limpio #ayuda{display:block;opacity:.0}
   <!-- 0 · Gancho: desafío en 3 segundos -->
   <section class="esc" id="e0">
     <div class="capa" style="inset:0;background:radial-gradient(ellipse at 50% 40%,#2e1648 0%,#0b0614 70%)"></div>
-    <div class="titulo" id="e0a" style="top:12cqw;font-size:8.6cqw">SI LA SACÁS<br>EN <span class="oro">3 SEGUNDOS</span>…</div>
+    <div class="titulo" id="e0a" style="top:12cqw;font-size:7.6cqw">SI LA SACÁS<br>EN <span class="oro">3 SEGUNDOS</span>…</div>
     <div class="abs" id="e0tab" style="left:2.5cqw;width:95cqw;top:46cqw;height:53.4cqw;background:url('../assets/tableros/fondo-lab-toxico.webp') center/100% 100% no-repeat;padding:10.3cqw 9.5% 5.6cqw;text-align:center">
       <div style="font:500 3.3cqw Outfit;color:#37D6C0;margin-bottom:2.2cqw">Comida típica</div>
       <div id="e0frase" style="display:flex;flex-wrap:wrap;justify-content:center;gap:2.6cqw 2.6cqw"></div>
@@ -108,6 +108,16 @@ body.limpio #ayuda{display:block;opacity:.0}
     <div class="titulo oro" id="e0num" style="top:104cqw;font-size:30cqw"></div>
     <div class="titulo" id="e0b" style="top:140cqw;font-size:7.4cqw">…SOS MÁS <span class="tur">RIOPLATENSE</span><br>QUE EL MATE 🧉</div>
     <div class="titulo oro" id="e0ok" style="top:108cqw;font-size:11cqw">¡DULCE<br>DE LECHE!</div>
+  </section>
+  <!-- 0b · Escudo: después de "pierde el turno" -->
+  <section class="esc" id="e0esc">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 45%,#3a1f6e,#0b0614 72%)"></div>
+    <div class="titulo" id="escT" style="top:16cqw;font-size:8.4cqw">¿TE TOCÓ<br><span class="mag">PIERDE TURNO</span>?</div>
+    <div class="capa" id="escRayos" style="left:50%;top:84cqw;width:130cqw;height:130cqw;margin:-65cqw;background:repeating-conic-gradient(#37D6C044 0 10deg,transparent 10deg 20deg);border-radius:50%;mask:radial-gradient(circle,#000 20%,transparent 65%);-webkit-mask:radial-gradient(circle,#000 20%,transparent 65%)"></div>
+    <div class="capa" id="escIco" style="left:27cqw;top:58cqw;width:46cqw;height:46cqw;border-radius:12cqw;background:radial-gradient(circle at 35% 30%,#7B3FE4,#3A1868 70%);display:grid;place-items:center;font-size:26cqw;box-shadow:0 2cqw 6cqw #000a,0 0 10cqw #37D6C066">🛡️</div>
+    <div class="titulo" id="escA" style="top:114cqw;font-size:9.4cqw"><span class="tur">USÁ UN ESCUDO</span></div>
+    <div class="titulo" id="escB" style="top:127cqw;font-size:7.4cqw">Y SEGUÍ JUGANDO</div>
+    <div class="titulo" id="escC" style="top:145cqw;font-size:5cqw"><span style="display:inline-block;background:#F5B301;color:#160B24;border-radius:3cqw;padding:1.6cqw 4cqw;text-shadow:none">🛍️ Escudos en la Tienda</span></div>
   </section>
   <!-- 1 · Intro -->
   <section class="esc" id="e1">
@@ -497,7 +507,7 @@ escena("e10","Final",6,t=>{
 /* ---------- REEL: gancho + clips acelerados de las escenas del trailer ---------- */
 (function(){const fr=$("e0frase");"DULCE DE LECHE".split(" ").forEach(w=>{const pw=document.createElement("div");pw.className="fr-pal";[...w].forEach(ch=>{const f=document.createElement("div");f.className="fr-f";f.dataset.l=ch;f.textContent=ch;pw.appendChild(f);});fr.appendChild(pw);});})();
 escena("e0","Gancho",3.2,t=>{
-  set("e0a",{o:1,s:t<.25?lerp(1.25,1,eOut(pr(t,0,.25))):1});
+  set("e0a",{o:1,s:t<.25?lerp(.92,1,eOut(pr(t,0,.25))):1});
   set("e0tab",{o:1,x:t<2.55?Math.sin(t*40)*pr(t,1.9,2.5)*.6:0});
   const n=t<.7?"3":t<1.35?"2":t<2.0?"1":"";const el=$("e0num");el.textContent=n;
   const k=t<.7?pr(t,0,.18):t<1.35?pr(t,.7,.88):pr(t,1.35,1.53);set(el,{o:t<2.0?1:0,s:lerp(1.8,1,eOut(k))});
@@ -506,9 +516,16 @@ escena("e0","Gancho",3.2,t=>{
   golpe("e0ok",t,2.5);
   $("flash").style.opacity=t>=2.45&&t<2.7?.8*(1-pr(t,2.45,2.7)):0;
 });
+escena("e0esc","Escudo",2.2,t=>{
+  golpe("escT",t,0);
+  const k=pr(t,.35,.7);set("escIco",{o:t<.35?0:1,s:lerp(2.4,1,eIn(k))*(1+.03*Math.sin(t*12)*pr(t,.7,1)),r:lerp(-20,0,k)});
+  set("escRayos",{o:pr(t,.6,.9),r:t*40});
+  golpe("escA",t,.75);golpe("escB",t,1.05);golpe("escC",t,1.35);
+  $("flash").style.opacity=t>=.7&&t<.9?.6*(1-pr(t,.7,.9)):0;
+});
 const TODAS={};ESC.forEach(e=>TODAS[e.id]=e);
 const clip=(id,nombre,desde,hasta,vel)=>({id,nombre,dur:(hasta-desde)/vel,render:lt=>TODAS[id].render(desde+lt*vel),cues:[]});
-const REEL=[TODAS.e0,clip("e2","Quiebra",9.9,13.9,2),clip("e3","Tío del Asado",.4,7.6,2.4),clip("e4","Uruguay",0,7.5,3),clip("e5","Argentina",0,7,3),
+const REEL=[TODAS.e0,clip("e2","Quiebra",9.9,13.9,2),clip("e2","Pierde turno",14.1,17.6,2),TODAS.e0esc,clip("e3","Tío del Asado",.4,7.6,2.4),clip("e4","Uruguay",0,7.5,3),clip("e5","Argentina",0,7,3),
   clip("e6","Puzzle de a dos",.8,8.6,2.6),clip("e8","Tutti Frutti",1.8,9.6,2.6),clip("e9","Extensiones",.3,6,2.2),clip("e10","Final",0,3.4,1)];
 ESC.length=0;REEL.forEach(e=>ESC.push(e));
 
