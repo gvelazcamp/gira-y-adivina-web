@@ -1394,3 +1394,7 @@ Fecha: 23/10/2026 — Reel auditado: entre 0:03 y 0:05 se veía negro porque los
 ```text
 Fecha: 23/10/2026 — Reel: el cierre dura 4,8 s para que girayadivina.com se lea bien (≈30 s en total). Se exportó a MP4 1080×1920 (30 fps, H.264 + AAC) cuadro por cuadro con Playwright (T fijo por cuadro, body.limpio) + ffmpeg con promo/reel-musica.mp3, para pasarlo por WhatsApp o subirlo a Instagram. El MP4 no se guarda en el repo (pesa ~18 MB).
 ```
+
+```text
+Fecha: 23/10/2026 — Reel más lento (a Gonzalo le dijeron que iba demasiado rápido): Quiebra/Pierde turno ×1.6, Tío del Asado ×1.9, Uruguay/Argentina ×2.2, Puzzle/Tutti ×2, Extensiones ×1.7, escena Escudo 3 s → ≈36,5 s. Música: The Big Reveal seguida desde 0:05.05 (sin cortes): el golpe de 0:07.5 cae en "¡DULCE DE LECHE!" y el de 0:37 cuando aparece el logo.
+```
