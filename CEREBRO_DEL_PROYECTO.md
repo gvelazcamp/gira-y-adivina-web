@@ -1374,3 +1374,7 @@ PENDIENTE (Gonzalo dijo que sí, para más adelante): si Google no lo arregla o 
 ```text
 Fecha: 23/10/2026 — Íconos de Extensiones que tardaban en aparecer al entrar. Causa: los logos de la raíz (logo-*.svg/.webp/.png) no están en assets/, así que el service worker los trataba como "red primero, sin caché" y los volvía a bajar cada vez. Arreglo: sw.js ahora sirve de la caché primero TODA imagen/audio del sitio (svg, webp, png, jpg, gif, mp3), esté o no en assets/ (ojo: si se cambia el contenido de un logo con el mismo nombre, subir CACHE_NAME). Además extensiones.js precarga y decodifica los logos del lobby al cargar el juego y los guarda (iconosListos), y las tarjetas usan decoding="sync". Prueba con red lenta: antes 7 pedidos a internet al abrir Extensiones, ahora 0. extensiones.js v63, sw v401.
 ```
+
+```text
+Fecha: 23/10/2026 — REEL para Instagram (lanzamiento en redes): promo/reel.html (~25 s, 9:16). Gancho de 3 s: "SI LA SACÁS EN 3 SEGUNDOS… SOS MÁS RIOPLATENSE QUE EL MATE 🧉" con tablero D_LC_ D_ L_CH_ + cuenta 3-2-1 → "¡DULCE DE LECHE!". Después cortes rápidos reusando las escenas del trailer aceleradas (clip(id,desde,hasta,vel)): Quiebra, Tío del Asado, Uruguay, Argentina, Puzzle de a dos, Tutti Frutti, 18 extensiones, final con logo y Google Play. Música: promo/reel-musica.mp3 (Grand Prize Fanfare 0:00.55–0:20.55 + final 0:53.1–0:58.6; el golpe final cae con el logo). Sin sonidos sintetizados. Para grabar: ⛶ y grabar pantalla. También publicado como artifact para verlo desde el celular.
+```
