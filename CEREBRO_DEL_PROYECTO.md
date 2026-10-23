@@ -1378,3 +1378,7 @@ Fecha: 23/10/2026 — Íconos de Extensiones que tardaban en aparecer al entrar.
 ```text
 Fecha: 23/10/2026 — REEL para Instagram (lanzamiento en redes): promo/reel.html (~25 s, 9:16). Gancho de 3 s: "SI LA SACÁS EN 3 SEGUNDOS… SOS MÁS RIOPLATENSE QUE EL MATE 🧉" con tablero D_LC_ D_ L_CH_ + cuenta 3-2-1 → "¡DULCE DE LECHE!". Después cortes rápidos reusando las escenas del trailer aceleradas (clip(id,desde,hasta,vel)): Quiebra, Tío del Asado, Uruguay, Argentina, Puzzle de a dos, Tutti Frutti, 18 extensiones, final con logo y Google Play. Música: promo/reel-musica.mp3 (Grand Prize Fanfare 0:00.55–0:20.55 + final 0:53.1–0:58.6; el golpe final cae con el logo). Sin sonidos sintetizados. Para grabar: ⛶ y grabar pantalla. También publicado como artifact para verlo desde el celular.
 ```
+
+```text
+Fecha: 23/10/2026 — Reel: el título del gancho se cortaba a los costados (ahora 7.6cqw y sin zoom de entrada). Después de QUIEBRA se agregó "Pierde turno" (clip e2 14.1–17.6 ×2) y una escena nueva "¿Te tocó PIERDE TURNO? 🛡️ USÁ UN ESCUDO y seguí jugando · Escudos en la Tienda" (e0esc, 2.2 s). Reel ≈ 29 s; música recortada de nuevo (0:00.55–0:24.3 + final 0:53.1–0:58.6) para que el golpe final siga cayendo con el logo.
+```
