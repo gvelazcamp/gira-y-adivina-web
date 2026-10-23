@@ -1231,3 +1231,7 @@ Fecha: 23/10/2026 — Tutti Frutti: la pantalla de inicio entra entera sin scrol
 Fecha: 23/10/2026 — Tutti Frutti ya no pide pantalla completa (PantallaFija.activar({completa:false}) y sin PantallaFija.entrar() al abrir): así no sale el aviso de Chrome "Para salir de la pantalla completa, arrastrá desde arriba…" que tapaba el botón ¡A jugar!. Sigue sin apagarse la pantalla y con el "atrás" bloqueado durante la partida. Ese aviso es de Chrome/Android, no depende del dominio. Los demás juegos de previa (Quién soy, Qué número, Bomba, Mímica, etc.) siguen con pantalla completa. pantalla-fija.js v6, tutti-frutti.js v70, sw v375.
 Pendiente (para una próxima versión de la app en Play, v18): poner la TWA en modo "fullscreen" (display fullscreen en la config de Bubblewrap/manifest) para que la app sea pantalla completa siempre y el aviso no aparezca en ningún juego.
 ```
+
+```text
+Fecha: 23/10/2026 — Tutti Frutti vuelve a pantalla completa (Gonzalo la prefiere). Para que el aviso de Chrome no tape ¡A jugar!, la pantalla completa se pide al cerrar el popup de bienvenida (o al volver a la pantalla de inicio sin popup), no al abrir el juego. Queda en pantalla-fija.js la opción activar({completa:false}) por si se necesita en otro juego. tutti-frutti.js v71, sw v376.
+```
