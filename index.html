@@ -6381,7 +6381,7 @@ function videoExtMostrar(despues){
   videoExtPendiente=false;videoExtDespues=despues||null;try{localStorage.setItem("gya_video_ext_visto","1");}catch(e){}
   $("videoExtFin").hidden=true;const b=$("videoExtSaltar");b.hidden=false;b.disabled=true;let n=5;b.textContent="Saltar en "+n;
   clearInterval(videoExtTimer);videoExtTimer=setInterval(()=>{n--;if(n>0){b.textContent="Saltar en "+n;return;}clearInterval(videoExtTimer);b.disabled=false;b.textContent="Saltar video ⏭";},1000);
-  $("videoExtFrame").src="promo/video-extensiones.html?embed=1&v=1";$("videoExt").hidden=false;}
+  $("videoExtFrame").src="promo/video-extensiones.html?embed=1&v=2";$("videoExt").hidden=false;}
 function videoExtTalVez(seguir){if(videoExtPendiente&&!videoExtVisto())videoExtMostrar(seguir);else{videoExtPendiente=false;seguir();}}
 $("videoExtSaltar").onclick=()=>videoExtCerrar(false);
 $("videoExtSeguir").onclick=()=>videoExtCerrar(false);

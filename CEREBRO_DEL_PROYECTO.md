@@ -1349,3 +1349,7 @@ Fecha: 23/10/2026 — Video de Extensiones con la música que eligió Gonzalo ("
 ```text
 Fecha: 23/10/2026 — El video de Extensiones ya está EN EL JUEGO: sale UNA sola vez (gya_video_ext_visto) cuando el jugador gana por primera vez el 3er paso de una ciudad (pasoActual===2: le faltan 2 partidas para el desafío del rival, tipo El Tío del Asado). Aparece al tocar "Siguiente →" / "Volver al mapa" (videoExtTalVez envuelve la acción que sigue). Pantalla completa negra con iframe promo/video-extensiones.html?embed=1 (sin controles, arranca solo, avisa al terminar con postMessage); "Saltar en 5…" → "Saltar video ⏭" a los 5 s; al final: "Ver Extensiones" (abre el lobby) o "Seguir jugando" (sigue con el paso/mapa). En embed se oculta el botón dibujado del video. Vista previa para Gonzalo en Pruebas: "Vista previa Video Extensiones". sw v398.
 ```
+
+```text
+Fecha: 23/10/2026 — Video de Extensiones: el celular de Gonzalo mostraba el botón dibujado del video y además los botones reales (versión vieja del video en caché). Se subió el iframe a ?embed=1&v=2: al cambiar el video hay que subir ese v. sw v399.
+```
