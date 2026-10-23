@@ -1284,3 +1284,7 @@ Fecha: 23/10/2026 — Carga más rápida de imágenes (Gonzalo: "los íconos tar
 - precargarPantallas(): 3,5 s después del load, en un momento libre, baja de a poco las imágenes de la Tienda, los íconos de Extensiones y la imagen de Social (no lo hace con ahorro de datos). Extensiones ya no usa loading="lazy" en los íconos.
 - assets/social/promo-redes.webp achicada a 720 px (355 → 155 KB). sw v384, extensiones.js v53.
 ```
+
+```text
+Fecha: 23/10/2026 — Puzzle: arte nuevo (hoja 4x3 de ChatGPT recortada en assets/puzzle-arte/: logo, como, solo, vivo, c_dibujo, c_aventura, c_heroe, c_gigante, c_ciudad, c_p3d, completo, fondo; icono.webp para el lobby). "Cómo jugar" ahora tiene logo + dibujo de los dos amigos armando en vivo y sale SIEMPRE al entrar (salvo si se entra con invitación a una sala). En "Elegí el puzzle" las categorías son tarjetas con dibujo (el select #elCat queda oculto y sigue mandando; la tarjeta 3D hace clic en #el3d, que queda oculto). El tablero tiene de fondo la mesa de madera (fondoMesa(): patrón del canvas, oscurecido; si no carga, el degradé violeta de antes). Trofeo arriba de "¡Puzzle completo!". puzzle.html v44, puzzle.js v44, extensiones.js v54, sw v385.
+```
