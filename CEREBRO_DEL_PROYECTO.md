@@ -1365,3 +1365,8 @@ Fecha: 23/10/2026 — Inicio y lobby de Extensiones: el título "Extensiones Gir
 ```text
 Fecha: 23/10/2026 — Video de Extensiones: se trababa un poquito al arrancar. Ahora (1) se empieza a cargar invisible apenas gana el 3er paso (videoExtPrecargar, clase .precarga opacity .01, se limpia sola a los 3 min), mientras mira el cartel de fin; (2) en ?embed=1 el video decodifica todas las imágenes, espera fuentes y música, pinta cada escena una vez tapada con negro, avisa "video-ext-listo" y arranca recién con el mensaje "play" del juego (o solo con &auto=1, como en la vista previa); (3) el "Saltar en 5" cuenta desde que el video empieza de verdad ("video-ext-empezo"). Iframe v=3, sw v400.
 ```
+
+```text
+Fecha: 23/10/2026 — Barra con la dirección (girayadivina.com) que aparece 1–2 s al abrir la app de Play "en frío" (después de mucho rato sin usarla; en caliente no sale). Revisado: Play Console → Enlaces profundos de la v17 (1.0.0.17) tiene girayadivina.com y gvelazcamp.github.io verificados ✓; el juego no usa www. Causa: error de Chrome desde la versión 152 en TODAS las TWA (GoogleChrome/android-browser-helper#624, abierto, sin arreglo; pasa aunque la app sea pantalla completa). No se arregla desde el código del juego ni con la v18.
+PENDIENTE (Gonzalo dijo que sí, para más adelante): si Google no lo arregla o le molesta mucho, pasar la app de TWA a Capacitor (el juego adentro de la app, sin Chrome: la barra no puede salir nunca). Costos: nueva mudanza de partidas (el progreso está en el almacenamiento de Chrome), reconectar los pagos de Play (monedas, vidas, sin publicidad, pase de extensiones) con un complemento nativo y armar el paquete con Android Studio. Antes, revisar si una versión nueva de Chrome ya lo arregló.
+```
