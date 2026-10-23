@@ -1618,12 +1618,12 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
   <div class="tn-card-info"><b>Sin publicidad</b><span>Sacá los anuncios para siempre</span></div>
   <button class="tn-comprar-real" data-producto="sin_publicidad">$2.99</button>
   </div>
-  <div class="tn-item tn-card tn-real">
+  <div class="tn-item tn-card tn-real tn-pase">
   <div class="tn-card-img" style="display:grid;place-items:center;font-size:2.4rem">🔓</div>
   <div class="tn-card-info"><b>Pase de extensiones · mensual</b><span>Todos los juegos de Extensiones sin fichas</span></div>
   <button class="tn-comprar-real" data-producto="pase_extensiones">$2.99</button>
   </div>
-  <div class="tn-item tn-card tn-real">
+  <div class="tn-item tn-card tn-real tn-pase">
   <div class="tn-card-img" style="display:grid;place-items:center;font-size:2.4rem">🏆</div>
   <div class="tn-card-info"><b>Pase de extensiones · anual</b><span>Un año sin fichas · ahorrás más del 50%</span></div>
   <button class="tn-comprar-real" data-producto="pase_extensiones_anual">$14.99</button>
@@ -1838,6 +1838,7 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
 </div></div>
 
 <div class="capa" id="capaPromoTienda"><div class="caja" style="max-width:340px;position:relative">
+  <div id="ptPase">
   <div style="width:108px;height:108px;margin:16px auto 14px;border-radius:28px;background:radial-gradient(circle at 35% 30%,#7B3FE4,#3A1868 70%);display:flex;align-items:center;justify-content:center;font-size:3.4rem;box-shadow:0 8px 20px #00000055,inset 0 2px 0 #FFFFFF22">🔓</div>
   <h2>Pase de extensiones</h2>
   <p>Desbloqueá <b>todos los juegos de Extensiones</b> de Girá y Adiviná: jugá sin fichas ⚡ y sin esperar.</p>
@@ -1849,6 +1850,24 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
     <span class="cta-play">🏆</span>
     <span class="cta-txt"><b>Anual · <span class="pase-precio">US$ 14,99</span></b><small>Ahorrás más del 50%</small></span>
   </button>
+  </div>
+  <div id="ptEscudos" hidden>
+  <div style="width:108px;height:108px;margin:16px auto 14px;border-radius:28px;background:radial-gradient(circle at 35% 30%,#7B3FE4,#3A1868 70%);display:flex;align-items:center;justify-content:center;font-size:3.4rem;box-shadow:0 8px 20px #00000055,inset 0 2px 0 #FFFFFF22">🛡️</div>
+  <h2>Escudos de la ruleta</h2>
+  <p>Comprálos en la Tienda y salvate cuando la ruleta caiga en <b>Quiebra</b> o <b>Pierde turno</b>.</p>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px">
+    <div style="display:flex;align-items:center;gap:10px;background:#00000033;border-radius:12px;padding:10px 14px;text-align:left">
+      <span style="font-size:1.3rem">🛡️</span><span style="font-size:.85rem"><b>Escudo Pierde Turno</b> — 🪙 750</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;background:#00000033;border-radius:12px;padding:10px 14px;text-align:left">
+      <span style="font-size:1.3rem">🛡️</span><span style="font-size:.85rem"><b>Escudo Quiebra</b> — 🪙 1250</span>
+    </div>
+  </div>
+  <button class="btn-grande cta-jugar" id="ptIrTienda" style="margin-bottom:10px">
+    <span class="cta-play">🛍️</span>
+    <span class="cta-txt"><b>Ir a Tienda</b><small>Comprar escudos ahora</small></span>
+  </button>
+  </div>
   <button class="no" id="ptMasTarde" style="width:100%;border-radius:12px;padding:12px;font-weight:700">Más tarde</button>
 </div></div>
 
@@ -3126,6 +3145,7 @@ $("objLista").addEventListener("click",e=>{
 $("pdVamos").onclick=()=>{$("capaPartidaDiaria").classList.remove("ver");iniciarPartidaDiaria();};
 $("pdMasTarde").onclick=()=>{$("capaPartidaDiaria").classList.remove("ver");pdGuardarEstado("pospuesto");objActualizarBadge();ptChequearAutoPopup();};
 let ptVistaPrueba=false;
+$("ptIrTienda").onclick=()=>{$("capaPromoTienda").classList.remove("ver","pt-vista-prueba");if(!ptVistaPrueba){ptGuardarEstado("vista");}ptVistaPrueba=false;$("bTienda").click();};
 document.querySelectorAll("#capaPromoTienda .pase-btn").forEach(b=>{b.onclick=()=>{if(!ptVistaPrueba)ptGuardarEstado("vista");tnComprarReal(b.dataset.producto);};});
 $("ptMasTarde").onclick=()=>{$("capaPromoTienda").classList.remove("ver","pt-vista-prueba");if(!ptVistaPrueba){ptGuardarEstado("vista");}ptVistaPrueba=false;};
 $("peIrEventos").onclick=()=>{$("capaPromoEventos").classList.remove("ver");peGuardar({visto:true});abrirEventos();};
@@ -4110,7 +4130,7 @@ function otorgarSobreSorpresa(garantizado){
   if(cm){cm.sobres++;if(garantizado)cm.sobresGarantizados=(cm.sobresGarantizados||0)+1;guardarColeccionMeta();}
   return cual;
 }
-function tnActualizar(){
+function tnActualizar(){tnMostrarTarjetasPase();
   regenerarVidas();
   $("tnMonedas").textContent=meta.monedas;
   document.querySelectorAll(".tn-comprar").forEach(b=>{
@@ -4241,12 +4261,17 @@ const TN_PRODUCTOS_REALES={
   pase_extensiones:{paseExtDias:31,noConsumible:true},
   pase_extensiones_anual:{paseExtDias:366,noConsumible:true}
 };
+/* Los testers libres de fichas (Juan E, Vale, etc.: Fichas.libre()) no ven nada del pase:
+   les sigue saliendo el popup viejo de los Escudos y no ven las tarjetas del pase en la Tienda. */
+function paseExtTester(){try{return !!(window.Fichas&&Fichas.libre());}catch(e){return false;}}
+function ptPrepararPopup(){const t=paseExtTester();$("ptPase").hidden=t;$("ptEscudos").hidden=!t;}
+function tnMostrarTarjetasPase(){const t=paseExtTester();document.querySelectorAll(".tn-pase").forEach(x=>{x.style.display=t?"none":"";});}
 function paseExtActivo(){return (meta.paseExtHasta||0)>Date.now();}
 window.paseExtActivo=paseExtActivo;
 /* Abre el popup del pase (desde el cartel de "sin fichas"). Solo dentro
    de la app de Google Play, que es donde se puede cobrar. */
-window.abrirPaseExt=()=>{if(!tnDigitalGoods){mostrarToast("🔓","El Pase de extensiones se compra desde la app de Google Play");return;}ptVistaPrueba=true;$("capaPromoTienda").classList.add("ver");};
-window.paseExtDisponible=()=>!!tnDigitalGoods&&!paseExtActivo();
+window.abrirPaseExt=()=>{if(!tnDigitalGoods){mostrarToast("🔓","El Pase de extensiones se compra desde la app de Google Play");return;}ptVistaPrueba=true;$("ptPase").hidden=false;$("ptEscudos").hidden=true;$("capaPromoTienda").classList.add("ver");};
+window.paseExtDisponible=()=>!!tnDigitalGoods&&!paseExtActivo()&&!paseExtTester();
 let tnDigitalGoods=null;
 async function tnInicializarBilling(){
   if(!window.getDigitalGoodsService)return;
@@ -6255,7 +6280,7 @@ $("bPruebaContraReloj").onclick=()=>{if(!esGonzalo())return;$("capaPruebas").cla
 $("bPruebaTuttiDudas").onclick=()=>{if(!esGonzalo())return;$("capaPruebas").classList.remove("ver");$("capaMas").classList.remove("ver");if(window.TuttiFrutti)TuttiFrutti.verDudas();};
 $("bPruebaPunteros").onclick=iniciarPruebaPunteros;
 $("bPruebaAltaPerfil").onclick=()=>{$("capaPruebas").classList.remove("ver");$("capaMas").classList.remove("ver");previsualizarPerfilVacio();};
-$("bPruebaGiftTienda").onclick=()=>{if(!esGonzalo())return;ptVistaPrueba=true;$("capaPruebas").classList.remove("ver");$("capaMas").classList.remove("ver");$("capaPromoTienda").classList.add("pt-vista-prueba","ver");};
+$("bPruebaGiftTienda").onclick=()=>{if(!esGonzalo())return;ptVistaPrueba=true;$("capaPruebas").classList.remove("ver");$("capaMas").classList.remove("ver");ptPrepararPopup();$("capaPromoTienda").classList.add("pt-vista-prueba","ver");};
 $("bPruebaSalaTVBots").onclick=iniciarPruebaSalaTVBots;
 $("bPruebaEscudos").onclick=iniciarPruebaEscudos;
 $("bPruebaChat").onclick=iniciarPruebaChat;
@@ -11457,7 +11482,7 @@ $("fBoton").onclick=()=>{
       let revisar=false;try{revisar=new URLSearchParams(location.search).get("revisar")==="1";}catch(e){}
       if(revisar){
         setTimeout(()=>{$("capaBienvenida").classList.add("ver");},900);
-        setTimeout(()=>{$("capaPromoTienda").classList.add("ver");},4000);
+        setTimeout(()=>{ptPrepararPopup();$("capaPromoTienda").classList.add("ver");},4000);
         return;
       }
       /* Debug para previsualizar la pantalla de "nombre y avatar
@@ -11506,15 +11531,15 @@ let ptPopupTimer=null;
 function ptChequearAutoPopup(){
   if(ptPopupTimer!==null||ptEstadoHoy()!=="pendiente"||esMismoDiaDeAlta())return;
   /* Ahora ofrece el Pase de extensiones: solo se puede pagar dentro de la app de Google Play. */
-  if(!tnDigitalGoods||paseExtActivo())return;
+  if(!paseExtTester()&&(!tnDigitalGoods||paseExtActivo()))return;
   const intentar=()=>{
     ptPopupTimer=null;
-    if(ptEstadoHoy()!=="pendiente"||esMismoDiaDeAlta()||!tnDigitalGoods||paseExtActivo())return;
+    if(ptEstadoHoy()!=="pendiente"||esMismoDiaDeAlta()||(!paseExtTester()&&(!tnDigitalGoods||paseExtActivo())))return;
     // Espera el regreso al inicio: nunca interrumpe una partida ni otro menú.
     if(document.hidden||$("setup").style.display==="none"||document.querySelector(".capa.ver")){
       ptPopupTimer=setTimeout(intentar,1500);return;
     }
-    $("capaPromoTienda").classList.add("ver");
+    ptPrepararPopup();$("capaPromoTienda").classList.add("ver");
   };
   ptPopupTimer=setTimeout(intentar,2800);
 }
@@ -11624,7 +11649,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="canta-la-cancion.js?v=13"></script>
 <script src="tutti-frutti-datos.js?v=34"></script>
 <script src="tutti-frutti.js?v=76"></script>
-<script src="extensiones.js?v=59"></script>
+<script src="extensiones.js?v=60"></script>
 <script src="sala-tv.js?v=1"></script>
 </body>
 </html>
