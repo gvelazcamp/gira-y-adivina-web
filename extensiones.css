@@ -670,3 +670,20 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .mim .mim-btn-img{height:1.7em;width:auto;vertical-align:-.45em;margin-right:8px;filter:drop-shadow(0 2px 3px #0006)}
 .mim .mim-final-img{display:block;width:min(40%,150px);height:auto;margin:0 auto 2px;filter:drop-shadow(0 6px 10px #000a)}
 .mim .imp-fin h3{text-align:center}
+/* Tutti Frutti: tarjetas de categorías y popup de bienvenida */
+.tf .tf-logo.tf-logo-chico{width:min(46%,170px)}
+.tf .tf-ayuda-btn{display:block;margin:0 auto 4px;background:none;border:0;box-shadow:none;color:#BFAFD1;font-size:.82rem;font-weight:800;text-decoration:underline;padding:4px 8px;width:auto;min-height:0}
+.tf .tf-tarjetas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:6px 0 10px}
+.mg-panel .tf-tarjetas .tf-tarjeta{position:relative;width:100%;min-height:0;aspect-ratio:300/368;margin:0;padding:0;border:0;border-radius:12px;background:transparent center/100% 100% no-repeat;box-shadow:none;filter:grayscale(.85) brightness(.6);opacity:.7;transition:transform .15s,filter .2s,opacity .2s}
+.mg-panel .tf-tarjetas .tf-tarjeta:active{transform:scale(.95)}
+.mg-panel .tf-tarjetas .tf-tarjeta.tf-on{filter:drop-shadow(0 0 8px #F5B301AA) drop-shadow(0 4px 5px #0008);opacity:1}
+.tf .tf-tarjeta span{position:absolute;left:8%;right:8%;top:78%;bottom:4.5%;display:grid;place-items:center;font:800 clamp(.52rem,2.6vw,.74rem)/1.05 'Outfit',sans-serif;color:#FFF3D6;text-shadow:0 1px 2px #000;text-align:center;overflow:hidden}
+.tf .tf-tarjeta i{position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;background:#1FA866;border:2px solid #fff;color:#fff;font-style:normal;font-weight:900;font-size:.8rem;display:none;place-items:center;box-shadow:0 2px 4px #0008}
+.tf .tf-tarjeta.tf-on i{display:grid}
+.tf .tf-bienv{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:#0A0412E0;padding:max(14px,var(--safe-top)) max(14px,var(--safe-right)) max(14px,var(--safe-bottom)) max(14px,var(--safe-left));overflow-y:auto}.tf .tf-bienv[hidden]{display:none}
+.tf .tf-bienv-caja{position:relative;width:min(100%,370px);background:#2A1A3C;border:1px solid #F5B30177;border-radius:22px;padding:14px 14px 16px;box-shadow:0 18px 45px #0008;text-align:center;animation:crBienv .45s cubic-bezier(.2,.8,.3,1.2) backwards}
+.tf .tf-bienv-logo{display:block;width:min(70%,240px);height:auto;margin:-4px auto 0;filter:drop-shadow(0 6px 10px #0009)}
+.tf .tf-bienv-dibujo{position:relative;width:88%;margin:2px auto 8px}.tf .tf-bienv-dibujo img{display:block;width:100%;height:auto}
+.tf .tf-bienv-dibujo b{position:absolute;left:51.5%;top:16.2%;transform:translate(-50%,-50%);font-family:'Archivo Black',sans-serif;font-size:clamp(1.2rem,7vw,1.9rem);color:#E5197C;line-height:1}
+.tf .tf-bienv ul{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:7px;text-align:left}.tf .tf-bienv li{display:flex;gap:9px;align-items:flex-start;background:#FFFFFF0D;border-radius:12px;padding:8px 10px;color:#E4D8EB;font-size:.8rem;line-height:1.35}.tf .tf-bienv li span{flex:none;font-size:1rem;line-height:1.2}.tf .tf-bienv li em{font-style:normal}.tf .tf-bienv li b{color:#F6EFE2}
+.tf .tf-bienv-x{position:absolute;top:10px;right:10px;width:32px;height:32px;min-height:0;padding:0;border-radius:50%;background:#FFFFFF14;color:#F6EFE2;font-weight:900;margin:0;z-index:2}

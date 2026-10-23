@@ -1205,3 +1205,7 @@ Fecha: 23/10/2026 — Canta la Canción: arte nuevo tema karaoke (hoja 4x3 de Ch
 ```text
 Fecha: 23/10/2026 — Mímica rioplatense: arte nuevo tema teatro (hoja 4x3 de ChatGPT recortada por cajas en assets/mimica/: logo, como, facil, media, dificil, accion, aplausos, pasar, foco, telon, trofeo, fondo). Inicio con logo + dibujo de cómo se juega y las cartas de dificultad con su dibujo (mate y cepillo / claqueta y pelota / ornitorrinco). Las pantallas del juego usan el escenario con telones de fondo (se ocultan las tiras CSS del telón ahí); foco sobre "Sube al escenario", claqueta en ¡Acción!, flecha en Pasar, aplausos en ¡Adivinaron!, telón cerrándose al fin del turno y trofeo con máscaras al ganador. Ojo: la imagen de cómo se juega usa la clase mim-como-img porque .mim-como ya es el texto desplegable. Ícono en Extensiones: assets/mimica/icono.webp. mimica.js v6, extensiones.js v51, extensiones.css v107, sw v369.
 ```
+
+```text
+Fecha: 23/10/2026 — Tutti Frutti: categorías como tarjetas ilustradas (hoja 4x3 de ChatGPT recortada en assets/tutti/k_<id>.webp, 300x368; la elegida brilla con ✓ verde, la no elegida queda gris; contador "N de 12"). Logo chico arriba y popup de bienvenida (#tfBienvenida) con el logo grande, el dibujo de los amigos (assets/tutti/como.webp, con una letra al azar escrita en la ficha) y la explicación (letra, ¡BASTA!, puntos 10/5/20, mejor de 3). Sale solo la primera vez (gya_tutti_bienvenida) y se reabre con "❓ Cómo se juega". tutti-frutti.js v66, extensiones.css v108, sw v370.
+```

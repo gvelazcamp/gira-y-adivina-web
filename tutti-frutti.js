@@ -16,6 +16,8 @@ const TuttiFrutti=(()=>{
   /* Dibujos en assets/tutti/ (hoja de ChatGPT recortada): logo, ficha de la letra, ¡BASTA!, trofeo y un ícono por categoría. */
   const ARTE=n=>"assets/tutti/"+n+".webp";
   const ICONO={"Nombre":"c_nombre","Apellido":"c_apellido","País o ciudad":"c_pais","Comida":"c_comida","Animal":"c_animal","Color":"c_color","Marca":"c_marca","Fruta o verdura":"c_fruta","Cosa":"c_cosa","Profesión":"c_profesion","Famoso":"c_famoso","Película o serie":"c_pelicula"};
+  /* Tarjetas ilustradas para elegir categorías (assets/tutti/k_<id>.webp). */
+  const tarjeta=c=>ICONO[c]?ARTE("k_"+ICONO[c].slice(2)):"";
   const icono=c=>ICONO[c]?`<img class="tf-ico" src="${ARTE(ICONO[c])}" alt="" draggable="false">`:"";
   const CATEGORIAS=["Nombre","Apellido","País o ciudad","Comida","Animal","Color","Marca","Fruta o verdura","Cosa","Profesión","Famoso","Película o serie"];
   const LETRAS="ABCDEFGHIJLMNOPRSTUV".split("");
@@ -27,13 +29,13 @@ const TuttiFrutti=(()=>{
   const q=id=>raiz.querySelector("#"+id);
   const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
   const nom=i=>PantallaFija.nombreJugador(est,i);
-  function abrir(contenedor){salir();cargar();cargarAprobadas();["ficha","basta","trofeo"].forEach(n=>{const i=new Image();i.src=ARTE(n);});raiz=document.createElement("section");raiz.className="tf";contenedor.appendChild(raiz);PantallaFija.entrar();configurar();}
-  const ajustesHtml=()=>`<div class="qs-sub">🗂️ Categorías: las verdes ✓ se juegan (tocá para elegir)</div>
-      <div class="qs-cats imp-cats tf-catsel" id="tfCats">${CATEGORIAS.map(c=>`<button type="button" data-c="${esc(c)}">${icono(c)}${esc(etiq(c))}</button>`).join("")}</div>
+  function abrir(contenedor){salir();cargar();cargarAprobadas();["ficha","basta","trofeo","como"].forEach(n=>{const i=new Image();i.src=ARTE(n);});raiz=document.createElement("section");raiz.className="tf";contenedor.appendChild(raiz);PantallaFija.entrar();configurar();}
+  const ajustesHtml=()=>`<div class="qs-sub">🗂️ Categorías · <b id="tfCuenta"></b> <small>(tocá para elegir)</small></div>
+      <div class="tf-tarjetas" id="tfCats">${CATEGORIAS.map(c=>`<button type="button" class="tf-tarjeta" data-c="${esc(c)}" style="background-image:url(${tarjeta(c)})"><i>✓</i><span>${esc(etiq(c))}</span></button>`).join("")}</div>
       <div class="qs-sub">⏱️ Tiempo máximo por letra</div>
       <div class="qns-rangos" id="tfT">${TIEMPOS.map(t=>`<button type="button" data-v="${t}">${t} s</button>`).join("")}</div>`;
   function ajustesEventos(){
-    const pintar=()=>{raiz.querySelectorAll("#tfT button").forEach(b=>b.classList.toggle("activo",Number(b.dataset.v)===tiempo));raiz.querySelectorAll("#tfCats button").forEach(b=>b.classList.toggle("tf-on",cats.includes(b.dataset.c)));};pintar();
+    const pintar=()=>{raiz.querySelectorAll("#tfT button").forEach(b=>b.classList.toggle("activo",Number(b.dataset.v)===tiempo));raiz.querySelectorAll("#tfCats button").forEach(b=>b.classList.toggle("tf-on",cats.includes(b.dataset.c)));const n=q("tfCuenta");if(n)n.textContent=cats.length+" de "+CATEGORIAS.length;};pintar();
     const avisar=()=>{if(on&&on.host){on.cats=cats.slice();on.tiempo=tiempo;difundirSala();}};
     q("tfT").onclick=e=>{const b=e.target.closest("button[data-v]");if(b){tiempo=Number(b.dataset.v);guardar();pintar();avisar();}};
     q("tfCats").onclick=e=>{const b=e.target.closest("button[data-c]");if(!b)return;const c=b.dataset.c;if(cats.includes(c)){if(cats.length>3)cats=cats.filter(x=>x!==c);}else cats=CATEGORIAS.filter(x=>x===c||cats.includes(x));guardar();pintar();avisar();};
@@ -49,14 +51,27 @@ const TuttiFrutti=(()=>{
   document.addEventListener("visibilitychange",()=>{if(document.hidden)detenerMusica();else if(raiz&&on&&on.fase==="jugando"&&on.fin)iniciarMusica();});
   function configurar(){
     detenerMusica();parar();cerrarSala();PantallaFija.desactivar();
-    raiz.innerHTML=`<div class="mg-panel imp-panel"><h3 class="tf-logo-h"><img class="tf-logo" src="${ARTE("logo")}" alt="Tutti Frutti" draggable="false"></h3>
-      <p>Se juegan <b>3 rondas</b> y gana el mejor de 3. El primero que completa todo canta <b>BASTA</b>. Puntos: <b>10</b> única, <b>5</b> repetida, <b>20</b> si sos el único.</p>
+    raiz.innerHTML=`<div class="mg-panel imp-panel"><h3 class="tf-logo-h"><img class="tf-logo tf-logo-chico" src="${ARTE("logo")}" alt="Tutti Frutti" draggable="false"></h3>
+      <button type="button" class="tf-ayuda-btn" id="tfAyudaBtn">❓ Cómo se juega</button>
       ${ajustesHtml()}
       <div id="tfZona"><button type="button" class="mg-principal" id="tfBots">🌐 Jugar online</button>
       <button type="button" class="mg-principal tf-sec" id="tfCrear">📱 Crear sala con amigos (cada uno con su celular)</button>
       <div class="tf-unirse"><input id="tfCodigo" maxlength="4" placeholder="CÓDIGO" autocomplete="off" autocapitalize="characters"><button type="button" id="tfUnirse">🔑 Unirme</button></div>
-      <p class="imp-ayuda" id="tfEstado" role="status"></p></div></div>`;
+      <p class="imp-ayuda" id="tfEstado" role="status"></p></div></div>
+      <div class="tf-bienv" id="tfBienvenida" hidden><div class="tf-bienv-caja mg-panel"><button type="button" class="tf-bienv-x" id="tfBienvX" aria-label="Cerrar">✕</button>
+        <img class="tf-bienv-logo" src="${ARTE("logo")}" alt="Tutti Frutti" draggable="false">
+        <div class="tf-bienv-dibujo"><img src="${ARTE("como")}" alt="" draggable="false"><b>${LETRAS[Math.floor(Math.random()*LETRAS.length)]}</b></div>
+        <ul><li><span>🔤</span><em>Sale una <b>letra</b> y todos completan las categorías con palabras que empiecen con esa letra.</em></li>
+        <li><span>📣</span><em>El primero que completa todo canta <b>¡BASTA!</b> y se corta la ronda para todos.</em></li>
+        <li><span>⭐</span><em>Puntos: <b>10</b> si tu palabra es única, <b>5</b> si alguien puso la misma y <b>20</b> si sos el único que completó esa categoría.</em></li>
+        <li><span>🏆</span><em>Se juegan <b>3 rondas</b>: gana el que gana más rondas.</em></li></ul>
+        <button type="button" class="mg-principal" id="tfBienvOk">¡A jugar!</button></div></div>`;
     ajustesEventos();
+    { const bienv=q("tfBienvenida"),cerrar=()=>{bienv.hidden=true;try{localStorage.setItem("gya_tutti_bienvenida","1");}catch(e){}};
+      q("tfBienvOk").onclick=cerrar;q("tfBienvX").onclick=cerrar;bienv.onclick=e=>{if(e.target===bienv)cerrar();};
+      q("tfAyudaBtn").onclick=()=>{bienv.hidden=false;};
+      let vista=false;try{vista=!!localStorage.getItem("gya_tutti_bienvenida");}catch(e){}
+      if(!vista)bienv.hidden=false; }
     q("tfCrear").onclick=crearSala;
     q("tfBots").onclick=elegirModoOnline;
     q("tfUnirse").onclick=()=>{const c=(q("tfCodigo").value||"").toUpperCase().trim();if(/^[A-HJ-NP-Z2-9]{4}$/.test(c))unirse(c);else estado("Escribí el código de 4 letras que te pasaron.");};
