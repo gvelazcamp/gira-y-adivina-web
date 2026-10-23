@@ -1181,3 +1181,7 @@ Fecha: 23/10/2026 — ¿Quién soy?: arte nuevo (hoja 3x3 de ChatGPT recortada e
 ```text
 Fecha: 23/10/2026 — ¿Quién soy?: la elección de categoría ahora son tarjetas ilustradas (hoja 3x2 de ChatGPT recortada en assets/quien-soy/cat_<id>.webp, 300x400). Grilla de 3x2, nombre corto en la franja oscura ("Cosas de la casa" → "Casa"), la última jugada brilla dorada. quien-soy.js v10, extensiones.css v101, sw v363.
 ```
+
+```text
+Fecha: 23/10/2026 — 100 Rioplatenses Dicen: la conductora ya no queda abajo de la ruleta; ahora aparece en un popup de bienvenida al abrir el juego (#crBienvenida) que explica cómo se juega (tema, 6 respuestas, 3 errores, 3 rondas ×1/×2/×3, jugar con un amigo). Se cierra con "¡A jugar!", ✕ o tocando afuera, y se vuelve a abrir con "❓ Cómo se juega" (reemplaza el desplegable viejo). cien-rioplatenses.js v9, extensiones.css v102, sw v364.
+```
