@@ -1177,3 +1177,7 @@ Fecha: 22/10/2026 — Impostor: la elección de categoría ahora son tarjetas il
 ```text
 Fecha: 23/10/2026 — ¿Quién soy?: arte nuevo (hoja 3x3 de ChatGPT recortada en assets/quien-soy/: logo, como, frente, ok, paso, reloj, tiempo, trofeo, fondo). Inicio con logo + dibujo de cómo se juega + íconos de acerté/paso; la partida tiene de fondo el escenario de TV (oscurecido al centro para que la palabra se lea), cronómetro al lado del tiempo, el chico con el celular en la frente durante la cuenta 3-2-1 y un ícono que salta al acertar/pasar (el destello verde/naranja ahora es una capa encima). Final con trofeo si es récord o despertador si no. Las categorías siguen como botones hasta que Gonzalo mande la hoja de tarjetas (prompt 1). quien-soy.js v9, extensiones.css v100, sw v362.
 ```
+
+```text
+Fecha: 23/10/2026 — ¿Quién soy?: la elección de categoría ahora son tarjetas ilustradas (hoja 3x2 de ChatGPT recortada en assets/quien-soy/cat_<id>.webp, 300x400). Grilla de 3x2, nombre corto en la franja oscura ("Cosas de la casa" → "Casa"), la última jugada brilla dorada. quien-soy.js v10, extensiones.css v101, sw v363.
+```

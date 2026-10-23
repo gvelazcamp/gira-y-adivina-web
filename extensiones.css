@@ -310,6 +310,11 @@ body.qns-bloqueado{overscroll-behavior:none}
 .qs-zona.qs-toda{gap:22px}.qs-zona.qs-toda>span{display:flex;align-items:center;gap:6px}.qs-zona .qs-ico{width:24px;height:24px;opacity:.6}
 .qs-frente{position:relative;z-index:2;width:min(34vw,26vh);height:auto;margin-bottom:-2vh;pointer-events:none;filter:drop-shadow(0 6px 12px #0009)}.qs-juego.en-juego .qs-frente{display:none}
 .qs-marca{position:absolute;left:max(18px,var(--safe-left));top:50%;width:min(22vw,22vh);height:auto;margin-top:calc(min(22vw,22vh) / -2);z-index:3;opacity:0;pointer-events:none}.qs-marca.pop{animation:qsMarca .6s ease-out}@keyframes qsMarca{0%{opacity:0;transform:scale(.4)}25%{opacity:1;transform:scale(1.15)}60%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+.qs .qs-tarjetas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:6px 0 10px}
+.mg-panel .qs-tarjetas .qs-tarjeta{position:relative;width:100%;min-height:0;aspect-ratio:3/4;margin:0;padding:0;border:0;border-radius:14px;background:transparent center/100% 100% no-repeat;box-shadow:none;filter:drop-shadow(0 5px 6px #0008);transition:transform .15s}
+.mg-panel .qs-tarjetas .qs-tarjeta:last-child{background:transparent center/100% 100% no-repeat}.mg-panel .qs-tarjetas .qs-tarjeta:active{transform:scale(.95)}
+.mg-panel .qs-tarjetas .qs-tarjeta.ultima{filter:drop-shadow(0 0 10px #F5B301CC) drop-shadow(0 5px 6px #0008)}
+.qs .qs-tarjeta span{position:absolute;left:10%;right:10%;top:80%;bottom:3.5%;display:grid;place-items:center;font:800 clamp(.6rem,2.9vw,.8rem)/1 'Outfit',sans-serif;color:#FFF3D6;text-shadow:0 1px 2px #000;white-space:nowrap;overflow:hidden}
 .qs .qs-final{display:block;width:min(42%,150px);height:auto;margin:0 auto -4px;filter:drop-shadow(0 6px 10px #0009)}.qs .qs-final-t{text-align:center}
 .qs-total{text-align:center;color:#E4D8EB;font-weight:800;margin:4px 0 8px}.qs-total b{font-family:'Archivo Black',sans-serif;font-size:2.6rem;color:#FFD65C;margin-right:6px}
 .qs-lista{list-style:none;margin:0 0 10px;padding:0;max-height:38vh;overflow-y:auto;display:flex;flex-wrap:wrap;gap:6px}.qs-lista li{padding:5px 9px;border-radius:9px;font-size:.82rem;font-weight:800}.qs-lista li.ok{background:#1FA86633;color:#7DF0B4}.qs-lista li.no{background:#FFFFFF12;color:#FFFFFF77}
