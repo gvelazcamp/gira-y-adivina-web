@@ -57,6 +57,27 @@ body.limpio #ayuda{display:block;opacity:.0}
 .chip{display:inline-flex;align-items:center;gap:1.6cqw;background:#000a;border:.3cqw solid #ffffff33;border-radius:99cqw;padding:1cqw 2.6cqw 1cqw 1cqw;font:800 4cqw Outfit}
 .chip img{width:8cqw;height:8cqw;border-radius:50%;object-fit:cover;border:.4cqw solid var(--oro)}
 .globo{font-family:'Archivo Black';text-align:center}
+/* Copia de la pantalla de partida */
+.jug{background:#0C0616D9;border:.5cqw solid transparent;border-radius:4cqw;padding:2.6cqw 3cqw}
+.jug.activo{border-color:#F5B301;background:#3a2a10cc;box-shadow:0 0 6cqw #F5B30126}
+.jug .jn{display:flex;align-items:center;gap:1.8cqw;font:700 4.2cqw Outfit}
+.jug .jn img{width:6.4cqw;height:6.4cqw;border-radius:50%;border:.3cqw solid #FFFFFF33}
+.jug .jn b{flex:1}
+.jug .jn i{font:700 2.8cqw Outfit;font-style:normal;background:#F5B301;color:#160B24;border-radius:99cqw;padding:.4cqw 2cqw;visibility:hidden}
+.jug.activo .jn i{visibility:visible}
+.jug .jc{display:flex;gap:4cqw;margin-top:1.2cqw;font:500 3.2cqw Outfit;color:#B49FCE}
+.jug .jc b{display:block;font:900 5.2cqw 'Archivo Black';color:#F6EFE2}
+.jug.activo .jc b.r{color:#F5B301}
+.jug .jc b.baja{color:#F09595}
+.fr-pal{display:flex;gap:1cqw}
+.fr-f{width:6.4cqw;height:8.4cqw;border-radius:1.4cqw;background:#2A1A3C;border:.25cqw solid #FFFFFF14;display:grid;place-items:center;font:900 4.4cqw 'Archivo Black';color:transparent}
+.fr-f.ab{background:#F6EFE2;color:#160B24}
+.acc{border-radius:3cqw;min-height:13.5cqw;display:grid;place-items:center;text-align:center;font:700 3.9cqw/1.15 Outfit;padding:1cqw}
+.acc.toca{transform:scale(.93);filter:brightness(1.25)}
+.tk{aspect-ratio:1;border-radius:2.3cqw;background:#2A1A3C;color:#F6EFE2;border:.25cqw solid #FFFFFF26;display:grid;place-items:center;font:700 4cqw Outfit}
+.tk.voc{background:#3A2450;color:#37D6C0}
+.tk.usada{background:#150C20;color:#7C6A94;border-color:#FFFFFF14}
+.tk.sel{background:#F5B301;color:#160B24;border-color:#FFF4B8;box-shadow:0 0 0 1cqw #F5B30155,0 0 6cqw #F5B301CC;transform:scale(1.15)}
 /* Puzzle */
 .pieza{position:absolute;background-size:400% 400%;border-radius:.6cqw;box-shadow:0 .6cqw 1.4cqw #000a;border:.3cqw solid #fff3}
 .cursor{position:absolute;z-index:25;font:800 3.2cqw Outfit;white-space:nowrap}
@@ -82,23 +103,38 @@ body.limpio #ayuda{display:block;opacity:.0}
     <div class="titulo oro" id="e1c" style="top:98cqw;font-size:9.6cqw">BIEN<br>RIOPLATENSEEE</div>
     <img class="capa" id="e1logo" src="../assets/logo.webp" style="left:15cqw;top:40cqw;width:70cqw">
   </section>
-  <!-- 2 · Ruleta -->
+  <!-- 2 · Ruleta: copia de la pantalla real de una partida -->
   <section class="esc" id="e2">
-    <img class="capa" src="../assets/tableros/fondo-lab-toxico.webp" id="e2fondo" style="inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.45) saturate(1.2)">
-    <div class="titulo" id="e2t" style="top:12cqw;font-size:10cqw">GIRÁ LA <span class="oro">RULETA</span></div>
-    <div class="capa" id="e2rueda" style="left:10cqw;top:44cqw;width:80cqw;height:80cqw">
-      <canvas id="rueda" width="600" height="600" style="width:100%;height:100%;border-radius:50%;box-shadow:0 0 0 1.6cqw #F5B301,0 0 0 2.6cqw #160B24,0 0 8cqw #F5B30199"></canvas>
-      <div style="position:absolute;left:50%;top:-4.5cqw;transform:translateX(-50%);width:0;height:0;border-left:4cqw solid transparent;border-right:4cqw solid transparent;border-top:8cqw solid #fff;filter:drop-shadow(0 .6cqw .6cqw #000)"></div>
+    <div class="capa" style="inset:0;background:radial-gradient(ellipse at 50% 0%,#2e1648 0%,#120a1e 60%)"></div>
+    <div class="titulo" id="e2t" style="top:8.5cqw;font-size:8.4cqw">GIRÁ LA <span class="oro">RULETA</span></div>
+    <div class="abs" id="e2jugs" style="left:4cqw;right:4cqw;top:21cqw;display:grid;grid-template-columns:1fr 1fr;gap:2.4cqw">
+      <div class="jug" id="e2j0"><div class="jn"><img src="../assets/avatars/avatar-01.webp"><b>Vos</b><i>turno</i></div><div class="jc"><span>ronda<b class="r">$0</b></span><span>total<b class="t">$0</b></span></div></div>
+      <div class="jug" id="e2j1"><div class="jn"><img src="../assets/avatars/avatar-05.webp"><b>Sofi</b><i>turno</i></div><div class="jc"><span>ronda<b class="r">$0</b></span><span>total<b class="t">$0</b></span></div></div>
     </div>
-    <div class="titulo oro" id="e2monto" style="top:62cqw;font-size:22cqw">$800</div>
-    <div class="capa" id="e2jug" style="left:5cqw;top:98cqw"><span class="chip"><img src="../assets/avatars/avatar-01.webp"> Vos · <b id="e2plata" style="color:var(--oro)">$0</b></span></div>
-    <div class="abs" style="left:0;right:0;top:111cqw;text-align:center;font:800 3.6cqw Outfit;color:#ffffffaa" id="e2cat">COMIDA TÍPICA</div>
-    <div class="tablero" id="e2tab" style="top:117cqw"></div>
-    <div class="capa" id="e2tecl" style="left:4cqw;right:4cqw;top:146cqw;display:flex;flex-wrap:wrap;gap:1.4cqw;justify-content:center"></div>
-    <div class="titulo" id="e2vocal" style="top:100cqw;font-size:6.4cqw"><span class="tur">¡COMPRÁ UNA VOCAL!</span></div>
+    <div class="abs" id="e2tab" style="left:2.5cqw;width:95cqw;top:42cqw;height:53.4cqw;background:url('../assets/tableros/fondo-lab-toxico.webp') center/100% 100% no-repeat;padding:10.3cqw 9.5% 5.6cqw;text-align:center">
+      <div style="font:500 3.3cqw Outfit;color:#37D6C0;margin-bottom:2.2cqw">Ronda 1 de 3 · Comida típica</div>
+      <div id="e2frase" style="display:flex;flex-wrap:wrap;justify-content:center;gap:2.6cqw 2.6cqw"></div>
+    </div>
+    <div class="abs" id="e2aviso" style="left:4cqw;right:4cqw;top:98cqw;background:#0C0616E6;border-left:.8cqw solid #37D6C0;border-radius:2.6cqw;padding:2.6cqw 3.4cqw;font:500 3.7cqw/1.3 Outfit;color:#F6EFE2;min-height:11cqw"></div>
+    <div class="abs" style="left:4cqw;right:4cqw;top:111.5cqw;height:5cqw;border-radius:99cqw;background:#0C0616;overflow:hidden"><i id="e2reloj" style="display:block;height:100%;background:#1F6B66;width:100%"></i><b id="e2relojn" style="position:absolute;inset:0;display:grid;place-items:center;font:700 3.6cqw Outfit;color:#fff">25</b></div>
+    <div class="abs" id="e2acc" style="left:4cqw;right:4cqw;top:119cqw;display:grid;grid-template-columns:repeat(3,1fr);gap:2cqw">
+      <div class="acc" id="e2bGirar" style="background:#E5197C;color:#fff">Girar</div>
+      <div class="acc" id="e2bVocal" style="background:#150C20;color:#B49FCE;border:.3cqw solid #FFFFFF22">Comprar vocal<br>$250</div>
+      <div class="acc" id="e2bResolver" style="background:#37D6C0;color:#160B24">Resolver</div>
+    </div>
+    <div class="abs" id="e2tecl" style="left:4cqw;right:4cqw;top:136cqw;display:grid;grid-template-columns:repeat(9,1fr);gap:1.2cqw"></div>
+    <!-- La ruleta aparece encima, como en el juego -->
+    <div class="capa" id="e2capa" style="inset:0;background:#0b0614e6;z-index:15">
+      <div id="e2rueda" style="position:absolute;left:6cqw;top:38cqw;width:88cqw;height:88cqw">
+        <canvas id="rueda" width="600" height="600" style="width:100%;height:100%;border-radius:50%;box-shadow:0 0 0 1.2cqw #F5B301,0 0 0 2cqw #2A1A3C,0 0 10cqw #000"></canvas>
+        <div style="position:absolute;left:50%;top:-3cqw;transform:translateX(-50%);width:0;height:0;border-left:3.6cqw solid transparent;border-right:3.6cqw solid transparent;border-top:7cqw solid #F5B301;filter:drop-shadow(0 .6cqw .6cqw #000)"></div>
+      </div>
+      <div id="e2salio" style="position:absolute;left:0;right:0;top:132cqw;text-align:center;font:900 10cqw 'Archivo Black';color:#F5B301;text-shadow:0 .9cqw 0 #7a4b00">Girando…</div>
+    </div>
     <div class="titulo" id="e2quiebra" style="top:70cqw;font-size:19cqw;color:#ff2d55;text-shadow:0 1cqw 0 #000,0 0 6cqw #ff2d55">QUIEBRA</div>
     <div class="titulo" id="e2pierde" style="top:72cqw;font-size:12cqw;color:#fff;text-shadow:0 1cqw 0 #000,0 0 6cqw #7B3FE4">PIERDE<br>EL TURNO</div>
-    <div class="capa" id="e2rojo" style="inset:0;background:#ff0033;mix-blend-mode:multiply;opacity:0"></div>
+    <div class="titulo oro" id="e2resuelto" style="top:7.5cqw;font-size:10cqw">¡RESUELTO!</div>
+    <div class="capa" id="e2rojo" style="inset:0;background:#ff0033;mix-blend-mode:multiply;opacity:0;z-index:16"></div>
   </section>
   <!-- 3 · Duelo -->
   <section class="esc" id="e3">
@@ -277,7 +313,7 @@ escena("e1","Intro",7,t=>{
   const l=pr(t,5.5,6.4);set("e1logo",{o:t<5.5?0:eOut(l)*(1-pr(t,6.7,7)),s:lerp(.4,1,eBack(l))});
 },[[0.5,"boom"],[3.0,"golpe"],[4.0,"boom"],[5.5,"boom"]]);
 
-/* 2 · Ruleta */
+/* 2 · Ruleta (copia de una partida real: tarjetas, tablero con marco, aviso, botones y teclado) */
 const SEG=[{v:500},{v:150},{v:900},{t:"COMODIN"},{v:400},{t:"PIERDE"},{v:600},{v:200},{v:750},{v:300},{t:"QUIEBRA"},{v:350},{v:1000},{v:250},{v:450},{t:"X2"},{t:"PIERDE"},{v:550},{v:300},{v:800},{v:200},{t:"QUIEBRA"},{v:650},{v:400}];
 const ETI={PIERDE:"PIERDE TURNO",QUIEBRA:"QUIEBRA",COMODIN:"COMODIN",X2:"x2 PREMIO"},FONDO={QUIEBRA:"#12060F",PIERDE:"#5A2E86",COMODIN:"#0F6E56",X2:"#F5B301"},TINTA={QUIEBRA:"#F5B301",PIERDE:"#F6EFE2",COMODIN:"#9FE1CB",X2:"#160B24"};
 (function(){const cv=$("rueda"),cx=cv.getContext("2d"),C=300,paso=Math.PI*2/SEG.length;
@@ -286,38 +322,56 @@ const ETI={PIERDE:"PIERDE TURNO",QUIEBRA:"QUIEBRA",COMODIN:"COMODIN",X2:"x2 PREM
     const mid=a0+paso/2;cx.save();cx.translate(C,C);cx.rotate(mid);cx.fillStyle=s.t?TINTA[s.t]:"#160B24";
     cx.font=s.t?"700 25px Outfit, sans-serif":"900 34px 'Archivo Black', sans-serif";const et=s.t?ETI[s.t]:"$"+s.v;
     if(mid>Math.PI/2&&mid<Math.PI*1.5){cx.rotate(Math.PI);cx.textAlign="left";cx.fillText(et,-(C-24),10);}else{cx.textAlign="right";cx.fillText(et,C-24,10);}cx.restore();});
-  cx.beginPath();cx.arc(C,C,46,0,Math.PI*2);cx.fillStyle="#160B24";cx.fill();cx.strokeStyle="#F5B301";cx.lineWidth=8;cx.stroke();})();
+  cx.beginPath();cx.arc(C,C,40,0,Math.PI*2);cx.fillStyle="#F5B301";cx.fill();cx.strokeStyle="#2A1A3C";cx.lineWidth=10;cx.stroke();})();
 const angulo=i=>270-(i+.5)*15;
-const G1=angulo(19)+360*5,G2=angulo(21)+360*8,G3=angulo(16)+360*10;
-const FRASE=["DULCE DE","LECHE"];
-(function(){const tab=$("e2tab");FRASE.forEach(f=>{const r=document.createElement("div");r.className="fila";[...f].forEach(ch=>{const c=document.createElement("div");c.className="casilla"+(ch===" "?" esp":"");c.dataset.l=ch;r.appendChild(c);});tab.appendChild(r);});
-  const k=$("e2tecl");"B C D F G L M R S T".split(" ").forEach(l=>{const d=document.createElement("div");d.className="tecla";d.textContent=l;d.dataset.l=l;k.appendChild(d);});
-  "A E I O U".split(" ").forEach(l=>{const d=document.createElement("div");d.className="tecla voc";d.textContent=l;d.dataset.l=l;k.appendChild(d);});})();
-const JUGADAS=[[6.8,"L",1600],[8.0,"D",1600],[9.6,"E",-250]];
-escena("e2","Ruleta",16,t=>{
-  golpe("e2t",t,0,0,15.6);
-  let g=0;if(t<1.4)g=0;else if(t<5)g=G1*eOut(pr(t,1.4,5));else if(t<10.6)g=G1;else if(t<12.6)g=lerp(G1,G2,eOut(pr(t,10.6,12.6)));else if(t<13.4)g=G2;else g=lerp(G2,G3,eOut(pr(t,13.4,14.8)));
+const GIROS=[[1.9,5.4,angulo(19)+360*5],[10.1,12.4,angulo(21)+360*8],[14.3,16.0,angulo(16)+360*10]];
+const FRASE="DULCE DE LECHE",TECLAS="ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
+(function(){const fr=$("e2frase");FRASE.split(" ").forEach(w=>{const pw=document.createElement("div");pw.className="fr-pal";[...w].forEach(ch=>{const f=document.createElement("div");f.className="fr-f";f.dataset.l=ch;f.textContent=ch;pw.appendChild(f);});fr.appendChild(pw);});
+  const k=$("e2tecl");[...TECLAS].forEach(l=>{const d=document.createElement("div");d.className="tk"+("AEIOU".includes(l)?" voc":"");d.textContent=l;d.dataset.l=l;k.appendChild(d);});})();
+const plata=n=>"$"+n.toLocaleString("es-UY");
+escena("e2","Ruleta",20,t=>{
+  golpe("e2t",t,0,0,18.7);
+  ["e2jugs","e2tab","e2aviso","e2acc","e2tecl"].forEach(id=>set(id,{o:pr(t,.4,1)}));
+  // giro de la ruleta (capa encima, como en el juego)
+  let g=0,enCapa=false,salio="Girando…",col="#F5B301";
+  GIROS.forEach(([a,b,dest],i)=>{const prev=i?GIROS[i-1][2]:0;if(t>=a)g=t<b?lerp(prev,dest,eOut(pr(t,a,b))):dest;
+    if(t>=a-.2&&t<b+.9){enCapa=true;if(t>=b){const sg=SEG[[19,21,16][i]];salio=sg.t?ETI[sg.t]:"$"+sg.v;col=sg.t==="QUIEBRA"?"#ff2d55":sg.t?"#F6EFE2":"#F5B301";}}});
   $("rueda").style.transform=`rotate(${g}deg)`;
-  // la ruleta sube y se achica mientras se juega el tablero, y vuelve para el segundo giro
-  const arriba=eIO(pr(t,6,6.6))*(1-eIO(pr(t,10.2,10.6)));
-  set("e2rueda",{o:eOut(pr(t,.8,1.4)),s:lerp(1,.42,arriba),y:lerp(0,-30,arriba)});
-  golpe("e2monto",t,5.0,0,6.0);
-  const tab=eOut(pr(t,6.2,6.8))*(1-pr(t,10.1,10.5));
-  ["e2tab","e2tecl","e2cat","e2jug"].forEach(id=>set(id,{o:tab,y:(1-tab)*10}));
-  let plata=0;const reveladas=new Set();
-  JUGADAS.forEach(([a,l,m])=>{if(t>=a+.4){reveladas.add(l);plata+=m*(m>0?1:1);}});
-  if(t>=13)plata=0;
-  $("e2plata").textContent="$"+Math.max(0,plata).toLocaleString("es-UY");
-  document.querySelectorAll("#e2tab .casilla").forEach(c=>{const v=reveladas.has(c.dataset.l);c.classList.toggle("ver",v);c.textContent=v?c.dataset.l:"";});
-  document.querySelectorAll("#e2tecl .tecla").forEach(k=>{const j=JUGADAS.find(x=>x[1]===k.dataset.l);const on=j&&t>=j[0]&&t<j[0]+.45;k.classList.toggle("ok",!!(j&&t>=j[0]));k.style.transform=on?"scale(1.25)":"";});
-  golpe("e2vocal",t,9.1,0,10.1);
-  const q=t>=12.6&&t<13.4;set("e2quiebra",{o:0});if(t>=12.6)golpe("e2quiebra",t,12.6,0,13.5);
-  $("e2rojo").style.opacity=t>=12.6&&t<13.4?.55*(1-pr(t,12.6,13.4)):0;
-  if(t>=14.8)golpe("e2pierde",t,14.8,0,15.7);else set("e2pierde",{o:0});
-  $("e2fondo").style.transform=q?`translate(${Math.sin(t*90)*1.5}cqw,0)`:"";
-},[[0,"golpe"],[1.4,"whoosh"],[5,"plata"],[6.8,"tick"],[7.2,"ding"],[8.0,"tick"],[8.4,"ding"],[9.1,"golpe"],[9.6,"tick"],[10,"ding"],[10.6,"whoosh"],[12.6,"quiebra"],[13.4,"whoosh"],[14.8,"error"]]);
+  const capaO=GIROS.reduce((m,[a,b])=>Math.max(m,pr(t,a-.2,a)*(1-pr(t,b+.6,b+.85))),0);
+  $("e2capa").style.opacity=capaO;$("e2capa").style.display=capaO>0?"block":"none";
+  $("e2salio").textContent=salio;$("e2salio").style.color=col;
+  // plata, turno y aviso
+  let rv=0,vos=true,aviso="Le toca a <b style='color:#F5B301'>Vos</b>. Girá para pedir una consonante.";
+  if(t>=6.4)aviso="Salió <b style='color:#F5B301'>$800</b>. Vos elige una consonante.";
+  if(t>=7.3){rv=1600;aviso="¡Hay <b style='color:#F5B301'>2 L</b>! Vos suma <b style='color:#F5B301'>$1.600</b>.";}
+  if(t>=8.2)aviso="Vos compra una vocal (<b style='color:#F5B301'>$250</b>).";
+  if(t>=9.1){rv=1350;aviso="¡Hay <b style='color:#37D6C0'>4 E</b>!";}
+  if(t>=13.1){rv=0;aviso="<b style='color:#ff4d6d'>QUIEBRA</b> — Vos pierde la plata de la ronda.";}
+  if(t>=13.8){vos=false;aviso="Le toca a <b style='color:#F5B301'>Sofi</b>. Girá para pedir una consonante.";}
+  if(t>=16.8)aviso="Salió <b>PIERDE TURNO</b>. Sofi pierde el turno.";
+  if(t>=17.3){vos=true;aviso="Le toca a <b style='color:#F5B301'>Vos</b>.";}
+  if(t>=17.9)aviso="Vos resuelve: <b style='color:#F5B301'>DULCE DE LECHE</b>";
+  $("e2aviso").innerHTML=aviso;
+  $("e2j0").classList.toggle("activo",vos);$("e2j1").classList.toggle("activo",!vos);
+  const r0=$("e2j0").querySelector(".r");r0.textContent=plata(rv);r0.classList.toggle("baja",t>=13.1&&t<14);
+  const ini=t>=17.3?17.3:t>=13.8?13.8:1;const seg=Math.max(0,Math.floor(25-(t-ini)*1.2));$("e2relojn").textContent=seg;$("e2reloj").style.width=(seg/25*100)+"%";
+  // botones tocados
+  [["e2bGirar",[1.6,9.8,14.1]],["e2bVocal",[8.2]],["e2bResolver",[17.9]]].forEach(([id,ts])=>$(id).classList.toggle("toca",ts.some(x=>t>=x&&t<x+.3)));
+  // teclado y tablero
+  const usadas=[];if(t>=7.3)usadas.push("L");if(t>=9.1)usadas.push("E");
+  document.querySelectorAll("#e2tecl .tk").forEach(k=>{const l=k.dataset.l;k.classList.toggle("sel",(l==="L"&&t>=7&&t<7.3)||(l==="E"&&t>=8.8&&t<9.1));k.classList.toggle("usada",usadas.includes(l));});
+  const todas=[...document.querySelectorAll("#e2frase .fr-f")];
+  todas.forEach((f,i)=>{const ab=usadas.includes(f.dataset.l)||t>=18.2+i*.06;f.classList.toggle("ab",ab);});
+  // golpes
+  if(t>=13.0)golpe("e2quiebra",t,13.0,0,13.9);else set("e2quiebra",{o:0});
+  $("e2rojo").style.opacity=t>=13.0&&t<13.8?.55*(1-pr(t,13.0,13.8)):0;
+  if(t>=16.7)golpe("e2pierde",t,16.7,0,17.4);else set("e2pierde",{o:0});
+  if(t>=18.9)golpe("e2resuelto",t,18.9,0,20);else set("e2resuelto",{o:0});
+  $("e2tab").style.transform=t>=13.0&&t<13.6?`translate(${Math.sin(t*90)*1.5}cqw,0)`:"";
+  $("e2tab").style.boxShadow=t>=18.9?`0 0 ${8*pr(t,18.9,19.3)}cqw #F5B301`:"none";
+},[[0,"golpe"],[1.6,"tick"],[1.9,"whoosh"],[5.4,"plata"],[7.0,"tick"],[7.3,"ding"],[8.2,"tick"],[8.8,"tick"],[9.1,"ding"],[9.8,"tick"],[10.1,"whoosh"],[12.4,"tick"],[13.0,"quiebra"],[14.3,"whoosh"],[16.0,"tick"],[16.7,"error"],[17.9,"tick"],[18.9,"gana"]]);
 // ticks de la ruleta mientras gira
-for(let s=1.5;s<5;s+=.08+.25*pr(s,1.5,5))ESC[1].cues.push([s,"tick"]);
+GIROS.forEach(([a,b])=>{for(let s=a+.1;s<b;s+=.07+.28*pr(s,a,b))ESC[1].cues.push([s,"tick"]);});
 
 /* 3 · Duelo */
 escena("e3","Tío del Asado",9,t=>{

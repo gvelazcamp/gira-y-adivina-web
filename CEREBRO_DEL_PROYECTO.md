@@ -1251,3 +1251,7 @@ Fecha: 23/10/2026 — Trailer promocional de prueba: promo/trailer.html (girayad
 ```text
 Fecha: 23/10/2026 — Trailer (promo/trailer.html): se sacó la música de partida (a Gonzalo le molestaba) y se puso una banda de suspenso sintetizada estilo trailer de juego: zumbido grave de fondo, latidos en la intro, bombo + bajo + hi-hat (progresión Am-F-C-G a 100 bpm), arpegio que sube la tensión desde la escena 3 y acorde grande en el final. Va sincronizada con el tiempo T (pausa/saltos).
 ```
+
+```text
+Fecha: 23/10/2026 — Trailer escena 2 (Ruleta) rehecha como copia de una partida real: tarjetas Vos/Sofi con ronda/total y "turno", tablero con el marco fondo-lab-toxico y las fichas del juego, aviso, reloj, botones Girar/Comprar vocal/Resolver y teclado A-Z. La ruleta aparece encima como en el juego ("Girando…" y lo que salió). Secuencia: $800 → L → compra E → QUIEBRA → turno de Sofi → PIERDE TURNO → Vos resuelve y se ve DULCE DE LECHE completa con "¡RESUELTO!". Escena de 20 s.
+```
