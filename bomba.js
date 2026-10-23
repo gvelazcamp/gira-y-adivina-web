@@ -20,33 +20,39 @@ const Bomba=(()=>{
   function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify({rondas,voz:conVoz}));}catch(e){}}
   cargar();
   const q=id=>raiz.querySelector("#"+id);
+  /* Arte en assets/bomba/ (hoja de ChatGPT recortada). */
+  const src=n=>"assets/bomba/"+n+".webp";
+  const img=(n,c)=>`<img class="${c}" src="${src(n)}" alt="" draggable="false">`;
   function abrir(contenedor){
     salir();cargar();
     raiz=document.createElement("section");raiz.className="bb";
-    contenedor.appendChild(raiz);PantallaFija.entrar();inicio();
+    contenedor.appendChild(raiz);PantallaFija.entrar();
+    ["bomba","pasar","fondo","boom","perdedor"].forEach(n=>{const i=new Image();i.src=src(n);});
+    inicio();
   }
   function inicio(){
-    raiz.innerHTML=`<div class="mg-panel bb-panel"><div class="bb-icono">💣</div><h3>Bomba</h3>
+    raiz.innerHTML=`<div class="mg-panel bb-panel"><h3 class="imp-logo-h"><img class="bb-logo" src="${src("logo")}" alt="Bomba" draggable="false"></h3>
+      ${img("como","bb-como")}
       <p>Aparece una sílaba: decí una palabra que la tenga (al principio, al medio o al final), tocá <b>Pasar</b> y dale el celular al de al lado.</p>
-      <p class="qns-nota">💥 La bomba explota en un momento secreto. Pierde el que la tiene en la mano. ¡Subí el volumen!</p>
+      <p class="qns-nota bb-nota">${img("chispa","bb-chispa")}<span>La bomba explota en un momento secreto. Pierde el que la tiene en la mano. ¡Subí el volumen!</span></p>
       ${SR?`<button type="button" class="bb-voz" id="bbVoz"></button>`:""}
       <button type="button" class="mg-principal" id="bbEmpezar">💣 Empezar</button>
       <button type="button" id="bbWpp">💬 Invitar por WhatsApp</button>
     </div>`;
     q("bbEmpezar").onclick=empezar;
     const bv=raiz.querySelector("#bbVoz");
-    const pintarVoz=()=>{if(bv)bv.innerHTML=conVoz?"🎤 Árbitro por voz: <b>SÍ</b><small>Si la palabra está bien, suena y pasa sola</small>":"🎤 Árbitro por voz: <b>NO</b><small>Se pasa tocando el botón</small>";};
+    const pintarVoz=()=>{if(bv)bv.innerHTML=img("micro","bb-mic")+(conVoz?"<span>Árbitro por voz: <b>SÍ</b><small>Si la palabra está bien, suena y pasa sola</small></span>":"<span>Árbitro por voz: <b>NO</b><small>Se pasa tocando el botón</small></span>");};
     if(bv){pintarVoz();bv.onclick=()=>{conVoz=!conVoz;guardar();pintarVoz();};}
     q("bbWpp").onclick=()=>PantallaFija.invitar("bomba","Bomba");
   }
   function silaba(){let s;do{s=SILABAS[Math.floor(Math.random()*SILABAS.length)];}while(s===ultima);ultima=s;return s;}
   function empezar(){
     raiz.innerHTML=`<div class="qns-pantalla bb-juego" id="bbJuego">
-      <div class="qs-tope"><span>💣 Bomba</span><b id="bbPasadas">0</b><button type="button" class="pf-salir" id="bbSalir">✕ Salir</button></div>
-      <div class="bb-mecha" id="bbMecha">💣</div>
+      <div class="qs-tope"><span class="bb-tit">${img("bomba","bb-mini")}Bomba</span><b id="bbPasadas">0</b><button type="button" class="pf-salir" id="bbSalir">✕ Salir</button></div>
+      <div class="bb-mecha" id="bbMecha">${img("bomba","bb-bomba")}${img("chispa","bb-chispa-mecha")}</div>
       <div class="bb-silaba" id="bbSilaba"></div>
       <div class="bb-oido" id="bbOido"></div>
-      <button type="button" class="bb-pasar" id="bbPasar">Pasar ➜</button>
+      <button type="button" class="bb-pasar bb-pasar-arte" id="bbPasar">${img("pasar","bb-pasar-img")}<span>Pasar</span></button>
     </div>`;
     PantallaFija.activar();
     const juego=q("bbJuego");
@@ -160,7 +166,7 @@ const Bomba=(()=>{
     jugando=false;clearTimeout(tic);pararVoz();rondas++;guardar();
     explosion();if(typeof vibrar==="function")vibrar([400,80,300]);
     raiz.innerHTML=`<div class="qns-pantalla bb-boom" id="bbBoom"><div class="mg-panel bb-panel">
-      <div class="bb-icono bb-icono-boom">💥</div><h3>¡BOOM!</h3>
+      <div class="bb-boom-arte">${img("boom","bb-boom-img")}${img("perdedor","bb-perdedor")}</div><h3 class="bb-boom-t">¡BOOM!</h3>
       <p>Perdió el que tiene el celular en la mano.<br>La bomba pasó <b>${pasadas}</b> ${pasadas===1?"vez":"veces"}.</p>
       <button type="button" class="mg-principal" id="bbOtra">💣 Otra ronda</button>
       <button type="button" id="bbTerminar">Terminar</button>

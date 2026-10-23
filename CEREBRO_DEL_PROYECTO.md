@@ -1193,3 +1193,7 @@ Fecha: 23/10/2026 — ¿Quién soy?: logo re-recortado entero (el corte entre co
 ```text
 Fecha: 23/10/2026 — ¿Qué número soy?: arte nuevo con tema bingo (hoja 3x3 de ChatGPT recortada en assets/que-numero-soy/: logo, como, bolilla, facil, medio, dificil, candado, revela, fondo; la bolilla se redondeó con espejo porque venía achatada). Inicio con logo + dibujo de cómo se juega + candado en el aviso; los rangos 1 a 10/50/100 tienen una bolilla, tres bolillas o el bombo. El número sale escrito dentro de una bolilla dorada gigante sobre el estudio de bingo (más chico si es 100). Final con el chico sorprendido y la bolilla con el número. Ícono en Extensiones: assets/que-numero-soy/icono.webp (reemplaza logo-que-numero-soy.svg). que-numero-soy.js v7, extensiones.js v48, extensiones.css v104, sw v366.
 ```
+
+```text
+Fecha: 23/10/2026 — Bomba: arte nuevo (hoja 3x3 de ChatGPT recortada por cajas en assets/bomba/: logo, como, bomba, chispa, pasar, micro, boom, perdedor, fondo). Inicio con logo + dibujo de cómo se juega, chispa en el aviso y micrófono en el botón del árbitro por voz. En la partida la bomba (con una chispa que titila en la mecha) late con el tic-tac sobre el cuarto con luces de alarma, y el botón Pasar lleva las manos pasando el celular. Al explotar: nube de explosión con el chico tiznado y "¡BOOM!". Ícono en Extensiones: assets/bomba/icono.webp (reemplaza logo-bomba.svg). bomba.js v13, extensiones.js v49, extensiones.css v105, sw v367.
+```
