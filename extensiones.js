@@ -93,7 +93,7 @@ window.EXTENSIONES=EXTENSIONES;
    jugar libremente a estas extensiones, sin consumir ni ver fichas. Cada juego
    tiene sus propias fichas: 3, se repone 1 cada 30 min. Se gasta 1 al empezar
    una partida/nivel en solitario (los duelos con amigos no gastan). En Palabra
-   Secreta la palabra del día es gratis y cada "Jugar otra palabra" gasta 1. Sin fichas:
+   Secreta se cobra al primer intento de cada palabra. Sin fichas:
    esperar, recargar ese juego con monedas o probar otro juego. Las vidas del
    juego principal no se tocan. */
 const Fichas=(()=>{

@@ -1315,5 +1315,9 @@ Fecha: 23/10/2026 — Fichas ⚡ de las extensiones: se habilitaron para todos l
 ```
 
 ```text
-Fecha: 23/10/2026 — Palabra Secreta también usa fichas ⚡: la palabra del día sigue gratis, y cada "Jugar otra palabra" (iniciarPractica) gasta 1 ficha de Palabra Secreta (3, +1 cada 30 min, como las demás). Los testers libres no gastan. Se agregó "palabra-secreta" a JUEGOS en Fichas. palabra-secreta.js v19, extensiones.js v57, sw v392.
+Fecha: 23/10/2026 — Palabra Secreta también usa fichas ⚡: [CORREGIDO más abajo: ya no hay palabra gratis] cada "Jugar otra palabra" (iniciarPractica) gasta 1 ficha de Palabra Secreta (3, +1 cada 30 min, como las demás). Los testers libres no gastan. Se agregó "palabra-secreta" a JUEGOS en Fichas. palabra-secreta.js v19, extensiones.js v57, sw v392.
+```
+
+```text
+Fecha: 23/10/2026 — Palabra Secreta es un juego normal como los demás: TODA palabra gasta 1 ficha ⚡, también la primera (antes la del día era gratis). Se cobra en enviar() al primer intento de cada palabra (marca partida.cobrada, así no cobra dos veces); los duelos no gastan. Al entrar, si la palabra guardada ya terminó, arranca una nueva directo; el final siempre ofrece "Jugar otra palabra" (se sacó "Volver a la palabra de hoy") y no se muestran textos de "Palabra de hoy"/"Palabra extra". Regla de Gonzalo: no volver a hablarle de "palabra gratis del día". Probado con usuario común: el 1er intento descuenta, el 2do no. palabra-secreta.js v20, sw v393.
 ```
