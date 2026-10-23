@@ -1313,3 +1313,7 @@ Fecha: 23/10/2026 — Lobby de Extensiones: el chip de rayitos ⚡ en las tarjet
 ```text
 Fecha: 23/10/2026 — Fichas ⚡ de las extensiones: se habilitaron para todos los perfiles salvo los testers Andrés, Flor, Grace, Juan E, Mari, Romina, Rubén y Vale. La comparación del nombre del perfil ignora mayúsculas, tildes y espacios repetidos. Esos perfiles no ven rayitos ni gastan fichas en los 9 juegos que cobran; el resto mantiene 3 fichas por juego, +1 cada 30 minutos. No se cambian vidas de la ruleta ni juegos que ya eran libres. La identidad actual es el nombre del perfil local (el juego no tiene cuentas autenticadas). extensiones.js v56, sw v391.
 ```
+
+```text
+Fecha: 23/10/2026 — Palabra Secreta también usa fichas ⚡: la palabra del día sigue gratis, y cada "Jugar otra palabra" (iniciarPractica) gasta 1 ficha de Palabra Secreta (3, +1 cada 30 min, como las demás). Los testers libres no gastan. Se agregó "palabra-secreta" a JUEGOS en Fichas. palabra-secreta.js v19, extensiones.js v57, sw v392.
+```

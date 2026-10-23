@@ -92,12 +92,13 @@ window.EXTENSIONES=EXTENSIONES;
 /* Fichas ⚡ de las extensiones. Los testers que ayudaron con el juego pueden
    jugar libremente a estas extensiones, sin consumir ni ver fichas. Cada juego
    tiene sus propias fichas: 3, se repone 1 cada 30 min. Se gasta 1 al empezar
-   una partida/nivel en solitario (los duelos con amigos no gastan). Sin fichas:
+   una partida/nivel en solitario (los duelos con amigos no gastan). En Palabra
+   Secreta la palabra del día es gratis y cada "Jugar otra palabra" gasta 1. Sin fichas:
    esperar, recargar ese juego con monedas o probar otro juego. Las vidas del
    juego principal no se tocan. */
 const Fichas=(()=>{
   const MAX=3,MS=30*60*1000,CLAVE="gya_fichas_ext",PRECIO=150;
-  const JUEGOS=["sopa-fugaz","rueda-de-letras","frases-en-giro","memoria-en-giro","rosco-rioplatense","silabario-rioplatense","cien-rioplatenses","ahorcado-rioplatense","moon-tap"];
+  const JUEGOS=["palabra-secreta","sopa-fugaz","rueda-de-letras","frases-en-giro","memoria-en-giro","rosco-rioplatense","silabario-rioplatense","cien-rioplatenses","ahorcado-rioplatense","moon-tap"];
   const TESTERS_LIBRES=new Set(["andres","flor","grace","juan e","mari","romina","ruben","vale"]);
   const activo=()=>{
     try{

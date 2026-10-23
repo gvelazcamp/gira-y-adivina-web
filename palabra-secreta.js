@@ -57,7 +57,7 @@ const PalabraSecreta=(()=>{
       else Duelo.onRondaRecibida(d=>{if(typeof d.palabra==="string"&&d.palabra.length===5)arrancar(d.palabra.toUpperCase());});
     }});
   }
-  function iniciarPractica(){practica=true;const candidatas=Vistas.filtrar("palabra",PALABRA_SECRETAS.filter(w=>w!==palabraDia()),w=>w);partida=nueva(candidatas[Math.floor(Math.random()*candidatas.length)]);Vistas.marcar("palabra",partida.objetivo);borrador="";tablero();mensaje("Palabra extra: no modifica tu racha de hoy.");}
+  function iniciarPractica(){if(window.Fichas&&!Fichas.usar("palabra-secreta",iniciarPractica))return;practica=true;const candidatas=Vistas.filtrar("palabra",PALABRA_SECRETAS.filter(w=>w!==palabraDia()),w=>w);partida=nueva(candidatas[Math.floor(Math.random()*candidatas.length)]);Vistas.marcar("palabra",partida.objetivo);borrador="";tablero();mensaje("Palabra extra: no modifica tu racha de hoy.");}
   function abrir(contenedor){salir();raiz=contenedor;iniciarDiaria();pantalla();tablero();document.addEventListener("visibilitychange",alVisibilidad);iniciarMusicaJuego();ayuda();}
   function salir(){token++;animando=false;if(duelo&&typeof Duelo!=="undefined")Duelo.salir();duelo=false;document.removeEventListener("visibilitychange",alVisibilidad);detenerMusicaJuego();raiz=null;partida=null;borrador="";}
   return{abrir,salir,tecla,indiceDia,palabraDia,evaluar,rachaActual,estadisticasGuardadas:()=>({...datos}),textoCompartir};
