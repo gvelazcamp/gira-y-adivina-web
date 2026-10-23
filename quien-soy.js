@@ -22,14 +22,14 @@ const QuienSoy=(()=>{
   function abrir(contenedor){
     salir();cargar();
     raiz=document.createElement("section");raiz.className="qs";
-    contenedor.appendChild(raiz);PantallaFija.entrar();
+    contenedor.appendChild(raiz);
+    PantallaFija.bienvenida(contenedor,{logo:src("logo"),alt:"¿Quién soy?",items:[["📱","Ponete el celular en la <b>frente</b> sin mirar la pantalla."],["🗣️","Tus amigos te <b>describen</b> la palabra sin decirla."],["👆","<b>Un toque</b> si acertaste · <b>dos toques rápidos</b> para pasar."],["⏱️","Adiviná todas las que puedas antes de que se termine el <b>tiempo</b>."]]});
     ARTE.forEach(n=>{const i=new Image();i.src=src(n);});
     inicio();
   }
   function inicio(){
     const cats=window.QUIEN_SOY_CATEGORIAS||[];
-    raiz.innerHTML=`<div class="mg-panel qs-panel"><h3 class="imp-logo-h"><img class="imp-logo qs-logo" src="${src("logo")}" alt="¿Quién soy?" draggable="false"></h3>
-      ${ico("como","qs-como")}
+    raiz.innerHTML=`<div class="mg-panel qs-panel">${ico("como","qs-como")}
       <p>Ponete el celular en la frente. Los demás te describen la palabra sin decirla y vos adiviná.</p>
       <div class="qns-nota qs-gestos"><span>${ico("ok")}<span><b>Un toque</b> en cualquier lado si acertaste</span></span><span>${ico("paso")}<span><b>Dos toques rápidos</b> para pasar</span></span></div>
       <div class="qs-sub">${ico("reloj")} Tiempo</div>

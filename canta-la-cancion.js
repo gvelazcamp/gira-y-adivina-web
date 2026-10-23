@@ -27,13 +27,13 @@ const CantaLaCancion=(()=>{
   /* Arte en assets/canta/ (hoja de ChatGPT recortada), tema karaoke. */
   const src=n=>"assets/canta/"+n+".webp";
   const img=(n,c)=>`<img class="${c}" src="${src(n)}" alt="" draggable="false">`;
-  function abrir(contenedor){salir();cargar();raiz=document.createElement("section");raiz.className="kar";contenedor.appendChild(raiz);PantallaFija.entrar();
+  function abrir(contenedor){salir();cargar();raiz=document.createElement("section");raiz.className="kar";contenedor.appendChild(raiz);
+    PantallaFija.bienvenida(contenedor,{logo:src("logo"),alt:"Canta la Canción",items:[["🎤","Sale una palabra: <b>cantá un pedacito</b> de una canción que la tenga."],["⏱️","Cantás hasta que termina el <b>tiempo</b> o tocás <b>Terminé</b>."],["👍","El <b>jurado</b> (los demás) vota si valió. Empate vale."],["🏆","Gana el que suma <b>más puntos</b>."]]});
     ["micro","fondo","jurado","arriba","abajo","parlante","vale","novale","trofeo","crono"].forEach(n=>{const i=new Image();i.src=src(n);});
     configurar();}
   function configurar(){
     parar();PantallaFija.desactivar();
-    raiz.innerHTML=`<div class="mg-panel imp-panel kar-panel"><h3 class="imp-logo-h"><img class="kar-logo" src="${src("logo")}" alt="Canta la Canción" draggable="false"></h3>
-      ${img("como","kar-como")}
+    raiz.innerHTML=`<div class="mg-panel imp-panel kar-panel">${img("como","kar-como")}
       <p>Sale una palabra y tenés que <b>cantar un pedacito de una canción</b> que la tenga. Cuando termina el tiempo, <b>el jurado</b> (los demás) vota si valió.${GRABA?" Se graba lo que cantás para que el jurado lo escuche de nuevo.":""}</p>
       <div class="qs-sub">👥 Jugadores</div><div id="ctaJug"></div>
       <div class="qs-sub">${img("crono","kar-ico")} Tiempo para cantar</div>

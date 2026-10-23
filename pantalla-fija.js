@@ -43,8 +43,24 @@ const PantallaFija=(()=>{
      sin bloquear el "atrás". Se corta con salir(). */
   function prender(){siempre=true;pedirWake();}
   function salir(){
+    document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());
     siempre=false;desactivar();soltarWake();
     try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});}catch(e){}
+  }
+  /* Popup de bienvenida al entrar a un juego de previa: logo grande + cómo
+     se juega + "¡A jugar!". La pantalla completa se pide al cerrarlo, así el
+     aviso de Chrome no tapa nada importante. o={logo,alt,items:[[emoji,html]]} */
+  function bienvenida(contenedor,o){
+    document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());
+    const c=document.createElement("div");c.className="pf-bienv";
+    c.innerHTML='<div class="pf-bienv-caja"><button type="button" class="pf-bienv-x" aria-label="Cerrar">✕</button>'+
+      '<img class="pf-bienv-logo" src="'+o.logo+'" alt="'+(o.alt||"")+'" draggable="false">'+
+      '<ul>'+o.items.map(([e,t])=>'<li><span>'+e+'</span><em>'+t+'</em></li>').join("")+'</ul>'+
+      '<button type="button" class="pf-bienv-ok">¡A jugar!</button></div>';
+    const cerrar=()=>{c.remove();entrar();};
+    c.querySelector(".pf-bienv-ok").onclick=cerrar;c.querySelector(".pf-bienv-x").onclick=cerrar;
+    c.addEventListener("click",e=>{if(e.target===c)cerrar();});
+    (contenedor||document.body).appendChild(c);
   }
   /* Botón ✕ Salir: pregunta "¿Terminar la partida?" con Sí / No. */
   function confirmar(el,cb,texto="¿Terminar la partida?"){
@@ -78,6 +94,6 @@ const PantallaFija=(()=>{
     pintar();
   }
   const nombreJugador=(estado,i)=>(estado.nombres[i]||"").trim()||"Jugador "+(i+1);
-  return{entrar,activar,desactivar,prender,salir,confirmar,invitar,editorJugadores,nombreJugador,activo:()=>activo};
+  return{entrar,activar,desactivar,prender,salir,confirmar,invitar,bienvenida,editorJugadores,nombreJugador,activo:()=>activo};
 })();
 window.PantallaFija=PantallaFija;

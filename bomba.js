@@ -26,13 +26,13 @@ const Bomba=(()=>{
   function abrir(contenedor){
     salir();cargar();
     raiz=document.createElement("section");raiz.className="bb";
-    contenedor.appendChild(raiz);PantallaFija.entrar();
+    contenedor.appendChild(raiz);
+    PantallaFija.bienvenida(contenedor,{logo:src("logo"),alt:"Bomba",items:[["🔤","Aparece una <b>sílaba</b>: decí una palabra que la tenga."],["➡️","Tocá <b>Pasar</b> y dale el celular al de al lado."],["💥","La bomba explota en un <b>momento secreto</b>: pierde el que la tiene en la mano."],["🎤","Con el <b>árbitro por voz</b> pasa sola si la palabra está bien. ¡Subí el volumen!"]]});
     ["bomba","pasar","fondo","boom","perdedor"].forEach(n=>{const i=new Image();i.src=src(n);});
     inicio();
   }
   function inicio(){
-    raiz.innerHTML=`<div class="mg-panel bb-panel"><h3 class="imp-logo-h"><img class="bb-logo" src="${src("logo")}" alt="Bomba" draggable="false"></h3>
-      ${img("como","bb-como")}
+    raiz.innerHTML=`<div class="mg-panel bb-panel">${img("como","bb-como")}
       <p>Aparece una sílaba: decí una palabra que la tenga (al principio, al medio o al final), tocá <b>Pasar</b> y dale el celular al de al lado.</p>
       <p class="qns-nota bb-nota">${img("chispa","bb-chispa")}<span>La bomba explota en un momento secreto. Pierde el que la tiene en la mano. ¡Subí el volumen!</span></p>
       ${SR?`<button type="button" class="bb-voz" id="bbVoz"></button>`:""}
