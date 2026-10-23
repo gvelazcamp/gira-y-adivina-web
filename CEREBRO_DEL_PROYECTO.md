@@ -1305,3 +1305,7 @@ Fecha: 23/10/2026 — Tutti Frutti: las categorías del campo, revisión y resul
 ```text
 Fecha: 23/10/2026 — Tutti Frutti: por pedido de Gonzalo se retiró la ❌ roja que aparecía en las respuestas válidas de otros jugadores. Nadie puede anular una respuesta validada ni quitarle los puntos mediante votos u objeciones; los mensajes de ese tipo de clientes viejos se ignoran. La apelación de respuestas dudosas se conserva (contra amigos deciden los demás; contra bots el jugador elige los puntos). tutti-frutti.js v76, sw v389.
 ```
+
+```text
+Fecha: 23/10/2026 — Lobby de Extensiones: el chip de rayitos ⚡ en las tarjetas que cobran fichas usa margin-top:auto para quedar alineado al pie de cada tarjeta dentro de su fila, incluso cuando el título o la descripción ocupan distinta cantidad de renglones. No cambia las fichas ni la altura de los textos. extensiones.css v116, sw v390.
+```

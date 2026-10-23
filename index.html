@@ -89,8 +89,8 @@ document.documentElement.classList.add("cargando");setTimeout(()=>document.docum
 <!-- Hojas de estilo sin bloquear el primer dibujo (con internet lento la
      pantalla de carga quedaba oscura y vacía hasta que bajaban). El juego
      queda tapado por la pantalla de carga hasta que termina de cargar. -->
-<link rel="preload" as="style" href="extensiones.css?v=115" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="extensiones.css?v=115"></noscript>
+<link rel="preload" as="style" href="extensiones.css?v=116" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="extensiones.css?v=116"></noscript>
 <!-- mqtt.js guardado en el propio juego (lib/): si unpkg anda mal, las salas igual conectan. Si el archivo local fallara, se prueba unpkg. -->
 <script src="lib/mqtt.min.js?v=5.10.1" defer onerror="(function(){var s=document.createElement('script');s.src='https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js';document.head.appendChild(s);})()"></script>
 <!-- supabase-js también guardado en el juego (lib/): si jsdelivr anda lento o bloqueado en algún país, el registro en Social igual llega. Si el archivo local fallara, se prueba jsdelivr. -->
