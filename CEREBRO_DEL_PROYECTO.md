@@ -1259,3 +1259,7 @@ Fecha: 23/10/2026 — Trailer escena 2 (Ruleta) rehecha como copia de una partid
 ```text
 Fecha: 23/10/2026 — Tutti Frutti: resultados de la ronda en grilla tipo planilla (pedido de Gonzalo con imagen de referencia). Título "RESULTADOS · RONDA X DE Y"; cada casilla = palabra + puntos; ⚠️ dudosa en amarillo (tocarla explica por qué), salvada en verde, anulada tachada en rojo; la tuya dudosa tiene botón verde "🙋 Apelar"; las de otros dudosas tienen el sumador −/+ (0·5·10·20); las ✓ de otros tienen un botoncito ❌ en la esquina para anular; columna/fila TOTAL rosa (dorada la del que más sumó, con 🏆 en el nombre; 🏁 al que cantó BASTA). Frase abajo: "X va ganando… y tu «Y» salió en amarillo." Celular parado: hacia abajo (categorías en filas, jugadores en columnas) — Gonzalo lo prefiere así; acostado/pantalla ancha: jugadores en filas como la imagen. Se mantiene la tabla de puntos acumulados. tutti-frutti.js v72, extensiones.css v112, sw v379.
 ```
+
+```text
+Fecha: 23/10/2026 — Tutti Frutti resultados: con 4 o más jugadores las columnas se achican (56px mínimo) para que entren sin cortarse en el celular parado. Recordatorio: "🙋 Apelar" sale en tu palabra amarilla solo en partidas con amigos; contra bots, en tu amarilla sale el sumador −/+ (vos decidís). tutti-frutti.js v73, sw v380.
+```
