@@ -1309,3 +1309,7 @@ Fecha: 23/10/2026 — Tutti Frutti: por pedido de Gonzalo se retiró la ❌ roja
 ```text
 Fecha: 23/10/2026 — Lobby de Extensiones: el chip de rayitos ⚡ en las tarjetas que cobran fichas usa margin-top:auto para quedar alineado al pie de cada tarjeta dentro de su fila, incluso cuando el título o la descripción ocupan distinta cantidad de renglones. No cambia las fichas ni la altura de los textos. extensiones.css v116, sw v390.
 ```
+
+```text
+Fecha: 23/10/2026 — Fichas ⚡ de las extensiones: se habilitaron para todos los perfiles salvo los testers Andrés, Flor, Grace, Juan E, Mari, Romina, Rubén y Vale. La comparación del nombre del perfil ignora mayúsculas, tildes y espacios repetidos. Esos perfiles no ven rayitos ni gastan fichas en los 9 juegos que cobran; el resto mantiene 3 fichas por juego, +1 cada 30 minutos. No se cambian vidas de la ruleta ni juegos que ya eran libres. La identidad actual es el nombre del perfil local (el juego no tiene cuentas autenticadas). extensiones.js v56, sw v391.
+```

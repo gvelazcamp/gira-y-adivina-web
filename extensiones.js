@@ -89,8 +89,8 @@ function extensionVisible(ext){
   return typeof esGonzalo==="function"&&esGonzalo();
 }
 window.EXTENSIONES=EXTENSIONES;
-/* Fichas ⚡ de las extensiones (EN PRUEBA: por ahora solo para el usuario
-   Gonzalo; para todos los demás las extensiones siguen gratis). Cada juego
+/* Fichas ⚡ de las extensiones. Los testers que ayudaron con el juego pueden
+   jugar libremente a estas extensiones, sin consumir ni ver fichas. Cada juego
    tiene sus propias fichas: 3, se repone 1 cada 30 min. Se gasta 1 al empezar
    una partida/nivel en solitario (los duelos con amigos no gastan). Sin fichas:
    esperar, recargar ese juego con monedas o probar otro juego. Las vidas del
@@ -98,7 +98,14 @@ window.EXTENSIONES=EXTENSIONES;
 const Fichas=(()=>{
   const MAX=3,MS=30*60*1000,CLAVE="gya_fichas_ext",PRECIO=150;
   const JUEGOS=["sopa-fugaz","rueda-de-letras","frases-en-giro","memoria-en-giro","rosco-rioplatense","silabario-rioplatense","cien-rioplatenses","ahorcado-rioplatense","moon-tap"];
-  const activo=()=>{try{return typeof esGonzalo==="function"&&esGonzalo();}catch(e){return false;}};
+  const TESTERS_LIBRES=new Set(["andres","flor","grace","juan e","mari","romina","ruben","vale"]);
+  const activo=()=>{
+    try{
+      const nombre=String(perfil&&perfil.nombre||"").trim().toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ");
+      return !TESTERS_LIBRES.has(nombre);
+    }catch(e){return true;}
+  };
   const cobra=id=>activo()&&JUEGOS.includes(id);
   let datos={};try{datos=JSON.parse(localStorage.getItem(CLAVE))||{};}catch(e){datos={};}
   const guardar=()=>{try{localStorage.setItem(CLAVE,JSON.stringify(datos));}catch(e){}};
@@ -136,7 +143,7 @@ const Fichas=(()=>{
       '<p>En <b>'+nombre(id)+'</b> usaste tus '+MAX+' fichas.</p><div class="fx-reloj">La próxima vuelve en <b id="fxReloj"></b></div>'+
       '<button type="button" class="fx-principal" id="fxRecargar">⚡ Recargar '+MAX+' fichas · 🪙 '+PRECIO+'</button>'+
       (otro&&otro[1]>0?'<button type="button" class="fx-otro" id="fxOtro">🎮 Probá <b>'+nombre(otro[0])+'</b> · tiene '+"⚡".repeat(otro[1])+'</button>':"")+
-      '<button type="button" class="fx-volver" id="fxVolver">Esperar</button><small class="fx-prueba">🧪 En prueba: solo lo ves vos (Gonzalo)</small></div>';
+      '<button type="button" class="fx-volver" id="fxVolver">Esperar</button></div>';
     (document.getElementById("extShell")||document.body).appendChild(c);
     const tic=()=>{const ms=falta(id),el=c.querySelector("#fxReloj");if(el)el.textContent=reloj(ms);if(de(id).n>0){cerrarC();if(typeof reintentar==="function")reintentar();}};
     const cerrarC=()=>{clearInterval(timerCartel);c.remove();};
