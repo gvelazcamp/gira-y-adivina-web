@@ -13,9 +13,11 @@ const QuienSoy=(()=>{
   cargar();
   const q=id=>raiz.querySelector("#"+id);
   const mezclar=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
-  const ARTE=["logo","como","frente","ok","paso","reloj","tiempo","trofeo","fondo"];
+  const ARTE=["cat_famosos","cat_personajes","cat_animales","cat_casa","cat_oficios","cat_mezcla","logo","como","frente","ok","paso","reloj","tiempo","trofeo","fondo"];
   const src=n=>"assets/quien-soy/"+n+".webp";
   const ico=(n,c="qs-ico")=>`<img class="${c}" src="${src(n)}" alt="" draggable="false">`;
+  const CORTO={casa:"Casa"};
+  const tarjeta=(id,nom)=>`<button type="button" class="qs-tarjeta${cat&&id===cat.id?" ultima":""}" data-cat="${id}" style="background-image:url(${src("cat_"+id)})"><span>${esc(nom)}</span></button>`;
   const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
   function abrir(contenedor){
     salir();cargar();
@@ -33,7 +35,7 @@ const QuienSoy=(()=>{
       <div class="qs-sub">${ico("reloj")} Tiempo</div>
       <div class="qns-rangos" id="qsTiempos">${TIEMPOS.map(t=>`<button type="button" data-t="${t}">${t} s</button>`).join("")}</div>
       <div class="qs-sub">Elegí la categoría para empezar</div>
-      <div class="qs-cats">${cats.map(c=>`<button type="button" data-cat="${c.id}">${c.emoji} ${esc(c.nombre)}</button>`).join("")}<button type="button" data-cat="mezcla">🎲 Mezcla</button></div>
+      <div class="qs-cats qs-tarjetas">${cats.map(c=>tarjeta(c.id,CORTO[c.id]||c.nombre)).join("")}${tarjeta("mezcla","Mezcla")}</div>
       <button type="button" id="qsWpp">💬 Invitar por WhatsApp</button>
     </div>`;
     const pintarT=()=>raiz.querySelectorAll("#qsTiempos button").forEach(b=>b.classList.toggle("activo",Number(b.dataset.t)===tiempo));pintarT();
