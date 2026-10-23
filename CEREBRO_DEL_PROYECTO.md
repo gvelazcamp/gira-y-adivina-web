@@ -1213,3 +1213,8 @@ Fecha: 23/10/2026 — Tutti Frutti: categorías como tarjetas ilustradas (hoja 4
 ```text
 Fecha: 23/10/2026 — Tutti Frutti: se sacó el logo chico de la pantalla de inicio (Gonzalo: ya está en el popup de bienvenida). Arriba queda solo "❓ Cómo se juega". tutti-frutti.js v67, sw v371.
 ```
+
+```text
+Fecha: 23/10/2026 — Regla de Gonzalo: el popup de inicio que explica el juego sale SIEMPRE al entrar al juego (no solo la primera vez). Se cambió Tutti Frutti (bienvPendiente: sale al abrir, no al volver de una partida; ya no usa gya_tutti_bienvenida) y Palabra Secreta (abrir() llama siempre a ayuda()). 100 Rioplatenses, Ahorcado, Frases y Memoria ya lo hacían así. tutti-frutti.js v68, palabra-secreta.js v18, sw v372.
+Pendiente: la conductora de 100 Rioplatenses (assets/cien/personaje.webp) vino cortada arriba de la frente en la hoja original; se le pasó a Gonzalo un prompt para regenerarla sola.
+```
