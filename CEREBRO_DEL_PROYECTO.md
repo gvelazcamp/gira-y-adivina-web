@@ -1255,3 +1255,7 @@ Fecha: 23/10/2026 — Trailer (promo/trailer.html): se sacó la música de parti
 ```text
 Fecha: 23/10/2026 — Trailer escena 2 (Ruleta) rehecha como copia de una partida real: tarjetas Vos/Sofi con ronda/total y "turno", tablero con el marco fondo-lab-toxico y las fichas del juego, aviso, reloj, botones Girar/Comprar vocal/Resolver y teclado A-Z. La ruleta aparece encima como en el juego ("Girando…" y lo que salió). Secuencia: $800 → L → compra E → QUIEBRA → turno de Sofi → PIERDE TURNO → Vos resuelve y se ve DULCE DE LECHE completa con "¡RESUELTO!". Escena de 20 s.
 ```
+
+```text
+Fecha: 23/10/2026 — Tutti Frutti: resultados de la ronda en grilla tipo planilla (pedido de Gonzalo con imagen de referencia). Título "RESULTADOS · RONDA X DE Y"; cada casilla = palabra + puntos; ⚠️ dudosa en amarillo (tocarla explica por qué), salvada en verde, anulada tachada en rojo; la tuya dudosa tiene botón verde "🙋 Apelar"; las de otros dudosas tienen el sumador −/+ (0·5·10·20); las ✓ de otros tienen un botoncito ❌ en la esquina para anular; columna/fila TOTAL rosa (dorada la del que más sumó, con 🏆 en el nombre; 🏁 al que cantó BASTA). Frase abajo: "X va ganando… y tu «Y» salió en amarillo." Celular parado: hacia abajo (categorías en filas, jugadores en columnas) — Gonzalo lo prefiere así; acostado/pantalla ancha: jugadores en filas como la imagen. Se mantiene la tabla de puntos acumulados. tutti-frutti.js v72, extensiones.css v112, sw v379.
+```

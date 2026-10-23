@@ -713,3 +713,46 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .pf-bienv-x{position:absolute;top:10px;right:10px;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:#FFFFFF14;color:#F6EFE2;font-weight:900;z-index:2}
 .pf-bienv-ok{display:block;width:100%;min-height:48px;border:0;border-radius:12px;background:#E5197C;color:#fff;font-weight:900;font-size:1.05rem;box-shadow:0 5px 0 #8E0F4C}
 .pf-bienv-ok:active{transform:translateY(3px);box-shadow:0 2px 0 #8E0F4C}
+/* Tutti Frutti: resultados en grilla (jugadores × categorías) */
+.tf .tf-res{padding:14px 10px 12px}
+.tf .tf-res-tit{font-family:'Archivo Black',sans-serif;color:#F5B301;letter-spacing:.14em;font-size:clamp(.82rem,4vw,1.05rem);text-align:center;margin:0 0 4px}
+.tf .tf-res-ayuda{font-size:.72rem;line-height:1.4;margin:0 0 8px}
+.tf .tf-amar{color:#FFD65C}.tf .tf-verde{color:#2ED18A}
+.tf .tf-grilla-caja{overflow-x:auto;margin:0 -4px 8px;padding:2px 4px 4px}
+.tf .tf-grilla{display:grid;gap:5px;align-items:stretch}
+.tf .tf-g-esq{min-height:0}
+.tf .tf-g-cat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.6rem;font-weight:800;color:#FFFFFF88;text-align:center;line-height:1.05}
+.tf .tf-g-cat .tf-ico{width:34px;height:34px;filter:drop-shadow(0 2px 3px #0008)}
+.tf .tf-g-cat small{display:none}
+.tf .tf-grilla.tf-vuelta .tf-g-cat .tf-ico{width:32px;height:32px}
+.tf .tf-g-tot-cab{font:900 .7rem 'Archivo Black',sans-serif;color:#E4D8EB;letter-spacing:.06em}
+.tf .tf-grilla.tf-vuelta .tf-g-tot-cab{font-size:.52rem}
+.tf .tf-g-nom{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:#FFFFFF0A;border:1px solid #FFFFFF22;border-radius:10px;padding:5px 4px;text-align:center;min-width:0}
+.tf .tf-g-nom b{font:900 .82rem 'Archivo Black',sans-serif;color:#FFD65C;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tf .tf-g-nom.tf-yo b{color:#fff}
+.tf .tf-g-nom em{font-style:normal;font-size:.7rem}
+.tf .tf-g-copa{display:none;font-style:normal;font-size:.9rem;line-height:1}
+.tf .tf-g-nom.tf-lider .tf-g-copa{display:block}
+.tf .tf-cel{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:#1E6B5E40;border:1px solid #37D6C055;border-radius:10px;padding:6px 3px;min-height:54px;min-width:0;text-align:center}
+.tf .tf-cel .tf-w{font-weight:900;font-size:.8rem;line-height:1.1;color:#fff;word-break:break-word;max-width:100%}
+.tf .tf-cel .tf-pts{font-size:.68rem;font-weight:800;color:#E4D8EB;opacity:.85}
+.tf .tf-cel.tf-vacia{background:#FFFFFF08;border-color:#FFFFFF1A}.tf .tf-cel.tf-vacia .tf-w{color:#FFFFFF66}
+.tf .tf-cel.tf-dudosa{background:#F5B30122;border:1.5px solid #F5B301;box-shadow:0 0 10px #F5B30144}
+.tf .tf-cel.tf-dudosa .tf-w{color:#FFE29A;cursor:pointer}
+.tf .tf-cel.tf-salvada{background:#1FA86640;border:1.5px solid #2ED18A}
+.tf .tf-cel.tf-anulada{background:#7D234840;border-color:#FF6B81}
+.tf .tf-cel.tf-anulada .tf-w{text-decoration:line-through;text-decoration-color:#FF6B81;color:#FFFFFF88}
+.tf .tf-cel.tf-defendida .tf-w::after{content:" 🗣️"}
+.tf .tf-cel .tf-marca{font-style:normal;font-size:.75rem}
+.mg-panel .tf-cel .tf-apelar{display:block;width:auto;min-height:0;margin:3px 0 0;padding:3px 8px;border-radius:99px;border:0;background:#1FA866;color:#fff;font-size:.66rem;font-weight:900;box-shadow:0 2px 0 #0F6B40;white-space:nowrap}
+.mg-panel .tf-cel .tf-apelar:disabled{background:#2ED18A55;box-shadow:none;opacity:1}
+.tf .tf-cel .tf-sum{margin-top:2px;padding:1px}
+.mg-panel .tf-cel .tf-sum button{width:20px;height:20px;min-height:20px;font-size:.85rem}
+.tf .tf-cel .tf-sum b{min-width:16px;font-size:.7rem}
+.mg-panel .tf-cel .tf-votar{position:absolute;top:-6px;right:-5px;width:auto;min-height:0;height:20px;margin:0;padding:0 5px;border-radius:99px;font-size:.62rem;background:#2A1A3C;border:1px solid #FFFFFF33;box-shadow:0 2px 4px #0008}
+.mg-panel .tf-cel .tf-votar.activo{background:#FF6B81;border-color:#fff}
+.mg-panel .tf-cel .tf-ceder{display:block;width:auto;min-height:0;margin:3px 0 0;padding:3px 7px;font-size:.62rem}
+.tf .tf-cel .tf-slot:empty{display:none}
+.tf .tf-g-tot{display:grid;place-items:center;background:#E5197C26;border:1.5px solid #E5197C88;border-radius:10px;font:900 1.25rem 'Archivo Black',sans-serif;color:#fff;min-height:44px}
+.tf .tf-g-tot.tf-lider{background:#F5B30130;border-color:#F5B301;color:#FFD65C;box-shadow:0 0 12px #F5B30155}
+.tf .tf-res-frase{text-align:center;font-weight:800;font-size:.9rem;color:#F6EFE2;margin:2px 0 10px}
