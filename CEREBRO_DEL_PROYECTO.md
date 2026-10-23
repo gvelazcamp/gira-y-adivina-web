@@ -1247,3 +1247,7 @@ Fecha: 23/10/2026 — Juegos de previa (¿Quién soy?, ¿Qué número soy?, Bomb
 ```text
 Fecha: 23/10/2026 — Trailer promocional de prueba: promo/trailer.html (girayadivina.com/promo/trailer.html, noindex). Video en HTML 9:16 de ~87 s, estilo trailer, con ▶/⏸, ⏹, saltar escenas, barra de tiempo, sonido sintetizado + música de partida, y botón ⛶ para ocultar controles y grabar la pantalla. Escenas: 1 Intro "Tipooo… un juego bien rioplatense", 2 Ruleta (gira, cae $800, consonantes, comprar vocal, QUIEBRA, pierde el turno), 3 Vencé al Tío del Asado + coleccionable + sello, 4 Recorré Uruguay (mapa con ruta), 5 Extensión Argentina, 6 Puzzle en vivo de a dos, 7 Ahorcado de a dos, 8 Tutti Frutti con BASTA y puntaje, 9 Más de 18 extensiones, 10 Final con logo, Google Play y web. Todo se dibuja desde el tiempo T (se puede pausar/saltar); ?e=N abre en la escena N. Gonzalo lo revisa y marca qué cambiar.
 ```
+
+```text
+Fecha: 23/10/2026 — Trailer (promo/trailer.html): se sacó la música de partida (a Gonzalo le molestaba) y se puso una banda de suspenso sintetizada estilo trailer de juego: zumbido grave de fondo, latidos en la intro, bombo + bajo + hi-hat (progresión Am-F-C-G a 100 bpm), arpegio que sube la tensión desde la escena 3 y acorde grande en el final. Va sincronizada con el tiempo T (pausa/saltos).
+```
