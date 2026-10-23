@@ -1402,3 +1402,12 @@ Fecha: 23/10/2026 — Reel más lento (a Gonzalo le dijeron que iba demasiado r�
 ```text
 Fecha: 23/10/2026 — Reel: QUIEBRA casi no se veía. Nuevo tramos(id,nombre,[[desde,hasta,dur]…]) en promo/reel.html: la ruleta gira rápido, QUIEBRA entra a velocidad normal y queda quieta ~1,3 s; lo mismo PIERDE EL TURNO (~0,9 s). Reel ≈38,4 s. Música: The Big Reveal 0:05.05–0:30 + 0:28.125–final (se repite un compás de 1,875 s a 128 BPM para que el golpe de 0:37 siga cayendo con el logo).
 ```
+
+```text
+Fecha: 23/10/2026 — Videos del mapa (ciudades con loop: Durazno, Montevideo, Salto, Tacuarembó, Cabo Polonio) quedaban en NEGRO un rato al entrar. Causas y arreglos:
+1) El navegador pide los .mp4 "por partes" (Range → respuesta 206) y el service worker no guardaba las parciales: se bajaban de nuevo cada vez. Ahora sw.js (videoDesdeCache) baja el .mp4 entero una vez, lo guarda (clave sin ?query) y responde las partes (206 con Content-Range) desde lo guardado.
+2) En la pantalla de la ciudad, el <video> reemplazaba al dibujo y hasta tener imagen se veía negro. Ahora el dibujo (duraznoImg) queda siempre abajo y da el tamaño; el video va encima (absolute) y aparece con un fundido recién al evento "playing" (clase .listo). Lo mismo en el mapa general (.region video).
+3) El <video id="duraznoVideo"> ya no baja durazno-loop.mp4 al abrir el juego (sin src/autoplay; se pone al entrar a la ciudad).
+4) precargarVideosMapa(): al abrir el mapa baja de a uno los videos de todas las ciudades (una vez por sesión, no con ahorro de datos) para que queden guardados.
+Probado: Range 0-99 / 1000- / -500 responden 206 correcto; un video servido desde la caché arranca en ~60 ms. (El Chromium de pruebas no tiene H.264, se probó con una copia en VP9.) sw v402.
+```
