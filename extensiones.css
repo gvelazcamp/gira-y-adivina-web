@@ -621,3 +621,21 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .qns .qn-revela{display:block;width:min(48%,170px);height:auto;margin:0 auto -6px;filter:drop-shadow(0 6px 10px #0009)}
 .qns .qns-fin .qns-panel h3{text-align:center}
 .qns .qn-escena .qns-pie{top:calc(max(14px,var(--safe-top)) + 56px)}
+/* Bomba: arte (assets/bomba) */
+.bb .bb-logo{display:block;width:min(66%,240px);height:auto;margin:0 auto;filter:drop-shadow(0 6px 10px #0009)}
+.bb .bb-como{display:block;width:min(94%,340px);height:auto;margin:2px auto 6px;filter:drop-shadow(0 6px 10px #0008)}
+.bb .bb-nota{display:flex;align-items:center;gap:10px;text-align:left}.bb .bb-chispa{width:40px;height:auto;flex:none}
+.mg-panel button.bb-voz{display:flex;align-items:center;gap:10px}.bb .bb-mic{width:34px;height:auto;flex:none}
+.bb-juego{background:#160B24 url(assets/bomba/fondo.webp) center/cover no-repeat}.bb-juego::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,#160B24D9 0%,#160B24A6 55%,#160B2433 100%);pointer-events:none}
+.bb-juego>*{position:relative}.bb-juego>.qs-tope,.bb-juego>.pf-salir{position:absolute}
+.bb-tit{display:flex;align-items:center;gap:6px}.bb .bb-mini{width:auto;height:26px}
+.bb-mecha{position:relative;height:min(44vw,26vh);font-size:0;margin-bottom:1vh}
+.bb .bb-bomba{display:block;height:100%;width:auto;filter:drop-shadow(0 10px 18px #000b)}
+.bb .bb-chispa-mecha{position:absolute;left:66%;top:9%;width:42%;height:auto;transform:translate(-50%,-50%);animation:bbChispa .35s infinite alternate;pointer-events:none;mix-blend-mode:screen}
+@keyframes bbChispa{0%{transform:translate(-50%,-50%) scale(.75) rotate(0);opacity:.7}100%{transform:translate(-50%,-50%) scale(1.1) rotate(25deg);opacity:1}}
+.bb-pasar.bb-pasar-arte{display:flex;align-items:center;justify-content:center;gap:10px}.bb .bb-pasar-img{height:44px;width:auto;filter:drop-shadow(0 2px 3px #0006)}
+.bb .bb-boom-arte{position:relative;width:min(88%,300px);margin:-4px auto 0;animation:bbBoom .5s}
+.bb .bb-boom-img{display:block;width:100%;height:auto}
+.bb .bb-perdedor{position:absolute;left:50%;bottom:-6%;width:62%;height:auto;transform:translateX(-50%);filter:drop-shadow(0 6px 10px #000a)}
+.bb .bb-boom-t{text-align:center;margin-top:14px!important}
+@media (orientation:landscape) and (max-height:500px){.bb-juego{padding-top:max(56px,var(--safe-top))}.bb-mecha{height:18vh;margin-bottom:0}.bb-pasar{margin-top:3vh}}
