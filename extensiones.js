@@ -209,7 +209,16 @@ const Extensiones=(()=>{
     },true);
   }
   function mostrar(){asegurar();shell.hidden=false;document.body.classList.add("ext-abierta");if(typeof detenerMusica==="function")detenerMusica();}
+  /* Los logos del lobby se bajan y se decodifican apenas carga el juego y se guardan acá
+     (si nadie los guarda, el navegador los descarta y al entrar a Extensiones tarda en dibujarlos). */
+  const iconosListos=[];
+  function precargarIconos(){
+    if(iconosListos.length)return;
+    EXTENSIONES.forEach(x=>{if(!x.icono)return;const im=new Image();im.src=x.icono;iconosListos.push(im);if(im.decode)im.decode().catch(()=>{});});
+  }
+  addEventListener("load",()=>setTimeout(precargarIconos,1200));
   function abrirLobby(){
+    precargarIconos();
     if(!EXTENSIONES_HABILITADAS)return;
     salirJuego();
     mostrar();vista="lobby";Fichas.enJuego("");
@@ -221,7 +230,7 @@ const Extensiones=(()=>{
       const lista=ext.grupo==="previa"?previa:resto;
       const b=document.createElement("button");b.type="button";b.className="ext-tarjeta";
       b.disabled=ext.estado!=="disponible";
-      const img=document.createElement("img");img.src=ext.icono;img.alt="";img.decoding="async";
+      const img=document.createElement("img");img.src=ext.icono;img.alt="";img.decoding="sync";
       const txt=document.createElement("span");txt.className="ext-tarjeta-texto";
       const nombre=document.createElement("b");nombre.textContent=ext.nombre;
       const desc=document.createElement("small");desc.textContent=ext.descripcion;
