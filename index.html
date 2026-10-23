@@ -1618,6 +1618,16 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
   <div class="tn-card-info"><b>Sin publicidad</b><span>Sacá los anuncios para siempre</span></div>
   <button class="tn-comprar-real" data-producto="sin_publicidad">$2.99</button>
   </div>
+  <div class="tn-item tn-card tn-real">
+  <div class="tn-card-img" style="display:grid;place-items:center;font-size:2.4rem">🔓</div>
+  <div class="tn-card-info"><b>Pase de extensiones · mensual</b><span>Todos los juegos de Extensiones sin fichas</span></div>
+  <button class="tn-comprar-real" data-producto="pase_extensiones">$2.99</button>
+  </div>
+  <div class="tn-item tn-card tn-real">
+  <div class="tn-card-img" style="display:grid;place-items:center;font-size:2.4rem">🏆</div>
+  <div class="tn-card-info"><b>Pase de extensiones · anual</b><span>Un año sin fichas · ahorrás más del 50%</span></div>
+  <button class="tn-comprar-real" data-producto="pase_extensiones_anual">$14.99</button>
+  </div>
   </div>
   <h3 class="tn-subtitulo" data-fijo="1">🎁 Packs</h3>
   <div class="tn-item tn-pack-img" style="background-image:url('assets/mini/shop/pack-explorador.webp')">
@@ -1828,20 +1838,16 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
 </div></div>
 
 <div class="capa" id="capaPromoTienda"><div class="caja" style="max-width:340px;position:relative">
-  <div style="width:108px;height:108px;margin:16px auto 14px;border-radius:28px;background:radial-gradient(circle at 35% 30%,#7B3FE4,#3A1868 70%);display:flex;align-items:center;justify-content:center;font-size:3.4rem;box-shadow:0 8px 20px #00000055,inset 0 2px 0 #FFFFFF22">🛡️</div>
-  <h2>Escudos de la ruleta</h2>
-  <p>Comprálos en la Tienda y salvate cuando la ruleta caiga en <b>Quiebra</b> o <b>Pierde turno</b>.</p>
-  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px">
-    <div style="display:flex;align-items:center;gap:10px;background:#00000033;border-radius:12px;padding:10px 14px;text-align:left">
-      <span style="font-size:1.3rem">🛡️</span><span style="font-size:.85rem"><b>Escudo Pierde Turno</b> — 🪙 750</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;background:#00000033;border-radius:12px;padding:10px 14px;text-align:left">
-      <span style="font-size:1.3rem">🛡️</span><span style="font-size:.85rem"><b>Escudo Quiebra</b> — 🪙 1250</span>
-    </div>
-  </div>
-  <button class="btn-grande cta-jugar" id="ptIrTienda" style="margin-bottom:10px">
-    <span class="cta-play">🛍️</span>
-    <span class="cta-txt"><b>Ir a Tienda</b><small>Comprar escudos ahora</small></span>
+  <div style="width:108px;height:108px;margin:16px auto 14px;border-radius:28px;background:radial-gradient(circle at 35% 30%,#7B3FE4,#3A1868 70%);display:flex;align-items:center;justify-content:center;font-size:3.4rem;box-shadow:0 8px 20px #00000055,inset 0 2px 0 #FFFFFF22">🔓</div>
+  <h2>Pase de extensiones</h2>
+  <p>Desbloqueá <b>todos los juegos de Extensiones</b> de Girá y Adiviná: jugá sin fichas ⚡ y sin esperar.</p>
+  <button class="btn-grande cta-jugar pase-btn" id="ptPaseMensual" data-producto="pase_extensiones" style="margin-bottom:10px">
+    <span class="cta-play">⚡</span>
+    <span class="cta-txt"><b>Mensual · <span class="pase-precio">US$ 2,99</span></b><small>Se renueva cada mes · cancelás cuando quieras</small></span>
+  </button>
+  <button class="btn-grande cta-jugar pase-btn" id="ptPaseAnual" data-producto="pase_extensiones_anual" style="margin-bottom:10px">
+    <span class="cta-play">🏆</span>
+    <span class="cta-txt"><b>Anual · <span class="pase-precio">US$ 14,99</span></b><small>Ahorrás más del 50%</small></span>
   </button>
   <button class="no" id="ptMasTarde" style="width:100%;border-radius:12px;padding:12px;font-weight:700">Más tarde</button>
 </div></div>
@@ -3120,7 +3126,7 @@ $("objLista").addEventListener("click",e=>{
 $("pdVamos").onclick=()=>{$("capaPartidaDiaria").classList.remove("ver");iniciarPartidaDiaria();};
 $("pdMasTarde").onclick=()=>{$("capaPartidaDiaria").classList.remove("ver");pdGuardarEstado("pospuesto");objActualizarBadge();ptChequearAutoPopup();};
 let ptVistaPrueba=false;
-$("ptIrTienda").onclick=()=>{$("capaPromoTienda").classList.remove("ver","pt-vista-prueba");if(!ptVistaPrueba){ptGuardarEstado("vista");}ptVistaPrueba=false;$("bTienda").click();};
+document.querySelectorAll("#capaPromoTienda .pase-btn").forEach(b=>{b.onclick=()=>{if(!ptVistaPrueba)ptGuardarEstado("vista");tnComprarReal(b.dataset.producto);};});
 $("ptMasTarde").onclick=()=>{$("capaPromoTienda").classList.remove("ver","pt-vista-prueba");if(!ptVistaPrueba){ptGuardarEstado("vista");}ptVistaPrueba=false;};
 $("peIrEventos").onclick=()=>{$("capaPromoEventos").classList.remove("ver");peGuardar({visto:true});abrirEventos();};
 $("peMasTarde").onclick=()=>{$("capaPromoEventos").classList.remove("ver");peGuardar({visto:true});};
@@ -4229,8 +4235,18 @@ const TN_PRODUCTOS_REALES={
   vidas_llenas:{vidasLlenas:true},
   vidas_infinitas_30min:{vidasInfinitas30min:true},
   vidas_infinitas_24h:{vidasInfinitas24hs:true},
-  sin_publicidad:{sinPublicidad:true,noConsumible:true}
+  sin_publicidad:{sinPublicidad:true,noConsumible:true},
+  /* Suscripciones (Play Console > Suscripciones): el pase de extensiones
+     saca las fichas ⚡ de todos los juegos de Extensiones mientras dure. */
+  pase_extensiones:{paseExtDias:31,noConsumible:true},
+  pase_extensiones_anual:{paseExtDias:366,noConsumible:true}
 };
+function paseExtActivo(){return (meta.paseExtHasta||0)>Date.now();}
+window.paseExtActivo=paseExtActivo;
+/* Abre el popup del pase (desde el cartel de "sin fichas"). Solo dentro
+   de la app de Google Play, que es donde se puede cobrar. */
+window.abrirPaseExt=()=>{if(!tnDigitalGoods){mostrarToast("🔓","El Pase de extensiones se compra desde la app de Google Play");return;}ptVistaPrueba=true;$("capaPromoTienda").classList.add("ver");};
+window.paseExtDisponible=()=>!!tnDigitalGoods&&!paseExtActivo();
 let tnDigitalGoods=null;
 async function tnInicializarBilling(){
   if(!window.getDigitalGoodsService)return;
@@ -4247,6 +4263,8 @@ async function tnActualizarPreciosReales(){
     detalles.forEach(d=>{
       const btn=document.querySelector('.tn-comprar-real[data-producto="'+d.itemId+'"]');
       if(btn&&!btn.disabled)try{btn.textContent=new Intl.NumberFormat(navigator.language,{style:"currency",currency:d.price.currency}).format(d.price.value);}catch(e){}
+      const pp=document.querySelector('.pase-btn[data-producto="'+d.itemId+'"] .pase-precio');
+      if(pp)try{pp.textContent=new Intl.NumberFormat(navigator.language,{style:"currency",currency:d.price.currency}).format(d.price.value);}catch(e){}
     });
   }catch(e){}
 }
@@ -4257,7 +4275,7 @@ async function tnRestaurarCompras(){
   if(!tnDigitalGoods||!tnDigitalGoods.listPurchases)return;
   try{
     const compras=await tnDigitalGoods.listPurchases();
-    compras.forEach(c=>{if(c.itemId==="sin_publicidad"){meta.sinAnuncios=true;guardarMeta();}});
+    compras.forEach(c=>{if(c.itemId==="sin_publicidad"){meta.sinAnuncios=true;guardarMeta();}if(TN_PRODUCTOS_REALES[c.itemId]&&TN_PRODUCTOS_REALES[c.itemId].paseExtDias){/* sigue suscripto: Play solo lista las vigentes */meta.paseExtHasta=Math.max(meta.paseExtHasta||0,Date.now()+3*86400000);guardarMeta();}});
     tnActualizarBotonesNoConsumibles();
   }catch(e){}
 }
@@ -4273,6 +4291,7 @@ function tnOtorgarProductoReal(id){
   else if(p.vidasLlenas){meta.vidas=VIDAS_MAX;meta.proxima=0;guardarMeta();mundoActualizarHud();mostrarToast("❤️","Vidas llenas");}
   else if(p.vidasInfinitas30min){meta.vidasInfinitasHasta=Math.max(Date.now(),meta.vidasInfinitasHasta||0)+30*60*1000;guardarMeta();mundoActualizarHud();mostrarToast("❤️","Vidas infinitas por 30 min");}
   else if(p.vidasInfinitas24hs){meta.vidasInfinitasHasta=Date.now()+24*60*60*1000;guardarMeta();mundoActualizarHud();mostrarToast("❤️","Vidas infinitas por 24hs");}
+  else if(p.paseExtDias){meta.paseExtHasta=Math.max(Date.now(),meta.paseExtHasta||0)+p.paseExtDias*86400000;guardarMeta();$("capaPromoTienda").classList.remove("ver","pt-vista-prueba");document.querySelectorAll(".fx-capa").forEach(x=>x.remove());mostrarToast("🔓","¡Pase activo! Jugá las extensiones sin fichas");}
   else if(p.sinPublicidad){meta.sinAnuncios=true;guardarMeta();mostrarToast("🚫📺","Listo, sin anuncios para siempre");tnActualizarBotonesNoConsumibles();}
   if(p.vidasLlenas||p.vidasInfinitas30min||p.vidasInfinitas24hs)$("capaSinVidas").classList.remove("ver");
   tnActualizar();
@@ -11486,9 +11505,11 @@ function pdChequearAutoPopup(){
 let ptPopupTimer=null;
 function ptChequearAutoPopup(){
   if(ptPopupTimer!==null||ptEstadoHoy()!=="pendiente"||esMismoDiaDeAlta())return;
+  /* Ahora ofrece el Pase de extensiones: solo se puede pagar dentro de la app de Google Play. */
+  if(!tnDigitalGoods||paseExtActivo())return;
   const intentar=()=>{
     ptPopupTimer=null;
-    if(ptEstadoHoy()!=="pendiente"||esMismoDiaDeAlta())return;
+    if(ptEstadoHoy()!=="pendiente"||esMismoDiaDeAlta()||!tnDigitalGoods||paseExtActivo())return;
     // Espera el regreso al inicio: nunca interrumpe una partida ni otro menú.
     if(document.hidden||$("setup").style.display==="none"||document.querySelector(".capa.ver")){
       ptPopupTimer=setTimeout(intentar,1500);return;
@@ -11603,7 +11624,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="canta-la-cancion.js?v=13"></script>
 <script src="tutti-frutti-datos.js?v=34"></script>
 <script src="tutti-frutti.js?v=76"></script>
-<script src="extensiones.js?v=58"></script>
+<script src="extensiones.js?v=59"></script>
 <script src="sala-tv.js?v=1"></script>
 </body>
 </html>

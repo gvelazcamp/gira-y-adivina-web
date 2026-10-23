@@ -107,7 +107,9 @@ const Fichas=(()=>{
       return !TESTERS_LIBRES.has(nombre);
     }catch(e){return true;}
   };
-  const cobra=id=>activo()&&JUEGOS.includes(id);
+  /* Con el Pase de extensiones (suscripción de Google Play, en index.html) no se gastan fichas. */
+  const conPase=()=>{try{return typeof window.paseExtActivo==="function"&&window.paseExtActivo();}catch(e){return false;}};
+  const cobra=id=>activo()&&JUEGOS.includes(id)&&!conPase();
   let datos={};try{datos=JSON.parse(localStorage.getItem(CLAVE))||{};}catch(e){datos={};}
   const guardar=()=>{try{localStorage.setItem(CLAVE,JSON.stringify(datos));}catch(e){}};
   /* Fichas de un juego, reponiendo las que correspondan por el tiempo pasado. */
@@ -143,6 +145,7 @@ const Fichas=(()=>{
     c.innerHTML='<div class="fx-caja"><div class="fx-rayo">⚡</div><h3>¡Te quedaste sin fichas!</h3>'+
       '<p>En <b>'+nombre(id)+'</b> usaste tus '+MAX+' fichas.</p><div class="fx-reloj">La próxima vuelve en <b id="fxReloj"></b></div>'+
       '<button type="button" class="fx-principal" id="fxRecargar">⚡ Recargar '+MAX+' fichas · 🪙 '+PRECIO+'</button>'+
+      (typeof window.paseExtDisponible==="function"&&window.paseExtDisponible()?'<button type="button" class="fx-otro" id="fxPase">🔓 <b>Pase de extensiones</b>: jugá todo sin fichas</button>':"")+
       (otro&&otro[1]>0?'<button type="button" class="fx-otro" id="fxOtro">🎮 Probá <b>'+nombre(otro[0])+'</b> · tiene '+"⚡".repeat(otro[1])+'</button>':"")+
       '<button type="button" class="fx-volver" id="fxVolver">Esperar</button></div>';
     (document.getElementById("extShell")||document.body).appendChild(c);
@@ -150,6 +153,7 @@ const Fichas=(()=>{
     const cerrarC=()=>{clearInterval(timerCartel);c.remove();};
     tic();timerCartel=setInterval(tic,1000);
     c.querySelector("#fxRecargar").onclick=()=>{if(recargar(id)){cerrarC();if(typeof reintentar==="function")reintentar();}};
+    const ps=c.querySelector("#fxPase");if(ps)ps.onclick=()=>{cerrarC();window.abrirPaseExt();};
     const o=c.querySelector("#fxOtro");if(o)o.onclick=()=>{cerrarC();Extensiones.abrirJuego(otro[0]);};
     c.querySelector("#fxVolver").onclick=cerrarC;
     c.onclick=e=>{if(e.target===c)cerrarC();};
