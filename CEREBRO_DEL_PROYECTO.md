@@ -1197,3 +1197,7 @@ Fecha: 23/10/2026 — ¿Qué número soy?: arte nuevo con tema bingo (hoja 3x3 d
 ```text
 Fecha: 23/10/2026 — Bomba: arte nuevo (hoja 3x3 de ChatGPT recortada por cajas en assets/bomba/: logo, como, bomba, chispa, pasar, micro, boom, perdedor, fondo). Inicio con logo + dibujo de cómo se juega, chispa en el aviso y micrófono en el botón del árbitro por voz. En la partida la bomba (con una chispa que titila en la mecha) late con el tic-tac sobre el cuarto con luces de alarma, y el botón Pasar lleva las manos pasando el celular. Al explotar: nube de explosión con el chico tiznado y "¡BOOM!". Ícono en Extensiones: assets/bomba/icono.webp (reemplaza logo-bomba.svg). bomba.js v13, extensiones.js v49, extensiones.css v105, sw v367.
 ```
+
+```text
+Fecha: 23/10/2026 — Canta la Canción: arte nuevo tema karaoke (hoja 4x3 de ChatGPT recortada por cajas en assets/canta/: logo, como, micro, arriba, abajo, jurado, parlante, vale, novale, crono, trofeo, fondo). Inicio con logo + dibujo de cómo se juega; el botón para arrancar es el micrófono dorado; el escenario de karaoke de fondo en todas las pantallas del juego; cronómetro detrás del aro del tiempo; la votación con la mesa del jurado, pulgares ilustrados (el no elegido se apaga) y parlante en "Escuchar de nuevo"; resultado con festejo de notas / micrófono roto y trofeo al ganador. Ícono en Extensiones: assets/canta/icono.webp (reemplaza logo-canta-la-cancion.svg). canta-la-cancion.js v12, extensiones.js v50, extensiones.css v106, sw v368.
+```
