@@ -1185,3 +1185,7 @@ Fecha: 23/10/2026 — ¿Quién soy?: la elección de categoría ahora son tarjet
 ```text
 Fecha: 23/10/2026 — 100 Rioplatenses Dicen: la conductora ya no queda abajo de la ruleta; ahora aparece en un popup de bienvenida al abrir el juego (#crBienvenida) que explica cómo se juega (tema, 6 respuestas, 3 errores, 3 rondas ×1/×2/×3, jugar con un amigo). Se cierra con "¡A jugar!", ✕ o tocando afuera, y se vuelve a abrir con "❓ Cómo se juega" (reemplaza el desplegable viejo). cien-rioplatenses.js v9, extensiones.css v102, sw v364.
 ```
+
+```text
+Fecha: 23/10/2026 — ¿Quién soy?: logo re-recortado entero (el corte entre columnas le comía el borde del signo de pregunta) y centrado en el inicio. El ícono del juego en Extensiones ahora es ese logo sobre un cuadrado violeta (assets/quien-soy/icono.webp, reemplaza logo-quien-soy.svg). Ojo: como assets/ es cache-first, se bumpeó CACHE_NAME para que llegue el logo nuevo. extensiones.js v47, extensiones.css v103, sw v365.
+```

@@ -303,7 +303,7 @@ body.qns-bloqueado{overscroll-behavior:none}
 .qs-juego::after{content:"";position:absolute;inset:0;opacity:0;pointer-events:none;z-index:1}.qs-juego.flash-ok::after{background:#1FA866;animation:qsFlash .45s}.qs-juego.flash-paso::after{background:#C9640F;animation:qsFlash .45s}@keyframes qsFlash{0%{opacity:.85}100%{opacity:0}}
 /* ¿Quién soy?: arte (assets/quien-soy) */
 .qs .qs-ico{width:1.35em;height:1.35em;object-fit:contain;vertical-align:-.32em;flex:none}
-.qs .qs-logo{width:min(56%,200px)}
+.qs .qs-logo{display:block;width:min(60%,220px);height:auto;margin:0 auto;filter:drop-shadow(0 6px 10px #0009)}
 .qs .qs-como{display:block;width:min(92%,330px);height:auto;margin:0 auto 6px;filter:drop-shadow(0 6px 10px #0008)}
 .qs .qs-gestos{display:flex;flex-direction:column;gap:6px;margin:0 0 6px}.qs .qs-gestos>span{display:flex;align-items:center;gap:9px;text-align:left;line-height:1.25}.qs .qs-gestos .qs-ico{width:30px;height:30px}
 .qs-crono{display:flex;align-items:center;gap:6px}.qs-crono .qs-ico{width:30px;height:30px}
