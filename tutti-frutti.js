@@ -21,6 +21,7 @@ const TuttiFrutti=(()=>{
   const icono=c=>ICONO[c]?`<img class="tf-ico" src="${ARTE(ICONO[c])}" alt="" draggable="false">`:"";
   const CATEGORIAS=["Nombre","Apellido","País o ciudad","Comida","Animal","Color","Marca","Fruta o verdura","Cosa","Profesión","Famoso","Película o serie"];
   const LETRAS="ABCDEFGHIJLMNOPRSTUV".split("");
+  let bienvPendiente=false;
   let raiz=null,est={cant:3,nombres:[]},tiempo=90,cats=["Nombre","Apellido","País o ciudad","Comida","Animal","Cosa"],partidas=0;
   let total=[],ronda=[],usadas=[],letra="",fin=0,timer=0,jugando=false,basta=false;
   function cargar(){try{const d=JSON.parse(localStorage.getItem(CLAVE));if(d&&typeof d==="object"){est.cant=Math.min(12,Math.max(1,Number(d.cant)||3));est.nombres=Array.isArray(d.nombres)?d.nombres.map(String):[];if(TIEMPOS.includes(d.tiempo))tiempo=d.tiempo;if(Array.isArray(d.cats)&&d.cats.length)cats=d.cats.filter(c=>CATEGORIAS.includes(c));partidas=Number(d.partidas)||0;}}catch(e){}}
@@ -29,7 +30,7 @@ const TuttiFrutti=(()=>{
   const q=id=>raiz.querySelector("#"+id);
   const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
   const nom=i=>PantallaFija.nombreJugador(est,i);
-  function abrir(contenedor){salir();cargar();cargarAprobadas();["ficha","basta","trofeo","como"].forEach(n=>{const i=new Image();i.src=ARTE(n);});raiz=document.createElement("section");raiz.className="tf";contenedor.appendChild(raiz);PantallaFija.entrar();configurar();}
+  function abrir(contenedor){salir();cargar();cargarAprobadas();["ficha","basta","trofeo","como"].forEach(n=>{const i=new Image();i.src=ARTE(n);});raiz=document.createElement("section");raiz.className="tf";contenedor.appendChild(raiz);PantallaFija.entrar();bienvPendiente=true;configurar();}
   const ajustesHtml=()=>`<div class="qs-sub">🗂️ Categorías · <b id="tfCuenta"></b> <small>(tocá para elegir)</small></div>
       <div class="tf-tarjetas" id="tfCats">${CATEGORIAS.map(c=>`<button type="button" class="tf-tarjeta" data-c="${esc(c)}" style="background-image:url(${tarjeta(c)})"><i>✓</i><span>${esc(etiq(c))}</span></button>`).join("")}</div>
       <div class="qs-sub">⏱️ Tiempo máximo por letra</div>
@@ -67,11 +68,11 @@ const TuttiFrutti=(()=>{
         <li><span>🏆</span><em>Se juegan <b>3 rondas</b>: gana el que gana más rondas.</em></li></ul>
         <button type="button" class="mg-principal" id="tfBienvOk">¡A jugar!</button></div></div>`;
     ajustesEventos();
-    { const bienv=q("tfBienvenida"),cerrar=()=>{bienv.hidden=true;try{localStorage.setItem("gya_tutti_bienvenida","1");}catch(e){}};
+    { const bienv=q("tfBienvenida"),cerrar=()=>{bienv.hidden=true;};
       q("tfBienvOk").onclick=cerrar;q("tfBienvX").onclick=cerrar;bienv.onclick=e=>{if(e.target===bienv)cerrar();};
       q("tfAyudaBtn").onclick=()=>{bienv.hidden=false;};
-      let vista=false;try{vista=!!localStorage.getItem("gya_tutti_bienvenida");}catch(e){}
-      if(!vista)bienv.hidden=false; }
+      /* Sale siempre al entrar al juego (no al volver de una partida). */
+      if(bienvPendiente){bienvPendiente=false;bienv.hidden=false;} }
     q("tfCrear").onclick=crearSala;
     q("tfBots").onclick=elegirModoOnline;
     q("tfUnirse").onclick=()=>{const c=(q("tfCodigo").value||"").toUpperCase().trim();if(/^[A-HJ-NP-Z2-9]{4}$/.test(c))unirse(c);else estado("Escribí el código de 4 letras que te pasaron.");};
