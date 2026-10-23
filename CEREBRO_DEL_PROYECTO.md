@@ -1329,3 +1329,7 @@ Fecha: 23/10/2026 — Recargar 3 fichas ⚡ de una extensión sale 🪙 400 fijo
 ```text
 Fecha: 23/10/2026 — PASE DE EXTENSIONES (suscripción de Google Play). Gonzalo creó en Play Console la suscripción `pase_extensiones` (plan `mensual`, US$ 2,99, retrocompatible). Como la app (TWA / Digital Goods API) compra mandando solo el ID de producto y no puede elegir el plan, el anual va en una suscripción APARTE: `pase_extensiones_anual` (plan `anual`, US$ 14,99); el plan `anual` que quedó dentro de `pase_extensiones` hay que desactivarlo. Código: TN_PRODUCTOS_REALES (paseExtDias 31/366, noConsumible) → meta.paseExtHasta; paseExtActivo(); tnRestaurarCompras extiende +3 días mientras Play liste la suscripción vigente (si cancela, se vence solo). Fichas.cobra() no cobra con el pase; el cartel "sin fichas" ofrece el pase (solo dentro de la app de Play). El popup diario capaPromoTienda (antes "Escudos de la ruleta") ahora ofrece el pase Mensual/Anual y solo sale dentro de la app de Play y si no tiene el pase. Tienda: 2 tarjetas nuevas en dinero real. Falta probar una compra real en Android. extensiones.js v59, sw v395.
 ```
+
+```text
+Fecha: 23/10/2026 — Los testers libres de fichas (Juan E, Vale, Andrés, Flor, Grace, Mari, Romina, Rubén: Fichas.libre()) NO ven nada del Pase de extensiones: les sigue saliendo el popup viejo de "Escudos de la ruleta" (#ptEscudos dentro de capaPromoTienda; ptPrepararPopup() elige cuál mostrar), no ven las tarjetas .tn-pase de la Tienda ni el botón del pase en el cartel de fichas. extensiones.js v60, sw v396.
+```

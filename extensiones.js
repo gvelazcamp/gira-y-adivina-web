@@ -169,7 +169,7 @@ const Fichas=(()=>{
   function enJuego(id){vistaActual=id||"";clearInterval(timerChip);pintarChip();if(cobra(vistaActual))timerChip=setInterval(pintarChip,1000);}
   /* Texto para la tarjeta del juego en la lista de Extensiones. */
   function etiqueta(id){if(!cobra(id))return"";const d=de(id),ms=falta(id);return d.n>0?"⚡".repeat(d.n)+(d.n<MAX?' · +1 en '+reloj(ms):""):"⚡ 0 · vuelve en "+reloj(ms);}
-  return{usar,enJuego,etiqueta,cobra,de};
+  return{usar,enJuego,etiqueta,cobra,de,libre:()=>!activo()};
 })();
 window.Fichas=Fichas;
 const Extensiones=(()=>{
