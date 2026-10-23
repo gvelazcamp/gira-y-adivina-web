@@ -18,7 +18,6 @@ const TuttiFrutti=(()=>{
   const ICONO={"Nombre":"c_nombre","Apellido":"c_apellido","País o ciudad":"c_pais","Comida":"c_comida","Animal":"c_animal","Color":"c_color","Marca":"c_marca","Fruta o verdura":"c_fruta","Cosa":"c_cosa","Profesión":"c_profesion","Famoso":"c_famoso","Película o serie":"c_pelicula"};
   /* Tarjetas ilustradas para elegir categorías (assets/tutti/k_<id>.webp). */
   const tarjeta=c=>ICONO[c]?ARTE("k_"+ICONO[c].slice(2)):"";
-  const icono=c=>ICONO[c]?`<img class="tf-ico" src="${ARTE(ICONO[c])}" alt="" draggable="false">`:"";
   const CATEGORIAS=["Nombre","Apellido","País o ciudad","Comida","Animal","Color","Marca","Fruta o verdura","Cosa","Profesión","Famoso","Película o serie"];
   const LETRAS="ABCDEFGHIJLMNOPRSTUV".split("");
   let bienvPendiente=false;
@@ -67,13 +66,13 @@ const TuttiFrutti=(()=>{
         <li><span>🏆</span><em>Se juegan <b>3 rondas</b>: gana el que gana más rondas.</em></li></ul>
         <button type="button" class="mg-principal" id="tfBienvOk">¡A jugar!</button></div></div>`;
     ajustesEventos();
-    { const bienv=q("tfBienvenida"),cerrar=()=>{bienv.hidden=true;PantallaFija.entrar();};
+    { const bienv=q("tfBienvenida"),cerrar=()=>{bienv.hidden=true;PantallaFija.entrar({completa:false});};
       q("tfBienvOk").onclick=cerrar;q("tfBienvX").onclick=cerrar;bienv.onclick=e=>{if(e.target===bienv)cerrar();};
       q("tfAyudaBtn").onclick=()=>{bienv.hidden=false;};
       /* Sale siempre al entrar al juego (no al volver de una partida). La
          pantalla completa se pide al cerrarlo: así el aviso de Chrome
          ("Para salir de la pantalla completa…") no tapa el botón ¡A jugar!. */
-      if(bienvPendiente){bienvPendiente=false;bienv.hidden=false;}else PantallaFija.entrar(); }
+      if(bienvPendiente){bienvPendiente=false;bienv.hidden=false;}else PantallaFija.entrar({completa:false}); }
     q("tfCrear").onclick=crearSala;
     q("tfBots").onclick=elegirModoOnline;
     q("tfUnirse").onclick=()=>{const c=(q("tfCodigo").value||"").toUpperCase().trim();if(/^[A-HJ-NP-Z2-9]{4}$/.test(c))unirse(c);else estado("Escribí el código de 4 letras que te pasaron.");};
@@ -317,7 +316,7 @@ const TuttiFrutti=(()=>{
   }
   function lobby(de){
     if(!raiz||!on)return;
-    PantallaFija.activar();
+    PantallaFija.activar({completa:false});
     pantalla(`<div class="mg-panel imp-panel"><h3>🍓 Sala de Tutti Frutti</h3>
       ${on.host?`<p>Pasales el código o invitalos por WhatsApp. Cuando estén todos, tocá <b>Empezar</b>.</p>
         <div class="dl-codigo tf-cod">${on.sala}</div>
@@ -378,7 +377,7 @@ const TuttiFrutti=(()=>{
   function jugarBots(modo){
     nuevaSala(true,"BOTS");on.bots=true;on.modoBots=modo;
     const bots=elegirBots(2+Math.floor(Math.random()*2),modo),miAv=typeof perfil!=="undefined"&&perfil&&perfil.avatar;
-    PantallaFija.activar();
+    PantallaFija.activar({completa:false});
     pantalla(`<div class="imp-centro"><div class="buscando-spinner"></div><div class="imp-quien" id="tfBusca">🌐 Buscando jugadores online…</div>
       <p class="imp-ayuda">${esc((MODOS_BOT[modo]||MODOS_BOT.normal).nombre)}</p>
       <ul class="tf-online" id="tfOnline"><li>${avatarImg(miAv)}<b>${esc(yo())} (vos)</b><em>✔ listo</em></li></ul></div>`);
@@ -540,7 +539,7 @@ const TuttiFrutti=(()=>{
   /* Ronda: animación de la letra y después una categoría por vez. */
   function jugarOnline(){
     cerrarObjeciones();
-    PantallaFija.activar();
+    PantallaFija.activar({completa:false});
     pantalla(`<div class="imp-centro"><div class="imp-quien">🎲 Ronda ${on.rj||1} de ${on.tot||RONDAS} · sorteando la letra…</div><div class="tf-ficha"><img src="${ARTE("ficha")}" alt="" draggable="false"><div class="tf-letra" id="tfLetra">?</div></div></div>`);
     let k=0;const giro=()=>{if(!raiz||!on)return;const el=q("tfLetra");if(!el)return;
       if(k<12){el.textContent=LETRAS[Math.floor(Math.random()*LETRAS.length)];if(typeof bip==="function")bip(600+k*25,.04,"square",.03);k++;setTimeout(giro,60+k*8);return;}
@@ -580,7 +579,7 @@ const TuttiFrutti=(()=>{
     ed.hidden=true;rv.hidden=false;
     q("tfProg").innerHTML=on.cats.map((c,j)=>`<i class="${on.mias[j]?"ok":""}" data-i="${j}"></i>`).join("");
     rv.innerHTML='<p class="imp-ayuda">¿Todo bien? Tocá una respuesta para corregirla.</p>'+
-      on.cats.map((c,j)=>`<button type="button" class="tf-rev-fila" data-i="${j}"><small>${icono(c)}${esc(etiq(c))}</small><b>${esc(on.mias[j]||"—")}</b><span>✏️</span></button>`).join("")+
+      on.cats.map((c,j)=>`<button type="button" class="tf-rev-fila" data-i="${j}"><small>${esc(etiq(c))}</small><b>${esc(on.mias[j]||"—")}</b><span>✏️</span></button>`).join("")+
       '<button type="button" class="bb-pasar mim-ok tf-rev-basta" id="tfBasta">✋ ¡BASTA!</button>';
     rv.onclick=e=>{const f=e.target.closest(".tf-rev-fila");if(f&&on&&on.fase==="jugando"&&!on.basta){irACampo(Number(f.dataset.i));return;}
       if(e.target.closest("#tfBasta")&&on&&on.fase==="jugando"&&!on.basta)mandar({t:"basta",n:on.n});};
@@ -588,7 +587,7 @@ const TuttiFrutti=(()=>{
   function pintarCampo(){
     if(!raiz||!on||!on.pend)return;if(!on.pend.length){revision();return;}const i=on.pend[0];
     {const ed=q("tfEdit"),rv=q("tfRev");if(ed)ed.hidden=false;if(rv)rv.hidden=true;}
-    q("tfCat").innerHTML=icono(on.cats[i])+esc(etiq(on.cats[i]));
+    q("tfCat").textContent=etiq(on.cats[i]);
     const inp=q("tfInput");inp.value=on.mias[i]||"";inp.placeholder="Empieza con "+on.letra+"…";try{inp.focus();}catch(e){}
     q("tfProg").innerHTML=on.cats.map((c,j)=>`<i class="${on.mias[j]?"ok":""}${j===i?" act":""}" data-i="${j}"></i>`).join("");
     q("tfMsg").textContent="";
@@ -694,6 +693,29 @@ const TuttiFrutti=(()=>{
   /* Sumador: 0 → 5 → 10 → 20 (el 15 no se usa en el Tutti). */
   const PASOS_SUMA=[0,5,10,20];
   const pasoSuma=(actual,dir)=>{let k=PASOS_SUMA.findIndex(x=>x>=actual);if(k<0)k=PASOS_SUMA.length-1;if(dir>0&&PASOS_SUMA[k]===actual)k++;else if(dir<0)k--;return PASOS_SUMA[Math.max(0,Math.min(PASOS_SUMA.length-1,k))];};
+  function asignarPuntos(a,i,p){
+    mandar({t:"extra",n:on.n,a,i,p});
+    const palabra=(on.resps[a]||[])[i];
+    if(p>0&&palabra&&typeof esGonzalo==="function"&&esGonzalo()){
+      aprobarPalabra(on.cats[i],palabra);
+      if(typeof mostrarToast==="function")mostrarToast("✅","«"+palabra+"» ya vale en "+on.cats[i]+" para las próximas partidas.");
+    }
+  }
+  function revisarMiRespuesta(i){
+    if(!on||!on.bots||on.fase!=="resultado")return;
+    const palabra=(on.resps[on.pid]||[])[i];if(!palabra)return;
+    document.querySelector(".tf-revision-propia")?.remove();
+    const c=document.createElement("div");c.className="pf-confirmar tf-revision-propia";
+    c.innerHTML=`<div class="mg-panel pf-caja"><h3>🙋 Apelar mi respuesta</h3>
+      <p class="tf-obj-pal"><small>${esc(etiq(on.cats[i]))}</small><b>${esc(palabra)}</b></p>
+      <p class="imp-ayuda">Revisá tu respuesta y elegí cuántos puntos vale.</p>
+      <div class="tf-revision-puntos">${PASOS_SUMA.map(p=>`<button type="button" data-p="${p}"${extraDe(on.pid,i)===p?' class="elegido"':""}>${p} pts</button>`).join("")}</div>
+      <button type="button" data-x="1">Cancelar</button></div>`;
+    c.addEventListener("click",e=>{const b=e.target.closest("button");if(e.target===c||b&&b.dataset.x){c.remove();return;}
+      if(!b||b.dataset.p===undefined||!on||on.fase!=="resultado")return;
+      const p=Number(b.dataset.p);if(!PASOS_SUMA.includes(p))return;c.remove();asignarPuntos(on.pid,i,p);});
+    document.body.appendChild(c);
+  }
   function mostrarResultado(){
     detenerMusica();
     if(!raiz||!on)return;on.fase="resultado";on.votos=on.votos||{};on.marcas=on.marcas||{};
@@ -705,19 +727,19 @@ const TuttiFrutti=(()=>{
     const C=on.cats.length,P=on.jug.length,ancho=(raiz.clientWidth||360)-36,porFilas=56+C*78+64<=ancho;
     const pos=(fila,col)=>`grid-row:${fila};grid-column:${col}`;
     let celdas=`<div class="tf-g-esq" style="${pos(1,1)}"></div>`;
-    on.cats.forEach((c,i)=>{celdas+=`<div class="tf-g-cat" style="${porFilas?pos(1,i+2):pos(i+2,1)}" title="${esc(etiq(c))}">${icono(c)}<small>${esc(etiq(c))}</small></div>`;});
+    on.cats.forEach((c,i)=>{celdas+=`<div class="tf-g-cat" style="${porFilas?pos(1,i+2):pos(i+2,1)}" title="${esc(etiq(c))}"><small>${esc(etiq(c))}</small></div>`;});
     celdas+=`<div class="tf-g-cat tf-g-tot-cab" style="${porFilas?pos(1,C+2):pos(C+2,1)}">TOTAL</div>`;
     on.jug.forEach((j,k)=>{const r=on.resps[j.pid]||[];
       celdas+=`<div class="tf-g-nom${j.pid===on.pid?" tf-yo":""}" data-nom="${j.pid}" style="${porFilas?pos(k+2,1):pos(1,k+2)}"><i class="tf-g-copa">🏆</i><b>${esc(j.nombre)}</b>${j.pid===g?`<em title="Cantó BASTA">🏁</em>`:""}</div>`;
       on.cats.forEach((c,i)=>{const v=r[i]||"",ok=marca(j.pid,i),mio=j.pid===on.pid;
         celdas+=`<div class="tf-cel${v?"":" tf-vacia"}${v&&!ok?" tf-dudosa":""}" data-a="${j.pid}" data-i="${i}" style="${porFilas?pos(k+2,i+2):pos(i+2,k+2)}">
           <span class="tf-w"${v&&!ok?` data-ver="1"`:""}>${esc(v||"—")}${v&&!ok?` <i class="tf-marca mal">⚠️</i>`:""}</span><small class="tf-pts">+0</small>
-          ${v&&!ok?(mio&&!on.bots?`<button type="button" class="tf-apelar">🙋 Apelar</button>`:`<span class="tf-sum"><button type="button" data-d="-5" aria-label="Restar">−</button><b>0</b><button type="button" data-d="5" aria-label="Sumar">+</button></span>`):""}
+          ${v&&!ok?(mio?`<button type="button" class="tf-apelar">🙋 Apelar</button>`:`<span class="tf-sum"><button type="button" data-d="-5" aria-label="Restar">−</button><b>0</b><button type="button" data-d="5" aria-label="Sumar">+</button></span>`):""}
           ${v&&ok&&!mio?`<button type="button" class="tf-votar" aria-label="Votar"></button>`:""}<span class="tf-slot"></span></div>`;});
       celdas+=`<div class="tf-g-tot" data-tot="${j.pid}" style="${porFilas?pos(k+2,C+2):pos(C+2,k+2)}">0</div>`;});
     const cols=porFilas?`minmax(64px,1.1fr) repeat(${C},minmax(70px,1fr)) minmax(54px,.8fr)`:`40px repeat(${P},minmax(${P>3?56:72}px,1fr))`;
     pantalla(`<div class="mg-panel imp-panel imp-fin tf-res"><h3 id="tfTitulo" class="tf-res-tit"></h3>
-      <p class="imp-ayuda tf-res-ayuda">Letra <b>${on.letra}</b> · <b>10</b> única · <b>5</b> repetida · <b>20</b> si sos el único.<br><b class="tf-amar">⚠️ amarilla</b> = vale 0, tocala para ver por qué · <b class="tf-verde">🙋 Apelar</b> la tuya · <b>+/−</b> sumale a la de otro · <b>❌</b> anulá una que no vale.</p>
+      <p class="imp-ayuda tf-res-ayuda">Letra <b>${on.letra}</b> · <b>10</b> única · <b>5</b> repetida · <b>20</b> si sos el único.<br><b class="tf-amar">⚠️ amarilla</b> = vale 0, tocala para ver por qué · <b class="tf-verde">🙋 Apelar</b> la tuya ${on.bots?"y elegí sus puntos":"para que los demás decidan"} · <b>+/−</b> sumale a la de otro · <b>❌</b> anulá una que no vale.</p>
       <div class="tf-grilla-caja"><div class="tf-grilla${porFilas?"":" tf-vuelta"}${P>3?" tf-muchos":""}" id="tfGrilla" lang="es" style="grid-template-columns:${cols}">${celdas}</div></div>
       <p class="tf-res-frase" id="tfFrase"></p>
       <div class="qs-sub">🏆 Puntos (con esta ronda)</div><ul class="imp-tabla" id="tfTabla"></ul>
@@ -726,10 +748,8 @@ const TuttiFrutti=(()=>{
     raiz.querySelector("#tfGrilla").onclick=e=>{
       const f=e.target.closest(".tf-cel");if(!f||!f.dataset.a)return;const a=f.dataset.a,i=Number(f.dataset.i);
       if(e.target.closest(".tf-ceder")){mandar({t:"objecion",n:on.n,a:on.pid,i,ok:true});return;}
-      const ap=e.target.closest(".tf-apelar");if(ap){if(ap.disabled)return;ap.disabled=true;ap.textContent="🙋 Apelada";mandar({t:"apela",n:on.n,a:on.pid,i});if(typeof mostrarToast==="function")mostrarToast("🙋","Les avisamos a todos: ellos deciden si te suman puntos.","Apelaste");return;}
-      const sb=e.target.closest(".tf-sum button");if(sb){if(!puedeSumar(a,i)){if(a!==on.pid&&typeof mostrarToast==="function")mostrarToast("🙋","Solo se suma si el que la escribió la apela.");return;}{const p=pasoSuma(extraDe(a,i)||0,Number(sb.dataset.d));mandar({t:"extra",n:on.n,a,i,p});
-        /* Si el que suma es Gonzalo, la palabra queda aprobada para siempre. */
-        const w=(on.resps[a]||[])[i];if(p>0&&w&&typeof esGonzalo==="function"&&esGonzalo()){aprobarPalabra(on.cats[i],w);if(typeof mostrarToast==="function")mostrarToast("✅","«"+w+"» ya vale en "+on.cats[i]+" para las próximas partidas.");}}return;}
+      const ap=e.target.closest(".tf-apelar");if(ap){if(on.bots){revisarMiRespuesta(i);return;}if(ap.disabled)return;ap.disabled=true;ap.textContent="🙋 Apelada";mandar({t:"apela",n:on.n,a:on.pid,i});if(typeof mostrarToast==="function")mostrarToast("🙋","Les avisamos a todos: ellos deciden si te suman puntos.","Apelaste");return;}
+      const sb=e.target.closest(".tf-sum button");if(sb){if(!puedeSumar(a,i)){if(a!==on.pid&&typeof mostrarToast==="function")mostrarToast("🙋","Solo se suma si el que la escribió la apela.");return;}asignarPuntos(a,i,pasoSuma(extraDe(a,i)||0,Number(sb.dataset.d)));return;}
       if(e.target.closest(".tf-votar")){const st=on.votos[a+"|"+i];const ya=!!(st&&st.has(on.pid));mandar({t:"voto",n:on.n,a,i,v:!ya});return;}
       if(e.target.closest("[data-ver]"))explicar(on.cats[i],(on.resps[a]||[])[i]);
     };
@@ -810,7 +830,7 @@ const TuttiFrutti=(()=>{
   function objecion(quien,i){
     if(colaObj.some(o=>o.i===i))return;colaObj.push({quien,i});if(colaObj.length===1)mostrarObjecion();
   }
-  function cerrarObjeciones(){colaObj.length=0;document.querySelectorAll(".tf-objecion,.tf-apelacion").forEach(x=>x.remove());}
+  function cerrarObjeciones(){colaObj.length=0;document.querySelectorAll(".tf-objecion,.tf-apelacion,.tf-revision-propia").forEach(x=>x.remove());}
   /* Apelación: el autor de una palabra en amarillo pide que se la cuenten;
      a cada uno le aparece el aviso y decide si le suma (+10, como el
      sumador) o no. Si alguien la acepta, además queda aprobada para siempre. */
@@ -852,6 +872,7 @@ const TuttiFrutti=(()=>{
       b.querySelector(".tf-pts").textContent="+"+(v?pr[a][i]:0);
       const bt=b.querySelector(".tf-votar");if(bt){bt.textContent=(ok?"❌":"✔")+(n?" "+n:"");bt.classList.toggle("activo",mio);}
       const ex=extraDe(a,i),sm=b.querySelector(".tf-sum b");if(sm)sm.textContent=ex||0;
+      const ap=b.querySelector(".tf-apelar");if(ap&&on.bots)ap.textContent=ex==null?"🙋 Apelar":"🙋 "+ex+" pts";
       const su=b.querySelector(".tf-sum");if(su)su.classList.toggle("tf-sum-off",!puedeSumar(a,i));
       const anul=!!v&&!vale(a,i)&&!(ex>0),salv=!!v&&!ok&&(vale(a,i)||ex>0);
       b.classList.toggle("tf-anulada",anul&&ok);b.classList.toggle("tf-salvada",salv);b.classList.toggle("tf-dudosa",!!v&&!ok&&!salv);

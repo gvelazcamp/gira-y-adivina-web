@@ -19,7 +19,11 @@ const PantallaFija=(()=>{
   /* Si la app ya abre en pantalla completa (app de Play configurada en modo
      "fullscreen"), no se pide de nuevo: así Chrome no muestra su aviso. */
   const yaCompleta=()=>{try{return matchMedia("(display-mode: fullscreen)").matches;}catch(e){return false;}};
-  function entrar(){
+  function entrar(opts={}){
+    if(opts.completa===false){
+      try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});}catch(e){}
+      return Promise.resolve();
+    }
     if(yaCompleta())return Promise.resolve();
     try{const el=document.documentElement;
       if(!document.fullscreenElement&&el.requestFullscreen)return el.requestFullscreen({navigationUI:"hide"}).catch(()=>{});}catch(e){}
