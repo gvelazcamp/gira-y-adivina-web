@@ -1133,6 +1133,22 @@ html.rueda-prueba-boreal .centro{background:radial-gradient(circle at 38% 30%,#E
 .capa.ver{display:grid}
 .caja{background:var(--noche2);border:1px solid #FFFFFF1F;border-radius:20px;padding:26px 22px;max-width:440px;width:100%;text-align:center}
 .caja h2{font-size:1.7rem;color:var(--oro);margin-bottom:10px}
+/* Popup "Llevá el juego en tu celular" (solo Android en el navegador, una vez) */
+#capaPlayWeb{z-index:60;background:#0A0412B8}
+#capaPlayWeb.ver{animation:pwFondo .35s ease-out}
+#capaPlayWeb .pw-caja{position:relative;max-width:360px;background:#160B24;border:1px solid #F5B30155;border-radius:28px;padding:30px 22px 18px;box-shadow:0 24px 60px #000c,0 0 0 1px #FFFFFF0F inset;animation:pwEntra .45s cubic-bezier(.2,.9,.3,1.15)}
+#capaPlayWeb .pw-caja:focus{outline:none}
+#capaPlayWeb .pw-ico{width:84px;height:84px;margin:0 auto 14px;border-radius:24px;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#3A2155,#221335);box-shadow:0 0 0 2px #F5B30166,0 10px 26px #0009,0 0 30px #F5B30133}
+#capaPlayWeb .pw-ico svg{width:54px;height:54px}
+#capaPlayWeb h2{color:#fff;font-size:1.55rem;line-height:1.15;margin:0 0 10px}
+#capaPlayWeb .pw-txt{color:#fff;opacity:.9;font-size:1rem;line-height:1.45;margin:0 0 20px}
+#capaPlayWeb .pw-play{display:block;width:100%;background:#F5B301;color:#160B24;border-radius:16px;padding:15px 12px;font-weight:900;font-size:1rem;letter-spacing:.03em;text-decoration:none;box-shadow:0 5px 0 #A87A00;margin-bottom:12px}
+#capaPlayWeb .pw-play:active{transform:translateY(3px);box-shadow:0 2px 0 #A87A00}
+#capaPlayWeb .pw-seguir{display:block;width:100%;background:none;border:0;color:#E4D8EB;font-weight:700;font-size:.95rem;padding:10px;text-decoration:underline;text-underline-offset:3px}
+#capaPlayWeb .pw-x{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;background:#FFFFFF14;color:#F6EFE2;font-size:1.05rem;font-weight:900;display:grid;place-items:center}
+#capaPlayWeb .pw-play:focus-visible,#capaPlayWeb .pw-seguir:focus-visible,#capaPlayWeb .pw-x:focus-visible{outline:3px solid #37D6C0;outline-offset:3px}
+@keyframes pwFondo{from{opacity:0}to{opacity:1}}
+@keyframes pwEntra{from{opacity:0;transform:translateY(24px) scale(.94)}to{opacity:1;transform:none}}
 .caja p{color:#C9B8DE;margin-bottom:18px;line-height:1.4}
 .caja input{width:100%;background:#00000044;border:1px solid #FFFFFF26;border-radius:12px;padding:13px;
  color:var(--crema);font-size:1.1rem;font-weight:700;text-align:center;text-transform:uppercase;margin-bottom:14px}
@@ -1328,6 +1344,16 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
     <p class="sub" style="margin:0 0 16px;line-height:1.45">Actualizá Girá y Adiviná en Play Store para tener todo lo nuevo y que el juego ande mejor. Es gratis y tu partida no se pierde.</p>
     <button class="btn-grande" id="actualizarYa" style="width:100%;margin-bottom:10px">📲 Actualizar ahora</button>
     <button class="no" id="actualizarLuego" style="width:100%;border-radius:12px;padding:13px;font-weight:700">Más tarde</button>
+  </div>
+</div>
+<div class="capa" id="capaPlayWeb" role="dialog" aria-modal="true" aria-labelledby="pwTitulo" aria-describedby="pwTexto">
+  <div class="caja pw-caja" id="pwCaja" tabindex="-1">
+    <button type="button" class="pw-x" id="pwCerrar" aria-label="Cerrar y seguir en el navegador">✕</button>
+    <div class="pw-ico" aria-hidden="true"><svg viewBox="0 0 64 64"><defs><linearGradient id="pwOro" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE07A"/><stop offset="1" stop-color="#F5B301"/></linearGradient></defs><path d="M18 18h28c7.7 0 13 6.3 14 14l2 13c.8 5.5-3 9.5-7.5 9.5-3.2 0-5.4-1.7-7-4.3L44 45H20l-3.5 5.2c-1.6 2.6-3.8 4.3-7 4.3C5 54.5 1.2 50.5 2 45l2-13c1-7.7 6.3-14 14-14z" fill="url(#pwOro)"/><rect x="15" y="28" width="12" height="4" rx="2" fill="#160B24"/><rect x="19" y="24" width="4" height="12" rx="2" fill="#160B24"/><circle cx="44" cy="27" r="3" fill="#160B24"/><circle cx="50" cy="33" r="3" fill="#160B24"/><circle cx="38" cy="33" r="3" fill="#160B24"/><circle cx="44" cy="39" r="3" fill="#160B24"/></svg></div>
+    <h2 id="pwTitulo">¡Llevá el juego en tu celular!</h2>
+    <p class="pw-txt" id="pwTexto">Girá y Adiviná Rioplatense también está disponible en Google Play.</p>
+    <a class="pw-play" id="pwDescargar" href="https://play.google.com/store/apps/details?id=io.github.gvelazcamp.twa" target="_blank" rel="noopener">DESCARGAR EN GOOGLE PLAY</a>
+    <button type="button" class="pw-seguir" id="pwSeguir">Continuar jugando en el navegador</button>
   </div>
 </div>
 <div class="capa" id="capaSocial">
@@ -3249,7 +3275,56 @@ function avisoActualizarApp(siguiente){
   $("actualizarYa").onclick=()=>{location.href=URL_PLAY_STORE;};
   $("actualizarLuego").onclick=()=>{c.classList.remove("ver");siguiente();};
 }
+/* Popup "¡Llevá el juego en tu celular!": solo en el navegador de un celular
+   Android (no en la app de Play Store, ni iPhone/iPad, ni compu), una sola
+   vez por visitante. Para no mostrarlo nunca dentro de la app (TWA), alcanza
+   con UNA de estas señales: referrer android-app:// (así abre la app),
+   origen ya anotado como "playstore", número de versión de la app guardado
+   (?app=N o ?comprobar_partida=1 del start_url), haber llegado desde el
+   puente de github.io (la versión 16), o pantalla en modo app (standalone/
+   fullscreen/minimal-ui). Ante la duda, no se muestra. ?probarplay=1 lo fuerza. */
+function esAndroidNavegador(){
+  try{
+    const ua=navigator.userAgent||"",ref=String(document.referrer||""),q=new URLSearchParams(location.search);
+    if(!/Android/i.test(ua)||/iPhone|iPad|iPod/i.test(ua))return false;
+    if(ref.startsWith("android-app://")||/gvelazcamp\.github\.io/.test(ref))return false;
+    if(localStorage.getItem("gya_origen_app")==="playstore"||+localStorage.getItem("gya_app_version")>0)return false;
+    if(q.has("comprobar_partida")||q.has("app")||q.has("sin_partida_anterior"))return false;
+    if(navigator.standalone===true||["standalone","fullscreen","minimal-ui"].some(m=>matchMedia("(display-mode: "+m+")").matches))return false;
+    return true;
+  }catch(e){return false;}
+}
+let avisoPlayWebHecho=false;
+function avisoPlayWeb(siguiente){
+  if(avisoPlayWebHecho)return false;
+  let forzar=false,ya=true;
+  try{forzar=new URLSearchParams(location.search).get("probarplay")==="1";
+    ya=!!localStorage.getItem("gya_aviso_play_web")||!!sessionStorage.getItem("gya_aviso_play_web");}catch(e){}
+  /* Solo en la pantalla de inicio limpia: sin links de invitación (?ext=, ?tutti=…),
+     sin una extensión abierta ni otra ventana encima. */
+  let conParametros=false;try{conParametros=[...new URLSearchParams(location.search).keys()].some(k=>!/^(utm_|fbclid|gclid)/.test(k));}catch(e){}
+  const libre=$("setup")&&$("setup").style.display!=="none"&&!document.body.classList.contains("ext-abierta")&&!document.querySelector(".capa.ver");
+  if(!forzar&&(ya||conParametros||!libre||!esAndroidNavegador()))return false;
+  avisoPlayWebHecho=true;try{sessionStorage.setItem("gya_aviso_play_web","1");}catch(e){}
+  const c=$("capaPlayWeb"),antes=document.activeElement;
+  const cerrar=decision=>{
+    try{localStorage.setItem("gya_aviso_play_web",decision);}catch(e){}
+    c.classList.remove("ver");document.removeEventListener("keydown",tecla);
+    try{if(antes&&antes.focus)antes.focus();}catch(e){}
+    if(typeof siguiente==="function")siguiente();
+  };
+  const tecla=e=>{if(e.key==="Escape"){e.preventDefault();cerrar("cerrado");}};
+  $("pwDescargar").onclick=()=>cerrar("descargar");
+  $("pwSeguir").onclick=()=>cerrar("navegador");
+  $("pwCerrar").onclick=()=>cerrar("cerrado");
+  c.onclick=e=>{if(e.target===c)cerrar("cerrado");};
+  document.addEventListener("keydown",tecla);
+  c.classList.add("ver");
+  setTimeout(()=>{try{$("pwCaja").focus({preventScroll:true});}catch(e){}},60);
+  return true;
+}
 function tutChequearBienvenida(){
+  if(avisoPlayWeb(tutChequearBienvenida))return;
   if(tutEsPrimeraVez()){
     tutMarcarBienvenidaVista();
     setTimeout(()=>{$("capaBienvenida").classList.add("ver");},900);
