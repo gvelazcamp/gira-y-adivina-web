@@ -26,7 +26,9 @@ const PantallaFija=(()=>{
   function activar(opts={}){
     const yaEstaba=activo;activo=true;document.body.classList.add("pf-activo");
     if(!yaEstaba)try{history.pushState({fija:1},"");}catch(e){}
-    const p=entrar();
+    /* completa:false (Tutti Frutti): sin pantalla completa, así no sale el
+       aviso de Chrome "Para salir de la pantalla completa…". */
+    const p=opts.completa===false?Promise.resolve():entrar();
     if(opts.orientacion)(p&&p.then?p:Promise.resolve()).then(()=>{if(activo)bloquearOrientacion(opts.orientacion);});
     pedirWake();
   }
