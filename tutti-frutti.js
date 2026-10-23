@@ -30,7 +30,7 @@ const TuttiFrutti=(()=>{
   const q=id=>raiz.querySelector("#"+id);
   const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
   const nom=i=>PantallaFija.nombreJugador(est,i);
-  function abrir(contenedor){salir();cargar();cargarAprobadas();["ficha","basta","trofeo","como"].forEach(n=>{const i=new Image();i.src=ARTE(n);});raiz=document.createElement("section");raiz.className="tf";contenedor.appendChild(raiz);PantallaFija.entrar();bienvPendiente=true;configurar();}
+  function abrir(contenedor){salir();cargar();cargarAprobadas();["ficha","basta","trofeo","como"].forEach(n=>{const i=new Image();i.src=ARTE(n);});raiz=document.createElement("section");raiz.className="tf";contenedor.appendChild(raiz);bienvPendiente=true;configurar();}
   /* Nombre corto en la tarjeta (entra en una línea aunque la tarjeta sea chica). */
   const CORTO={"País o ciudad":"País / ciudad","Animal":"Animal","Fruta o verdura":"Fruta/verdura","Famoso":"Famoso","Película o serie":"Peli / serie"};
   const ajustesHtml=(extra="")=>`<div class="tf-cab"><div class="qs-sub">🗂️ Categorías · <b id="tfCuenta"></b></div>${extra}</div>
@@ -315,7 +315,7 @@ const TuttiFrutti=(()=>{
   }
   function lobby(de){
     if(!raiz||!on)return;
-    PantallaFija.activar();
+    PantallaFija.activar({completa:false});
     pantalla(`<div class="mg-panel imp-panel"><h3>🍓 Sala de Tutti Frutti</h3>
       ${on.host?`<p>Pasales el código o invitalos por WhatsApp. Cuando estén todos, tocá <b>Empezar</b>.</p>
         <div class="dl-codigo tf-cod">${on.sala}</div>
@@ -376,7 +376,7 @@ const TuttiFrutti=(()=>{
   function jugarBots(modo){
     nuevaSala(true,"BOTS");on.bots=true;on.modoBots=modo;
     const bots=elegirBots(2+Math.floor(Math.random()*2),modo),miAv=typeof perfil!=="undefined"&&perfil&&perfil.avatar;
-    PantallaFija.activar();
+    PantallaFija.activar({completa:false});
     pantalla(`<div class="imp-centro"><div class="buscando-spinner"></div><div class="imp-quien" id="tfBusca">🌐 Buscando jugadores online…</div>
       <p class="imp-ayuda">${esc((MODOS_BOT[modo]||MODOS_BOT.normal).nombre)}</p>
       <ul class="tf-online" id="tfOnline"><li>${avatarImg(miAv)}<b>${esc(yo())} (vos)</b><em>✔ listo</em></li></ul></div>`);
@@ -536,7 +536,7 @@ const TuttiFrutti=(()=>{
   /* Ronda: animación de la letra y después una categoría por vez. */
   function jugarOnline(){
     cerrarObjeciones();
-    PantallaFija.activar();
+    PantallaFija.activar({completa:false});
     pantalla(`<div class="imp-centro"><div class="imp-quien">🎲 Ronda ${on.rj||1} de ${on.tot||RONDAS} · sorteando la letra…</div><div class="tf-ficha"><img src="${ARTE("ficha")}" alt="" draggable="false"><div class="tf-letra" id="tfLetra">?</div></div></div>`);
     let k=0;const giro=()=>{if(!raiz||!on)return;const el=q("tfLetra");if(!el)return;
       if(k<12){el.textContent=LETRAS[Math.floor(Math.random()*LETRAS.length)];if(typeof bip==="function")bip(600+k*25,.04,"square",.03);k++;setTimeout(giro,60+k*8);return;}
