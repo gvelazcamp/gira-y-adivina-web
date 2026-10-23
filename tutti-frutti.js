@@ -713,7 +713,7 @@ const TuttiFrutti=(()=>{
           ${v&&!ok?(mio&&!on.bots?`<button type="button" class="tf-apelar">🙋 Apelar</button>`:`<span class="tf-sum"><button type="button" data-d="-5" aria-label="Restar">−</button><b>0</b><button type="button" data-d="5" aria-label="Sumar">+</button></span>`):""}
           ${v&&ok&&!mio?`<button type="button" class="tf-votar" aria-label="Votar"></button>`:""}<span class="tf-slot"></span></div>`;});
       celdas+=`<div class="tf-g-tot" data-tot="${j.pid}" style="${porFilas?pos(k+2,C+2):pos(C+2,k+2)}">0</div>`;});
-    const cols=porFilas?`minmax(64px,1.1fr) repeat(${C},minmax(70px,1fr)) minmax(54px,.8fr)`:`44px repeat(${P},minmax(78px,1fr))`;
+    const cols=porFilas?`minmax(64px,1.1fr) repeat(${C},minmax(70px,1fr)) minmax(54px,.8fr)`:`40px repeat(${P},minmax(${P>3?56:72}px,1fr))`;
     pantalla(`<div class="mg-panel imp-panel imp-fin tf-res"><h3 id="tfTitulo" class="tf-res-tit"></h3>
       <p class="imp-ayuda tf-res-ayuda">Letra <b>${on.letra}</b> · <b>10</b> única · <b>5</b> repetida · <b>20</b> si sos el único.<br><b class="tf-amar">⚠️ amarilla</b> = vale 0, tocala para ver por qué · <b class="tf-verde">🙋 Apelar</b> la tuya · <b>+/−</b> sumale a la de otro · <b>❌</b> anulá una que no vale.</p>
       <div class="tf-grilla-caja"><div class="tf-grilla${porFilas?"":" tf-vuelta"}" id="tfGrilla" style="grid-template-columns:${cols}">${celdas}</div></div>
