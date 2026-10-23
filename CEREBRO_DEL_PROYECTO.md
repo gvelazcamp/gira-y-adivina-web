@@ -1235,3 +1235,7 @@ Pendiente (para una próxima versión de la app en Play, v18): poner la TWA en m
 ```text
 Fecha: 23/10/2026 — Tutti Frutti vuelve a pantalla completa (Gonzalo la prefiere). Para que el aviso de Chrome no tape ¡A jugar!, la pantalla completa se pide al cerrar el popup de bienvenida (o al volver a la pantalla de inicio sin popup), no al abrir el juego. Queda en pantalla-fija.js la opción activar({completa:false}) por si se necesita en otro juego. tutti-frutti.js v71, sw v376.
 ```
+
+```text
+Fecha: 23/10/2026 — PantallaFija.entrar() ya no pide pantalla completa si la app abre en modo fullscreen (display-mode: fullscreen). Preparado para la v18 de Play: al generar el paquete en PWABuilder elegir Display mode "Fullscreen" (o "Fullscreen sticky"); así toda la app es pantalla completa y el aviso de Chrome "Para salir de la pantalla completa…" no aparece en ningún juego. Mientras tanto (v16/v17) el aviso sigue saliendo unos segundos al entrar a los juegos de previa. pantalla-fija.js v7, sw v377.
+```
