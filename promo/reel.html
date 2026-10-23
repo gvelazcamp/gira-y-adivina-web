@@ -527,7 +527,7 @@ escena("e0esc","Escudo",2.2,t=>{
 const TODAS={};ESC.forEach(e=>TODAS[e.id]=e);
 const clip=(id,nombre,desde,hasta,vel)=>({id,nombre,dur:(hasta-desde)/vel,render:lt=>TODAS[id].render(desde+lt*vel),cues:[]});
 const REEL=[TODAS.e0,clip("e2","Quiebra",9.9,13.7,2),clip("e2","Pierde turno",14.1,16.7,2),TODAS.e0esc,clip("e3","Tío del Asado",.4,7.6,2.4),clip("e4","Uruguay",0,7.5,3),clip("e5","Argentina",0,7,3),
-  clip("e6","Puzzle de a dos",.8,8.6,2.6),clip("e8","Tutti Frutti",1.8,9.6,2.6),clip("e9","Extensiones",.3,6,2.2),clip("e10","Final",0,3.4,1)];
+  clip("e6","Puzzle de a dos",.8,8.6,2.6),clip("e8","Tutti Frutti",1.8,9.6,2.6),clip("e9","Extensiones",.3,6,2.2),clip("e10","Final",0,4.8,1)];
 ESC.length=0;REEL.forEach(e=>ESC.push(e));
 
 /* ---------- Motor: tiempo, controles y saltos ---------- */
