@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="es-UY">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Girá y Adiviná · Video Extensiones</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* Video corto para mostrar después de 3 partidas del juego principal:
+   gancho de 3 s → juegos de Extensiones → puzzle en vivo de a dos → "Entrá".
+   Mismo motor que trailer.html (todo sale del tiempo T). Arte: ../assets */
+:root{--oro:#F5B301;--mag:#E5197C;--tur:#37D6C0;--vio:#160B24;--cre:#F6EFE2}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;color:#fff;font-family:Outfit,sans-serif}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+#escenario{position:relative;width:min(100vw,calc((100vh - 64px) * 9 / 16));aspect-ratio:9/16;overflow:hidden;background:#000;container-type:inline-size}
+body.limpio #escenario{width:min(100vw,calc(100vh * 9 / 16))}
+.esc{position:absolute;inset:0;display:none;overflow:hidden}
+.capa{position:absolute;will-change:transform,opacity}
+.abs{position:absolute}
+img{display:block;-webkit-user-drag:none;user-select:none}
+.titulo{position:absolute;left:4cqw;right:4cqw;text-align:center;font-family:'Archivo Black',sans-serif;line-height:1.02;color:#fff;text-shadow:0 .6cqw 0 #000,0 0 4cqw rgba(229,25,124,.55);letter-spacing:.02em;z-index:20}
+.oro{color:var(--oro);text-shadow:0 .7cqw 0 #7a4b00,0 0 5cqw rgba(245,179,1,.55)}
+.mag{color:#ff4fa8}
+.tur{color:var(--tur)}
+.viñeta{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.8) 100%);z-index:30}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:60}
+#negro{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:59}
+#marca{position:absolute;right:2cqw;top:2cqw;z-index:70;font:700 2.6cqw Outfit;color:#fff9;background:#0008;border-radius:9px;padding:.6cqw 1.6cqw;pointer-events:none}
+body.limpio #marca{display:none}
+#ctrl{width:min(100vw,520px);display:flex;align-items:center;gap:6px;padding:0 8px}
+#ctrl button{flex:none;height:40px;min-width:40px;border:0;border-radius:10px;background:#2A1A3C;color:#fff;font:800 15px Outfit;padding:0 10px}
+#ctrl button.prin{background:var(--mag)}
+#barra{flex:1;accent-color:var(--oro)}
+#tiempo{font:700 12px Outfit;color:#ccc;min-width:62px;text-align:right}
+#escenas{width:min(100vw,520px);display:flex;gap:4px;overflow-x:auto;padding:0 8px 6px}
+#escenas button{flex:none;border:0;border-radius:8px;background:#1a1024;color:#ccc;font:700 11px Outfit;padding:6px 8px}
+#escenas button.activa{background:var(--oro);color:#160B24}
+body.limpio #ctrl,body.limpio #escenas{display:none}
+/* Gancho: tablero que se rompe */
+.mini-tab{position:absolute;left:8cqw;right:8cqw;display:flex;justify-content:center;gap:1.4cqw}
+.mini-tab i{width:9cqw;height:11.6cqw;border-radius:1.4cqw;background:#F6EFE2;display:grid;place-items:center;font:900 6.6cqw 'Archivo Black';font-style:normal;color:#160B24;box-shadow:0 .8cqw 0 #0a3d30}
+.ext-ico{position:absolute;width:17cqw;height:17cqw;border-radius:4cqw;object-fit:contain;filter:drop-shadow(0 1cqw 1.6cqw #000c)}
+/* Desfile de juegos */
+.juego{position:absolute;left:0;right:0;top:40cqw;text-align:center}
+.juego img{width:52cqw;height:52cqw;margin:0 auto;object-fit:contain;filter:drop-shadow(0 2cqw 4cqw #000)}
+.juego b{display:block;margin-top:3cqw;font:900 8.4cqw 'Archivo Black';color:#fff;text-shadow:0 .7cqw 0 #000}
+.juego span{display:block;margin:1.6cqw 8cqw 0;font:700 4.6cqw/1.2 Outfit;color:#E4D8EB}
+#e2cont{position:absolute;left:0;right:0;top:150cqw;text-align:center;font:900 5cqw 'Archivo Black';color:var(--tur)}
+/* Puzzle */
+.pieza{position:absolute;background-size:400% 400%;border-radius:.6cqw;box-shadow:0 .6cqw 1.4cqw #000a;border:.3cqw solid #fff3}
+.cursor{position:absolute;z-index:25;font:800 3.2cqw Outfit;white-space:nowrap}
+.cursor i{display:block;width:6cqw;height:6cqw;clip-path:polygon(0 0,100% 55%,55% 62%,40% 100%);background:var(--c);filter:drop-shadow(0 0 .6cqw #000)}
+.cursor b{display:inline-block;margin-left:3cqw;background:var(--c);color:#160B24;border-radius:2cqw;padding:.4cqw 1.6cqw}
+.marcador{position:absolute;top:36cqw;display:flex;align-items:center;gap:1.6cqw;background:#000a;border:.4cqw solid var(--c);border-radius:99cqw;padding:1cqw 3cqw 1cqw 1cqw;font:800 4cqw Outfit}
+.marcador img{width:7cqw;height:7cqw;border-radius:50%}
+.marcador b{font:900 5cqw 'Archivo Black';color:var(--c)}
+/* Final */
+#e4btn{position:absolute;left:12cqw;right:12cqw;top:118cqw;border-radius:5cqw;background:linear-gradient(180deg,#ff4fa8,#E5197C);box-shadow:0 1.6cqw 0 #8a0f4a,0 0 8cqw #E5197C88;text-align:center;padding:4cqw 2cqw;font:900 6.6cqw 'Archivo Black';color:#fff;z-index:21}
+#e4btn small{display:block;font:700 3.8cqw Outfit;color:#ffe3f1;margin-top:1cqw}
+</style>
+</head>
+<body>
+<div id="escenario">
+  <!-- 1 · Gancho (3 s): "¿Solo jugás a la ruleta?" -->
+  <section class="esc" id="e1">
+    <div class="capa" id="e1fondo" style="inset:-10%;background:radial-gradient(ellipse at 50% 55%,#3b1255 0%,#12061c 50%,#000 80%)"></div>
+    <div class="mini-tab" id="e1tab" style="top:46cqw"><i>R</i><i>U</i><i>L</i><i>E</i><i>T</i><i>A</i></div>
+    <div class="titulo" id="e1a" style="top:16cqw;font-size:10.4cqw">¿SOLO JUGÁS<br>A LA <span class="oro">RULETA</span>?</div>
+    <div class="titulo" id="e1b" style="top:70cqw;font-size:13cqw">HAY</div>
+    <div class="titulo oro" id="e1c" style="top:84cqw;font-size:25cqw">18</div>
+    <div class="titulo" id="e1d" style="top:113cqw;font-size:10cqw">JUEGOS MÁS 😳</div>
+    <div id="e1icos" class="abs" style="inset:0"></div>
+  </section>
+  <!-- 2 · Desfile de Extensiones -->
+  <section class="esc" id="e2">
+    <div class="capa" id="e2fondo" style="inset:0;background:radial-gradient(circle at 50% 45%,#2a1745,#06030b 75%)"></div>
+    <div class="titulo" id="e2t" style="top:12cqw;font-size:8.6cqw">MIRÁ LAS<br><span class="oro">EXTENSIONES</span></div>
+    <div id="e2juegos"></div>
+    <div id="e2cont"></div>
+  </section>
+  <!-- 3 · Puzzle en vivo de a dos -->
+  <section class="esc" id="e3">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 45%,#2b1745,#0b0614 70%)"></div>
+    <div class="titulo" id="e3t" style="top:9cqw;font-size:8.8cqw">PUZZLES <span class="oro">EN VIVO</span><br>DE A DOS 🧩</div>
+    <div class="marcador" id="e3m1" style="--c:#37D6C0;left:6cqw"><img src="../assets/avatars/avatar-01.webp">Vos <b id="e3n1">0</b></div>
+    <div class="marcador" id="e3m2" style="--c:#FF4FA8;right:6cqw"><img src="../assets/avatars/avatar-05.webp">Sofi <b id="e3n2">0</b></div>
+    <div class="abs" id="e3marco" style="left:10cqw;top:52cqw;width:80cqw;height:80cqw;border-radius:2cqw;background:#ffffff0d;border:.5cqw dashed #ffffff33"></div>
+    <div id="e3piezas" class="abs" style="inset:0"></div>
+    <div class="cursor" id="e3c1" style="--c:#37D6C0;left:22cqw;top:150cqw"><i></i><b>Vos</b></div>
+    <div class="cursor" id="e3c2" style="--c:#FF4FA8;left:66cqw;top:150cqw"><i></i><b>Sofi</b></div>
+    <div class="titulo oro" id="e3fin" style="top:140cqw;font-size:10cqw">¡COMPLETO!</div>
+  </section>
+  <!-- 4 · Final: entrá a Extensiones -->
+  <section class="esc" id="e4">
+    <div class="capa" id="e4fondo" style="inset:-10%;background:radial-gradient(ellipse at 50% 45%,#4a1a6a 0%,#160B24 50%,#000 80%)"></div>
+    <img class="capa" id="e4logo" src="../assets/logo.webp" style="left:16cqw;top:22cqw;width:68cqw">
+    <div class="titulo" id="e4t" style="top:88cqw;font-size:8cqw">YA ESTÁN EN<br><span class="oro">TU JUEGO</span></div>
+    <div id="e4btn">🎮 ENTRÁ A EXTENSIONES<small>Están en el menú principal</small></div>
+  </section>
+  <div class="viñeta"></div>
+  <div id="negro"></div><div id="flash"></div>
+  <div id="marca"></div>
+</div>
+<div id="ctrl">
+  <button class="prin" id="bPlay">▶</button>
+  <button id="bStop">⏹</button>
+  <button id="bAnt">⏮</button>
+  <button id="bSig">⏭</button>
+  <input type="range" id="barra" min="0" max="1000" value="0">
+  <span id="tiempo">0:00</span>
+  <button id="bSon">🔊</button>
+  <button id="bLimpio" title="Ocultar controles para grabar">⛶</button>
+</div>
+<div id="escenas"></div>
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const pr=(t,a,b)=>clamp((t-a)/(b-a));
+const eOut=x=>1-Math.pow(1-x,3),eIn=x=>x*x*x,eIO=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eBack=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2);};
+const lerp=(a,b,x)=>a+(b-a)*x;
+function set(el,o){if(typeof el==="string")el=$(el);if(!el)return;
+  if("o" in o)el.style.opacity=o.o;
+  el.style.transform=`translate(${o.x||0}cqw,${o.y||0}cqw) scale(${o.s==null?1:o.s}) rotate(${o.r||0}deg)`;}
+function golpe(el,t,a,fuera=null){const x=pr(t,a,a+.3);if(t<a||(fuera!=null&&t>fuera+.25)){set(el,{o:0});return;}
+  const sale=fuera!=null?pr(t,fuera,fuera+.25):0;const sh=t-a<.45?Math.sin((t-a)*80)*(1-pr(t,a,a+.45))*1.2:0;
+  set(el,{o:(x<1?x:1)*(1-sale),s:lerp(2.2,1,eOut(x))*(1+sale*.3),x:sh});}
+
+/* ---------- Sonido sintetizado ---------- */
+let AC=null,sonido=true;
+function ac(){if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();return AC;}
+function tono(f,d,tipo="sine",v=.2,f2=null){if(!sonido)return;const a=ac(),o=a.createOscillator(),g=a.createGain();o.type=tipo;o.frequency.setValueAtTime(f,a.currentTime);if(f2)o.frequency.exponentialRampToValueAtTime(f2,a.currentTime+d);g.gain.setValueAtTime(v,a.currentTime);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+d);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+d+.05);}
+function ruido(d,v=.3,fc=800,tipo="lowpass"){if(!sonido)return;const a=ac(),b=a.createBuffer(1,a.sampleRate*d,a.sampleRate),c=b.getChannelData(0);for(let i=0;i<c.length;i++)c[i]=(Math.random()*2-1)*Math.pow(1-i/c.length,2);const s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();s.buffer=b;f.type=tipo;f.frequency.value=fc;g.gain.value=v;s.connect(f);f.connect(g);g.connect(a.destination);s.start();}
+const SFX={boom:()=>{tono(90,1.2,"sine",.6,28);ruido(.8,.25,300);},golpe:()=>{tono(140,.45,"square",.15,50);ruido(.3,.3,1200);},
+  whoosh:()=>ruido(.5,.18,2400),tick:()=>tono(1800,.03,"square",.05),ding:()=>{tono(880,.22,"triangle",.14);tono(1320,.3,"sine",.07);},
+  vidrio:()=>{ruido(.5,.35,5000,"highpass");tono(2400,.2,"triangle",.06,900);},pop:()=>tono(520,.09,"triangle",.12,900),
+  gana:()=>{[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tono(f,.3,"triangle",.14),i*110));},riser:()=>tono(120,1.4,"sawtooth",.08,900)};
+/* Música: arranca con todo (es un gancho), bombo + bajo + arpegio; acorde al final. */
+const M={bombo:()=>tono(150,.3,"sine",.5,42),hat:()=>ruido(.05,.05,7000,"highpass"),
+  bajo:f=>{if(!sonido)return;const a=ac(),o=a.createOscillator(),fl=a.createBiquadFilter(),g=a.createGain();o.type="sawtooth";o.frequency.value=f;fl.type="lowpass";fl.frequency.value=420;g.gain.setValueAtTime(.15,a.currentTime);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+.38);o.connect(fl);fl.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.4);},
+  pluck:f=>tono(f,.14,"triangle",.045),acorde:()=>{[130.8,196,261.6,329.6,392].forEach(f=>tono(f,2.6,"sawtooth",.035));tono(65.4,3,"sine",.4,60);}};
+const BEAT=.5,ACORDES=[[65.41,[523.3,659.3,784]],[49,[392,493.9,587.3]],[55,[440,523.3,659.3]],[43.65,[349.2,440,523.3]]];
+function armarMusica(total){const ev=[];
+  for(let b=0;b*BEAT<total;b++){const t=b*BEAT,[raiz,arp]=ACORDES[Math.floor(b/4)%4];
+    if(t<1.4)continue;                                   // la pregunta del gancho va en silencio
+    if(t>=total-3.4){if(Math.abs(t-(total-3.2))<BEAT/2)ev.push([t,()=>M.acorde()]);continue;}
+    ev.push([t,()=>M.bombo()]);ev.push([t,()=>M.bajo(raiz)]);ev.push([t+BEAT/2,()=>M.hat()]);
+    if(t>=3)arp.forEach((f,i)=>ev.push([t+i*BEAT/4,()=>M.pluck(f)]));}
+  return ev;}
+
+/* ---------- Escenas ---------- */
+const ESC=[];let T=0;
+function escena(id,nombre,dur,render,cues=[]){ESC.push({id,nombre,dur,render,cues});}
+
+const JUEGOS=[["logo-sopa-fugaz.svg","Sopa Fugaz","Buscá las palabras antes de que se muden"],["logo-rosco-rioplatense.svg","El Rosco","Girá, leé la pista y descubrí la palabra"],
+  ["logo-tutti-frutti.svg","Tutti Frutti","Cada uno con su celular… ¡BASTA!"],["logo-impostor.svg","Impostor","Todos tienen la misma palabra… menos uno"],
+  ["logo-ahorcado-rioplatense.svg","Ahorcado","La ruleta elige la categoría"],["logo-cien-rioplatenses.svg","100 Rioplatenses Dicen","Descubrí lo que dijo la gente"],
+  ["assets/quien-soy/icono.webp","¿Quién soy?","Celular en la frente y a adivinar"],["assets/bomba/icono.webp","Bomba","Pasala antes de que explote 💣"]];
+const ICOS=["logo-sopa-fugaz.svg","logo-rueda-de-letras.svg","logo-palabra-secreta.svg","logo-frases-en-giro.svg","logo-memoria-en-giro.svg","logo-rosco-rioplatense.svg","logo-silabario-rioplatense.svg","logo-cien-rioplatenses.svg","logo-ahorcado-rioplatense.svg","logo-impostor.svg","assets/mimica/icono.webp","assets/canta/icono.webp","logo-tutti-frutti.svg","assets/quien-soy/icono.webp","assets/bomba/icono.webp","assets/que-numero-soy/icono.webp","assets/puzzle-arte/icono.webp","logo-moon-tap.webp"];
+
+/* 1 · Gancho: pregunta al que viene de jugar a la ruleta, el tablero se rompe y explotan los 18 juegos */
+const VUELO=ICOS.map((_,i)=>{const a=i/ICOS.length*Math.PI*2+.3,r=36+(i%3)*9;return{x:50+Math.cos(a)*r-8.5,y:100+Math.sin(a)*r*1.35-8.5,r:(i%2?1:-1)*(20+i*7)};});
+(function(){const b=$("e1icos");ICOS.forEach(s=>{const im=document.createElement("img");im.className="ext-ico";im.src="../"+s;im.style.left="41.5cqw";im.style.top="91.5cqw";b.appendChild(im);});})();
+escena("e1","Gancho",3.2,t=>{
+  set("e1fondo",{o:1,s:1+t*.03});
+  golpe("e1a",t,0,1.35);
+  const tab=$("e1tab");[...tab.children].forEach((c,i)=>{const rompe=pr(t,1.3,1.75);set(c,{o:1-pr(t,1.45,1.75),x:rompe*(i-2.5)*9,y:rompe*rompe*30*(i%2?1:-.6),r:rompe*(i%2?40:-40)});});
+  set(tab,{o:t<.15?pr(t,0,.15):1,y:t<1.3?Math.sin(t*30)*pr(t,.9,1.3)*.8:0});
+  golpe("e1b",t,1.45,3.0);golpe("e1c",t,1.75,3.0);golpe("e1d",t,2.1,3.0);
+  document.querySelectorAll("#e1icos img").forEach((im,i)=>{const v=VUELO[i],x=eOut(pr(t,1.5+i*.02,2.2+i*.02));
+    set(im,{o:t<1.5?0:x*(1-pr(t,2.95,3.2)),x:(v.x-41.5)*x,y:(v.y-91.5)*x,s:lerp(.2,.75,x),r:v.r*x});});
+  $("flash").style.opacity=t>=1.3&&t<1.55?.7*(1-pr(t,1.3,1.55)):0;
+},[[0,"golpe"],[1.3,"vidrio"],[1.45,"boom"],[1.75,"golpe"],[2.1,"golpe"]]);
+
+/* 2 · Desfile: un juego por pantalla, rapidito */
+(function(){const b=$("e2juegos");JUEGOS.forEach(([ic,n,d])=>{const j=document.createElement("div");j.className="juego";j.innerHTML=`<img src="../${ic}"><b>${n}</b><span>${d}</span>`;b.appendChild(j);});})();
+const PASO=.62,INI2=.5;
+escena("e2","Extensiones",INI2+JUEGOS.length*PASO+.3,t=>{
+  golpe("e2t",t,0);
+  let vis=-1;document.querySelectorAll("#e2juegos .juego").forEach((j,i)=>{const a=INI2+i*PASO,x=pr(t,a,a+.18),s=pr(t,a+PASO-.12,a+PASO);
+    if(t<a||t>a+PASO){j.style.opacity=0;return;}vis=i;
+    set(j,{o:x*(1-s*(i<JUEGOS.length-1?1:0)),x:lerp(40,0,eOut(x))+lerp(0,-40,eIn(s))*(i<JUEGOS.length-1?1:0),s:lerp(.7,1,eBack(x))});});
+  $("e2cont").textContent=vis>=0?(vis+1)+" de 18 · y siguen…":"";
+  $("e2fondo").style.filter=`hue-rotate(${Math.max(0,vis)*40}deg)`;
+},[[0,"golpe"],...JUEGOS.map((_,i)=>[INI2+i*PASO,"whoosh"]),...JUEGOS.map((_,i)=>[INI2+i*PASO+.12,"pop"])]);
+
+/* 3 · Puzzle en vivo: dos cursores ponen piezas y suben los marcadores */
+const N=4,PZ=[];
+(function(){const box=$("e3piezas");const orden=[5,10,0,15,6,3,12,9,1,14,4,11,2,13,7,8];let semilla=7;const rnd=()=>{semilla=(semilla*9301+49297)%233280;return semilla/233280;};
+  for(let i=0;i<N*N;i++){const f=Math.floor(i/N),c=i%N,p=document.createElement("div");p.className="pieza";
+    p.style.cssText+=`width:20cqw;height:20cqw;left:${10+c*20}cqw;top:${52+f*20}cqw;background-image:url('../assets/puzzle/mercado-puerto.webp');background-position:${c/(N-1)*100}% ${f/(N-1)*100}%`;
+    box.appendChild(p);const bx=4+rnd()*72,by=138+rnd()*16;PZ.push({el:p,dx:bx-(10+c*20),dy:by-(52+f*20),r:(rnd()-.5)*50,ord:orden.indexOf(i)});}})();
+const INI3=.7,CADA=.24,FIN3=INI3+16*CADA;
+escena("e3","Puzzle de a dos",FIN3+1.2,t=>{
+  golpe("e3t",t,0);
+  set("e3m1",{o:pr(t,.3,.6)});set("e3m2",{o:pr(t,.3,.6)});
+  let act=null,n1=0,n2=0;
+  PZ.forEach(p=>{const a=INI3+p.ord*CADA,x=eIO(pr(t,a,a+CADA*.9));set(p.el,{o:pr(t,.1,.5),x:p.dx*(1-x),y:p.dy*(1-x),r:p.r*(1-x),s:(.55+.45*x)*(1+.08*Math.sin(Math.PI*x))});
+    const quien=p.ord%2;if(x>=1){if(quien)n2++;else n1++;}if(t>=a&&t<a+CADA)act={p,quien};});
+  $("e3n1").textContent=n1;$("e3n2").textContent=n2;
+  [$("e3c1"),$("e3c2")].forEach(c=>{c.style.opacity=t>.6&&t<FIN3+.2?1:0;});
+  if(act){const r=act.p.el.getBoundingClientRect(),s=$("escenario").getBoundingClientRect(),u=s.width/100;
+    const c=act.quien?$("e3c2"):$("e3c1");c.style.left=((r.left-s.left)/u+10)+"cqw";c.style.top=((r.top-s.top)/u+10)+"cqw";}
+  const fin=pr(t,FIN3,FIN3+.4);$("e3marco").style.boxShadow=t>FIN3?`0 0 ${fin*10}cqw #F5B301`:"none";
+  golpe("e3fin",t,FIN3+.1);
+},[[0,"golpe"],...Array.from({length:16},(_,i)=>[INI3+i*CADA+.2,"tick"]),[FIN3+.1,"gana"]]);
+
+/* 4 · Final */
+escena("e4","Entrá",3.4,t=>{
+  set("e4fondo",{o:pr(t,0,.4),s:1+t*.03});
+  const l=pr(t,.1,.8);set("e4logo",{o:l,s:lerp(.3,1,eBack(l))*(1+.015*Math.sin(t*3))});
+  golpe("e4t",t,.7);
+  const b=pr(t,1.2,1.6);set("e4btn",{o:b,s:t<1.2?.5:lerp(.5,1,eBack(b))*(1+.04*Math.sin(t*9)*pr(t,1.6,1.8))});
+},[[.1,"boom"],[.7,"golpe"],[1.2,"ding"]]);
+
+/* ---------- Motor ---------- */
+const INI=[];let acc=0;ESC.forEach(e=>{INI.push(acc);acc+=e.dur;});const TOTAL=acc;
+let tocando=false,ult=null;
+function cual(t){for(let i=ESC.length-1;i>=0;i--)if(t>=INI[i])return i;return 0;}
+function pintar(){
+  const i=cual(T),e=ESC[i],lt=T-INI[i];
+  ESC.forEach((s,k)=>{$(s.id).style.display=k===i?"block":"none";});
+  e.render(lt);
+  const fin=e.dur-lt;$("negro").style.opacity=i===0&&lt<.1?0:Math.max(lt<.15?1-lt/.15:0,fin<.12&&i<ESC.length-1?1-fin/.12:0);
+  $("barra").value=Math.round(T/TOTAL*1000);
+  const mm=s=>Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,"0");
+  $("tiempo").textContent=mm(T)+" / "+mm(TOTAL);
+  $("marca").textContent=`Escena ${i+1} · ${e.nombre} · ${lt.toFixed(1)}s`;
+  document.querySelectorAll("#escenas button").forEach((b,k)=>b.classList.toggle("activa",k===i));
+}
+const MUSICA=armarMusica(TOTAL);
+function cuesEntre(a,b){ESC.forEach((e,i)=>e.cues.forEach(([ct,n])=>{const g=INI[i]+ct;if(g>a&&g<=b&&SFX[n])SFX[n]();}));
+  MUSICA.forEach(([t,fn])=>{if(t>a&&t<=b)fn();});}
+function loop(now){if(tocando){const dt=ult==null?0:(now-ult)/1000;const a=T;T=Math.min(TOTAL,T+dt);cuesEntre(a,T);if(T>=TOTAL){tocando=false;$("bPlay").textContent="▶";}}
+  ult=now;pintar();requestAnimationFrame(loop);}
+function play(){ac();if(T>=TOTAL)T=0;if(T===0)cuesEntre(-1,0);tocando=true;$("bPlay").textContent="⏸";}
+function pausa(){tocando=false;$("bPlay").textContent="▶";}
+function ir(t){T=clamp(t,0,TOTAL);}
+$("bPlay").onclick=()=>tocando?pausa():play();
+$("bStop").onclick=()=>{pausa();T=0;};
+$("bAnt").onclick=()=>{const i=cual(T);ir(T-INI[i]>1?INI[i]:INI[Math.max(0,i-1)]);};
+$("bSig").onclick=()=>{const i=cual(T);ir(INI[Math.min(ESC.length-1,i+1)]);};
+$("barra").oninput=e=>ir(e.target.value/1000*TOTAL);
+$("bSon").onclick=()=>{sonido=!sonido;$("bSon").textContent=sonido?"🔊":"🔇";};
+$("bLimpio").onclick=()=>{document.body.classList.add("limpio");if(!tocando)play();};
+$("escenario").onclick=()=>{if(document.body.classList.contains("limpio")){document.body.classList.remove("limpio");pausa();}};
+ESC.forEach((e,i)=>{const b=document.createElement("button");b.textContent=(i+1)+" · "+e.nombre;b.onclick=()=>ir(INI[i]);$("escenas").appendChild(b);});
+document.addEventListener("keydown",e=>{if(e.code==="Space"){e.preventDefault();tocando?pausa():play();}if(e.code==="ArrowRight")$("bSig").click();if(e.code==="ArrowLeft")$("bAnt").click();});
+const q=new URLSearchParams(location.search);if(q.get("e"))T=INI[clamp(+q.get("e")-1,0,ESC.length-1)];if(q.get("t"))T=clamp(+q.get("t"),0,TOTAL);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
