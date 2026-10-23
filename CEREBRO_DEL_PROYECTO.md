@@ -1337,3 +1337,7 @@ Fecha: 23/10/2026 — Los testers libres de fichas (Juan E, Vale, Andrés, Flor,
 ```text
 Fecha: 23/10/2026 — CORRECCIÓN del popup del pase: Gonzalo quería reemplazar el popup de la PARTIDA DIARIA (el de "premio chico: coleccionable, marco o puntero"), NO el de los Escudos. El de "Escudos de la ruleta" (capaPromoTienda) volvió a estar igual que antes para todos y sigue saliendo segundo. El pase tiene su propio popup #capaPase: sale en lugar del de la Partida Diaria (paseOfrecerHoy: 1 vez por día, gya_promo_pase, solo en la app de Play, sin pase y no tester); la Partida Diaria queda "pospuesta" en Objetivos; "Más tarde" sigue con el de los Escudos. Los testers libres siguen viendo el de la Partida Diaria. Las entradas anteriores de hoy que dicen que el pase reemplazó a capaPromoTienda quedaron viejas. extensiones.js v61, sw v397.
 ```
+
+```text
+Fecha: 23/10/2026 — Video corto promo/video-extensiones.html (~17 s, 9:16, mismo motor que trailer.html): gancho de 3 s "¿Solo jugás a la ruleta? → el tablero RULETA se rompe → HAY 18 JUEGOS MÁS" + desfile de 8 extensiones + puzzle en vivo de a dos (Vos/Sofi con marcador) + "Entrá a Extensiones". Idea de Gonzalo: mostrarlo después de jugar 3 partidas del juego principal. PENDIENTE: NO está en el juego todavía; primero lo revisa Gonzalo.
+```
