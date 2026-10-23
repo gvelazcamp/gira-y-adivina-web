@@ -51,7 +51,7 @@ const TuttiFrutti=(()=>{
   document.addEventListener("visibilitychange",()=>{if(document.hidden)detenerMusica();else if(raiz&&on&&on.fase==="jugando"&&on.fin)iniciarMusica();});
   function configurar(){
     detenerMusica();parar();cerrarSala();PantallaFija.desactivar();
-    raiz.innerHTML=`<div class="mg-panel imp-panel"><h3 class="tf-logo-h"><img class="tf-logo tf-logo-chico" src="${ARTE("logo")}" alt="Tutti Frutti" draggable="false"></h3>
+    raiz.innerHTML=`<div class="mg-panel imp-panel">
       <button type="button" class="tf-ayuda-btn" id="tfAyudaBtn">❓ Cómo se juega</button>
       ${ajustesHtml()}
       <div id="tfZona"><button type="button" class="mg-principal" id="tfBots">🌐 Jugar online</button>
