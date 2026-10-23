@@ -1345,3 +1345,7 @@ Fecha: 23/10/2026 — Video corto promo/video-extensiones.html (~17 s, 9:16, mis
 ```text
 Fecha: 23/10/2026 — Video de Extensiones con la música que eligió Gonzalo ("Grand Prize Fanfare", hecha con Gemini): promo/video-extensiones-musica.mp3 = 0:00.55–0:13.55 + final 0:53.1–0:58.6 con fundido (≈18 s; el golpe final cae cuando aparece el logo). El video toca el mp3 sincronizado con T y los sonidos sintetizados quedan apagados (SINTE=false). A Gonzalo no le gustan los efectos tipo "psh psh" en la música. Versión para ver también en el artifact https://claude.ai/artifact/Y1c7QfJV91NKAqcCyiK3eb.
 ```
+
+```text
+Fecha: 23/10/2026 — El video de Extensiones ya está EN EL JUEGO: sale UNA sola vez (gya_video_ext_visto) cuando el jugador gana por primera vez el 3er paso de una ciudad (pasoActual===2: le faltan 2 partidas para el desafío del rival, tipo El Tío del Asado). Aparece al tocar "Siguiente →" / "Volver al mapa" (videoExtTalVez envuelve la acción que sigue). Pantalla completa negra con iframe promo/video-extensiones.html?embed=1 (sin controles, arranca solo, avisa al terminar con postMessage); "Saltar en 5…" → "Saltar video ⏭" a los 5 s; al final: "Ver Extensiones" (abre el lobby) o "Seguir jugando" (sigue con el paso/mapa). En embed se oculta el botón dibujado del video. Vista previa para Gonzalo en Pruebas: "Vista previa Video Extensiones". sw v398.
+```

@@ -39,6 +39,7 @@ body.limpio #marca{display:none}
 #escenas button{flex:none;border:0;border-radius:8px;background:#1a1024;color:#ccc;font:700 11px Outfit;padding:6px 8px}
 #escenas button.activa{background:var(--oro);color:#160B24}
 body.limpio #ctrl,body.limpio #escenas{display:none}
+body.embed{background:#000}body.embed #e4btn{display:none}body.embed #escenario{width:min(100vw,calc(100vh * 9 / 16))}
 /* Gancho: tablero que se rompe */
 .mini-tab{position:absolute;left:8cqw;right:8cqw;display:flex;justify-content:center;gap:1.4cqw}
 .mini-tab i{width:9cqw;height:11.6cqw;border-radius:1.4cqw;background:#F6EFE2;display:grid;place-items:center;font:900 6.6cqw 'Archivo Black';font-style:normal;color:#160B24;box-shadow:0 .8cqw 0 #0a3d30}
@@ -253,6 +254,10 @@ $("escenario").onclick=()=>{if(document.body.classList.contains("limpio")){docum
 ESC.forEach((e,i)=>{const b=document.createElement("button");b.textContent=(i+1)+" · "+e.nombre;b.onclick=()=>ir(INI[i]);$("escenas").appendChild(b);});
 document.addEventListener("keydown",e=>{if(e.code==="Space"){e.preventDefault();tocando?pausa():play();}if(e.code==="ArrowRight")$("bSig").click();if(e.code==="ArrowLeft")$("bAnt").click();});
 const q=new URLSearchParams(location.search);if(q.get("e"))T=INI[clamp(+q.get("e")-1,0,ESC.length-1)];if(q.get("t"))T=clamp(+q.get("t"),0,TOTAL);
+/* ?embed=1: lo abre el juego (index.html) en un iframe. Sin controles, arranca solo cuando cargaron las imágenes y avisa al terminar. */
+if(q.get("embed")==="1"){document.body.classList.add("limpio","embed");$("escenario").onclick=null;
+  addEventListener("load",()=>{play();const m=$("musica");m.play().catch(()=>{m.muted=true;m.play().catch(()=>{});});});
+  setInterval(()=>{if(T>=TOTAL&&!window._avisado){window._avisado=true;try{parent.postMessage({gya:"video-ext-fin"},"*");}catch(e){}}},200);}
 requestAnimationFrame(loop);
 </script>
 </body>

@@ -686,6 +686,14 @@ p.sub{margin:14px 0 24px;color:#C9B8DE}
 .pd-premio-preview .evento-card-marco{width:96px!important;height:96px!important;max-width:96px!important;flex:0 0 96px!important}
 .pd-premio-preview .ficha-skin-preview{background-size:contain;background-repeat:no-repeat;margin:0}
 .pd-premio-preview .evento-card-premio-emoji{font-size:4rem}
+/* Video de Extensiones (sale 1 vez, al ganar el 3er paso de una ciudad) */
+#videoExt{position:fixed;inset:0;z-index:300;background:#000;display:flex;align-items:center;justify-content:center}
+#videoExtFrame{border:0;width:min(100vw,calc(100vh * 9 / 16));height:min(100vh,calc(100vw * 16 / 9));background:#000}
+#videoExtSaltar{position:absolute;right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));border:1px solid #FFFFFF55;background:#000000AA;color:#fff;font:800 14px Outfit,system-ui,sans-serif;border-radius:10px;padding:10px 16px}
+#videoExtSaltar:disabled{opacity:.75}
+#videoExt[hidden],#videoExtFin[hidden],#videoExtSaltar[hidden]{display:none}
+#videoExtFin{position:absolute;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;max-width:360px;margin:0 auto}
+#videoExtFin .no{width:100%;border-radius:12px;padding:12px;font-weight:700}
 #capaPromoTienda h2{margin-bottom:10px}
 #capaPromoTienda .caja>p{position:relative;margin:4px 8px 14px;line-height:1.35}
 #capaPromoTienda .btn-grande,
@@ -1837,6 +1845,15 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
   <button class="no" id="pdMasTarde" style="width:100%;border-radius:12px;padding:12px;font-weight:700">Más tarde</button>
 </div></div>
 
+<div id="videoExt" hidden>
+  <iframe id="videoExtFrame" title="Video de Extensiones" allow="autoplay"></iframe>
+  <button type="button" id="videoExtSaltar" disabled>Saltar en 5</button>
+  <div id="videoExtFin" hidden>
+    <button type="button" class="btn-grande cta-jugar" id="videoExtIr"><span class="cta-play">🎮</span><span class="cta-txt"><b>Ver Extensiones</b><small>Probá los 18 juegos</small></span></button>
+    <button type="button" class="no" id="videoExtSeguir">Seguir jugando</button>
+  </div>
+</div>
+
 <div class="capa" id="capaPromoTienda"><div class="caja" style="max-width:340px;position:relative">
   <div style="width:108px;height:108px;margin:16px auto 14px;border-radius:28px;background:radial-gradient(circle at 35% 30%,#7B3FE4,#3A1868 70%);display:flex;align-items:center;justify-content:center;font-size:3.4rem;box-shadow:0 8px 20px #00000055,inset 0 2px 0 #FFFFFF22">🛡️</div>
   <h2>Escudos de la ruleta</h2>
@@ -1926,6 +1943,7 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
   <div class="setup-menu">
     <button class="btn-grande sec" id="bPruebaPunteros"><span class="btn-ico">🎯</span><span class="btn-txt">Ruletas de prueba · 8 punteros</span></button>
     <button class="btn-grande sec" id="bPruebaAltaPerfil"><span class="btn-ico">👤</span><span class="btn-txt">Alta de usuario nuevo</span></button>
+    <button class="btn-grande sec" id="bPruebaVideoExt"><span class="btn-ico">🎬</span><span class="btn-txt">Vista previa Video Extensiones</span></button>
     <button class="btn-grande sec" id="bPruebaGiftTienda"><span class="btn-ico">🛡️</span><span class="btn-txt">Vista previa Nuevo: Escudos</span></button>
     <button class="btn-grande sec" id="bPruebaSalaTVBots"><span class="btn-ico">📺</span><span class="btn-txt">Sala TV con bots ficticios</span></button>
     <button class="btn-grande sec" id="bPruebaEscudos"><span class="btn-ico">🛡️</span><span class="btn-txt">Escudos · siempre cae Quiebra/Pierde</span></button>
@@ -6287,6 +6305,7 @@ $("bPruebaContraReloj").onclick=()=>{if(!esGonzalo())return;$("capaPruebas").cla
 $("bPruebaTuttiDudas").onclick=()=>{if(!esGonzalo())return;$("capaPruebas").classList.remove("ver");$("capaMas").classList.remove("ver");if(window.TuttiFrutti)TuttiFrutti.verDudas();};
 $("bPruebaPunteros").onclick=iniciarPruebaPunteros;
 $("bPruebaAltaPerfil").onclick=()=>{$("capaPruebas").classList.remove("ver");$("capaMas").classList.remove("ver");previsualizarPerfilVacio();};
+$("bPruebaVideoExt").onclick=()=>{if(!esGonzalo())return;$("capaPruebas").classList.remove("ver");$("capaMas").classList.remove("ver");videoExtMostrar(null);try{localStorage.removeItem("gya_video_ext_visto");}catch(e){}};
 $("bPruebaGiftTienda").onclick=()=>{if(!esGonzalo())return;ptVistaPrueba=true;$("capaPruebas").classList.remove("ver");$("capaMas").classList.remove("ver");$("capaPromoTienda").classList.add("pt-vista-prueba","ver");};
 $("bPruebaSalaTVBots").onclick=iniciarPruebaSalaTVBots;
 $("bPruebaEscudos").onclick=iniciarPruebaEscudos;
@@ -6352,6 +6371,22 @@ function sumarRondaColeccion(cual){
 }
 let colSobreCualActual=null,colVolverAModal=false;
 let sobrePendienteCual=null,accionTrasSobre=null;
+/* Video de Extensiones: 1 sola vez, después de ganar por primera vez el 3er paso de una
+   ciudad (faltan 2 partidas para el desafío del rival). Saltar se habilita a los 5 s. */
+let videoExtPendiente=false,videoExtTimer=0,videoExtDespues=null;
+function videoExtVisto(){try{return localStorage.getItem("gya_video_ext_visto")==="1";}catch(e){return false;}}
+function videoExtCerrar(ir){clearInterval(videoExtTimer);$("videoExt").hidden=true;$("videoExtFrame").src="about:blank";
+  const f=videoExtDespues;videoExtDespues=null;if(ir){try{Extensiones.abrirLobby();}catch(e){if(f)f();}}else if(f)f();}
+function videoExtMostrar(despues){
+  videoExtPendiente=false;videoExtDespues=despues||null;try{localStorage.setItem("gya_video_ext_visto","1");}catch(e){}
+  $("videoExtFin").hidden=true;const b=$("videoExtSaltar");b.hidden=false;b.disabled=true;let n=5;b.textContent="Saltar en "+n;
+  clearInterval(videoExtTimer);videoExtTimer=setInterval(()=>{n--;if(n>0){b.textContent="Saltar en "+n;return;}clearInterval(videoExtTimer);b.disabled=false;b.textContent="Saltar video ⏭";},1000);
+  $("videoExtFrame").src="promo/video-extensiones.html?embed=1&v=1";$("videoExt").hidden=false;}
+function videoExtTalVez(seguir){if(videoExtPendiente&&!videoExtVisto())videoExtMostrar(seguir);else{videoExtPendiente=false;seguir();}}
+$("videoExtSaltar").onclick=()=>videoExtCerrar(false);
+$("videoExtSeguir").onclick=()=>videoExtCerrar(false);
+$("videoExtIr").onclick=()=>videoExtCerrar(true);
+addEventListener("message",e=>{if(e.data&&e.data.gya==="video-ext-fin"&&!$("videoExt").hidden){clearInterval(videoExtTimer);$("videoExtSaltar").hidden=true;$("videoExtFin").hidden=false;}});
 // Presenta cada sobre acreditado, incluso si los dos son de la misma ciudad.
 function mostrarSobresPack(sobres){
   let indice=0;
@@ -9796,6 +9831,7 @@ function finDelJuego(){
         sumarMonedas(100);
         if(CIUDAD_RICA[d.id]){
           selloImg=CIUDAD_RICA[d.id].sellos[pasoActual].img;
+          if(pasoActual===2&&!videoExtVisto())videoExtPendiente=true;
           if(d.id==="durazno"){
             if(pasoActual===0)logroDesbloquear("paso1");
             if(pasoActual===3)logroDesbloquear("paso4");
@@ -11385,12 +11421,13 @@ $("fMapa").onclick=()=>{
       $("capaModoOnline").classList.add("ver");}
     else verMundo();
   };
-  if(sobrePendienteCual){const c=sobrePendienteCual;sobrePendienteCual=null;accionTrasSobre=continuar;colMostrarSobreConseguido(c);}
-  else continuar();
+  const seguir=()=>videoExtTalVez(continuar);
+  if(sobrePendienteCual){const c=sobrePendienteCual;sobrePendienteCual=null;accionTrasSobre=seguir;colMostrarSobreConseguido(c);}
+  else seguir();
 };
 $("fVolverMapaPaso").onclick=()=>{
   detenerPartidaAnterior();fSiguientePaso=null;$("modalFin").classList.remove("ver");
-  const irAlMapa=()=>verMundo();
+  const irAlMapa=()=>videoExtTalVez(()=>verMundo());
   if(sobrePendienteCual){const c=sobrePendienteCual;sobrePendienteCual=null;accionTrasSobre=irAlMapa;colMostrarSobreConseguido(c);}
   else irAlMapa();
 };
