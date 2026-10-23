@@ -16,7 +16,11 @@ const PantallaFija=(()=>{
      usuario): así el aviso de Chrome "Para salir de la pantalla completa…"
      sale en la pantalla de inicio y no tapa el número/palabra al jugar.
      Se queda en pantalla completa entre rondas; solo sale con salir(). */
+  /* Si la app ya abre en pantalla completa (app de Play configurada en modo
+     "fullscreen"), no se pide de nuevo: así Chrome no muestra su aviso. */
+  const yaCompleta=()=>{try{return matchMedia("(display-mode: fullscreen)").matches;}catch(e){return false;}};
   function entrar(){
+    if(yaCompleta())return Promise.resolve();
     try{const el=document.documentElement;
       if(!document.fullscreenElement&&el.requestFullscreen)return el.requestFullscreen({navigationUI:"hide"}).catch(()=>{});}catch(e){}
     return Promise.resolve();
