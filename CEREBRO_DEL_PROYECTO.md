@@ -1398,3 +1398,7 @@ Fecha: 23/10/2026 — Reel: el cierre dura 4,8 s para que girayadivina.com se le
 ```text
 Fecha: 23/10/2026 — Reel más lento (a Gonzalo le dijeron que iba demasiado rápido): Quiebra/Pierde turno ×1.6, Tío del Asado ×1.9, Uruguay/Argentina ×2.2, Puzzle/Tutti ×2, Extensiones ×1.7, escena Escudo 3 s → ≈36,5 s. Música: The Big Reveal seguida desde 0:05.05 (sin cortes): el golpe de 0:07.5 cae en "¡DULCE DE LECHE!" y el de 0:37 cuando aparece el logo.
 ```
+
+```text
+Fecha: 23/10/2026 — Reel: QUIEBRA casi no se veía. Nuevo tramos(id,nombre,[[desde,hasta,dur]…]) en promo/reel.html: la ruleta gira rápido, QUIEBRA entra a velocidad normal y queda quieta ~1,3 s; lo mismo PIERDE EL TURNO (~0,9 s). Reel ≈38,4 s. Música: The Big Reveal 0:05.05–0:30 + 0:28.125–final (se repite un compás de 1,875 s a 128 BPM para que el golpe de 0:37 siga cayendo con el logo).
+```
