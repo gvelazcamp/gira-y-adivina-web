@@ -10,6 +10,9 @@ const QueNumeroSoy=(()=>{
   function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify({max,rondas}));}catch(e){}}
   cargar();
   const q=id=>raiz.querySelector("#"+id);
+  /* Arte en assets/que-numero-soy/ (hoja de ChatGPT recortada): tema bingo, el número va dentro de una bolilla. */
+  const src=n=>"assets/que-numero-soy/"+n+".webp";
+  const ARTE_RANGO={10:"facil",50:"medio",100:"dificil"};
 
   /* Pantalla completa, sin apagarse y sin "atrás": PantallaFija (pantalla-fija.js). */
   function frenar(e){if(!bloqueado||e.target.closest(".pf-salir"))return;if(e.cancelable)e.preventDefault();e.stopPropagation();}
@@ -17,25 +20,27 @@ const QueNumeroSoy=(()=>{
   function abrir(contenedor){
     salir();cargar();
     raiz=document.createElement("section");raiz.className="qns";
-    raiz.innerHTML=`<div class="mg-panel qns-panel"><h3>¿Qué número soy?</h3>
+    raiz.innerHTML=`<div class="mg-panel qns-panel"><h3 class="imp-logo-h"><img class="qn-logo" src="${src("logo")}" alt="¿Qué número soy?" draggable="false"></h3>
+      <img class="qn-como" src="${src("como")}" alt="" draggable="false">
       <p>El celular muestra un número gigante. Ponételo en la frente: los demás te dan pistas y vos adiviná tu número.</p>
-      <p class="qns-nota">🔒 Mientras juegan la pantalla no se apaga y los toques no hacen nada. Para terminar tocá <b>✕ Salir</b>.</p>
-      <div class="qns-rangos" id="qnsRangos">${RANGOS.map(r=>`<button type="button" data-max="${r}">1 a ${r}</button>`).join("")}</div>
+      <p class="qns-nota qn-nota"><img src="${src("candado")}" alt="" draggable="false"><span>Mientras juegan la pantalla no se apaga y los toques no hacen nada. Para terminar tocá <b>✕ Salir</b>.</span></p>
+      <div class="qns-rangos qn-rangos" id="qnsRangos">${RANGOS.map(r=>`<button type="button" data-max="${r}"><img src="${src(ARTE_RANGO[r])}" alt="" draggable="false"><span>1 a ${r}</span></button>`).join("")}</div>
       <button type="button" class="mg-principal" id="qnsEmpezar">▶ Empezar</button>
       <button type="button" id="qnsWpp">💬 Invitar por WhatsApp</button>
     </div>
-    <div class="qns-pantalla" id="qnsPantalla" hidden>
-      <div class="qns-num" id="qnsNum"></div>
+    <div class="qns-pantalla qn-escena" id="qnsPantalla" hidden>
+      <div class="qn-bola"><div class="qns-num" id="qnsNum"></div></div>
       <button type="button" class="pf-salir" id="qnsSalir">✕ Salir</button>
       <div class="qns-pie" id="qnsPie"></div>
     </div>
     <div class="qns-pantalla qns-fin" id="qnsFin" hidden>
-      <div class="mg-panel qns-panel"><h3>Tu número era</h3><div class="qns-num qns-num-chico" id="qnsEra"></div>
+      <div class="mg-panel qns-panel"><img class="qn-revela" src="${src("revela")}" alt="" draggable="false"><h3>Tu número era</h3><div class="qn-bola qn-bola-chica"><div class="qns-num" id="qnsEra"></div></div>
         <button type="button" class="mg-principal" id="qnsOtro">🔄 Otro número</button>
         <button type="button" id="qnsTerminar">Terminar</button>
       </div>
     </div>`;
     contenedor.appendChild(raiz);PantallaFija.entrar();
+    ["bolilla","fondo","revela"].forEach(n=>{const i=new Image();i.src=src(n);});
     pintarRangos();
     q("qnsRangos").onclick=e=>{const b=e.target.closest("button[data-max]");if(!b)return;max=Number(b.dataset.max);guardar();pintarRangos();};
     q("qnsEmpezar").onclick=empezar;
@@ -55,11 +60,11 @@ const QueNumeroSoy=(()=>{
     q("qnsFin").hidden=true;capa.hidden=false;document.body.classList.add("qns-bloqueado");
     /* Cuenta regresiva para que llegue a ponérselo en la frente sin verlo. */
     let n=3;const num=q("qnsNum"),pie=q("qnsPie");
-    num.classList.add("qns-cuenta");pie.textContent="Ponete el celular en la frente";pie.hidden=false;
+    num.classList.add("qns-cuenta");num.classList.remove("tres");pie.textContent="Ponete el celular en la frente";pie.hidden=false;
     const paso=()=>{
       if(!raiz||!bloqueado)return;
       if(n>0){num.textContent=n;n--;cuenta=setTimeout(paso,1000);return;}
-      num.classList.remove("qns-cuenta");num.textContent=numero;
+      num.classList.remove("qns-cuenta");num.textContent=numero;num.classList.toggle("tres",numero>99);
       pie.hidden=true;
       if(typeof vibrar==="function")vibrar(40);
     };
@@ -69,7 +74,7 @@ const QueNumeroSoy=(()=>{
     clearTimeout(cuenta);
     bloqueado=false;capa.hidden=true;document.body.classList.remove("qns-bloqueado");
     rondas++;guardar();
-    q("qnsEra").textContent=numero;q("qnsFin").hidden=false;
+    q("qnsEra").textContent=numero;q("qnsEra").classList.toggle("tres",numero>99);q("qnsFin").hidden=false;
     if(typeof vibrar==="function")vibrar([30,40,30]);
     /* La pantalla sigue prendida hasta que tocan "Terminar". */
   }

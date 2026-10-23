@@ -604,3 +604,20 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 @media(prefers-reduced-motion:reduce){.rl-celda.nueva{animation:none}}
 .tf-prog i[data-i]{cursor:pointer;width:16px;height:16px}.tf-rev{display:flex;flex-direction:column;gap:6px;width:100%;max-width:360px;margin:6px auto 0}.tf-rev[hidden]{display:none}.tf-rev-fila{display:flex;align-items:center;gap:8px;text-align:left;background:#FFFFFF12;border:1px solid #FFFFFF26;border-radius:12px;padding:8px 12px;color:#fff}.tf-rev-fila small{flex:0 0 42%;font-size:.72rem;color:#D7C8E5}.tf-rev-fila b{flex:1;font-size:.95rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tf-rev-fila span{font-size:.85rem}.tf-rev-basta{margin-top:6px;font-size:1.1rem}#tfEdit[hidden]{display:none}
 .rl-rango{display:flex;align-items:center;justify-content:center;gap:8px;margin:2px auto 4px;font-size:.78rem}.rl-rango b{color:#F5B301}.rl-rango span{display:flex;gap:4px}.rl-rango i{width:9px;height:9px;border-radius:50%;background:#FFFFFF2E}.rl-rango i.ok{background:#F5B301}.rl-rango small{color:#BFAFD1}.rl-letra.rl-centro{background:#160B24;color:#F5B301;border:3px solid #F5B301;box-shadow:0 3px 0 #A87516}.rl-letra.rl-centro.sel{background:#37D6C0;color:#160B24}#rlTema{color:#F6EFE2;font-weight:700}
+/* ¿Qué número soy?: arte (assets/que-numero-soy), tema bingo */
+.qns .qn-logo{display:block;width:min(62%,230px);height:auto;margin:0 auto;filter:drop-shadow(0 6px 10px #0009)}
+.qns .qn-como{display:block;width:min(92%,330px);height:auto;margin:2px auto 6px;filter:drop-shadow(0 6px 10px #0008)}
+.qns .qn-nota{display:flex;align-items:center;gap:10px;text-align:left}.qns .qn-nota img{width:38px;height:auto;flex:none}
+.mg-panel .qn-rangos button{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:auto;min-height:0;padding:8px 4px 7px}
+.mg-panel .qn-rangos button img{width:auto;height:52px;max-width:90%;object-fit:contain;filter:drop-shadow(0 3px 4px #0007)}
+.mg-panel .qn-rangos button span{font-weight:900}
+.qns .qn-escena{background:#160B24 url(assets/que-numero-soy/fondo.webp) center/cover no-repeat}
+.qns .qn-escena::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,#160B24CC 0%,#160B2499 55%,#160B2433 100%);pointer-events:none}
+.qns .qn-bola{--b:min(86vw,74vh);position:relative;z-index:1;width:var(--b);height:var(--b);display:grid;place-items:center;background:url(assets/que-numero-soy/bolilla.webp) center/contain no-repeat;filter:drop-shadow(0 12px 24px #000a)}
+.qns .qn-bola .qns-num{position:absolute;left:15%;right:14%;top:13%;bottom:10%;display:grid;place-items:center;font-size:calc(var(--b) * .4);letter-spacing:-.02em;color:#2A1240;text-shadow:0 4px 0 #0000001F}
+.qns .qn-bola .qns-num.tres{font-size:calc(var(--b) * .3)}
+.qns .qn-bola .qns-num.qns-cuenta{color:#2A124066;text-shadow:none}
+.qns .qn-bola-chica{--b:min(42vw,150px);margin:4px auto 12px}
+.qns .qn-revela{display:block;width:min(48%,170px);height:auto;margin:0 auto -6px;filter:drop-shadow(0 6px 10px #0009)}
+.qns .qns-fin .qns-panel h3{text-align:center}
+.qns .qn-escena .qns-pie{top:calc(max(14px,var(--safe-top)) + 56px)}
