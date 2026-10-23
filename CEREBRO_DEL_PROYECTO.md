@@ -1263,3 +1263,7 @@ Fecha: 23/10/2026 — Tutti Frutti: resultados de la ronda en grilla tipo planil
 ```text
 Fecha: 23/10/2026 — Tutti Frutti resultados: con 4 o más jugadores las columnas se achican (56px mínimo) para que entren sin cortarse en el celular parado. Recordatorio: "🙋 Apelar" sale en tu palabra amarilla solo en partidas con amigos; contra bots, en tu amarilla sale el sumador −/+ (vos decidís). tutti-frutti.js v73, sw v380.
 ```
+
+```text
+Fecha: 23/10/2026 — Tutti Frutti contra bots: arreglo de "los bots quedan todos en 0". Los bots entregaban sus respuestas con 0,4–1,1 s de demora después del BASTA; si se tocaba "▶ Continuar" rápido (o el anfitrión publicaba antes), los resultados salían sin sus palabras. Ahora respuestasBots() las entrega al instante. Además, con 4+ jugadores la letra de las casillas es más chica y las palabras largas se cortan con guion en vez de por la mitad. tutti-frutti.js v74, extensiones.css v113, sw v381.
+```

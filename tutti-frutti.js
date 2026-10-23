@@ -422,10 +422,12 @@ const TuttiFrutti=(()=>{
   /* Al cortar la ronda, cada bot entrega solo lo que llegó a escribir. */
   function respuestasBots(){
     const n=on.n,ahora=Date.now();
-    on.jug.filter(j=>j.bot).forEach((j,k)=>{
+    on.jug.filter(j=>j.bot).forEach(j=>{
       const r=(on.botResp&&on.botResp[j.pid])||[],listas=j.bot.listas||[];
       const parcial=r.map((w,i)=>listas[i]!=null&&listas[i]<=ahora?w:"");
-      on.timers.push(setTimeout(()=>{if(on&&on.n===n)manejar({t:"resp",n,pid:j.pid,r:parcial});},400+k*350));
+      /* Al instante: con demora, si tocabas "Continuar" rápido los resultados
+         salían antes de que llegaran y los bots quedaban todos en 0. */
+      manejar({t:"resp",n,pid:j.pid,r:parcial});
     });
   }
   function nuevaRonda(){
@@ -716,7 +718,7 @@ const TuttiFrutti=(()=>{
     const cols=porFilas?`minmax(64px,1.1fr) repeat(${C},minmax(70px,1fr)) minmax(54px,.8fr)`:`40px repeat(${P},minmax(${P>3?56:72}px,1fr))`;
     pantalla(`<div class="mg-panel imp-panel imp-fin tf-res"><h3 id="tfTitulo" class="tf-res-tit"></h3>
       <p class="imp-ayuda tf-res-ayuda">Letra <b>${on.letra}</b> · <b>10</b> única · <b>5</b> repetida · <b>20</b> si sos el único.<br><b class="tf-amar">⚠️ amarilla</b> = vale 0, tocala para ver por qué · <b class="tf-verde">🙋 Apelar</b> la tuya · <b>+/−</b> sumale a la de otro · <b>❌</b> anulá una que no vale.</p>
-      <div class="tf-grilla-caja"><div class="tf-grilla${porFilas?"":" tf-vuelta"}" id="tfGrilla" style="grid-template-columns:${cols}">${celdas}</div></div>
+      <div class="tf-grilla-caja"><div class="tf-grilla${porFilas?"":" tf-vuelta"}${P>3?" tf-muchos":""}" id="tfGrilla" lang="es" style="grid-template-columns:${cols}">${celdas}</div></div>
       <p class="tf-res-frase" id="tfFrase"></p>
       <div class="qs-sub">🏆 Puntos (con esta ronda)</div><ul class="imp-tabla" id="tfTabla"></ul>
       ${salieronHtml()}

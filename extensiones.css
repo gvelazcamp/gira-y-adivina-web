@@ -756,3 +756,6 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .tf .tf-g-tot{display:grid;place-items:center;background:#E5197C26;border:1.5px solid #E5197C88;border-radius:10px;font:900 1.25rem 'Archivo Black',sans-serif;color:#fff;min-height:44px}
 .tf .tf-g-tot.tf-lider{background:#F5B30130;border-color:#F5B301;color:#FFD65C;box-shadow:0 0 12px #F5B30155}
 .tf .tf-res-frase{text-align:center;font-weight:800;font-size:.9rem;color:#F6EFE2;margin:2px 0 10px}
+.tf .tf-cel .tf-w{word-break:normal;overflow-wrap:anywhere;hyphens:auto;-webkit-hyphens:auto}
+.tf .tf-grilla.tf-muchos .tf-cel .tf-w{font-size:.68rem}
+.tf .tf-grilla.tf-muchos .tf-cel{padding:7px 2px 5px}
