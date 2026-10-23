@@ -1333,3 +1333,7 @@ Fecha: 23/10/2026 — PASE DE EXTENSIONES (suscripción de Google Play). Gonzalo
 ```text
 Fecha: 23/10/2026 — Los testers libres de fichas (Juan E, Vale, Andrés, Flor, Grace, Mari, Romina, Rubén: Fichas.libre()) NO ven nada del Pase de extensiones: les sigue saliendo el popup viejo de "Escudos de la ruleta" (#ptEscudos dentro de capaPromoTienda; ptPrepararPopup() elige cuál mostrar), no ven las tarjetas .tn-pase de la Tienda ni el botón del pase en el cartel de fichas. extensiones.js v60, sw v396.
 ```
+
+```text
+Fecha: 23/10/2026 — CORRECCIÓN del popup del pase: Gonzalo quería reemplazar el popup de la PARTIDA DIARIA (el de "premio chico: coleccionable, marco o puntero"), NO el de los Escudos. El de "Escudos de la ruleta" (capaPromoTienda) volvió a estar igual que antes para todos y sigue saliendo segundo. El pase tiene su propio popup #capaPase: sale en lugar del de la Partida Diaria (paseOfrecerHoy: 1 vez por día, gya_promo_pase, solo en la app de Play, sin pase y no tester); la Partida Diaria queda "pospuesta" en Objetivos; "Más tarde" sigue con el de los Escudos. Los testers libres siguen viendo el de la Partida Diaria. Las entradas anteriores de hoy que dicen que el pase reemplazó a capaPromoTienda quedaron viejas. extensiones.js v61, sw v397.
+```
