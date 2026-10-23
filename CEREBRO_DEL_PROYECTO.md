@@ -1271,3 +1271,8 @@ Fecha: 23/10/2026 — Tutti Frutti contra bots: arreglo de "los bots quedan todo
 ```text
 Fecha: 23/10/2026 — Lobby de Extensiones: Tutti Frutti y Puzzle pasan a ser los dos primeros de "Más juegos" (intercambiados en el catálogo de extensiones.js con Sopa Fugaz y Rueda de Letras, que quedan donde estaban ellos). extensiones.js v52, sw v382.
 ```
+
+```text
+Fecha: 23/10/2026 — Popup "¡Llevá el juego en tu celular!" (#capaPlayWeb en index.html, funciones esAndroidNavegador() y avisoPlayWeb()). Solo en el navegador de un celular Android, en la pantalla de inicio limpia (sin ?parámetros de invitación, sin extensión abierta ni otra ventana), una sola vez por visitante (gya_aviso_play_web en localStorage = descargar/navegador/cerrado; sessionStorage evita repetirlo en la misma sesión). Sale al terminar la carga, antes del tutorial de bienvenida; al cerrarlo sigue el flujo normal (tutChequearBienvenida). Botón dorado → ficha de Play (nueva pestaña, sin redirección automática); "Continuar jugando en el navegador", ✕, Escape o tocar afuera lo cierran.
+Detección de la app (TWA) — alcanza con una señal para NO mostrarlo: referrer android-app://, gya_origen_app="playstore", gya_app_version>0 (?app=N o ?comprobar_partida=1 del start_url, también lo marca la PWA instalada), llegada desde gvelazcamp.github.io (puente de la v16), o display-mode standalone/fullscreen/minimal-ui. ?probarplay=1 lo fuerza para probar. No requiere actualizar la app de Play. sw v383.
+```
