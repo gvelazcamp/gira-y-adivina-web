@@ -1288,3 +1288,7 @@ Fecha: 23/10/2026 — Carga más rápida de imágenes (Gonzalo: "los íconos tar
 ```text
 Fecha: 23/10/2026 — Puzzle: arte nuevo (hoja 4x3 de ChatGPT recortada en assets/puzzle-arte/: logo, como, solo, vivo, c_dibujo, c_aventura, c_heroe, c_gigante, c_ciudad, c_p3d, completo, fondo; icono.webp para el lobby). "Cómo jugar" ahora tiene logo + dibujo de los dos amigos armando en vivo y sale SIEMPRE al entrar (salvo si se entra con invitación a una sala). En "Elegí el puzzle" las categorías son tarjetas con dibujo (el select #elCat queda oculto y sigue mandando; la tarjeta 3D hace clic en #el3d, que queda oculto). El tablero tiene de fondo la mesa de madera (fondoMesa(): patrón del canvas, oscurecido; si no carga, el degradé violeta de antes). Trofeo arriba de "¡Puzzle completo!". puzzle.html v44, puzzle.js v44, extensiones.js v54, sw v385.
 ```
+
+```text
+Fecha: 23/10/2026 — Puzzle "Cómo jugar" entra sin scroll en cualquier celular: 6 renglones cortos (En vivo resaltado primero, arrastrar/girar/pellizcar, se pega sola, imagen chiquita y Guía, qué hay en Elegir, se guarda solo) en vez de 11, y logo/dibujo/letra que se achican según la altura (dvh + media queries de 700 y 600 px). Probado en 320x568, 360x640, 375x667, 390x740 y 412x800. puzzle.html v45, puzzle.js v45, sw v386.
+```
