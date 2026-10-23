@@ -89,12 +89,83 @@ function extensionVisible(ext){
   return typeof esGonzalo==="function"&&esGonzalo();
 }
 window.EXTENSIONES=EXTENSIONES;
+/* Fichas ⚡ de las extensiones (EN PRUEBA: por ahora solo para el usuario
+   Gonzalo; para todos los demás las extensiones siguen gratis). Cada juego
+   tiene sus propias fichas: 3, se repone 1 cada 30 min. Se gasta 1 al empezar
+   una partida/nivel en solitario (los duelos con amigos no gastan). Sin fichas:
+   esperar, recargar ese juego con monedas o probar otro juego. Las vidas del
+   juego principal no se tocan. */
+const Fichas=(()=>{
+  const MAX=3,MS=30*60*1000,CLAVE="gya_fichas_ext",PRECIO=150;
+  const JUEGOS=["sopa-fugaz","rueda-de-letras","frases-en-giro","memoria-en-giro","rosco-rioplatense","silabario-rioplatense","cien-rioplatenses","ahorcado-rioplatense","moon-tap"];
+  const activo=()=>{try{return typeof esGonzalo==="function"&&esGonzalo();}catch(e){return false;}};
+  const cobra=id=>activo()&&JUEGOS.includes(id);
+  let datos={};try{datos=JSON.parse(localStorage.getItem(CLAVE))||{};}catch(e){datos={};}
+  const guardar=()=>{try{localStorage.setItem(CLAVE,JSON.stringify(datos));}catch(e){}};
+  /* Fichas de un juego, reponiendo las que correspondan por el tiempo pasado. */
+  function de(id){
+    const d=datos[id]||(datos[id]={n:MAX,prox:0});const ahora=Date.now();let cambio=false;
+    while(d.n<MAX&&d.prox&&ahora>=d.prox){d.n++;d.prox=d.n<MAX?d.prox+MS:0;cambio=true;}
+    if(d.n>=MAX&&d.prox){d.prox=0;cambio=true;}
+    if(cambio)guardar();return d;
+  }
+  const falta=id=>{const d=de(id);return d.n<MAX&&d.prox?Math.max(0,d.prox-Date.now()):0;};
+  const reloj=ms=>{const t=Math.ceil(ms/1000),m=Math.floor(t/60),s=t%60;return m+":"+String(s).padStart(2,"0");};
+  const nombre=id=>{const e=EXTENSIONES.find(x=>x.id===id);return e?e.nombre:id;};
+  function usar(id,reintentar){
+    if(!cobra(id))return true;
+    const d=de(id);
+    if(d.n>0){d.n--;if(!d.prox)d.prox=Date.now()+MS;guardar();pintarChip();
+      const ch=document.getElementById("extFichas");if(ch){ch.classList.remove("gasto");void ch.offsetWidth;ch.classList.add("gasto");}
+      return true;}
+    sinFichas(id,reintentar);return false;
+  }
+  function recargar(id){
+    let monedas=0,infinitas=false;try{monedas=meta.monedas;infinitas=recursosInfinitosGonzalo();}catch(e){}
+    if(!infinitas&&monedas<PRECIO){if(typeof mostrarToast==="function")mostrarToast("🪙","Te faltan monedas: necesitás "+PRECIO+".","Recargar");return false;}
+    try{gastarMonedas(PRECIO);}catch(e){}
+    datos[id]={n:MAX,prox:0};guardar();pintarChip();return true;
+  }
+  /* Cartel "te quedaste sin fichas" con cuenta regresiva. */
+  let timerCartel=0;
+  function sinFichas(id,reintentar){
+    document.querySelectorAll(".fx-capa").forEach(x=>x.remove());clearInterval(timerCartel);
+    const otro=JUEGOS.filter(x=>x!==id&&EXTENSIONES.some(e=>e.id===x&&e.estado==="disponible")).map(x=>[x,de(x).n]).sort((a,b)=>b[1]-a[1])[0];
+    const c=document.createElement("div");c.className="fx-capa";
+    c.innerHTML='<div class="fx-caja"><div class="fx-rayo">⚡</div><h3>¡Te quedaste sin fichas!</h3>'+
+      '<p>En <b>'+nombre(id)+'</b> usaste tus '+MAX+' fichas.</p><div class="fx-reloj">La próxima vuelve en <b id="fxReloj"></b></div>'+
+      '<button type="button" class="fx-principal" id="fxRecargar">⚡ Recargar '+MAX+' fichas · 🪙 '+PRECIO+'</button>'+
+      (otro&&otro[1]>0?'<button type="button" class="fx-otro" id="fxOtro">🎮 Probá <b>'+nombre(otro[0])+'</b> · tiene '+"⚡".repeat(otro[1])+'</button>':"")+
+      '<button type="button" class="fx-volver" id="fxVolver">Esperar</button><small class="fx-prueba">🧪 En prueba: solo lo ves vos (Gonzalo)</small></div>';
+    (document.getElementById("extShell")||document.body).appendChild(c);
+    const tic=()=>{const ms=falta(id),el=c.querySelector("#fxReloj");if(el)el.textContent=reloj(ms);if(de(id).n>0){cerrarC();if(typeof reintentar==="function")reintentar();}};
+    const cerrarC=()=>{clearInterval(timerCartel);c.remove();};
+    tic();timerCartel=setInterval(tic,1000);
+    c.querySelector("#fxRecargar").onclick=()=>{if(recargar(id)){cerrarC();if(typeof reintentar==="function")reintentar();}};
+    const o=c.querySelector("#fxOtro");if(o)o.onclick=()=>{cerrarC();Extensiones.abrirJuego(otro[0]);};
+    c.querySelector("#fxVolver").onclick=cerrarC;
+    c.onclick=e=>{if(e.target===c)cerrarC();};
+  }
+  /* Chip "⚡ 2/3" arriba, al lado del nombre del juego. */
+  let vistaActual="",timerChip=0;
+  function pintarChip(){
+    const ch=document.getElementById("extFichas");if(!ch)return;
+    if(!cobra(vistaActual)){ch.hidden=true;return;}
+    const d=de(vistaActual),ms=falta(vistaActual);ch.hidden=false;
+    ch.innerHTML='<span>'+"⚡".repeat(d.n)+'<i>'+"⚡".repeat(MAX-d.n)+'</i></span>'+(ms?'<small>+1 en '+reloj(ms)+'</small>':"");
+  }
+  function enJuego(id){vistaActual=id||"";clearInterval(timerChip);pintarChip();if(cobra(vistaActual))timerChip=setInterval(pintarChip,1000);}
+  /* Texto para la tarjeta del juego en la lista de Extensiones. */
+  function etiqueta(id){if(!cobra(id))return"";const d=de(id),ms=falta(id);return d.n>0?"⚡".repeat(d.n)+(d.n<MAX?' · +1 en '+reloj(ms):""):"⚡ 0 · vuelve en "+reloj(ms);}
+  return{usar,enJuego,etiqueta,cobra,de};
+})();
+window.Fichas=Fichas;
 const Extensiones=(()=>{
   let shell=null,contenido=null,vista="";
   function asegurar(){
     if(shell)return;
     shell=document.createElement("section");shell.id="extShell";shell.className="ext-shell";shell.hidden=true;
-    shell.innerHTML='<div class="ext-wrap"><header class="ext-header"><button class="ext-atras" id="extAtras" type="button" aria-label="Volver">‹</button><strong id="extTitulo">Extensiones</strong><button class="ext-cerrar" id="extCerrar" type="button" aria-label="Cerrar">✕</button></header><div id="extContenido"></div></div>';
+    shell.innerHTML='<div class="ext-wrap"><header class="ext-header"><button class="ext-atras" id="extAtras" type="button" aria-label="Volver">‹</button><strong id="extTitulo">Extensiones</strong><span class="ext-fichas" id="extFichas" hidden></span><button class="ext-cerrar" id="extCerrar" type="button" aria-label="Cerrar">✕</button></header><div id="extContenido"></div></div>';
     document.body.appendChild(shell);
     contenido=shell.querySelector("#extContenido");
     /* Todas las ventanitas de inicio/fin de los juegos llevan un "Volver"
@@ -129,7 +200,7 @@ const Extensiones=(()=>{
   function abrirLobby(){
     if(!EXTENSIONES_HABILITADAS)return;
     salirJuego();
-    mostrar();vista="lobby";
+    mostrar();vista="lobby";Fichas.enJuego("");
     shell.querySelector("#extTitulo").textContent="Extensiones Girá y Adiviná";
     contenido.innerHTML='<div class="ext-hero"><span>✦ MÁS JUEGOS, MÁS DESAFÍOS</span><h2>Extensiones</h2><p>Elegí un juego del universo Girá y Adiviná. Jugá gratis, sin gastar vidas ni monedas.</p></div><h3 class="ext-seccion">🎮 Más juegos</h3><div class="ext-lista" id="extListaResto"></div><h3 class="ext-seccion">🎉 Juegos de previa</h3><div class="ext-lista" id="extListaPrevia"></div>';
     /* "Juegos de previa": los de juntarse en grupo (grupo:"previa") van en su propia sección. */
@@ -144,6 +215,7 @@ const Extensiones=(()=>{
       const desc=document.createElement("small");desc.textContent=ext.descripcion;
       const record=document.createElement("em");record.textContent=ext.estado==="disponible"?"Mejor: "+ext.record():"Próximamente";
       txt.append(nombre,desc,record);b.append(img,txt);
+      if(Fichas.cobra(ext.id)){const f=document.createElement("span");f.className="ext-fichas-tarjeta";f.textContent=Fichas.etiqueta(ext.id);b.appendChild(f);}
       if(ext.insignia){const ins=document.createElement("span");ins.className="ext-insignia";ins.textContent=ext.insignia;b.appendChild(ins);}
       if(!b.disabled)b.onclick=()=>abrirJuego(ext.id);
       lista.appendChild(b);
@@ -153,13 +225,13 @@ const Extensiones=(()=>{
   function abrirJuego(id){
     if(!EXTENSIONES_HABILITADAS)return;
     const ext=EXTENSIONES.find(x=>x.id===id&&x.estado==="disponible"&&extensionVisible(x));if(!ext)return;
-    mostrar();vista=id;contenido.replaceChildren();
+    mostrar();vista=id;contenido.replaceChildren();Fichas.enJuego(id);
     shell.querySelector("#extTitulo").textContent=ext.nombre;
     if(typeof window.anotarUltimoJuego==="function")window.anotarUltimoJuego(ext.nombre);
     ext.abrir(contenido);shell.scrollTop=0;
   }
   function salirJuego(){for(const juego of [window.SopaFugaz,window.RuedaDeLetras,window.PalabraSecreta,window.FrasesEnGiro,window.MemoriaEnGiro,window.RoscoRioplatense,window.SilabarioRioplatense,window.CienRioplatenses,window.AhorcadoRioplatense,window.ContraRelojRioplatense,window.MoonTap,window.Puzzle,window.QueNumeroSoy,window.QuienSoy,window.Bomba,window.Impostor,window.Mimica,window.CantaLaCancion,window.TuttiFrutti])if(juego)juego.salir();}
-  function cerrar(){if(!shell)return;salirJuego();shell.hidden=true;document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
+  function cerrar(){if(!shell)return;salirJuego();Fichas.enJuego("");shell.hidden=true;document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
   return{abrirLobby,abrirJuego,cerrar};
 })();
 window.Extensiones=Extensiones;

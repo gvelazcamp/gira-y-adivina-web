@@ -80,7 +80,7 @@ const CienRioplatenses=(()=>{
     if(!raiz||!shell)return;
     if(document.activeElement===$("#crEntrada"))$("#crForm").scrollIntoView({block:"nearest"});
   }
-  function iniciar(){ronda=0;puntos=0;usadasPartida=[];resumen=[];$("#crFinal").hidden=true;girar();}
+  function iniciar(){if(!duelo&&window.Fichas&&!Fichas.usar("cien-rioplatenses",iniciar))return;ronda=0;puntos=0;usadasPartida=[];resumen=[];$("#crFinal").hidden=true;girar();}
   function elegirPreguntaParaDuelo(yaElegidas){
     const pool=CIEN_PREGUNTAS.filter(p=>!yaElegidas.includes(p.id));
     const categorias=CIEN_CATEGORIAS.filter(c=>pool.some(p=>p.categoria===c.id));

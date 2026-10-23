@@ -103,7 +103,7 @@ const RoscoRioplatense=(()=>{
     $("#rrDefinicion").textContent=d.definicion;hud();enfocar();
     if(typeof hablar==="function")hablar(d.definicion,audioMusica);
   }
-  function iniciar(){duelo=false;config=configNivel(nivel);items=armarRonda();guardar();arrancarRonda();}
+  function iniciar(){if(window.Fichas&&!Fichas.usar("rosco-rioplatense",iniciar))return;duelo=false;config=configNivel(nivel);items=armarRonda();guardar();arrancarRonda();}
   function arrancarRonda(){
     estados=items.map(()=>"pendiente");respuestas=items.map(()=>"");
     actual=-1;destino=-1;angulo=0;tiempo=config.segundos*1000;ultimo=performance.now();
