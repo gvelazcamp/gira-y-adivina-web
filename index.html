@@ -9471,10 +9471,14 @@ function hostGirar(){
     const local=((270-(destino%360))%360+360)%360;
     s=SEG[Math.floor(local/paso)%SEG.length];
     intentos++;
-  }while((enTutorial&&s.t&&intentos<40)||(s.t==="PIERDE"&&(S.pierdeSeguidas||0)>=2&&intentos<40)||
+  }while((enTutorial&&s.t&&intentos<40)||
     (pruebaEscudosForzar&&s.t!=="PIERDE"&&s.t!=="QUIEBRA"&&intentos<200)||
+    /* REGLA DE GONZALO: el PRIMER giro de cada partida nunca es Pierde turno ni Quiebra, y nunca
+       salen dos "malos" seguidos (Pierde turno o Quiebra, de cualquier jugador): después de uno
+       malo, el giro siguiente siempre es plata o comodín/x2. */
+    (!pruebaEscudosForzar&&(s.t==="PIERDE"||s.t==="QUIEBRA")&&(!S.girosHechos||S.ultimoMalo)&&intentos<80)||
     (!meta.primerGiroHecho&&esJugarAhora()&&(s.t==="PIERDE"||s.t==="QUIEBRA")&&intentos<40));
-  S.pierdeSeguidas=s.t==="PIERDE"?(S.pierdeSeguidas||0)+1:0;
+  S.girosHechos=(S.girosHechos||0)+1;S.ultimoMalo=s.t==="PIERDE"||s.t==="QUIEBRA";
   /* Regla del primer giro: en ¡Jugar ahora! (Mapa de Uruguay), el
      primerísimo giro que hace un usuario nuevo en toda la vida del
      juego nunca puede ser Pierde turno ni Quiebra — se marca como
