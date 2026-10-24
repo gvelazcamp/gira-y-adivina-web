@@ -172,6 +172,7 @@ Este archivo orienta; el código conserva la implementación, los datos conserva
 - Para arte, leer el PROMPT del tipo correspondiente. Preservar el exterior oscuro de los marcos de letra. Una imagen por objeto cuando Gonzalo pida assets separados. Distinguir marcos, fondos, sellos y coleccionables.
 - No inventar lugares o elementos de una ciudad como si fueran reales; verificar referencias cuando se cree arte geográfico.
 - **REGLA DE GONZALO (19/10/2026): el deslizado (scroll) NUNCA se toca.** Nada de `overscroll-behavior`, `touch-action`, `scroll-snap`, `scroll-behavior`, `overflow` en html/body ni listeners de touch/wheel que frenen el deslizar en las pantallas del juego. Si algo parece pedirlo (p. ej. la recarga al deslizar hacia abajo), preguntarle antes a Gonzalo. Los juegos con PantallaFija/canvas propios (Puzzle, Bomba, etc.) manejan su propio toque y no cuentan.
+- **REGLA DE GONZALO (ruleta de la partida):** el PRIMER giro de cada partida nunca es PIERDE TURNO ni QUIEBRA, y nunca salen dos "malos" seguidos (PIERDE TURNO o QUIEBRA, de cualquier jugador). Vale en todos los modos (máquina, sala de a dos, Sala TV, local): todos los giros pasan por hostGirar() (index.html), con S.girosHechos y S.ultimoMalo.
 - Para audio, revisar referencias existentes antes de sustituir una pista. No borrar música o sonidos de otras extensiones por cambiar una sola.
 
 ## 5. Recuperación: encontrar y reactivar el contexto necesario
@@ -1454,4 +1455,8 @@ Fecha: 24/10/2026 — Los personajes/logos de los popups de inicio de cada juego
 
 ```text
 Fecha: 24/10/2026 — Tutti Frutti, "Famoso / banda": "Emanero" salió como mal escrita y sugería "Enero". Arreglos: (1) nueva lista window.TUTTI_BANDAS en tutti-frutti-datos.js (~375 bandas y artistas, sobre todo rioplatenses: cumbia, cuarteto, rock nacional, urbano/trap, folclore, murga/candombe, tango, más bandas internacionales conocidas). Se acepta el nombre completo y sin el artículo inicial ("Vela Puerca", "Piojos"), pero NO la última palabra sola (para que "Los Palmeras" no habilite cualquier palabra). Se sacaron nombres sueltos que son palabras o nombres comunes (Soledad, Rodrigo, Chocolate, Virus…). (2) La sugerencia "Lo correcto es…" en Famoso/Marca/Película ahora solo aparece si Wikipedia confirma que la sugerencia ES de esa categoría (antes alcanzaba con que no dijera que no: por eso "Enero"). Auditoría de palabras OK. tutti-frutti.js v78, tutti-frutti-datos.js v35, sw v413.
+```
+
+```text
+Fecha: 24/10/2026 — Ruleta de la partida (a Gonzalo, jugando en una sala de a dos, le salió PIERDE TURNO de entrada y dos veces seguido; "era regla"). Antes solo se protegía el primerísimo giro de un usuario nuevo en ¡Jugar ahora! y se permitían hasta 2 PIERDE seguidos. Ahora en hostGirar() — por donde pasan TODOS los giros (anfitrión, invitado vía mensaje "girar", bots, Sala TV, local) — el primer giro de la partida nunca es PIERDE/QUIEBRA y después de un PIERDE o QUIEBRA el siguiente nunca es otro malo (S.girosHechos, S.ultimoMalo; S se crea de nuevo en cada partida). Simulación de 20.000 partidas: 0 primeros giros malos, 0 malos seguidos, ~13% de giros malos. Regla anotada en "Reglas de contenido y visuales". sw v414.
 ```
