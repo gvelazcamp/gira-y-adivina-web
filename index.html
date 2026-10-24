@@ -7457,7 +7457,7 @@ function verMundo(){
     const r=document.createElement("div");r.className="region";
     const abierto=i===0||ganados.has(MUNDO[i-1].id);
     if(!abierto&&!ganados.has(d.id))r.classList.add("gris");
-    if(d.bg)r.style.backgroundImage="url('"+d.bg+"')";
+    if(d.bg)r.dataset.bg=d.bg; // el dibujo se pone recién cuando la ciudad se acerca a la pantalla (ver mapaFondoObs)
     if(d.video){
       const v=document.createElement("video");
       v.dataset.src=d.video;
@@ -7566,17 +7566,24 @@ function verMundo(){
     });
   },{root:m,rootMargin:"60% 0px"});
   m.querySelectorAll(".region video").forEach(v=>mapaVideoObs.observe(v));
+  /* Los dibujos de las ciudades (200–650 KB cada uno) antes se pedían TODOS juntos al abrir el
+     mapa y competían entre sí: la ciudad que estabas mirando tardaba y se veía oscura. Ahora se
+     piden primero los que están en pantalla o cerca, y el resto a medida que te acercás. */
+  if(mapaFondoObs)mapaFondoObs.disconnect();
+  mapaFondoObs=new IntersectionObserver(entries=>{entries.forEach(en=>{if(!en.isIntersecting)return;const r=en.target;
+    if(r.dataset.bg){r.style.backgroundImage="url('"+r.dataset.bg+"')";delete r.dataset.bg;}mapaFondoObs.unobserve(r);});},{root:m,rootMargin:"120% 0px"});
+  m.querySelectorAll(".region").forEach(r=>mapaFondoObs.observe(r));
   precargarVideosMapa();
 }
 /* Baja (una vez) los videos de las ciudades del mapa para que queden guardados en el
    celular (el service worker los guarda) y la próxima vez arranquen al instante. */
-let videosMapaPedidos=false;
+let videosMapaPedidos=false,mapaFondoObs=null;
 function precargarVideosMapa(){
   if(videosMapaPedidos)return;videosMapaPedidos=true;
   try{if(navigator.connection&&navigator.connection.saveData)return;}catch(e){}
   const urls=[...new Set([...MUNDO_URUGUAY,...(typeof MUNDO_ARGENTINA!=="undefined"?MUNDO_ARGENTINA:[])].map(d=>d.video).filter(Boolean))];
   const uno=()=>{const u=urls.shift();if(!u)return;fetch(u).then(r=>r.blob()).catch(()=>{}).then(()=>setTimeout(uno,200));};
-  setTimeout(uno,1500);
+  setTimeout(uno,8000); // después de que carguen los dibujos que se están viendo
 }
 $("salirMundo").onclick=()=>{$("mundo").style.display="none";$("setup").style.display="block";
   $("fondoMundo").classList.remove("ver");};

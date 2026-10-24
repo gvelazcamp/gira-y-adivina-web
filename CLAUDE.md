@@ -31,7 +31,7 @@ Split strategy, not uniformly network-first anymore:
 - `index.html`/JS/manifest: **network-first**, falling back to cache only when offline. This was a conscious fix for a real bug — a cache-first strategy left phones (especially the TWA) stuck on stale versions after deploys.
 - Anything under `assets/`: **cache-first** (added later to stop the shop re-fetching every icon over the network on each open).
 
-Because images are cache-first, **replacing the content of an existing file under `assets/` (same filename, different picture) will not reach phones that already cached it** unless `CACHE_NAME` is bumped — bump it whenever you overwrite an existing asset's bytes, not just when the app-shell file list changes.
+Images, audio and video (svg/webp/png/jpg/gif/mp3/mp4…) live in a separate persistent cache, `CACHE_ASSETS` (`gya-assets-v1`), that is **not** wiped when `CACHE_NAME` is bumped (bumping `CACHE_NAME` on every deploy used to wipe every map, video and icon, so phones re-downloaded everything and saw black/slow screens after each update). Bump `CACHE_NAME` for code changes as usual; **replacing the content of an existing media file with the same filename will not reach phones** unless you bump `CACHE_ASSETS` — prefer a new filename or a `?v=` query instead. `.mp4` requests are served from the cache with proper 206 range responses (`videoDesdeCache`).
 
 ## Architecture inside `index.html`
 
