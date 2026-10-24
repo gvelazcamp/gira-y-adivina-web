@@ -2031,6 +2031,12 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
   <button class="no" id="rkCerrar" style="width:100%;border-radius:14px;padding:13px;font-weight:700;margin-top:10px">Cerrar</button>
 </div></div>
 
+<div class="capa" id="capaRecuperar"><div class="caja" style="max-width:360px;text-align:center">
+  <h2 id="recTit">¿Sos vos?</h2>
+  <p id="recTxt" style="margin:6px 4px 14px;line-height:1.35">Ese nombre ya tiene una partida guardada. Para traerla a este celular, tocá el avatar que usabas:</p>
+  <div id="recAvatares" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px"></div>
+  <button class="no" id="recNo" style="width:100%;border-radius:12px;padding:12px;font-weight:700">No soy yo, elijo otro nombre</button>
+</div></div>
 <div class="capa" id="capaInstalarIOS"><div class="caja pios-caja">
   <img class="pios-ico" src="icono-192.png" alt="">
   <h2>Instalá Girá y Adiviná</h2>
@@ -7757,6 +7763,49 @@ function actualizarChipPerfil(){
    que el resto de las llamadas a Supabase de este archivo). */
 /* soloRanking: para el apodo del Ranking igual al propio nombre de perfil (su
    fila de "usuarios" es la de uno mismo, no de otro jugador). */
+/* RECUPERAR PARTIDA POR NOMBRE. En iPhone, cada vez que se agrega el juego a la pantalla de inicio
+   arranca con la memoria vacía (por ejemplo al pasar de la dirección vieja a girayadivina.com) y
+   pedía registrarse de nuevo: parecía que se perdía todo. Ahora, en un celular sin perfil, si
+   escribís un nombre que ya tiene partida guardada, el juego pregunta "¿Sos vos?" y para confirmar
+   pide tocar el avatar que usabas (entre 6). Si acertás, trae toda la partida (respaldo estado_juego
+   de Supabase) y recarga. */
+let recuperarFila=null;
+async function filaPartidaGuardada(nombre){
+  const supa=obtenerSupa();if(!supa)return null;
+  try{
+    const patron=String(nombre).replace(/[\\%_]/g,"\\$&");
+    const r=await supa.from("gya_ranking").select("apodo,grupo,avatar,estado_juego").in("grupo",[USR_GRUPO,RK_GRUPO]).ilike("apodo",patron).limit(4);
+    const filas=(r.data||[]).filter(x=>x&&x.estado_juego&&x.estado_juego.localStorage);
+    if(!filas.length)return null;
+    return filas.find(x=>x.grupo===USR_GRUPO)||filas[0];
+  }catch(e){return null;}
+}
+function avatarDeFila(f){
+  try{const ls=f.estado_juego.localStorage;return String(ls.gya_avatar||f.avatar||"");}catch(e){return String(f.avatar||"");}
+}
+function mostrarRecuperar(fila){
+  recuperarFila=fila;
+  const suyo=avatarDeFila(fila);
+  const otros=AVATARES.filter(a=>a!==suyo).sort(()=>Math.random()-.5).slice(0,5);
+  const opciones=[suyo,...otros].sort(()=>Math.random()-.5);
+  $("recTit").textContent="¿Sos vos, "+fila.apodo+"?";
+  const cont=$("recAvatares");cont.innerHTML="";
+  opciones.forEach(id=>{const b=document.createElement("button");b.type="button";b.className="avatar-opcion";
+    b.innerHTML='<img src="assets/avatars/'+id+'.webp" alt="">';
+    b.onclick=()=>{if(id===suyo)recuperarPartida(fila);else{$("capaRecuperar").classList.remove("ver");mostrarToast("👤","Ese no era. Elegí otro nombre, por ej. "+fila.apodo+"2.");}};
+    cont.appendChild(b);});
+  $("capaRecuperar").classList.add("ver");
+}
+function recuperarPartida(fila){
+  try{
+    const datos=fila.estado_juego.localStorage;let n=0;
+    Object.keys(datos).forEach(clave=>{if(!(clave.startsWith("gya_")||clave.startsWith("larueda_")))return;if(ESTADO_JUEGO_EXCLUIR.has(clave))return;try{localStorage.setItem(clave,datos[clave]);n++;}catch(e){}});
+    $("capaRecuperar").classList.remove("ver");
+    mostrarToast("✅","¡Listo! Recuperamos tu partida");
+    setTimeout(()=>{location.href=location.pathname;},900);
+  }catch(e){mostrarToast("⚠️","No se pudo recuperar. Probá de nuevo con internet.");}
+}
+$("recNo").onclick=()=>{$("capaRecuperar").classList.remove("ver");recuperarFila=null;};
 async function nombrePerfilDisponible(nombre,soloRanking){
   const supa=obtenerSupa();
   if(!supa)return true;
@@ -7861,7 +7910,7 @@ $("perfilNombreOk").onclick=async()=>{
     $("perfilNombreOk").disabled=true;
     const disponible=await nombrePerfilDisponible(n);
     $("perfilNombreOk").disabled=!nombrePerfilPersonal($("perfilNombre").value.slice(0,12));
-    if(!disponible){mostrarToast("👤","Ese nombre ya lo usa otro jugador. Probá otro, por ej. "+n+"2.");return;}
+    if(!disponible){if(!perfilExiste()){const fila=await filaPartidaGuardada(n);if(fila&&avatarDeFila(fila)){mostrarRecuperar(fila);return;}}mostrarToast("👤","Ese nombre ya lo usa otro jugador. Probá otro, por ej. "+n+"2.");return;}
   }
   $("perfilNombre").value=n;
   renderAvatarGrid();
@@ -7882,7 +7931,7 @@ $("perfilContinuar").onclick=async()=>{
     $("perfilContinuar").disabled=true;
     const disponible=await nombrePerfilDisponible(n);
     actualizarBotonPerfil();
-    if(!disponible){mostrarToast("👤","Ese nombre ya lo usa otro jugador. Probá otro, por ej. "+n+"2.");return;}
+    if(!disponible){if(!perfilExiste()){const fila=await filaPartidaGuardada(n);if(fila&&avatarDeFila(fila)){mostrarRecuperar(fila);return;}}mostrarToast("👤","Ese nombre ya lo usa otro jugador. Probá otro, por ej. "+n+"2.");return;}
   }
   guardarPerfil(n,avatarElegido,paisElegido,$("perfilCiudad").value);
   mapaPaisForzado=null;sincronizarMundoActivo();
