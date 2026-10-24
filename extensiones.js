@@ -215,7 +215,13 @@ const Extensiones=(()=>{
   function precargarIconos(){
     if(iconosListos.length)return;
     EXTENSIONES.forEach(x=>{if(!x.icono)return;const im=new Image();im.src=x.icono;iconosListos.push(im);if(im.decode)im.decode().catch(()=>{});});
+    /* Y los dibujos de los popups de cada juego (personajes y logos grandes del cartel de inicio),
+       un ratito después, para que al entrar a un juego el popup salga completo de arranque. */
+    setTimeout(()=>{ARTE_POPUPS.forEach(u=>{const im=new Image();im.src=u;iconosListos.push(im);if(im.decode)im.decode().catch(()=>{});});},1500);
   }
+  const ARTE_POPUPS=["ahorcado","cien","frases-giro","memoria-giro","palabra-secreta","rosco","rueda-letras","silabario"].map(c=>"assets/"+c+"/personaje.webp")
+    .concat(["ahorcado","bomba","canta","cien","frases-giro","impostor","memoria-giro","mimica","palabra-secreta","puzzle-arte","que-numero-soy","quien-soy","rosco","rueda-letras","silabario","sopa","tutti"].map(c=>"assets/"+c+"/logo.webp"))
+    .concat(["assets/tutti/como.webp","assets/tutti/ficha.webp"]);
   addEventListener("load",()=>setTimeout(precargarIconos,1200));
   function abrirLobby(){
     precargarIconos();
