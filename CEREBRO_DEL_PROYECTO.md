@@ -1427,3 +1427,7 @@ Fecha: 24/10/2026 — Mapa: al entrar se veía un instante la primera ciudad (Du
 ```text
 Fecha: 24/10/2026 — CORRECCIÓN (video de Gonzalo: "nunca hacía esto, entraba y estaba todo impecable"): se SACÓ la carga "a medida que te acercás" de los dibujos del mapa (mapaFondoObs, del 24/10) porque al entrar mostraba un cuadro negro y el dibujo se pintaba de a pedazos. Vuelve a ponerse el fondo de todas las ciudades al instante, como antes (ahora salen de la caché fija de assets). Además precargarMapaActual(): al abrir el juego deja bajados y decodificados los dibujos de tu ciudad actual y las de al lado, así el mapa aparece completo desde el primer cuadro (probado: el primer cuadro ya tiene el dibujo). REGLA: el mapa tiene que aparecer completo al entrar; no volver a cargar sus dibujos de forma diferida. sw v406.
 ```
+
+```text
+Fecha: 24/10/2026 — Ciudades con video: al empezar el video la imagen "se agrandaba" (de chico a grande). Causa: el dibujo original (ej. salto.webp, 941×1672) está más alejado que el video (salto-loop.mp4, 886×1552, más cerca). Arreglo: para las ciudades con video se usa como dibujo de fondo el PRIMER CUADRO del video (assets/worlds/<ciudad>-loop-poster.webp, sacado con ffmpeg), mismo encuadre y medida → el fundido al video no cambia nada. fondoCiudad(d) lo elige (mapa general, pantalla de la ciudad y precarga). Si se cambia un video *-loop.mp4, regenerar su poster: ffmpeg -i X-loop.mp4 -frames:v 1 -c:v libwebp -quality 82 X-loop-poster.webp. sw v407.
+```

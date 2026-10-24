@@ -2891,6 +2891,10 @@ function paisPerfilGuardado(){try{return localStorage.getItem("gya_pais")==="arg
 function paisMapaActivo(){try{if(mapaPaisForzado)return mapaPaisForzado;return paisPerfilGuardado();}catch(e){return"uruguay";}}
 let mapaPaisActual=paisMapaActivo();
 let MUNDO=mapaPaisActual==="argentina"?MUNDO_ARGENTINA:MUNDO_URUGUAY;
+/* Dibujo de fondo de una ciudad. Si tiene video, se usa el primer cuadro del video (…-loop-poster.webp),
+   que tiene el mismo encuadre: así al empezar el video no "agranda" la imagen (el dibujo original
+   está más alejado que el video). */
+function fondoCiudad(d){return d.video?d.video.replace(/-loop\.mp4$/,"-loop-poster.webp"):d.bg;}
 function claveMundo(base){return mapaPaisActual==="argentina"?base+"_argentina":base;}
 function registrarMapaVisitado(){try{localStorage.setItem("gya_mapa_pais_social",mapaPaisActual);}catch(e){}}
 function cargarGanadosMapa(){try{return new Set(JSON.parse(localStorage.getItem(claveMundo("larueda_mundo"))||"[]"));}catch(e){return new Set();}}
@@ -7400,7 +7404,7 @@ function abrirCiudadRica(idx){
      siempre. */
   if(dzCiudad().video){
     img.style.display="block";
-    if(!img.src.endsWith(dzCiudad().bg))img.src=dzCiudad().bg;
+    if(!img.src.endsWith(fondoCiudad(dzCiudad())))img.src=fondoCiudad(dzCiudad());
     vid.style.display="block";
     if(!vid.src.endsWith(dzCiudad().video)){vid.classList.remove("listo");vid.src=dzCiudad().video;}
     if(vid.paused)vid.play().catch(()=>{});
@@ -7457,7 +7461,7 @@ function verMundo(){
     const r=document.createElement("div");r.className="region";
     const abierto=i===0||ganados.has(MUNDO[i-1].id);
     if(!abierto&&!ganados.has(d.id))r.classList.add("gris");
-    if(d.bg)r.style.backgroundImage="url('"+d.bg+"')";
+    if(d.bg)r.style.backgroundImage="url('"+fondoCiudad(d)+"')";
     if(d.video){
       const v=document.createElement("video");
       v.dataset.src=d.video;
@@ -7580,7 +7584,7 @@ const mapaDibujosListos=[];
 function precargarMapaActual(){
   try{
     const lista=MUNDO;let act=0;while(act<lista.length&&ganados.has(lista[act].id))act++;act=Math.min(act,lista.length-1);
-    [act,act-1,act+1].forEach(i=>{const d=lista[i];if(!d||!d.bg)return;const im=new Image();im.src=d.bg;mapaDibujosListos.push(im);if(im.decode)im.decode().catch(()=>{});});
+    [act,act-1,act+1].forEach(i=>{const d=lista[i];if(!d||!d.bg)return;const im=new Image();im.src=fondoCiudad(d);mapaDibujosListos.push(im);if(im.decode)im.decode().catch(()=>{});});
   }catch(e){}
 }
 window.addEventListener("load",()=>setTimeout(precargarMapaActual,1500));
