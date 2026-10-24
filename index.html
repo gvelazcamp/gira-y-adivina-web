@@ -191,9 +191,7 @@ button:focus-visible{outline:3px solid var(--agua);outline-offset:2px}
 #mapa::-webkit-scrollbar{width:0}
 .tira{position:relative;width:100%;overflow:hidden}
 .region{width:100%;aspect-ratio:3/4;background-size:cover;background-position:center;display:block;margin-bottom:-1px;position:relative}
-.region video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;opacity:0;transition:opacity .3s}
-/* el video aparece recién cuando ya tiene imagen: antes se ve el dibujo de la ciudad (nunca negro) */
-.region video.listo{opacity:1}
+.region video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
 .region::before,.region::after{content:"";position:absolute;left:0;right:0;height:10%;pointer-events:none}
 .region::before{top:0;background:linear-gradient(180deg,#0C0616,transparent)}
 .region::after{bottom:0;background:linear-gradient(0deg,#0C0616,transparent)}
@@ -258,9 +256,7 @@ button:focus-visible{outline:3px solid var(--agua);outline-offset:2px}
 .dz-viewport.dz-arrastrando{cursor:grabbing}
 .dz-canvas{position:relative;width:100%}
 .dz-canvas img,.dz-canvas video{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none;pointer-events:none}
-/* El dibujo de la ciudad queda siempre abajo (da el tamaño) y el video encima aparece cuando ya se está reproduciendo: así nunca se ve negro. */
-.dz-canvas video{position:absolute;left:0;top:0;height:100%;object-fit:cover;opacity:0;transition:opacity .3s}
-.dz-canvas video.listo{opacity:1}
+
 .dz-nodo{position:absolute;transform:translate(-50%,-50%);z-index:3;width:clamp(34px,12vw,50px);height:clamp(34px,12vw,50px);
  border-radius:50%;display:grid;place-items:center;font-family:'Archivo Black',sans-serif;
  font-size:clamp(.85rem,3.2vw,1.1rem);background:#160B24E6;color:var(--crema);border:3px solid #FFFFFF3D;
@@ -2701,7 +2697,6 @@ function activarLoopSuave(v){
   });
 }
 activarLoopSuave($("duraznoVideo"));
-$("duraznoVideo").addEventListener("playing",e=>e.target.classList.add("listo"));
 const cv=$("rueda"),cx=cv.getContext("2d");
 /* Marco de ruleta equipado: se carga acá (temprano) porque el primer
    dibujado de la ruleta real ya lo necesita. El resto del sistema de
@@ -7403,12 +7398,13 @@ function abrirCiudadRica(idx){
      infinito en vez del fondo fijo. El resto sigue usando la imagen de
      siempre. */
   if(dzCiudad().video){
-    img.style.display="block";
-    if(!img.src.endsWith(fondoCiudad(dzCiudad())))img.src=fondoCiudad(dzCiudad());
+    /* Solo el video, como siempre. Su "poster" es el primer cuadro del mismo video: mientras
+       arranca se ve esa imagen (nunca negro) y con el mismo tamaño, así no salta. */
+    img.style.display="none";
     vid.style.display="block";
-    if(!vid.src.endsWith(dzCiudad().video)){vid.classList.remove("listo");vid.src=dzCiudad().video;}
+    if(!vid.src.endsWith(dzCiudad().video)){vid.poster=fondoCiudad(dzCiudad());vid.src=dzCiudad().video;}
     if(vid.paused)vid.play().catch(()=>{});
-    if(img.complete)irAFoco();else img.addEventListener("load",irAFoco,{once:true});
+    irAFoco();
   }else{
     vid.pause();vid.style.display="none";
     img.style.display="block";
@@ -7466,7 +7462,7 @@ function verMundo(){
       const v=document.createElement("video");
       v.dataset.src=d.video;
       v.muted=true;v.loop=true;v.playsInline=true;v.preload="none";
-      activarLoopSuave(v);v.addEventListener("playing",()=>v.classList.add("listo"));
+      activarLoopSuave(v);v.poster=fondoCiudad(d);
       r.appendChild(v);
     }
     if(d.id==="montevideo"){
@@ -7585,6 +7581,7 @@ function precargarMapaActual(){
   try{
     const lista=MUNDO;let act=0;while(act<lista.length&&ganados.has(lista[act].id))act++;act=Math.min(act,lista.length-1);
     [act,act-1,act+1].forEach(i=>{const d=lista[i];if(!d||!d.bg)return;const im=new Image();im.src=fondoCiudad(d);mapaDibujosListos.push(im);if(im.decode)im.decode().catch(()=>{});});
+    const dv=lista[act];if(dv&&dv.video)fetch(dv.video).then(r=>r.blob()).catch(()=>{}); // el video de tu ciudad queda guardado
   }catch(e){}
 }
 window.addEventListener("load",()=>setTimeout(precargarMapaActual,1500));

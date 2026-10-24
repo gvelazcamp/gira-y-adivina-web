@@ -1431,3 +1431,7 @@ Fecha: 24/10/2026 — CORRECCIÓN (video de Gonzalo: "nunca hacía esto, entraba
 ```text
 Fecha: 24/10/2026 — Ciudades con video: al empezar el video la imagen "se agrandaba" (de chico a grande). Causa: el dibujo original (ej. salto.webp, 941×1672) está más alejado que el video (salto-loop.mp4, 886×1552, más cerca). Arreglo: para las ciudades con video se usa como dibujo de fondo el PRIMER CUADRO del video (assets/worlds/<ciudad>-loop-poster.webp, sacado con ffmpeg), mismo encuadre y medida → el fundido al video no cambia nada. fondoCiudad(d) lo elige (mapa general, pantalla de la ciudad y precarga). Si se cambia un video *-loop.mp4, regenerar su poster: ffmpeg -i X-loop.mp4 -frames:v 1 -c:v libwebp -quality 82 X-loop-poster.webp. sw v407.
 ```
+
+```text
+Fecha: 24/10/2026 — Pedido de Gonzalo: "¿no puede ser solo el video, como antes?". En la pantalla de la ciudad vuelve a estar SOLO el video (el dibujo queda oculto, como siempre), sin capas ni fundido. Al video se le pone como poster el primer cuadro del mismo video (fondoCiudad → *-loop-poster.webp): mientras arranca se ve esa imagen dentro del mismo video, del mismo tamaño, nunca negro. En el mapa general también sin fundido (video encima del fondo, con el mismo poster). Al abrir el juego se guarda en el celular el video de tu ciudad actual. sw v408.
+```
