@@ -7545,6 +7545,9 @@ function verMundo(){
   tira.appendChild(pin);
 
   m.appendChild(tira);
+  /* Ubicar el mapa en la ciudad actual YA, antes de que se pinte: antes se veía un instante la
+     primera ciudad (arriba de todo, a medio cargar) y después saltaba a la tuya. */
+  {const nodo0=m.querySelectorAll(".nodo")[act];if(nodo0)m.scrollTop=nodo0.offsetTop-m.clientHeight/2;}
   setTimeout(()=>{
     const nodo=m.querySelectorAll(".nodo")[act];
     if(nodo)m.scrollTop=nodo.offsetTop-m.clientHeight/2;
