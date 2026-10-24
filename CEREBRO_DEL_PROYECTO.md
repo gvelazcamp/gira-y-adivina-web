@@ -1411,3 +1411,7 @@ Fecha: 23/10/2026 — Videos del mapa (ciudades con loop: Durazno, Montevideo, S
 4) precargarVideosMapa(): al abrir el mapa baja de a uno los videos de todas las ciudades (una vez por sesión, no con ahorro de datos) para que queden guardados.
 Probado: Range 0-99 / 1000- / -500 responden 206 correcto; un video servido desde la caché arranca en ~60 ms. (El Chromium de pruebas no tiene H.264, se probó con una copia en VP9.) sw v402.
 ```
+
+```text
+Fecha: 24/10/2026 — Al compartir girayadivina.com (Instagram, WhatsApp) la vista previa mostraba el logo cortado: og:image era el ícono cuadrado (icono-512.png) y las redes lo recortan horizontal. Nueva imagen para compartir assets/compartir/og-girayadivina.jpg (1200×630: logo al centro, ruleta a la izquierda, banderas a la derecha, fondo de Montevideo desenfocado); og:image/twitter:image apuntan ahí. Las redes guardan la vista previa vieja un tiempo (Facebook/Instagram: se puede refrescar en developers.facebook.com/tools/debug). sw v403.
+```
