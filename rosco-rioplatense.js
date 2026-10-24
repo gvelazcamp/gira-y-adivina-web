@@ -78,9 +78,24 @@ const RoscoRioplatense=(()=>{
     if(typeof vibrar==="function")vibrar(acierto?25:[45,40,45]);
   }
   function enfocar(){if(raiz&&!document.hidden){$("#rrEntrada").focus({preventScroll:true});ajustarPantalla();}}
+  /* Todo en una sola pantalla, también con el teclado abierto (pedido de los jugadores: había que
+     deslizar para ver la pista y donde se escribe). Con el teclado abierto se ocultan el logo y el
+     "volver" (modo compacto) y la rueda se achica para que entren rueda + pista + respuesta. */
   function ajustarPantalla(){
     if(!raiz||!shell)return;
-    if(document.activeElement===$("#rrEntrada"))$("#rrForm").scrollIntoView({block:"nearest"});
+    const vv=window.visualViewport,alto=vv?vv.height:innerHeight;
+    const escribiendo=document.activeElement===$("#rrEntrada");
+    const teclado=alto<innerHeight*.8||(escribiendo&&alto<innerHeight*.9);
+    raiz.classList.toggle("rr-compacto",teclado);
+    const rueda=raiz.querySelector(".rr-rueda"),juego=$("#rrJuego");
+    if(rueda&&juego&&!juego.hidden){
+      rueda.style.width="";
+      const natural=rueda.offsetWidth,arriba=raiz.getBoundingClientRect().top-shell.getBoundingClientRect().top+shell.scrollTop;
+      const resto=raiz.offsetHeight-rueda.offsetHeight,sobra=alto-arriba-resto-10;
+      rueda.style.width=Math.max(teclado?80:110,Math.min(natural,sobra))+"px";
+    }
+    if(teclado){shell.scrollTop=0;if(vv&&vv.offsetTop>0&&escribiendo){const f=$("#rrForm").getBoundingClientRect();if(f.bottom<=alto)window.scrollTo(0,0);}}
+    else if(escribiendo)$("#rrForm").scrollIntoView({block:"nearest"});
   }
   function siguiente(){
     const p=pendientes();if(!p.length){terminar();return;}
@@ -107,7 +122,7 @@ const RoscoRioplatense=(()=>{
   function arrancarRonda(){
     estados=items.map(()=>"pendiente");respuestas=items.map(()=>"");
     actual=-1;destino=-1;angulo=0;tiempo=config.segundos*1000;ultimo=performance.now();
-    $("#rrPanel").hidden=true;$("#rrEntrada").value="";$("#rrJuego").hidden=false;
+    $("#rrPanel").hidden=true;$("#rrEntrada").value="";$("#rrJuego").hidden=false;requestAnimationFrame(ajustarPantalla);
     const disco=$("#rrDisco");disco.replaceChildren();disco.style.transition="none";disco.style.transform="rotate(0deg)";
     items.forEach((d,i)=>{
       const el=document.createElement("div"),span=document.createElement("span"),a=i*2*Math.PI/items.length;
@@ -230,6 +245,7 @@ const RoscoRioplatense=(()=>{
     $("#rrEscuchar").onclick=()=>{if(actual>=0&&typeof hablar==="function")hablar(items[actual].definicion,audioMusica);};
     for(const b of raiz.querySelectorAll("#rrForm button"))b.onpointerdown=e=>e.preventDefault();
     $("#rrEntrada").onbeforeinput=e=>{if(fase!=="resolver")e.preventDefault();};
+    $("#rrEntrada").addEventListener("focus",()=>setTimeout(ajustarPantalla,350));$("#rrEntrada").addEventListener("blur",()=>setTimeout(ajustarPantalla,350));
     window.visualViewport?.addEventListener("resize",ajustarPantalla);window.visualViewport?.addEventListener("scroll",ajustarPantalla);window.addEventListener("resize",ajustarPantalla);
     document.addEventListener("visibilitychange",visibilidad);ultimo=performance.now();intervalo=setInterval(tic,ROSCO_CONFIG.ticMs);iniciarMusicaJuego();
     const acciones=[["Jugar nivel "+nivel,iniciar]];if(nivel>1)acciones.push(["Practicar desde el nivel 1",()=>{nivel=1;iniciar();}]);
