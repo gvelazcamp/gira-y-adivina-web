@@ -1423,3 +1423,7 @@ Fecha: 24/10/2026 — Auditoría de carga ("otra vez algo negro"). CAUSA DE FOND
 ```text
 Fecha: 24/10/2026 — Mapa: al entrar se veía un instante la primera ciudad (Durazno, arriba de todo y a medio cargar, con negro abajo) y después saltaba a la ciudad actual (video de Gonzalo). El scroll a la ciudad actual se hacía en un setTimeout de 80 ms; ahora se hace en el momento, antes de que se pinte (queda el setTimeout como corrección). Así además se piden primero los dibujos de la ciudad donde estás. sw v405.
 ```
+
+```text
+Fecha: 24/10/2026 — CORRECCIÓN (video de Gonzalo: "nunca hacía esto, entraba y estaba todo impecable"): se SACÓ la carga "a medida que te acercás" de los dibujos del mapa (mapaFondoObs, del 24/10) porque al entrar mostraba un cuadro negro y el dibujo se pintaba de a pedazos. Vuelve a ponerse el fondo de todas las ciudades al instante, como antes (ahora salen de la caché fija de assets). Además precargarMapaActual(): al abrir el juego deja bajados y decodificados los dibujos de tu ciudad actual y las de al lado, así el mapa aparece completo desde el primer cuadro (probado: el primer cuadro ya tiene el dibujo). REGLA: el mapa tiene que aparecer completo al entrar; no volver a cargar sus dibujos de forma diferida. sw v406.
+```
