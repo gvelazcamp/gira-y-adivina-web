@@ -151,11 +151,6 @@ body.ext-abierta{overflow:hidden}
 
 /* El Rosco: círculo compacto con campo de respuesta siempre accesible. */
 .ext-shell.rr-abierta{height:100vh;height:100lvh}
-/* Rosco con el teclado abierto: todo en una pantalla (rueda + pista + respuesta) */
-.rr-game.rr-compacto #rrVolver,.rr-game.rr-compacto .rr-titulo{display:none!important}
-.rr-game.rr-compacto .sf-hud{margin-bottom:4px}.rr-game.rr-compacto .rr-rueda{margin:14px auto 6px}
-.rr-game.rr-compacto .rr-pista{min-height:0;padding:8px 12px}.rr-game.rr-compacto .rr-mensaje{min-height:0;margin:3px 0}
-.rr-game.rr-compacto .sf-hud{margin:2px 0}.rr-game.rr-compacto .sf-hud>div{padding:3px 4px}.rr-game.rr-compacto .sf-hud small{font-size:.58rem}.rr-game.rr-compacto .sf-hud b{font-size:.9rem}
 .rr-game{max-width:480px;margin:auto;text-align:center}.rr-game [hidden]{display:none!important}
 .rr-titulo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px}.rr-titulo img{width:52px;height:52px;border-radius:14px}.rr-titulo h2{font-family:'Archivo Black',sans-serif;color:#F5B301;font-size:1.5rem;margin:0}.rr-titulo p{font-size:.76rem;color:#D7C8E5;margin:4px 0 0}
 .rr-rueda{position:relative;width:min(76vw,290px);aspect-ratio:1;margin:17px auto 12px;border-radius:50%;background:radial-gradient(circle,#442068,#241238 68%);box-shadow:inset 0 0 0 2px #F5B30166,0 10px 25px #0004}
