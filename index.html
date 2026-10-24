@@ -7457,7 +7457,7 @@ function verMundo(){
     const r=document.createElement("div");r.className="region";
     const abierto=i===0||ganados.has(MUNDO[i-1].id);
     if(!abierto&&!ganados.has(d.id))r.classList.add("gris");
-    if(d.bg)r.dataset.bg=d.bg; // el dibujo se pone recién cuando la ciudad se acerca a la pantalla (ver mapaFondoObs)
+    if(d.bg)r.style.backgroundImage="url('"+d.bg+"')";
     if(d.video){
       const v=document.createElement("video");
       v.dataset.src=d.video;
@@ -7569,18 +7569,21 @@ function verMundo(){
     });
   },{root:m,rootMargin:"60% 0px"});
   m.querySelectorAll(".region video").forEach(v=>mapaVideoObs.observe(v));
-  /* Los dibujos de las ciudades (200–650 KB cada uno) antes se pedían TODOS juntos al abrir el
-     mapa y competían entre sí: la ciudad que estabas mirando tardaba y se veía oscura. Ahora se
-     piden primero los que están en pantalla o cerca, y el resto a medida que te acercás. */
-  if(mapaFondoObs)mapaFondoObs.disconnect();
-  mapaFondoObs=new IntersectionObserver(entries=>{entries.forEach(en=>{if(!en.isIntersecting)return;const r=en.target;
-    if(r.dataset.bg){r.style.backgroundImage="url('"+r.dataset.bg+"')";delete r.dataset.bg;}mapaFondoObs.unobserve(r);});},{root:m,rootMargin:"120% 0px"});
-  m.querySelectorAll(".region").forEach(r=>mapaFondoObs.observe(r));
   precargarVideosMapa();
 }
 /* Baja (una vez) los videos de las ciudades del mapa para que queden guardados en el
    celular (el service worker los guarda) y la próxima vez arranquen al instante. */
-let videosMapaPedidos=false,mapaFondoObs=null;
+let videosMapaPedidos=false;
+/* Al abrir el juego se dejan listos (bajados y decodificados) los dibujos de tu ciudad actual y
+   las de al lado, así al tocar el mapa aparecen al instante, sin negro ni carga de a pedazos. */
+const mapaDibujosListos=[];
+function precargarMapaActual(){
+  try{
+    const lista=MUNDO;let act=0;while(act<lista.length&&ganados.has(lista[act].id))act++;act=Math.min(act,lista.length-1);
+    [act,act-1,act+1].forEach(i=>{const d=lista[i];if(!d||!d.bg)return;const im=new Image();im.src=d.bg;mapaDibujosListos.push(im);if(im.decode)im.decode().catch(()=>{});});
+  }catch(e){}
+}
+window.addEventListener("load",()=>setTimeout(precargarMapaActual,1500));
 function precargarVideosMapa(){
   if(videosMapaPedidos)return;videosMapaPedidos=true;
   try{if(navigator.connection&&navigator.connection.saveData)return;}catch(e){}

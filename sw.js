@@ -1,4 +1,4 @@
-const CACHE_NAME = "gya-cache-v405";
+const CACHE_NAME = "gya-cache-v406";
 // Imágenes, audios y videos van en una caché APARTE que NO se borra cuando se
 // sube CACHE_NAME. Antes cada actualización del juego (CACHE_NAME nuevo) borraba
 // todo y el celular volvía a bajar mapas, videos e íconos: se veía negro/lento
