@@ -78,24 +78,17 @@ const RoscoRioplatense=(()=>{
     if(typeof vibrar==="function")vibrar(acierto?25:[45,40,45]);
   }
   function enfocar(){if(raiz&&!document.hidden){$("#rrEntrada").focus({preventScroll:true});ajustarPantalla();}}
-  /* Todo en una sola pantalla, también con el teclado abierto (pedido de los jugadores: había que
-     deslizar para ver la pista y donde se escribe). Con el teclado abierto se ocultan el logo y el
-     "volver" (modo compacto) y la rueda se achica para que entren rueda + pista + respuesta. */
+  /* Que el teclado nunca tape donde se escribe (Android e iPhone), sin cambiar cómo se ve el juego:
+     la ventana del Rosco ocupa exactamente la parte de la pantalla que queda ARRIBA del teclado
+     (visualViewport) y, si el campo queda abajo, se corre solo un poquito hasta que se vea. */
   function ajustarPantalla(){
     if(!raiz||!shell)return;
-    const vv=window.visualViewport,alto=vv?vv.height:innerHeight;
-    const escribiendo=document.activeElement===$("#rrEntrada");
-    const teclado=alto<innerHeight*.8||(escribiendo&&alto<innerHeight*.9);
-    raiz.classList.toggle("rr-compacto",teclado);
-    const rueda=raiz.querySelector(".rr-rueda"),juego=$("#rrJuego");
-    if(rueda&&juego&&!juego.hidden){
-      rueda.style.width="";
-      const natural=rueda.offsetWidth,arriba=raiz.getBoundingClientRect().top-shell.getBoundingClientRect().top+shell.scrollTop;
-      const resto=raiz.offsetHeight-rueda.offsetHeight,sobra=alto-arriba-resto-10;
-      rueda.style.width=Math.max(teclado?80:110,Math.min(natural,sobra))+"px";
+    const vv=window.visualViewport,alto=Math.round(vv?vv.height:innerHeight),arriba=vv?Math.max(0,Math.round(vv.offsetTop)):0;
+    shell.style.height=alto+"px";shell.style.top=arriba+"px";shell.style.bottom="auto";
+    if(document.activeElement===$("#rrEntrada")){
+      const sb=shell.getBoundingClientRect(),fb=$("#rrForm").getBoundingClientRect();
+      if(fb.bottom>sb.bottom-10)shell.scrollTop+=fb.bottom-(sb.bottom-10);
     }
-    if(teclado){shell.scrollTop=0;if(vv&&vv.offsetTop>0&&escribiendo){const f=$("#rrForm").getBoundingClientRect();if(f.bottom<=alto)window.scrollTo(0,0);}}
-    else if(escribiendo)$("#rrForm").scrollIntoView({block:"nearest"});
   }
   function siguiente(){
     const p=pendientes();if(!p.length){terminar();return;}
@@ -255,6 +248,7 @@ const RoscoRioplatense=(()=>{
   function salir(){
     clearInterval(intervalo);intervalo=null;document.removeEventListener("visibilitychange",visibilidad);
     window.visualViewport?.removeEventListener("resize",ajustarPantalla);window.visualViewport?.removeEventListener("scroll",ajustarPantalla);window.removeEventListener("resize",ajustarPantalla);
+    if(shell){shell.style.height="";shell.style.top="";shell.style.bottom="";}
     shell?.classList.remove("rr-abierta");
     if("speechSynthesis" in window)speechSynthesis.cancel();
     if(typeof sincronizarMusica==="function")sincronizarMusica();
