@@ -1520,3 +1520,7 @@ Fecha: 25/10/2026 — REEL del Tutti Frutti: promo/reel-tutti.html (≈29 s, 9:1
 ```text
 Fecha: 25/10/2026 — Reel del Tutti Frutti, ajustes de Gonzalo: el gancho ahora dice "ELEGÍ TUS CATEGORÍAS… ¿LAS COMPLETÁS EN 3 SEGUNDOS?" con 6 categorías que entran una por una (Nombre ULISES, Animal URUBÚ, País URUGUAY, Fruta UVA, Marca UMBRO, Profesión UTILERO) y la ficha U. El papelito dura más (4 s) y se escribe a mano palabra por palabra. Reel ≈30,4 s; música The Big Reveal 0:05.05–0:08.25 + 0:13.2–final. Gonzalo va a pedir otra música a Gemini (prompt con los segundos de cada golpe).
 ```
+
+```text
+Fecha: 25/10/2026 — Reel del Tutti Frutti: el botón "🚫 Anular una respuesta" del video salía corrido a la derecha y cortado (la animación pisaba el centrado); ahora queda centrado completo.
+```
