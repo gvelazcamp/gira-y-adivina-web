@@ -368,7 +368,7 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .tf .tf-ficha .tf-letra.tf-final{color:#E5197C;text-shadow:0 5px 0 #7A0E44}
 .tf .tf-ficha.tf-ficha-chica{width:min(30vw,120px);margin-top:0}.tf .tf-ficha .tf-letra.tf-chica{font-size:min(15vw,4rem)}
 /* Mientras se escribe: todo pegado arriba y compacto, para que con el teclado abierto se vean la casilla y los botones */
-.tf .imp-juego>.tf-campo{margin-top:0!important;padding-top:46px;gap:6px;min-height:0}
+.tf .imp-juego>.tf-campo{margin-top:auto!important;margin-bottom:auto;padding-top:46px;gap:6px;min-height:0}
 .tf .tf-campo .tf-ficha.tf-ficha-chica{width:min(17vw,64px)}.tf .tf-campo .tf-ficha .tf-letra.tf-chica{font-size:min(8vw,2.1rem)}
 .tf .tf-campo #tfCat{font-size:1.15rem}
 /* Sopa Fugaz con dibujos (assets/sopa/), todo bajo .sf-game (sf-panel y sf-acciones también los usan otros juegos) */
@@ -778,3 +778,4 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 @keyframes fxMenos{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(14px)}}
 
 .mg-panel .tf-anular-btn{display:block;width:fit-content;min-height:0;margin:10px auto 4px;padding:5px 14px;border-radius:99px;border:0;background:#C2334D;color:#fff;font:inherit;font-size:.72rem;font-weight:900;box-shadow:0 2px 0 #7D2348;cursor:pointer}.tf-anular .pf-caja{max-height:88vh;display:flex;flex-direction:column}.tf-anular-lista{overflow:auto;max-height:55vh;margin:8px auto}.tf-anular-lista .tf-rev-fila span{white-space:nowrap;font-size:.8rem}.tf-anular-lista .tf-anulada-fila b{text-decoration:line-through;text-decoration-color:#FF6B81}
+.tf .qs-tope>#tfReloj{position:absolute;left:50%;transform:translateX(-50%)}

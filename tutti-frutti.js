@@ -93,7 +93,15 @@ const TuttiFrutti=(()=>{
     q("tfUnirse").onclick=()=>{const c=(q("tfCodigo").value||"").toUpperCase().trim();if(/^[A-HJ-NP-Z2-9]{4}$/.test(c))unirse(c);else estado("Escribí el código de 4 letras que te pasaron.");};
   }
   function estado(t){const e=raiz&&raiz.querySelector("#tfEstado");if(e)e.textContent=t;}
-  function pantalla(html){raiz.innerHTML=`<div class="qns-pantalla imp-juego"><button type="button" class="pf-salir" id="tfSalir">✕ Salir</button>${html}</div>`;PantallaFija.confirmar(q("tfSalir"),configurar);actualizarChat();}
+  function pantalla(html){raiz.innerHTML=`<div class="qns-pantalla imp-juego"><button type="button" class="pf-salir" id="tfSalir">✕ Salir</button>${html}</div>`;PantallaFija.confirmar(q("tfSalir"),configurar);actualizarChat();ajustarVV();}
+  /* La pantalla ocupa solo la parte visible (sin el teclado): en iPhone, al
+     abrirse el teclado la página se corría para arriba y el reloj quedaba
+     tapado; así arriba siempre se ve y lo de escribir queda centrado. */
+  function ajustarVV(){
+    const el=raiz&&raiz.querySelector(".qns-pantalla"),vv=window.visualViewport;if(!el||!vv)return;
+    el.style.top=Math.max(0,Math.round(vv.offsetTop))+"px";el.style.height=Math.round(vv.height)+"px";el.style.bottom="auto";
+  }
+  if(window.visualViewport){visualViewport.addEventListener("resize",ajustarVV);visualViewport.addEventListener("scroll",ajustarVV);}
   function parar(){jugando=false;clearTimeout(timer);}
   function salir(){document.querySelectorAll(".tf-modos").forEach(x=>x.remove());if(typeof cerrarApelaciones==="function")cerrarApelaciones();detenerMusica();parar();cerrarSala();if(raiz)PantallaFija.salir();if(raiz)raiz.remove();raiz=null;}
   /* ===== Control de respuestas =====

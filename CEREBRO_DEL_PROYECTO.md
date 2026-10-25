@@ -1552,3 +1552,7 @@ Fecha: 25/10/2026 — Tutti Frutti online: aviso de salida. Si alguien sale de l
 ```text
 Fecha: 25/10/2026 — Tutti Frutti: al sacar "Después" los botones quedaban corridos a la izquierda con un hueco; ahora "⟵ Anterior" y "Siguiente ➜" ocupan todo el ancho (2 columnas). extensiones.css v122, sw v431.
 ```
+
+```text
+Fecha: 25/10/2026 — Tutti Frutti, pantalla de escribir (capturas de Gonzalo en iPhone y Samsung): en iPhone, al abrirse el teclado la página se corría para arriba y el reloj/"Letra"/Salir quedaban tapados por la barra de arriba. Ahora la pantalla del Tutti ocupa solo la parte visible (visualViewport: top=offsetTop, height=vv.height, como el Rosco) y el bloque ficha + categoría + caja + botones queda centrado entre el reloj y el teclado (margin auto). El reloj ahora está centrado de verdad (antes corrido a la derecha). No se tocó el deslizado. tutti-frutti.js v89, extensiones.css v123, sw v432.
+```
