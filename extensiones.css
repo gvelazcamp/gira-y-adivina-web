@@ -776,3 +776,5 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .ext-fichas.gasto::after{content:"−1 ⚡";position:absolute;right:0;top:100%;font-size:.75rem;font-weight:900;color:#FF6B81;animation:fxMenos 1.2s ease-out forwards;pointer-events:none}
 @keyframes fxGasto{0%{transform:scale(1.35)}100%{transform:none}}
 @keyframes fxMenos{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(14px)}}
+
+.tf-anular-btn{display:block;margin:10px auto 4px}.tf-anular .pf-caja{max-height:88vh;display:flex;flex-direction:column}.tf-anular-lista{overflow:auto;max-height:55vh;margin:8px auto}.tf-anular-lista .tf-rev-fila span{white-space:nowrap;font-size:.8rem}.tf-anular-lista .tf-anulada-fila b{text-decoration:line-through;text-decoration-color:#FF6B81}

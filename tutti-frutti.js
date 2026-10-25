@@ -499,7 +499,7 @@ const TuttiFrutti=(()=>{
          o en una posterior, se ignora. Antes volvía a sortear la letra en
          pantalla y borraba lo que el jugador había escrito. */
       if(Number(m.n)<=Number(on.n||0)&&on.fase!=="lobby")return;
-      on.n=m.n;if(Array.isArray(m.usadas))on.usadas=m.usadas.slice();on.rj=m.rj||on.rj;on.tot=m.tot||on.tot||RONDAS;on.letra=m.letra;on.cats=m.cats;on.tiempo=m.tiempo;on.fase="jugando";on.resps={};on.extra={};on.apeladas={};on.ganador=null;on.basta=null;on.mias=Array(on.cats.length).fill("");on.envie=false;
+      on.n=m.n;if(Array.isArray(m.usadas))on.usadas=m.usadas.slice();on.rj=m.rj||on.rj;on.tot=m.tot||on.tot||RONDAS;on.letra=m.letra;on.cats=m.cats;on.tiempo=m.tiempo;on.fase="jugando";on.resps={};on.extra={};on.apeladas={};on.anuladas={};on.ganador=null;on.basta=null;on.mias=Array(on.cats.length).fill("");on.envie=false;
       jugarOnline();
       if(on.bots)planBots();
     }else if(m.t==="basta"&&m.n===on.n){
@@ -521,6 +521,11 @@ const TuttiFrutti=(()=>{
       const quien=(on.jug.find(j=>j.pid===m.a)||{}).nombre||"Alguien",pal=(on.resps[m.a]||[])[m.i]||"",cat=on.cats[m.i]||"";
       anotarChat("🙋 "+quien+" apela «"+pal+"» ("+cat+")");
       if(m.a!==on.pid&&on.fase==="resultado")apelacion(m.a,m.i);
+    }else if(m.t==="anula"&&m.n===on.n){
+      on.anuladas=on.anuladas||{};const k=m.a+"|"+m.i;if(m.v)on.anuladas[k]=true;else delete on.anuladas[k];pintarVotos();
+      const quien=(on.jug.find(j=>j.pid===m.pid)||{}).nombre||"Alguien",de=(on.jug.find(j=>j.pid===m.a)||{}).nombre||"",pal=(on.resps[m.a]||[])[m.i]||"";
+      const txt=(m.v?"🚫 "+quien+" anuló":"↩️ "+quien+" devolvió")+" «"+pal+"» de "+de+" ("+etiq(on.cats[m.i]||"")+")";
+      anotarChat(txt);if(m.pid!==on.pid&&typeof mostrarToast==="function")mostrarToast(m.v?"🚫":"↩️",txt);
     }else if(m.t==="objecion"&&m.n===on.n){
       /* Las objeciones para quitar puntos también se retiraron. */
       return;
@@ -650,13 +655,17 @@ const TuttiFrutti=(()=>{
   const marca=(a,i)=>!!(on.marcas&&on.marcas[a]&&on.marcas[a][i]);
   /* Una respuesta validada mantiene sus puntos: otros jugadores no pueden
      anularla. Las dudosas se revisan mediante Apelar y el sumador. */
-  function vale(a,i){return !!((on.resps[a]||[])[i])&&marca(a,i);}
+  function vale(a,i){return !!((on.resps[a]||[])[i])&&marca(a,i)&&!anulada(a,i);}
+  /* Anular: cualquiera puede marcar una respuesta que está mal (aunque el
+     juego la haya dado por buena) → vale 0 y los puntos de los demás se
+     recalculan (ej.: el otro pasa a 20 si queda como único). */
+  const anulada=(a,i)=>!!(on.anuladas&&on.anuladas[a+"|"+i]);
   function puntosRonda(){
     const pts={};on.jug.forEach(j=>pts[j.pid]=Array(on.cats.length).fill(0));
     on.cats.forEach((c,i)=>{
       /* Una ⚠️ a la que le sumaron puntos cuenta como respondida para los
          demás: si no, el otro seguía con 20 ("sos el único") aunque sí respondí. */
-      const validos=on.jug.filter(j=>vale(j.pid,i)||extraDe(j.pid,i)>0);
+      const validos=on.jug.filter(j=>!anulada(j.pid,i)&&(vale(j.pid,i)||extraDe(j.pid,i)>0));
       validos.forEach(j=>{
         const n=NORM(on.resps[j.pid][i]);
         const iguales=validos.filter(o=>o.pid!==j.pid&&NORM(on.resps[o.pid][i])===n).length;
@@ -664,7 +673,7 @@ const TuttiFrutti=(()=>{
       });
     });
     /* ⚠️ dudosas: los puntos que le pusieron a mano con el sumador (5, 10 o 20). */
-    on.jug.forEach(j=>on.cats.forEach((c,i)=>{const x=extraDe(j.pid,i);if(x!=null&&(on.resps[j.pid]||[])[i]&&!marca(j.pid,i))pts[j.pid][i]=x;}));
+    on.jug.forEach(j=>on.cats.forEach((c,i)=>{const x=extraDe(j.pid,i);if(x!=null&&(on.resps[j.pid]||[])[i]&&!marca(j.pid,i)&&!anulada(j.pid,i))pts[j.pid][i]=x;}));
     return pts;
   }
   const sumar=a=>a.reduce((x,y)=>x+y,0);
@@ -730,6 +739,7 @@ const TuttiFrutti=(()=>{
       <p class="imp-ayuda tf-res-ayuda">Letra <b>${on.letra}</b> · <b>10</b> única · <b>5</b> repetida · <b>20</b> si sos el único.<br><b class="tf-amar">⚠️ amarilla</b> = vale 0, tocala para ver por qué · <b class="tf-verde">🙋 Apelar</b> la tuya ${on.bots?"y elegí sus puntos":"para que los demás decidan"} · <b>+/−</b> sumale a la de otro.</p>
       <div class="tf-grilla-caja"><div class="tf-grilla${porFilas?"":" tf-vuelta"}${P>3?" tf-muchos":""}" id="tfGrilla" lang="es" style="grid-template-columns:${cols}">${celdas}</div></div>
       <p class="tf-res-frase" id="tfFrase"></p>
+      <button type="button" class="bb-pasar imp-gris tf-anular-btn" id="tfAnular">🚫 Anular una respuesta</button>
       <div class="qs-sub">🏆 Puntos (con esta ronda)</div><ul class="imp-tabla" id="tfTabla"></ul>
       ${salieronHtml()}
       ${on.host?((on.rj||1)>=(on.tot||RONDAS)?`<button type="button" class="mg-principal" id="tfOtra">🏆 Ver ganador de la partida</button>`:`<button type="button" class="mg-principal" id="tfOtra">🎲 Siguiente ronda (${(on.rj||1)+1} de ${on.tot||RONDAS})</button>`):`<p class="imp-ayuda">Esperando al anfitrión…</p>`}</div>`);
@@ -739,6 +749,7 @@ const TuttiFrutti=(()=>{
       const sb=e.target.closest(".tf-sum button");if(sb){if(!puedeSumar(a,i)){if(a!==on.pid&&typeof mostrarToast==="function")mostrarToast("🙋","Solo se suma si el que la escribió la apela.");return;}asignarPuntos(a,i,pasoSuma(extraDe(a,i)||0,Number(sb.dataset.d)));return;}
       if(e.target.closest("[data-ver]"))explicar(on.cats[i],(on.resps[a]||[])[i]);
     };
+    q("tfAnular").onclick=elegirAnular;
     if(on.ganador===on.pid&&typeof bip==="function")[523,659,784].forEach((f,i)=>setTimeout(()=>bip(f,.2,"triangle",.05),i*130));
     pintarVotos();
     if(on.host){
@@ -752,6 +763,23 @@ const TuttiFrutti=(()=>{
       };
       q("tfOtra").onclick=e=>{if(e&&e.currentTarget){if(e.currentTarget.disabled)return;e.currentTarget.disabled=true;}cerrar();if((on.rj||1)>=(on.tot||RONDAS)){mandar({t:"final",n:on.n,ganadas:on.ganadas,rg:on.rg,jug:on.jug,tot:on.tot||RONDAS});return;}nuevaRonda();};
     }
+  }
+  /* Popup para anular (o devolver) cualquier respuesta escrita de la ronda. */
+  function elegirAnular(){
+    if(!on||on.fase!=="resultado")return;
+    document.querySelector(".tf-anular")?.remove();
+    const pr=puntosRonda(),filas=[];
+    on.cats.forEach((c,i)=>on.jug.forEach(j=>{const v=(on.resps[j.pid]||[])[i];if(!v)return;const an=anulada(j.pid,i);if(!an&&!pr[j.pid][i])return;
+      filas.push(`<button type="button" class="tf-rev-fila${an?" tf-anulada-fila":""}" data-a="${j.pid}" data-i="${i}"><small>${esc(etiq(c))} · ${esc(j.nombre)}</small><b>${esc(v)}</b><span>${an?"↩️ Devolver":"🚫 +"+pr[j.pid][i]}</span></button>`);}));
+    const c=document.createElement("div");c.className="pf-confirmar tf-anular";
+    c.innerHTML=`<div class="mg-panel pf-caja"><h3>🚫 Anular una respuesta</h3>
+      <p class="imp-ayuda">Tocá la que está mal: pasa a 0 y los puntos se ajustan.</p>
+      <div class="tf-rev tf-anular-lista">${filas.join("")||'<p class="imp-ayuda">No hay respuestas con puntos.</p>'}</div>
+      <button type="button" data-x="1">Cancelar</button></div>`;
+    c.addEventListener("click",e=>{const b=e.target.closest("button");if(e.target===c||b&&b.dataset.x){c.remove();return;}
+      if(!b||!b.dataset.a||!on||on.fase!=="resultado")return;c.remove();
+      const a=b.dataset.a,i=Number(b.dataset.i);mandar({t:"anula",n:on.n,a,i,v:!anulada(a,i)});});
+    document.body.appendChild(c);
   }
   /* Mini popup: por qué está mal y cuál es la forma correcta (solo informa). */
   /* Distancia "como suena" (ll=y, v=b, z/ce/ci=s, h muda, c/qu=k, ge/gi=j)
@@ -837,8 +865,8 @@ const TuttiFrutti=(()=>{
       const ex=extraDe(a,i),sm=b.querySelector(".tf-sum b");if(sm)sm.textContent=ex||0;
       const ap=b.querySelector(".tf-apelar");if(ap&&on.bots)ap.textContent=ex==null?"🙋 Apelar":"🙋 "+ex+" pts";
       const su=b.querySelector(".tf-sum");if(su)su.classList.toggle("tf-sum-off",!puedeSumar(a,i));
-      const salv=!!v&&!ok&&(vale(a,i)||ex>0);
-      b.classList.toggle("tf-salvada",salv);b.classList.toggle("tf-dudosa",!!v&&!ok&&!salv);
+      const an=!!v&&anulada(a,i),salv=!!v&&!ok&&!an&&(vale(a,i)||ex>0);
+      b.classList.toggle("tf-anulada",an);b.classList.toggle("tf-salvada",salv);b.classList.toggle("tf-dudosa",!!v&&!ok&&!salv&&!an);
       const mk=b.querySelector(".tf-marca.mal");if(mk)mk.textContent=salv?"✓":"⚠️";
     });
     const sumR=pid=>sumar(pr[pid]||[]);

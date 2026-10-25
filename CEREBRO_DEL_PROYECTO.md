@@ -1496,3 +1496,7 @@ Fecha: 25/10/2026 — Tutti Frutti: el modo Difícil vuelve a como estaba (3–4
 ```text
 Fecha: 25/10/2026 — Tutti Frutti: "Anterior" y "Siguiente" recorren libre todas las categorías en orden (dan la vuelta), estén vacías o completas. Anterior ya no queda gris al principio; Siguiente con el campo vacío pasa a la que sigue en vez de trabar (si hay algo escrito sigue validando la letra). Lo escrito queda guardado. tutti-frutti.js v82, sw v423.
 ```
+
+```text
+Fecha: 25/10/2026 — Tutti Frutti: botón "🚫 Anular una respuesta" arriba de "Puntos (con esta ronda)". Abre la lista de respuestas que suman; tocás la que está mal (aunque el juego la diera por buena, ej. «una» como película) y pasa a 0, tachada en rojo; los puntos se recalculan (el otro puede pasar a 20 si queda único). Cualquiera puede anular; se avisa a todos y queda en el chat; se puede "↩️ Devolver". tutti-frutti.js v83, extensiones.css v120, sw v424.
+```
