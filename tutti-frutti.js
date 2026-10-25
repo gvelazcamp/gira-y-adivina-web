@@ -533,7 +533,7 @@ const TuttiFrutti=(()=>{
       anotarChat("🚫 "+quien+" pide anular «"+pal+"» de "+de+" ("+etiq(on.cats[m.i]||"")+")");
       if(m.pid!==on.pid&&on.fase==="resultado")pedidoAnular(m.pid,m.a,m.i);
     }else if(m.t==="vale"&&m.n===on.n){
-      const quien=(on.jug.find(j=>j.pid===m.pid)||{}).nombre||"Alguien",pal=(on.resps[m.a]||[])[m.i]||"",txt="✅ "+quien+" dice que «"+pal+"» vale: no se anula.";
+      const quien=(on.jug.find(j=>j.pid===m.pid)||{}).nombre||"Alguien",pal=(on.resps[m.a]||[])[m.i]||"",txt="✅ "+quien+" eligió no anular «"+pal+"».";
       anotarChat(txt);document.querySelector(`.tf-pide-anular[data-k="${m.a}|${m.i}"]`)?.remove();
       if(m.pid!==on.pid&&typeof mostrarToast==="function")mostrarToast("✅",txt);
     }else if(m.t==="objecion"&&m.n===on.n){
@@ -783,7 +783,7 @@ const TuttiFrutti=(()=>{
       filas.push(`<button type="button" class="tf-rev-fila${an?" tf-anulada-fila":""}" data-a="${j.pid}" data-i="${i}"><small>${esc(etiq(c))} · ${esc(j.nombre)}</small><b>${esc(v)}</b><span>${an?"↩️ Devolver":"🚫 +"+pr[j.pid][i]}</span></button>`);}));
     const c=document.createElement("div");c.className="pf-confirmar tf-anular";
     c.innerHTML=`<div class="mg-panel pf-caja"><h3>🚫 Anular una respuesta</h3>
-      <p class="imp-ayuda">Tocá la que está mal: ${on.bots?"pasa a 0":"los demás deciden si vale"} y los puntos se ajustan.</p>
+      <p class="imp-ayuda">Tocá la que está mal: ${on.bots?"pasa a 0":"los demás deciden si se anula"} y los puntos se ajustan.</p>
       <div class="tf-rev tf-anular-lista">${filas.join("")||'<p class="imp-ayuda">No hay respuestas con puntos.</p>'}</div>
       <button type="button" data-x="1">Cancelar</button></div>`;
     c.addEventListener("click",e=>{const b=e.target.closest("button");if(e.target===c||b&&b.dataset.x){c.remove();return;}
@@ -792,7 +792,7 @@ const TuttiFrutti=(()=>{
       /* Devolver o jugar contra bots: directo. Con amigos, deciden los demás. */
       if(anulada(a,i)||on.bots){mandar({t:"anula",n:on.n,a,i,v:!anulada(a,i)});return;}
       mandar({t:"pideanular",n:on.n,a,i});
-      if(typeof mostrarToast==="function")mostrarToast("🚫","Les preguntamos a los demás si vale o no.","Pediste anular");});
+      if(typeof mostrarToast==="function")mostrarToast("🚫","Les preguntamos a los demás si la anulan o no.","Pediste anular");});
     document.body.appendChild(c);
   }
   function pedidoAnular(quien,a,i){
@@ -801,8 +801,8 @@ const TuttiFrutti=(()=>{
     if(typeof vibrar==="function")vibrar([40,60,40]);
     const c=document.createElement("div");c.className="pf-confirmar tf-pide-anular";c.dataset.k=k;
     c.innerHTML=`<div class="mg-panel pf-caja"><div class="bb-icono">🚫</div><h3>${esc(nom)} quiere anular ${esc(de)}</h3>
-      <p class="tf-obj-pal"><small>${esc(etiq(cat))}</small><b>${esc(pal)}</b></p><p class="imp-ayuda">¿Vale o no vale?</p>
-      <button type="button" class="mg-principal" data-r="si">✅ Sí, vale</button><button type="button" data-r="no">❌ No vale (0 pts)</button></div>`;
+      <p class="tf-obj-pal"><small>${esc(etiq(cat))}</small><b>${esc(pal)}</b></p><p class="imp-ayuda">¿La anulamos?</p>
+      <button type="button" class="mg-principal" data-r="no">🚫 Anular (pasa a 0)</button><button type="button" data-r="si">✅ No anular</button></div>`;
     c.addEventListener("click",ev=>{const r=ev.target.closest("button[data-r]");if(!r)return;c.remove();
       if(!on||on.fase!=="resultado")return;
       if(r.dataset.r==="no")mandar({t:"anula",n:on.n,a,i,v:true});else mandar({t:"vale",n:on.n,a,i});});

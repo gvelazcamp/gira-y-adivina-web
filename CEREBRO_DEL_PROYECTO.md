@@ -1508,3 +1508,7 @@ Fecha: 25/10/2026 — Tutti Frutti: "Anular una respuesta" ya no anula directo c
 ```text
 Fecha: 25/10/2026 — Tutti Frutti: el botón "🚫 Anular una respuesta" ahora es chico, tipo pastilla como "🙋 Apelar" (rojo), en vez del botón grande. tutti-frutti.js v85, extensiones.css v121, sw v426.
 ```
+
+```text
+Fecha: 25/10/2026 — Tutti Frutti: el popup del pedido de anular ahora pregunta "¿La anulamos?" con botones "🚫 Anular (pasa a 0)" y "✅ No anular" (antes "Sí, vale / No vale" confundía). tutti-frutti.js v86, sw v427.
+```
