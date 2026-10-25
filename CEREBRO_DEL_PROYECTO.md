@@ -1484,3 +1484,7 @@ Fecha: 25/10/2026 — Fichas ⚡ también en Tutti Frutti y Puzzle (pedido de Go
 ```text
 Fecha: 25/10/2026 — Texto: "Jugá a las extensiones de Girá y Adiviná" pasa a "Jugá más juegos de Girá y Adiviná" (botón del menú principal y título del lobby de Extensiones; en inglés "Play more Girá y Adiviná games"). i18n v3, extensiones.js v66, sw v420.
 ```
+
+```text
+Fecha: 25/10/2026 — Tutti Frutti contra la máquina: los bots "Normal" eran muy lentos (Gonzalo completó todo y ellos tenían 2). Nuevos tiempos por categoría (MODOS_BOT): Normal 3,5–5 s (antes 6–9), Difícil 2–3 s (antes 3–4,5), Persona mayor 9–14 s (antes 15–25); siguen +25% en categorías/letras difíciles. También saben un poco más (hab Normal .90–.97, Mayor .75–.90). tutti-frutti.js v80, sw v421.
+```
