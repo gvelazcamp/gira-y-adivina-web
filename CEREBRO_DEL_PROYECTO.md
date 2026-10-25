@@ -1464,3 +1464,7 @@ Fecha: 24/10/2026 — Ruleta de la partida (a Gonzalo, jugando en una sala de a 
 ```text
 Fecha: 24/10/2026 — Sala de a dos: en el turno de un jugador SIN tablero (Vale) el tablero pasaba a liso y las letras se agrandaban; en el turno de Gonzalo (con tablero) se achicaban. aplicarTableroSegunTurno(): en host/guest, si al que le toca no tiene tablero, se usa el tuyo equipado o, si tampoco tenés, el de otro jugador de la sala. Así el tablero y el tamaño de las letras quedan iguales toda la partida. Probado los 4 casos (vos con/sin tablero × turno de cada uno): siempre con marco. sw v415.
 ```
+
+```text
+Fecha: 25/10/2026 — Puzzle (Gonzalo: "una persona nueva o mayor, ¿cómo se da cuenta de que hay puzzle cooperativo?"). El popup de inicio ahora termina con dos botones: "🧩 Armar solo" y "👥 Armar con un amigo" (turquesa, abre directo la pantalla de sala: crear sala / unirse con código). El renglón destacado dice "¿Con alguien? Tocá 👥 Armar con un amigo…". En el selector de arriba "👥 Cooperativo" pasó a "👥 Con un amigo". puzzle.html/puzzle.js v46, sw v416.
+```
