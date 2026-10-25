@@ -1524,3 +1524,7 @@ Fecha: 25/10/2026 — Reel del Tutti Frutti, ajustes de Gonzalo: el gancho ahora
 ```text
 Fecha: 25/10/2026 — Reel del Tutti Frutti: el botón "🚫 Anular una respuesta" del video salía corrido a la derecha y cortado (la animación pisaba el centrado); ahora queda centrado completo.
 ```
+
+```text
+Fecha: 25/10/2026 — Reel del Tutti Frutti con la música que eligió Gonzalo ("Sudden Victory Lap", desde el segundo 24): promo/reel-tutti-musica.mp3 = 0:23.65–0:54.1 con fundido final de 1,9 s (empieza en 23,65 para que el golpe de 0:26.1 caiga justo en el ¡BASTA! del gancho). Reemplaza a The Big Reveal en este reel.
+```
