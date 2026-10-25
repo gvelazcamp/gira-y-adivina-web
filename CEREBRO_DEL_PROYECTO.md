@@ -1480,3 +1480,7 @@ Fecha: 25/10/2026 — Puzzles 3D OCULTOS (Gonzalo: "ocultarlo porque tenemos que
 ```text
 Fecha: 25/10/2026 — Fichas ⚡ también en Tutti Frutti y Puzzle (pedido de Gonzalo). Mismas reglas que el resto (3 por juego, +1 cada 30 min, recarga 🪙 400, testers libres no gastan). Tutti Frutti: 1 ficha por PARTIDA contra la máquina (una partida = 3 rondas/letras; se cobra en jugarBots y en cada "Revancha" contra bots); con amigos no gasta. Puzzle: 1 ficha por cada puzzle NUEVO que empezás solo (armarElegidoSolo, desde puzzle.html vía parent.Fichas); seguir uno guardado o armar con un amigo no gasta. El cartel "sin fichas" sale arriba del iframe del Puzzle. Probado: 3 puzzles → 0 fichas, el 4.º muestra el cartel. extensiones.js v65, tutti-frutti.js v79, puzzle v49, sw v419.
 ```
+
+```text
+Fecha: 25/10/2026 — Texto: "Jugá a las extensiones de Girá y Adiviná" pasa a "Jugá más juegos de Girá y Adiviná" (botón del menú principal y título del lobby de Extensiones; en inglés "Play more Girá y Adiviná games"). i18n v3, extensiones.js v66, sw v420.
+```
