@@ -1468,3 +1468,7 @@ Fecha: 24/10/2026 — Sala de a dos: en el turno de un jugador SIN tablero (Vale
 ```text
 Fecha: 25/10/2026 — Puzzle (Gonzalo: "una persona nueva o mayor, ¿cómo se da cuenta de que hay puzzle cooperativo?"). El popup de inicio ahora termina con dos botones: "🧩 Armar solo" y "👥 Armar con un amigo" (turquesa, abre directo la pantalla de sala: crear sala / unirse con código). El renglón destacado dice "¿Con alguien? Tocá 👥 Armar con un amigo…". En el selector de arriba "👥 Cooperativo" pasó a "👥 Con un amigo". puzzle.html/puzzle.js v46, sw v416.
 ```
+
+```text
+Fecha: 25/10/2026 — Puzzle (Gonzalo: "lo primero después del popup tiene que ser elegir qué puzzle y cuántas piezas, como en la sala; si no entra directo a un puzzle"). Ahora "🧩 Armar solo" abre "🧩 Elegí tu puzzle" (si no hay uno a medio armar para seguir) y "Empezar otro" también. En esa pantalla, jugando solo, hay botones de piezas: 12, 25, 49, 70, 100, 150, 300 (Aventuras desde 49; Gigantes siguen con 500/1000). En la sala sigue igual ("Elijan el puzzle"). pintarPiezasSolo() en puzzle.html. Probado: elegir 70 → arma 72 piezas (grilla más cercana). puzzle v47, sw v417.
+```

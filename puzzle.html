@@ -140,6 +140,7 @@ select{padding:7px 8px}
 #elegir .el-n{display:flex;gap:8px;justify-content:center;margin:2px 0 6px}#elegir .el-n[hidden]{display:none}
 #elegir .card .el-n button{width:auto;flex:1;margin-top:0;padding:8px 10px;font-size:13.5px;background:var(--btn);color:var(--text);border:1px solid var(--line)}
 #elegir .card .el-n button.on{background:var(--teal);color:#0B2B27;border-color:var(--teal)}
+#elegir .el-pz{flex-wrap:wrap;gap:6px}#elegir .card .el-pz button{flex:1 0 22%;padding:7px 4px}#elegir .card .el-pz button:disabled{opacity:.35}
 #elegir .card #el3d{display:block;width:100%;margin-top:8px;border-color:var(--teal)}
 #elegir .card #el3d[hidden]{display:none}
 #elegir{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:19;transition:opacity .3s;padding:12px}
@@ -251,7 +252,7 @@ button:disabled,select:disabled{opacity:.4;cursor:default}
 <div class="el-cats" id="elCats"><button type="button" data-c="dibujo"><img src="assets/puzzle-arte/c_dibujo.webp" alt=""><span>Dibujos</span></button><button type="button" data-c="aventura"><img src="assets/puzzle-arte/c_aventura.webp" alt=""><span>Aventuras</span></button><button type="button" data-c="heroe"><img src="assets/puzzle-arte/c_heroe.webp" alt=""><span>Héroes</span></button><button type="button" data-c="gigante"><img src="assets/puzzle-arte/c_gigante.webp" alt=""><span>Gigantes</span></button><button type="button" data-c="ciudad"><img src="assets/puzzle-arte/c_ciudad.webp" alt=""><span>Ciudades</span></button><button type="button" data-c="p3d"><img src="assets/puzzle-arte/c_p3d.webp" alt=""><span>3D</span></button></div>
 <select id="elCat" aria-label="Categoría"><option value="dibujo">🎨 Dibujos · 25 piezas</option><option value="aventura">🗺️ Aventuras · 49 piezas</option><option value="heroe">🦸 Héroes · 25 piezas</option><option value="gigante">🧠 Gigantes · 500 o 1000 piezas</option><option value="ciudad">🏙️ Ciudades · 25 piezas</option></select>
 <div class="el-foto"><button id="elAnt" aria-label="Anterior">‹</button><img id="elImg" alt=""><span id="elSello" class="el-sello" hidden>✅ Ya lo armaste</span><button id="elSig" aria-label="Siguiente">›</button></div>
-<p class="el-nombre" id="elNombre"></p><div id="elN" class="el-n" hidden><button id="elN5">500 piezas</button><button id="elN10">1000 piezas</button></div><p class="el-otro" id="elOtro"></p>
+<p class="el-nombre" id="elNombre"></p><div id="elN" class="el-n" hidden><button id="elN5">500 piezas</button><button id="elN10">1000 piezas</button></div><div id="elPz" class="el-n el-pz" hidden></div><p class="el-otro" id="elOtro"></p>
 <button id="el3d" class="pj-sec" hidden>🧊 Puzzles 3D: estadios encastrables</button><button id="elOk">✅ Aceptar</button><button id="elNo" class="pj-sec" hidden>❌ No, hablemos por el chat</button><button id="elChat" class="pj-sec">💬 Chat</button><button id="elSalir" class="pj-sec">Salir de la sala</button></div></div>
 <div id="seguir" class="hide"><div class="card"><div class="big">🧩</div><h2>Tenés un puzzle a medio armar</h2><p id="seguirTxt"></p><button id="bSeguir">Seguir armándolo</button><br><button id="bOtro" style="margin-top:10px;background:var(--btn);color:var(--text);border:1px solid var(--line)">Empezar otro</button></div></div>
 <div id="win" class="hide"><div class="card"><img class="win-trofeo" src="assets/puzzle-arte/completo.webp" alt=""><h2>¡Puzzle completo!</h2><img id="winImg" class="win-img" alt="Puzzle terminado"><p id="winTxt"></p><button id="winShare" class="pj-wpp">📲 Compartir foto</button><button id="again">Jugar otro</button></div></div>
@@ -463,7 +464,7 @@ function ofrecerSeguir(d){
   const N=d.p.length,pct=N>1?Math.round((N-d.g.length)/(N-1)*100):0;
   $('#seguirTxt').textContent=`${N} piezas · ${pct}% armado · ${fmt(d.t||0)}`;$('#seguir').classList.remove('hide');
   $('#bSeguir').onclick=()=>{$('#seguir').classList.add('hide');seguir(d)};
-  $('#bOtro').onclick=()=>{$('#seguir').classList.add('hide');try{localStorage.removeItem(KEY)}catch(_){}newGame()};
+  $('#bOtro').onclick=()=>{$('#seguir').classList.add('hide');try{localStorage.removeItem(KEY)}catch(_){}newGame();abrirElegirSolo()};
 }
 async function seguir(d,compartido){
   if(busy&&!compartido)return;busy=true;const yo=++gen;
@@ -645,7 +646,7 @@ function verPrevia(v){$('#prev').classList.toggle('hide',!v);$('#pvBtn').classLi
 $('#pvBtn').onclick=()=>verPrevia($('#prev').classList.contains('hide'));
 $('#prev').onclick=()=>verPrevia(false);
 $('#mini').onclick=()=>verPrevia(true);
-$('#bTuto').onclick=()=>{$('#tuto').classList.add('hide');try{const d=JSON.parse(localStorage.getItem('gya_puzzle')||'{}');d.tuto=1;localStorage.setItem('gya_puzzle',JSON.stringify(d))}catch(_){}};$('#bTutoPareja').onclick=()=>{$('#bTuto').onclick();abrirPj();};$('#guide').onclick=toggleGuide;
+$('#bTuto').onclick=()=>{$('#tuto').classList.add('hide');try{const d=JSON.parse(localStorage.getItem('gya_puzzle')||'{}');d.tuto=1;localStorage.setItem('gya_puzzle',JSON.stringify(d))}catch(_){}};$('#bTutoPareja').onclick=()=>{$('#bTuto').onclick();abrirPj();};/* "Armar solo": si no hay un puzzle a medio armar para seguir, primero se elige cuál y cuántas piezas. */$('#bTuto').addEventListener('click',()=>setTimeout(()=>{if($('#seguir').classList.contains('hide')&&!coop&&$('#pareja').classList.contains('hide'))abrirElegirSolo()},0));$('#guide').onclick=toggleGuide;
 $('#count').onchange=nuevoConfirmado;$('#rot').onchange=nuevoConfirmado;
 /* 🔲 Bordes (con 150+ piezas, solo): junta las piezas de borde sueltas
    alrededor del marco, para arrancar como en un puzzle de verdad. Tocándolo de
@@ -889,7 +890,18 @@ $('#elCat').onchange=e=>moverSel(e.target.value,0);
 /* Tarjetas de categoría: cambian el select de siempre (que queda oculto) o abren el 3D. */
 function marcarCats(){const v=$('#elCat').value,h3=$('#el3d').hidden;document.querySelectorAll('#elCats button').forEach(b=>{b.classList.toggle('on',b.dataset.c===v);if(b.dataset.c==='p3d')b.hidden=h3})}
 $('#elCats').onclick=e=>{const b=e.target.closest('button[data-c]');if(!b)return;if(b.dataset.c==='p3d'){$('#el3d').click();return}const s=$('#elCat');if(s.value!==b.dataset.c){s.value=b.dataset.c;s.dispatchEvent(new Event('change'))}marcarCats()};
-{const _pe=pintarElegir;pintarElegir=function(){const r=_pe.apply(this,arguments);try{marcarCats()}catch(_){}return r}}
+{const _pe=pintarElegir;pintarElegir=function(){const r=_pe.apply(this,arguments);try{marcarCats()}catch(_){}try{pintarPiezasSolo()}catch(_){}return r}}
+/* Jugando solo, en "Elegí tu puzzle" también se eligen las piezas (pedido de Gonzalo: primero elegir
+   qué puzzle y cuántas piezas, como en la sala). Gigantes siguen con 500/1000. */
+const PIEZAS_SOLO=[12,25,49,70,100,150,300];
+function pintarPiezasSolo(){
+  const box=$('#elPz'),solo=!coop;box.hidden=!solo||sel.cat==='gigante';
+  const h=$('#elegir h2');if(h)h.textContent=solo?'🧩 Elegí tu puzzle':'🧩 Elijan el puzzle';
+  if(box.hidden)return;
+  const min=sel.cat==='aventura'?49:0;let actual=+$('#count').value||25;if(actual<min||actual>=500)actual=min||25;$('#count').value=String(actual);
+  box.innerHTML=PIEZAS_SOLO.map(n=>`<button type="button" data-n="${n}"${n<min?' disabled':''} class="${n===actual?'on':''}">${n} piezas</button>`).join('');
+  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{$('#count').value=b.dataset.n;pintarPiezasSolo()});
+}
 $('#elN5').onclick=()=>moverSel(sel.cat,sel.i,500);$('#elN10').onclick=()=>moverSel(sel.cat,sel.i,1000);
 $('#elAnt').onclick=()=>moverSel(sel.cat,sel.i-1);$('#elSig').onclick=()=>moverSel(sel.cat,sel.i+1);
 $('#elNo').onclick=()=>{if(!coop)return;const q=coop.compa||otros();enviarChat('❌ '+miNombre()+' no aceptó '+nombreSel(),true);mandar({k:'no',cat:sel.cat,i:sel.i});otroOk=miOk=false;selT=Math.max(Date.now(),selT+1);mandarSel();pintarElegir();$('#chat').classList.remove('hide');pintarChat();setTimeout(()=>{try{$('#chatTxt').focus()}catch(_){}},200)};
