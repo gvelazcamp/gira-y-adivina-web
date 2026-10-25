@@ -1536,3 +1536,7 @@ Fecha: 25/10/2026 — Rosco: las palabras se repetían entre partidas (había ~8
 ```text
 Fecha: 25/10/2026 — Tutti Frutti: se sacó el botón "Después" (si completabas todo con Después nunca llegaba al ¡BASTA!). Quedan solo "⟵ Anterior" y "Siguiente ➜": Siguiente con el campo vacío pasa a la que sigue; con algo escrito valida la letra. Apenas TODAS las categorías tienen una palabra válida (completadas en cualquier orden, con Siguiente o con Anterior) aparece la revisión con el botón ¡BASTA!. Probado con Playwright: saltear las 6 con Siguiente y completarlas solo con Anterior → aparece ¡BASTA!. tutti-frutti.js v87, sw v429.
 ```
+
+```text
+Fecha: 25/10/2026 — Reel del Tutti Frutti: nueva escena "Apelar" antes de "Anular": "¿EL JUEGO NO TE LA RECONOCIÓ?" → MATAMBRE en amarillo ⚠️ +0 → 🙋 Apelar → popup en el celu de Sofi "¿Le sumás los puntos?" → ✅ Sí, vale → pasa a verde +10 → "APELÁ Y SUMÁ TUS PUNTOS · tus amigos deciden si vale". Reel ≈34,4 s; música Sudden Victory Lap 0:23.65 hasta el final del tema (termina natural, fundido de 1 s).
+```
