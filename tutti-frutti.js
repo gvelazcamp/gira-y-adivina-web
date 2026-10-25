@@ -566,16 +566,15 @@ const TuttiFrutti=(()=>{
       <div id="tfEdit"><div class="imp-quien" id="tfCat"></div>
       <input id="tfInput" autocomplete="off" autocapitalize="words" enterkeyhint="next">
       <p class="imp-ayuda" id="tfMsg"></p>
-      <div class="mim-btns"><button type="button" class="bb-pasar imp-gris" id="tfAnt">⟵ Anterior</button><button type="button" class="bb-pasar imp-gris" id="tfSaltar">Después</button><button type="button" class="bb-pasar mim-ok" id="tfSig">Siguiente ➜</button></div></div>
+      <div class="mim-btns"><button type="button" class="bb-pasar imp-gris" id="tfAnt">⟵ Anterior</button><button type="button" class="bb-pasar mim-ok" id="tfSig">Siguiente ➜</button></div></div>
       <div id="tfRev" class="tf-rev" hidden></div></div>`);
     const inp=q("tfInput");
     q("tfSig").onclick=confirmarCampo;
-    q("tfSaltar").onclick=()=>{guardarCampo(false);if(on.pend.length>1){on.pend.push(on.pend.shift());}pintarCampo();};
     inp.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();confirmarCampo();}});
     /* Anterior: va a la categoría de antes en el orden (vacía o completa,
        da la vuelta); lo escrito queda guardado. */
     q("tfAnt").onclick=()=>{if(!on||on.fase!=="jugando"||on.basta||!on.pend.length)return;
-      guardarCampo();const n=on.cats.length;irACampo((on.pend[0]-1+n)%n);};
+      guardarCampo();if(todoCompleto()){on.pend=[];revision();return;}const n=on.cats.length;irACampo((on.pend[0]-1+n)%n);};
     /* Los puntitos de arriba también llevan directo a cualquier categoría. */
     q("tfProg").onclick=e=>{const d=e.target.closest("i[data-i]");if(!d||!on||on.fase!=="jugando"||on.basta)return;if(on.pend.length)guardarCampo();irACampo(Number(d.dataset.i));};
     pintarCampo();relojOnline();
@@ -602,12 +601,15 @@ const TuttiFrutti=(()=>{
     q("tfMsg").textContent="";
     const a=q("tfAnt");if(a)a.disabled=on.cats.length<2;
   }
+  const valida=v=>{v=String(v||"").trim();return v.length>=2&&N(v)[0]===on.letra;};
+  const todoCompleto=()=>on.cats.every((c,i)=>valida(on.mias[i]));
   function guardarCampo(){const i=on.pend[0];on.mias[i]=(q("tfInput").value||"").trim().slice(0,30);}
   function confirmarCampo(){
     if(!on||on.fase!=="jugando"||on.basta)return;
     const v=(q("tfInput").value||"").trim();
-    /* Vacío: "Siguiente" pasa a la categoría que sigue sin trabar. */
-    if(!v&&on.cats.length>1){guardarCampo();irACampo((on.pend[0]+1)%on.cats.length);return;}
+    /* Vacío: "Siguiente" pasa a la categoría que sigue sin trabar (se puede
+       volver después); si ya está todo completo, va a la revisión y al BASTA. */
+    if(!v&&on.cats.length>1){guardarCampo();if(todoCompleto()){on.pend=[];revision();return;}irACampo((on.pend[0]+1)%on.cats.length);return;}
     if(v.length<2||N(v)[0]!==on.letra){
       q("tfMsg").textContent=v?"Tiene que empezar con "+on.letra:"Escribí una palabra con "+on.letra;
       if(v&&typeof sonidoErrorExt==="function")sonidoErrorExt();
@@ -616,7 +618,9 @@ const TuttiFrutti=(()=>{
     const cat=on.cats[on.pend[0]];
     guardarCampo();on.hist=(on.hist||[]).filter(x=>x!==on.pend[0]);on.hist.push(on.pend[0]);on.pend.shift();
     if(typeof bip==="function")bip(880,.06,"sine",.04);
-    if(!on.pend.length){revision();return;}
+    /* Terminó cuando todas las categorías tienen una palabra válida, aunque
+       se hayan completado salteando o volviendo con Anterior. */
+    if(!on.pend.length||todoCompleto()){on.pend=[];revision();return;}
     pintarCampo();
     revisar(cat,v).then(ok=>{if(ok===false&&on&&on.fase==="jugando"){const m=raiz&&raiz.querySelector("#tfMsg");if(m&&!m.textContent)m.textContent="⚠️ «"+v+"» no la encontré como "+NOM_CAT[cat]+". Al final la pueden votar.";}});
   }
