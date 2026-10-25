@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="es-UY">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Puzzle · Reel</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* REEL del Puzzle (≈34 s, 9:16), mismo motor y misma música que reel-tutti.html.
+   Gancho: "¿Te animás a armarlo?" con las piezas volando a su lugar en el golpe. Después: +40 puzzles, de 12 a 1000 piezas, se pegan solas,
+   cooperativo en vivo (dos celulares), chat, se guarda solo, completo y cierre.
+   Las piezas se dibujan en un canvas con forma de rompecabezas de verdad. */
+:root{--oro:#F5B301;--mag:#E5197C;--tur:#37D6C0;--vio:#160B24;--cre:#F6EFE2;--verde:#2ED18A}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;color:#fff;font-family:Outfit,sans-serif}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+#escenario{position:relative;width:min(100vw,calc((100vh - 64px) * 9 / 16));aspect-ratio:9/16;overflow:hidden;background:#000;container-type:inline-size}
+body.limpio #escenario{width:min(100vw,calc(100vh * 9 / 16))}
+.esc{position:absolute;inset:0;display:none;overflow:hidden}
+.capa{position:absolute;will-change:transform,opacity}
+.abs{position:absolute}
+img{display:block;-webkit-user-drag:none;user-select:none}
+.titulo{position:absolute;left:4cqw;right:4cqw;text-align:center;font-family:'Archivo Black',sans-serif;line-height:1.04;color:#fff;text-shadow:0 .6cqw 0 #000,0 0 4cqw rgba(229,25,124,.55);letter-spacing:.02em;z-index:20}
+.oro{color:var(--oro);text-shadow:0 .7cqw 0 #7a4b00,0 0 5cqw rgba(245,179,1,.55)}
+.mag{color:#ff4fa8}.tur{color:var(--tur)}.verde{color:var(--verde)}
+#lienzo{position:absolute;inset:0;width:100%;height:100%;z-index:12;pointer-events:none}
+.viñeta{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.8) 100%);z-index:30}
+.barras::before,.barras::after{content:"";position:absolute;left:0;right:0;height:7cqw;background:#000;z-index:40}
+.barras::before{top:0}.barras::after{bottom:0}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:60}
+#negro{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:59}
+#marca{position:absolute;right:2cqw;top:8cqw;z-index:70;font:700 2.6cqw Outfit;color:#fff9;background:#0008;border-radius:9px;padding:.6cqw 1.6cqw;pointer-events:none}
+body.limpio #marca{display:none}
+#ctrl{width:min(100vw,520px);display:flex;align-items:center;gap:6px;padding:0 8px}
+#ctrl button{flex:none;height:40px;min-width:40px;border:0;border-radius:10px;background:#2A1A3C;color:#fff;font:800 15px Outfit;padding:0 10px}
+#ctrl button.prin{background:var(--mag)}
+#barra{flex:1;accent-color:var(--oro)}
+#tiempo{font:700 12px Outfit;color:#ccc;min-width:62px;text-align:right}
+#escenas{width:min(100vw,520px);display:flex;gap:4px;overflow-x:auto;padding:0 8px 6px}
+#escenas button{flex:none;border:0;border-radius:8px;background:#1a1024;color:#ccc;font:700 11px Outfit;padding:6px 8px}
+#escenas button.activa{background:var(--oro);color:#160B24}
+body.limpio #ctrl,body.limpio #escenas{display:none}
+.rayos{position:absolute;border-radius:50%;background:repeating-conic-gradient(#F5B30144 0 10deg,transparent 10deg 20deg);mask:radial-gradient(circle,#000 20%,transparent 65%);-webkit-mask:radial-gradient(circle,#000 20%,transparent 65%)}
+.mini{position:absolute;width:27cqw;height:27cqw;border-radius:3cqw;object-fit:cover;border:.6cqw solid #FFFFFF33;box-shadow:0 1.4cqw 3cqw #000a}
+.mini.sel{border-color:var(--oro);box-shadow:0 0 0 1cqw #F5B30155,0 0 8cqw #F5B301}
+.chip{display:inline-flex;align-items:center;gap:1.4cqw;background:#000a;border:.4cqw solid #ffffff44;border-radius:99cqw;padding:1.6cqw 3.6cqw;font:800 4.2cqw Outfit;white-space:nowrap}
+.tel{position:absolute;border-radius:5cqw;background:#0B0614;border:1cqw solid #2A1A3C;box-shadow:0 2cqw 5cqw #000c,inset 0 0 0 .3cqw #FFFFFF22}
+.tel b{position:absolute;left:0;right:0;bottom:-9cqw;text-align:center;font:900 4.4cqw 'Archivo Black'}
+.cursor{position:absolute;z-index:25;font:800 3cqw Outfit;white-space:nowrap}
+.cursor i{display:block;width:5cqw;height:5cqw;clip-path:polygon(0 0,100% 55%,55% 62%,40% 100%);background:var(--c);filter:drop-shadow(0 0 .6cqw #000)}
+.cursor b{display:inline-block;margin-left:2.6cqw;background:var(--c);color:#160B24;border-radius:2cqw;padding:.3cqw 1.4cqw}
+.globo{position:absolute;max-width:66cqw;padding:2.6cqw 4cqw;border-radius:5cqw;font:700 4.6cqw Outfit;box-shadow:0 1.4cqw 3cqw #000a}
+.globo small{display:block;font:800 3cqw Outfit;opacity:.75;margin-bottom:.4cqw}
+.globo.ella{left:6cqw;background:#3A2450;border-bottom-left-radius:1cqw}
+.globo.yo{right:6cqw;background:#1FA866;border-bottom-right-radius:1cqw}
+.dedo{position:absolute;font-size:11cqw;z-index:26;filter:drop-shadow(0 1cqw 1cqw #000a)}
+.barrap{position:absolute;left:12cqw;right:12cqw;height:5cqw;border-radius:99cqw;background:#FFFFFF1A;overflow:hidden;border:.4cqw solid #FFFFFF33}
+.barrap i{display:block;height:100%;background:linear-gradient(90deg,#37D6C0,#2ED18A)}
+</style>
+</head>
+<body>
+<div id="escenario" class="barras">
+  <!-- 0 · Gancho -->
+  <section class="esc" id="e0">
+    <div class="capa" style="inset:0;background:radial-gradient(ellipse at 50% 40%,#3a1a5c 0%,#120618 70%)"></div>
+    <div class="titulo" id="e0a" style="top:10cqw;font-size:8.6cqw">¿TE ANIMÁS<br>A <span class="oro">ARMARLO</span>? 🧩</div>
+    <div class="titulo oro" id="e0num" style="top:118cqw;font-size:24cqw"></div>
+    <div class="titulo oro" id="e0ok" style="top:124cqw;font-size:11cqw">¡COMPLETO!</div>
+    <div class="titulo" id="e0b" style="top:150cqw;font-size:5.4cqw">sin mirar la imagen 👀</div>
+  </section>
+  <!-- 1 · Elegí tu puzzle -->
+  <section class="esc" id="e1">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 40%,#2e1648,#0b0614 72%)"></div>
+    <div class="titulo" id="e1a" style="top:11cqw;font-size:8.4cqw">MÁS DE <span class="oro">40 PUZZLES</span><br>PARA ELEGIR</div>
+    <div id="e1minis" class="abs" style="inset:0"></div>
+    <div class="abs" id="e1chips" style="left:3cqw;right:3cqw;top:130cqw;display:flex;flex-wrap:wrap;justify-content:center;gap:2cqw"></div>
+  </section>
+  <!-- 2 · Piezas -->
+  <section class="esc" id="e2">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 45%,#3a1250,#0b0614 72%)"></div>
+    <div class="titulo" id="e2a" style="top:11cqw;font-size:8.6cqw">DE <span class="oro">12</span> A <span class="oro">1000</span><br>PIEZAS</div>
+    <div class="titulo oro" id="e2num" style="top:122cqw;font-size:20cqw">12</div>
+    <div class="titulo" id="e2b" style="top:146cqw;font-size:6.4cqw">GIGANTES DE 1000 🧠</div>
+  </section>
+  <!-- 3 · Se pega sola -->
+  <section class="esc" id="e3">
+    <div class="capa" style="inset:0;background:radial-gradient(ellipse at 50% 30%,#2b1745,#0b0614 70%)"></div>
+    <div class="titulo" id="e3a" style="top:9cqw;font-size:6.8cqw">ARRASTRÁ LA PIEZA…<br><span class="tur">¡Y SE PEGA SOLA!</span> 🧲</div>
+    <div class="dedo" id="e3dedo">👆</div>
+  </section>
+  <!-- 4 · ¿Y de a dos? -->
+  <section class="esc" id="e4">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 45%,#7B3FE4,#1a0b33 70%)"></div>
+    <div class="rayos capa" id="e4rayos" style="left:50%;top:80cqw;width:160cqw;height:160cqw;margin:-80cqw"></div>
+    <img class="capa" id="e4vivo" src="../assets/puzzle-arte/vivo.webp" style="left:8cqw;top:46cqw;width:84cqw">
+    <div class="titulo" id="e4t" style="top:16cqw;font-size:11cqw">¿Y DE A <span class="tur">DOS</span>? 👥</div>
+  </section>
+  <!-- 5 · Cooperativo en vivo -->
+  <section class="esc" id="e5">
+    <div class="capa" style="inset:0;background:radial-gradient(ellipse at 50% 30%,#123a48 0%,#0b0614 66%)"></div>
+    <div class="titulo" id="e5a" style="top:9cqw;font-size:7.8cqw">ARMALO <span class="tur">EN VIVO</span><br>CON UN AMIGO</div>
+    <div class="tel" id="e5t1" style="left:4cqw;top:34cqw;width:44cqw;height:90cqw"><b class="tur">📱 Vos</b></div>
+    <div class="tel" id="e5t2" style="left:52cqw;top:34cqw;width:44cqw;height:90cqw"><b class="mag">📱 Sofi</b></div>
+    <div class="titulo" id="e5b" style="top:146cqw;font-size:6cqw">CADA UNO EN SU CELU 📱</div>
+  </section>
+  <!-- 6 · Chat -->
+  <section class="esc" id="e6">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 35%,#2e1648,#0b0614 72%)"></div>
+    <div class="titulo" id="e6a" style="top:10cqw;font-size:8cqw">Y SE ORGANIZAN<br>POR EL <span class="tur">CHAT</span> 💬</div>
+    <img class="capa" id="e6como" src="../assets/puzzle-arte/como.webp" style="left:8cqw;top:33cqw;width:84cqw">
+    <div class="globo ella capa" id="g1" style="top:88cqw"><small>Sofi</small>¡Me falta el cielo! ☁️</div>
+    <div class="globo yo capa" id="g2" style="top:106cqw"><small>Vos</small>Dale, yo hago el borde 💪</div>
+    <div class="globo ella capa" id="g3" style="top:124cqw"><small>Sofi</small>¡Ahí encajó! 🧩</div>
+    <div class="globo yo capa" id="g4" style="top:142cqw"><small>Vos</small>🔥🔥🔥</div>
+  </section>
+  <!-- 7 · Se guarda solo -->
+  <section class="esc" id="e7">
+    <div class="capa" style="inset:0;background:radial-gradient(ellipse at 50% 30%,#1d2e52 0%,#0b0614 66%)"></div>
+    <div class="titulo" id="e7a" style="top:12cqw;font-size:7.8cqw">SE GUARDA <span class="oro">SOLO</span> 💾</div>
+    <div class="barrap" id="e7barra" style="top:112cqw"><i id="e7prog" style="width:0"></i></div>
+    <div class="titulo" id="e7dia" style="top:120cqw;font-size:7.4cqw"></div>
+    <div class="titulo" id="e7b" style="top:146cqw;font-size:5.6cqw">seguí cuando quieras, aunque pasen días</div>
+  </section>
+  <!-- 8 · Completo -->
+  <section class="esc" id="e8">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 45%,#5a1a6a,#0b0614 72%)"></div>
+    <div class="rayos capa" id="e8rayos" style="left:50%;top:80cqw;width:150cqw;height:150cqw;margin:-75cqw"></div>
+    <img class="capa" id="e8img" src="../assets/puzzle-arte/completo.webp" style="left:16cqw;top:38cqw;width:68cqw">
+    <div class="titulo oro" id="e8t" style="top:14cqw;font-size:10cqw">¡PUZZLE<br>COMPLETO!</div>
+    <div class="titulo" id="e8c" style="top:120cqw;font-size:5cqw"><span class="chip" style="background:#1FA866;border-color:#7CF0BE">📲 Compartí la foto</span></div>
+  </section>
+  <!-- 9 · Final -->
+  <section class="esc" id="e9">
+    <div class="capa" id="e9fondo" style="inset:-10%;background:radial-gradient(ellipse at 50% 40%,#5a1a6a 0%,#160B24 50%,#000 80%)"></div>
+    <img class="capa" id="e9logo" src="../assets/puzzle-arte/logo.webp" style="left:20cqw;top:12cqw;width:60cqw">
+    <div class="titulo" id="e9en" style="top:76cqw;font-size:5cqw;color:#E4D8EB">GRATIS EN</div>
+    <img class="capa" id="e9gya" src="../assets/logo.webp" style="left:23cqw;top:83cqw;width:54cqw">
+    <div class="titulo" id="e9play" style="top:134cqw;font-size:5.2cqw"><span style="display:inline-block;white-space:nowrap;background:#fff;color:#160B24;border-radius:3cqw;padding:2cqw 5cqw;text-shadow:none">▶ Disponible en Google Play</span></div>
+    <div class="titulo" id="e9web" style="top:150cqw;font-size:7cqw;color:var(--tur)">girayadivina.com</div>
+  </section>
+  <canvas id="lienzo" width="1080" height="1920"></canvas>
+  <div class="viñeta"></div>
+  <div id="negro"></div><div id="flash"></div>
+  <div id="marca"></div>
+</div>
+<div id="ctrl">
+  <button class="prin" id="bPlay">▶</button>
+  <button id="bStop">⏹</button>
+  <button id="bAnt">⏮</button>
+  <button id="bSig">⏭</button>
+  <input type="range" id="barra" min="0" max="1000" value="0">
+  <span id="tiempo">0:00</span>
+  <button id="bSon">🔊</button>
+  <button id="bLimpio" title="Ocultar controles para grabar">⛶</button>
+</div>
+<div id="escenas"></div>
+<div style="display:none">
+  <img id="imDragon" src="../assets/puzzle/dragon.webp">
+  <img id="imMercado" src="../assets/puzzle/mercado-puerto.webp">
+  <img id="imPiratas" src="../assets/puzzle/piratas.webp">
+  <img id="imValle" src="../assets/puzzle/valle-dragones.webp">
+  <img id="imSelva" src="../assets/puzzle/selva.webp">
+</div>
+<audio id="musica" src="reel-tutti-musica.mp3" preload="auto"></audio>
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const pr=(t,a,b)=>clamp((t-a)/(b-a));
+const eOut=x=>1-Math.pow(1-x,3),eIn=x=>x*x*x,eIO=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eBack=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2);};
+const lerp=(a,b,x)=>a+(b-a)*x;
+function set(el,o){if(typeof el==="string")el=$(el);if(!el)return;
+  if("o" in o)el.style.opacity=o.o;
+  el.style.transform=`translate(${o.x||0}cqw,${o.y||0}cqw) scale(${o.s==null?1:o.s}) rotate(${o.r||0}deg)`;}
+function golpe(el,t,a,fuera=null){const x=pr(t,a,a+.3);if(t<a||(fuera!=null&&t>fuera+.25)){set(el,{o:0});return;}
+  const sale=fuera!=null?pr(t,fuera,fuera+.25):0;const sh=t-a<.45?Math.sin((t-a)*80)*(1-pr(t,a,a+.45))*1.2:0;
+  set(el,{o:(x<1?x:1)*(1-sale),s:lerp(2.2,1,eOut(x))*(1+sale*.3),x:sh});}
+const pop=(el,t,a,fuera=null)=>{const x=pr(t,a,a+.3);set(el,{o:t<a?0:x*(fuera!=null?1-pr(t,fuera,fuera+.2):1),s:lerp(.3,1,eBack(x))});};
+function rnd(semilla){let s=semilla;return()=>{s=(s*9301+49297)%233280;return s/233280;};}
+
+/* ---------- Piezas de rompecabezas en el canvas (1 cqw = 10.8 px) ---------- */
+const CV=$("lienzo"),X=CV.getContext("2d"),U=10.8;
+function tablero(img,cols,rows,semilla=3){const r=rnd(semilla),sg=()=>r()<.5?1:-1;
+  return{img,cols,rows,H:Array.from({length:rows},()=>Array.from({length:cols},sg)),V:Array.from({length:rows},()=>Array.from({length:cols},sg))};}
+const TAB=[[.35,0],[.37,0,.28,.15,.38,.2],[.46,.26,.54,.26,.62,.2],[.72,.15,.63,0,.65,0],[1,0]];
+function borde(ax,ay,bx,by,s,L){const dx=bx-ax,dy=by-ay,len=Math.hypot(dx,dy),ux=dx/len,uy=dy/len,nx=uy,ny=-ux;
+  const P=(u,v)=>[ax+dx*u+nx*v*s*L,ay+dy*u+ny*v*s*L];
+  if(!s){X.lineTo(bx,by);return;}
+  X.lineTo(...P(.35,0));
+  for(const c of TAB.slice(1,4))X.bezierCurveTo(...P(c[0],c[1]),...P(c[2],c[3]),...P(c[4],c[5]));
+  X.lineTo(bx,by);}
+function camino(tb,c,r,w,h){const L=Math.min(w,h),top=r?-tb.H[r-1][c]:0,bot=r<tb.rows-1?tb.H[r][c]:0,right=c<tb.cols-1?tb.V[r][c]:0,left=c?-tb.V[r][c-1]:0;
+  X.beginPath();X.moveTo(0,0);borde(0,0,w,0,top,L);borde(w,0,w,h,right,L);borde(w,h,0,h,bot,L);borde(0,h,0,0,left,L);X.closePath();}
+/* Dibuja la pieza (c,r) con su esquina en (x,y) cqw; w,h = tamaño de pieza en cqw. */
+function pieza(tb,c,r,x,y,w,h,o={}){
+  const {rot=0,s=1,a=1,sombra=true,brillo=null,tono=null}=o;if(a<=0)return;
+  const W=w*U,Hh=h*U;X.save();X.globalAlpha=a;X.translate(x*U+W/2,y*U+Hh/2);X.rotate(rot*Math.PI/180);X.scale(s,s);X.translate(-W/2,-Hh/2);
+  camino(tb,c,r,W,Hh);
+  if(sombra){X.shadowColor="rgba(0,0,0,.6)";X.shadowBlur=16;X.shadowOffsetY=8;X.fillStyle="#000";X.fill();X.shadowColor="transparent";}
+  X.save();X.clip();X.drawImage(tb.img,-c*W,-r*Hh,tb.cols*W,tb.rows*Hh);if(tono){X.fillStyle=tono;X.fillRect(-W,-Hh,W*3,Hh*3);}X.restore();
+  X.lineWidth=2.4;X.strokeStyle="rgba(255,255,255,.45)";X.stroke();
+  if(brillo){X.lineWidth=7;X.strokeStyle=brillo;X.shadowColor=brillo;X.shadowBlur=24;X.stroke();}
+  X.restore();}
+function marco(x,y,w,h,col="rgba(255,255,255,.28)"){X.save();X.setLineDash([14,10]);X.lineWidth=3;X.strokeStyle=col;X.strokeRect(x*U,y*U,w*U,h*U);X.restore();}
+function guia(img,x,y,w,h,a){X.save();X.globalAlpha=a;X.drawImage(img,x*U,y*U,w*U,h*U);X.restore();}
+/* Recorrido de un puzzle: piezas desde su lugar suelto hasta el lugar final */
+function piezasSueltas(tb,semilla,zona){const r=rnd(semilla),L=[];for(let k=0;k<tb.cols*tb.rows;k++)L.push({c:k%tb.cols,r:Math.floor(k/tb.cols),x:zona[0]+r()*(zona[2]-zona[0]),y:zona[1]+r()*(zona[3]-zona[1]),rot:(r()-.5)*70,ord:r()});return L;}
+
+const ESC=[];
+function escena(id,nombre,dur,render){ESC.push({id,nombre,dur,render});}
+const IM={};
+
+/* 0 · Gancho */
+let G0;
+escena("e0","Gancho",3.2,t=>{
+  G0=G0||{tb:tablero(IM.dragon,3,3,5)};if(!G0.p)G0.p=piezasSueltas(G0.tb,11,[2,36,74,108]);
+  set("e0a",{o:1,s:t<.25?lerp(.92,1,eOut(pr(t,0,.25))):1});
+  const bx=15,by=42,w=70/3;
+  marco(bx,by,70,70,t>=2.45?"rgba(245,179,1,.9)":"rgba(255,255,255,.28)");
+  const orden=[...G0.p].sort((a,b)=>a.ord-b.ord);
+  orden.forEach((q,i)=>{const a=1.85+i*.06,k=eIO(pr(t,a,a+.3)),wob=t<a?Math.sin(t*6+i)*3:0;
+    pieza(G0.tb,q.c,q.r,lerp(q.x,bx+q.c*w,k),lerp(q.y,by+q.r*w,k),w,w,{rot:lerp(q.rot,0,k)+wob,s:lerp(.9,1,k),sombra:k<1,brillo:t>=2.45&&t<2.9?"rgba(245,179,1,.8)":null});});
+  set("e0num",{o:0});
+  golpe("e0b",t,.25,2.3);golpe("e0ok",t,2.45);
+  $("flash").style.opacity=t>=2.45&&t<2.7?.8*(1-pr(t,2.45,2.7)):0;
+});
+
+/* 1 · Elegí tu puzzle */
+const MINIS=["dragon","piratas","dinosaurios","princesa-hielo","futbol","ciudad-voladora","selva","egipto","espacio"];
+const CATS=["🎨 Dibujos","🗺️ Aventuras","🦸 Héroes","🏙️ Ciudades","🧠 Gigantes"];
+(function(){const b=$("e1minis");MINIS.forEach((m,i)=>{const im=document.createElement("img");im.className="mini capa";im.src="../assets/puzzle/mini/"+m+".webp";im.style.left=(6+(i%3)*30)+"cqw";im.style.top=(38+Math.floor(i/3)*30)+"cqw";b.appendChild(im);});
+  const c=$("e1chips");CATS.forEach(n=>{const s=document.createElement("span");s.className="chip";s.textContent=n;c.appendChild(s);});})();
+escena("e1","Elegí",4.0,t=>{
+  golpe("e1a",t,0);
+  document.querySelectorAll("#e1minis .mini").forEach((im,i)=>{const a=.3+i*.13,x=pr(t,a,a+.3),sel=i===4&&t>=2.8;im.classList.toggle("sel",sel);
+    set(im,{o:x*(t>=2.8&&!sel?.45:1),s:lerp(.2,1,eBack(x))*(sel?1+.12*eOut(pr(t,2.8,3.1)):1),r:lerp(-20,0,eOut(x))});});
+  document.querySelectorAll("#e1chips .chip").forEach((s,i)=>pop(s,t,1.7+i*.18));
+});
+
+/* 2 · De 12 a 1000 piezas */
+const PASOS=[[4,3,12],[5,5,25],[7,7,49],[10,10,100],[17,18,300],[32,32,1000]];
+const TB2={};
+escena("e2","Piezas",2.2,t=>{
+  golpe("e2a",t,0);
+  const k=Math.min(PASOS.length-1,Math.floor(pr(t,.25,1.55)*PASOS.length)),[cc,rr,n]=PASOS[k];
+  const bx=15,by=40,S=70;guia(IM.selva,bx,by,S,S,1);
+  const tb=TB2[n]||(TB2[n]=tablero(IM.selva,cc,rr,n));const w=S/cc,h=S/rr;
+  X.save();X.lineWidth=n>300?1:2;X.strokeStyle="rgba(255,255,255,.55)";
+  for(let r=0;r<rr;r++)for(let c=0;c<cc;c++){X.save();X.translate((bx+c*w)*U,(by+r*h)*U);camino(tb,c,r,w*U,h*U);X.stroke();X.restore();}X.restore();
+  const el=$("e2num");el.textContent=n;set(el,{o:pr(t,.2,.35),s:1+.25*(1-pr(t,.25+k*.217,.4+k*.217))});
+  golpe("e2b",t,1.55);
+  $("flash").style.opacity=t>=1.5&&t<1.7?.5*(1-pr(t,1.5,1.7)):0;
+});
+
+/* 3 · Se pega sola: el dedo arrastra piezas desde la bandeja al tablero */
+let G3;
+escena("e3","Se pega sola",4.4,t=>{
+  golpe("e3a",t,0);
+  if(!G3){const tb=tablero(IM.mercado,4,4,9),r=rnd(21),ya=[0,1,2,3,4,7,8,12],todas=[];
+    for(let k=0;k<16;k++){const c=k%4,f=Math.floor(k/4);todas.push({c,r:f,puesta:ya.includes(k),x:6+r()*68,y:118+r()*24,rot:(r()-.5)*60});}
+    const mover=todas.filter(q=>!q.puesta);mover.forEach((q,i)=>q.t0=.5+i*.47);G3={tb,todas};}
+  const bx=10,by=32,w=20;
+  guia(IM.mercado,bx,by,80,80,.13);marco(bx,by,80,80);
+  let dedo=null;
+  G3.todas.forEach(q=>{const fx=bx+q.c*w,fy=by+q.r*w;
+    if(q.puesta){pieza(G3.tb,q.c,q.r,fx,fy,w,w,{sombra:false});return;}
+    const k=eIO(pr(t,q.t0,q.t0+.36)),fin=t>=q.t0+.36;
+    const sn=fin?1+.08*Math.sin(Math.PI*pr(t,q.t0+.36,q.t0+.56)):1;
+    if(t>=q.t0&&!fin)dedo=[lerp(q.x,fx,k)+w*.35,lerp(q.y,fy,k)+w*.5];
+    pieza(G3.tb,q.c,q.r,lerp(q.x,fx,k),lerp(q.y,fy,k),w,w,{rot:lerp(q.rot,0,k),s:lerp(.8,1,k)*sn,sombra:!fin,brillo:fin&&t<q.t0+.6?"rgba(55,214,192,.9)":null});});
+  const d=$("e3dedo");d.style.opacity=dedo?1:0;if(dedo){d.style.left=dedo[0]+"cqw";d.style.top=dedo[1]+"cqw";}
+});
+
+/* 4 · ¿Y de a dos? */
+escena("e4","¿De a dos?",1.4,t=>{
+  golpe("e4t",t,.1);const b=pr(t,0,.25);set("e4vivo",{o:1,s:lerp(2.2,1,eOut(b))*(1+.02*Math.sin(t*14))});
+  set("e4rayos",{o:1,r:t*40});$("flash").style.opacity=t<.2?.8*(1-pr(t,0,.2)):0;
+});
+
+/* 5 · Cooperativo: dos celulares, cada pieza que pone uno aparece en el otro */
+let G5;
+escena("e5","En vivo de a dos",4.4,t=>{
+  golpe("e5a",t,0);set("e5t1",{o:pr(t,.1,.3)});set("e5t2",{o:pr(t,.1,.3)});
+  if(!G5){const tb=tablero(IM.piratas,3,3,4),r=rnd(33),q=[];for(let k=0;k<9;k++)q.push({c:k%3,r:Math.floor(k/3),x:1.5+r()*26,y:56+r()*22,rot:(r()-.5)*50,quien:k%2,t0:.5+k*.38});
+    q.sort(()=>0);G5={tb,q};}
+  const tels=[[4,34],[52,34]],w=12.66,ox=3,oy=8;
+  tels.forEach(([tx,ty],yo)=>{if(t<.1)return;X.save();X.globalAlpha=pr(t,.1,.3);
+    marco(tx+ox,ty+oy,38,38,"rgba(255,255,255,.22)");X.restore();
+    G5.q.forEach(q=>{const fx=tx+ox+q.c*w,fy=ty+oy+q.r*w,col=q.quien?"rgba(255,79,168,.95)":"rgba(55,214,192,.95)";
+      const propio=q.quien===yo,k=eIO(pr(t,q.t0,q.t0+.3)),fin=t>=q.t0+.3;
+      if(propio)pieza(G5.tb,q.c,q.r,lerp(tx+q.x,fx,k),lerp(ty+q.y,fy,k),w,w,{rot:lerp(q.rot,0,k),s:lerp(.75,1,k),sombra:!fin,a:pr(t,.1,.3),brillo:fin&&t<q.t0+.6?col:null});
+      else if(fin){const pp=pr(t,q.t0+.3,q.t0+.5);pieza(G5.tb,q.c,q.r,fx,fy,w,w,{s:lerp(1.4,1,eOut(pp)),a:pp,sombra:false,brillo:t<q.t0+.7?col:null});}
+      else pieza(G5.tb,q.c,q.r,tx+q.x,ty+q.y,w,w,{rot:q.rot,s:.75,a:pr(t,.1,.3)});});});
+  golpe("e5b",t,3.8);
+});
+
+/* 6 · Chat */
+escena("e6","Chat",4.0,t=>{
+  golpe("e6a",t,0);const c=pr(t,.2,.5);set("e6como",{o:c,s:lerp(.7,1,eBack(c)),y:Math.sin(t*2.5)*.5});
+  ["g1","g2","g3","g4"].forEach((id,i)=>{const a=.9+i*.65,x=pr(t,a,a+.25);set(id,{o:x,y:lerp(4,0,eOut(x)),s:lerp(.8,1,eBack(x))});});
+});
+
+/* 7 · Se guarda solo */
+let G7;const DIAS=[[.3,"LUNES",.25],[1.5,"MIÉRCOLES",.6],[2.7,"SÁBADO",1]];
+escena("e7","Se guarda",4.2,t=>{
+  golpe("e7a",t,0);
+  if(!G7){const tb=tablero(IM.valle,5,5,7),r=rnd(5),orden=Array.from({length:25},(_,k)=>k).sort(()=>r()-.5);G7={tb,orden};}
+  let p=0,dia="";DIAS.forEach(([a,d,v],i)=>{if(t>=a){dia=d;const prev=i?DIAS[i-1][2]:0;p=lerp(prev,v,eOut(pr(t,a,a+.6)));}});
+  const bx=15,by=36,w=14;marco(bx,by,70,70);
+  const n=Math.round(p*25);G7.orden.slice(0,n).forEach(k=>pieza(G7.tb,k%5,Math.floor(k/5),bx+(k%5)*w,by+Math.floor(k/5)*w,w,w,{sombra:false}));
+  if(p>=1)marco(bx,by,70,70,"rgba(46,209,138,.95)");
+  $("e7prog").style.width=(p*100)+"%";set("e7barra",{o:pr(t,.2,.4)});
+  const el=$("e7dia");el.innerHTML=dia?`${dia} · <span class="${p>=1?"verde":"oro"}">${Math.round(p*100)}%${p>=1?" ✅":""}</span>`:"";
+  const ult=DIAS.filter(d=>t>=d[0]).pop();set(el,{o:dia?1:0,s:ult?lerp(1.25,1,eOut(pr(t,ult[0],ult[0]+.25))):1});
+  golpe("e7b",t,3.2);
+});
+
+/* 8 · Completo */
+const CONF=Array.from({length:70},(_,i)=>{const r=rnd(100+i);return{x:r()*100,v:30+r()*50,d:r()*1.2,c:["#F5B301","#E5197C","#37D6C0","#7B3FE4","#2ED18A"][i%5],w:1.2+r()*1.6,g:r()*360};});
+escena("e8","Completo",2.9,t=>{
+  golpe("e8t",t,0);const k=pr(t,.15,.45);set("e8img",{o:t<.15?0:1,s:lerp(2.2,1,eIn(k))*(1+.02*Math.sin(t*8))});
+  set("e8rayos",{o:pr(t,.4,.7),r:t*35});pop("e8c",t,1.3);
+  CONF.forEach(c=>{const tt=t-c.d;if(tt<0)return;const y=-10+c.v*tt+12*tt*tt,x=c.x+Math.sin(tt*3+c.g)*4;X.save();X.translate(x*U,y*U);X.rotate(c.g+tt*6);X.fillStyle=c.c;X.fillRect(-c.w*U/2,-c.w*U/4,c.w*U,c.w*U/2);X.restore();});
+  $("flash").style.opacity=t>=.4&&t<.6?.5*(1-pr(t,.4,.6)):0;
+});
+
+/* 9 · Final */
+escena("e9","Final",3.7,t=>{
+  set("e9fondo",{o:pr(t,0,.4),s:1+t*.03});
+  const l=pr(t,0,.5);set("e9logo",{o:l,s:lerp(.3,1,eBack(l))*(1+.02*Math.sin(t*4)),r:Math.sin(t*2)*2});
+  golpe("e9en",t,.7);const g=pr(t,.8,1.2);set("e9gya",{o:t<.8?0:g,s:lerp(.5,1,eBack(g))});
+  golpe("e9play",t,1.4);golpe("e9web",t,1.9);
+  $("flash").style.opacity=t>=.08&&t<.25?.7*(1-pr(t,.08,.25)):0;
+});
+
+/* ---------- Motor ---------- */
+let T=0;const INI=[];let acc=0;ESC.forEach(e=>{INI.push(acc);acc+=e.dur;});const TOTAL=acc;
+let tocando=false,ult=null,sonido=true;
+function cual(t){for(let i=ESC.length-1;i>=0;i--)if(t>=INI[i])return i;return 0;}
+function pintar(){
+  IM.dragon=$("imDragon");IM.mercado=$("imMercado");IM.piratas=$("imPiratas");IM.valle=$("imValle");IM.selva=$("imSelva");
+  const i=cual(T),e=ESC[i],lt=T-INI[i];
+  document.querySelectorAll("#escenario .esc").forEach(el=>{el.style.display="none";});$(e.id).style.display="block";
+  $("flash").style.opacity=0;X.clearRect(0,0,CV.width,CV.height);
+  e.render(lt);
+  const fin=e.dur-lt;$("negro").style.opacity=i===0?0:Math.max(lt<.08?1-lt/.08:0,fin<.06&&i<ESC.length-1?1-fin/.06:0);
+  $("barra").value=Math.round(T/TOTAL*1000);
+  const mm=s=>Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,"0");
+  $("tiempo").textContent=mm(T)+" / "+mm(TOTAL);
+  $("marca").textContent=`Escena ${i+1} · ${e.nombre} · ${lt.toFixed(1)}s`;
+  document.querySelectorAll("#escenas button").forEach((b,k)=>b.classList.toggle("activa",k===i));
+}
+function syncMusica(){const m=$("musica");m.muted=!sonido;if(tocando){try{if(Math.abs(m.currentTime-T)>.25)m.currentTime=T;}catch(e){}m.play().catch(()=>{});}else m.pause();}
+function loop(now){if(tocando){const dt=ult==null?0:(now-ult)/1000;T=Math.min(TOTAL,T+dt);if(T>=TOTAL){tocando=false;$("bPlay").textContent="▶";$("musica").pause();}}
+  ult=now;pintar();requestAnimationFrame(loop);}
+function play(){if(T>=TOTAL)T=0;try{$("musica").currentTime=T;}catch(e){}tocando=true;$("bPlay").textContent="⏸";syncMusica();}
+function pausa(){tocando=false;$("bPlay").textContent="▶";$("musica").pause();}
+function ir(t){T=clamp(t,0,TOTAL);try{$("musica").currentTime=T;}catch(e){}syncMusica();}
+$("bPlay").onclick=()=>tocando?pausa():play();
+$("bStop").onclick=()=>{pausa();T=0;};
+$("bAnt").onclick=()=>{const i=cual(T);ir(T-INI[i]>1?INI[i]:INI[Math.max(0,i-1)]);};
+$("bSig").onclick=()=>{const i=cual(T);ir(INI[Math.min(ESC.length-1,i+1)]);};
+$("barra").oninput=e=>ir(e.target.value/1000*TOTAL);
+$("bSon").onclick=()=>{sonido=!sonido;$("bSon").textContent=sonido?"🔊":"🔇";syncMusica();};
+$("bLimpio").onclick=()=>{document.body.classList.add("limpio");if(!tocando)play();};
+$("escenario").onclick=()=>{if(document.body.classList.contains("limpio")){document.body.classList.remove("limpio");pausa();}};
+ESC.forEach((e,i)=>{const b=document.createElement("button");b.textContent=(i+1)+" · "+e.nombre;b.onclick=()=>ir(INI[i]);$("escenas").appendChild(b);});
+document.addEventListener("keydown",e=>{if(e.code==="Space"){e.preventDefault();tocando?pausa():play();}if(e.code==="ArrowRight")$("bSig").click();if(e.code==="ArrowLeft")$("bAnt").click();});
+const q=new URLSearchParams(location.search);if(q.get("e"))T=INI[clamp(+q.get("e")-1,0,ESC.length-1)];if(q.get("t"))T=clamp(+q.get("t"),0,TOTAL);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
