@@ -1556,3 +1556,7 @@ Fecha: 25/10/2026 — Tutti Frutti: al sacar "Después" los botones quedaban cor
 ```text
 Fecha: 25/10/2026 — Tutti Frutti, pantalla de escribir (capturas de Gonzalo en iPhone y Samsung): en iPhone, al abrirse el teclado la página se corría para arriba y el reloj/"Letra"/Salir quedaban tapados por la barra de arriba. Ahora la pantalla del Tutti ocupa solo la parte visible (visualViewport: top=offsetTop, height=vv.height, como el Rosco) y el bloque ficha + categoría + caja + botones queda centrado entre el reloj y el teclado (margin auto). El reloj ahora está centrado de verdad (antes corrido a la derecha). No se tocó el deslizado. tutti-frutti.js v89, extensiones.css v123, sw v432.
 ```
+
+```text
+Fecha: 25/10/2026 — Tutti Frutti, aviso de salida (Gonzalo jugó contra un iPhone y no le apareció nada): al salir de la app el celu corta la conexión y el aviso se perdía; además al volver solo se reenviaba si la ronda seguía. Ahora al volver se reenvía 5 veces (0; 1,5; 4; 8 y 15 s) aunque la ronda ya haya terminado (los demás no lo cuentan dos veces). Nuevo: si alguien toca Salir y abandona la sala, a los demás les aparece "🚪 Pepito salió de la partida". OJO: los dos celulares tienen que tener la versión nueva (cerrar y abrir el juego). tutti-frutti.js v90, sw v433.
+```

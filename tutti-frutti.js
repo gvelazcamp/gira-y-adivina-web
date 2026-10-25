@@ -58,12 +58,20 @@ const TuttiFrutti=(()=>{
   const salidasDe=pid=>(on&&on.salidas&&on.salidas[pid])||0;
   const penalizado=pid=>salidasDe(pid)>=SALIDAS_MAX;
   function salidaJuego(){
-    if(!raiz||!on||on.bots||on.fase!=="jugando"||on.basta)return;
+    if(!raiz||!on||on.bots)return;
     on.salidas=on.salidas||{};
-    if(document.hidden){on.salidas[on.pid]=salidasDe(on.pid)+1;on.salidaPend=true;}
-    else if(!on.salidaPend)return;
-    else on.salidaPend=false;
-    mandar({t:"salio",n:on.n,c:salidasDe(on.pid)});
+    if(document.hidden){
+      if(on.fase!=="jugando"||on.basta)return;
+      on.salidas[on.pid]=salidasDe(on.pid)+1;on.salidaPend=on.n;
+      mandar({t:"salio",n:on.n,c:salidasDe(on.pid)});
+      return;
+    }
+    /* Al volver: al salir de la app el celu suele cortar la conexión y ese
+       aviso se pierde, así que se manda de nuevo varias veces (aunque la
+       ronda ya haya terminado); los demás no lo cuentan dos veces. */
+    if(on.salidaPend!==on.n)return;
+    on.salidaPend=null;const mio=on,n=on.n,c=salidasDe(on.pid);
+    [0,1500,4000,8000,15000].forEach(ms=>on.timers.push(setTimeout(()=>{if(on===mio&&on.n===n)mandar({t:"salio",n,c});},ms)));
   }
   function configurar(){
     detenerMusica();parar();cerrarSala();PantallaFija.desactivar();
@@ -512,7 +520,8 @@ const TuttiFrutti=(()=>{
     }else if(m.t==="sala"&&!on.host){
       on.jug=Array.isArray(m.jug)?m.jug:[];on.ganadas=m.ganadas||{};on.rg=m.rg||{};on.cats=m.cats||on.cats;on.tiempo=m.tiempo||on.tiempo;pintarJugadores();
     }else if(m.t==="chau"){
-      const eraHost=!on.host&&on.jug[0]&&on.jug[0].pid===m.pid;
+      const eraHost=!on.host&&on.jug[0]&&on.jug[0].pid===m.pid,quien=(on.jug.find(j=>j.pid===m.pid)||{}).nombre;
+      if(quien&&!eraHost&&typeof mostrarToast==="function")mostrarToast("🚪",quien+" salió de la partida.","Se fue "+quien);
       on.jug=on.jug.filter(j=>j.pid!==m.pid);
       if(eraHost){cerrarSala();if(raiz){configurar();estado("El anfitrión cerró la sala.");}return;}
       if(on.host)difundirSala();pintarJugadores();
