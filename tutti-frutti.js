@@ -49,7 +49,22 @@ const TuttiFrutti=(()=>{
       if(audioMusica.paused)audioMusica.play().catch(()=>{});}catch(e){}
   }
   function detenerMusica(){try{if(audioMusica)audioMusica.pause();}catch(e){}}
-  document.addEventListener("visibilitychange",()=>{if(document.hidden)detenerMusica();else if(raiz&&on&&on.fase==="jugando"&&on.fin)iniciarMusica();});
+  document.addEventListener("visibilitychange",()=>{if(document.hidden)detenerMusica();else if(raiz&&on&&on.fase==="jugando"&&on.fin)iniciarMusica();salidaJuego();});
+  /* Salir de la app en plena ronda (por ej. a buscar en internet): se avisa a
+     todos con un aviso chico. A la 3ª salida en la misma ronda, ese jugador
+     pierde los puntos de la ronda. Contra bots no cuenta. El aviso se manda al
+     salir y se repite al volver (por si el celu cortó la conexión al salir). */
+  const SALIDAS_MAX=3;
+  const salidasDe=pid=>(on&&on.salidas&&on.salidas[pid])||0;
+  const penalizado=pid=>salidasDe(pid)>=SALIDAS_MAX;
+  function salidaJuego(){
+    if(!raiz||!on||on.bots||on.fase!=="jugando"||on.basta)return;
+    on.salidas=on.salidas||{};
+    if(document.hidden){on.salidas[on.pid]=salidasDe(on.pid)+1;on.salidaPend=true;}
+    else if(!on.salidaPend)return;
+    else on.salidaPend=false;
+    mandar({t:"salio",n:on.n,c:salidasDe(on.pid)});
+  }
   function configurar(){
     detenerMusica();parar();cerrarSala();PantallaFija.desactivar();
     raiz.innerHTML=`<div class="mg-panel imp-panel tf-config">
@@ -499,7 +514,7 @@ const TuttiFrutti=(()=>{
          o en una posterior, se ignora. Antes volvía a sortear la letra en
          pantalla y borraba lo que el jugador había escrito. */
       if(Number(m.n)<=Number(on.n||0)&&on.fase!=="lobby")return;
-      on.n=m.n;if(Array.isArray(m.usadas))on.usadas=m.usadas.slice();on.rj=m.rj||on.rj;on.tot=m.tot||on.tot||RONDAS;on.letra=m.letra;on.cats=m.cats;on.tiempo=m.tiempo;on.fase="jugando";on.resps={};on.extra={};on.apeladas={};on.anuladas={};on.ganador=null;on.basta=null;on.mias=Array(on.cats.length).fill("");on.envie=false;
+      on.n=m.n;if(Array.isArray(m.usadas))on.usadas=m.usadas.slice();on.rj=m.rj||on.rj;on.tot=m.tot||on.tot||RONDAS;on.letra=m.letra;on.cats=m.cats;on.tiempo=m.tiempo;on.fase="jugando";on.resps={};on.extra={};on.apeladas={};on.anuladas={};on.salidas={};on.avisoSalida=0;on.salidaPend=false;on.ganador=null;on.basta=null;on.mias=Array(on.cats.length).fill("");on.envie=false;
       jugarOnline();
       if(on.bots)planBots();
     }else if(m.t==="basta"&&m.n===on.n){
@@ -536,6 +551,18 @@ const TuttiFrutti=(()=>{
       const quien=(on.jug.find(j=>j.pid===m.pid)||{}).nombre||"Alguien",pal=(on.resps[m.a]||[])[m.i]||"",txt="✅ "+quien+" eligió no anular «"+pal+"».";
       anotarChat(txt);document.querySelector(`.tf-pide-anular[data-k="${m.a}|${m.i}"]`)?.remove();
       if(m.pid!==on.pid&&typeof mostrarToast==="function")mostrarToast("✅",txt);
+    }else if(m.t==="salio"&&m.n===on.n){
+      on.salidas=on.salidas||{};const c=Math.min(SALIDAS_MAX,Number(m.c)||0);
+      if(m.pid===on.pid&&document.hidden)return;
+      if(c<=(m.pid===on.pid?(on.avisoSalida||0):salidasDe(m.pid)))return;
+      if(m.pid===on.pid)on.avisoSalida=c;else on.salidas[m.pid]=c;
+      const quien=(on.jug.find(j=>j.pid===m.pid)||{}).nombre||"Alguien";
+      if(typeof mostrarToast==="function"){
+        if(m.pid===on.pid)mostrarToast(c>=SALIDAS_MAX?"🚫":"👀",c>=SALIDAS_MAX?"Saliste 3 veces: perdés los puntos de esta ronda.":"Saliste del juego. Aviso "+c+" de "+SALIDAS_MAX+": a la "+SALIDAS_MAX+"ª perdés los puntos de la ronda.","No vale salir");
+        else mostrarToast(c>=SALIDAS_MAX?"🚫":"👀",c>=SALIDAS_MAX?quien+" salió 3 veces: pierde los puntos de esta ronda.":quien+": ¡no vale hacer trampa! Aviso "+c+" de "+SALIDAS_MAX+".",quien+" salió del juego");
+      }
+      anotarChat((c>=SALIDAS_MAX?"🚫 ":"👀 ")+quien+" salió del juego ("+c+" de "+SALIDAS_MAX+")");
+      if(on.fase==="resultado")pintarVotos();
     }else if(m.t==="objecion"&&m.n===on.n){
       /* Las objeciones para quitar puntos también se retiraron. */
       return;
@@ -679,7 +706,7 @@ const TuttiFrutti=(()=>{
     on.cats.forEach((c,i)=>{
       /* Una ⚠️ a la que le sumaron puntos cuenta como respondida para los
          demás: si no, el otro seguía con 20 ("sos el único") aunque sí respondí. */
-      const validos=on.jug.filter(j=>!anulada(j.pid,i)&&(vale(j.pid,i)||extraDe(j.pid,i)>0));
+      const validos=on.jug.filter(j=>!penalizado(j.pid)&&!anulada(j.pid,i)&&(vale(j.pid,i)||extraDe(j.pid,i)>0));
       validos.forEach(j=>{
         const n=NORM(on.resps[j.pid][i]);
         const iguales=validos.filter(o=>o.pid!==j.pid&&NORM(on.resps[o.pid][i])===n).length;
@@ -688,6 +715,8 @@ const TuttiFrutti=(()=>{
     });
     /* ⚠️ dudosas: los puntos que le pusieron a mano con el sumador (5, 10 o 20). */
     on.jug.forEach(j=>on.cats.forEach((c,i)=>{const x=extraDe(j.pid,i);if(x!=null&&(on.resps[j.pid]||[])[i]&&!marca(j.pid,i)&&!anulada(j.pid,i))pts[j.pid][i]=x;}));
+    /* Salió 3 veces del juego en la ronda: todo a 0. */
+    on.jug.forEach(j=>{if(penalizado(j.pid))pts[j.pid]=pts[j.pid].map(()=>0);});
     return pts;
   }
   const sumar=a=>a.reduce((x,y)=>x+y,0);
@@ -741,7 +770,7 @@ const TuttiFrutti=(()=>{
     on.cats.forEach((c,i)=>{celdas+=`<div class="tf-g-cat" style="${porFilas?pos(1,i+2):pos(i+2,1)}" title="${esc(etiq(c))}"><small>${esc(etiq(c))}</small></div>`;});
     celdas+=`<div class="tf-g-cat tf-g-tot-cab" style="${porFilas?pos(1,C+2):pos(C+2,1)}">TOTAL</div>`;
     on.jug.forEach((j,k)=>{const r=on.resps[j.pid]||[];
-      celdas+=`<div class="tf-g-nom${j.pid===on.pid?" tf-yo":""}" data-nom="${j.pid}" style="${porFilas?pos(k+2,1):pos(1,k+2)}"><i class="tf-g-copa">🏆</i><b>${esc(j.nombre)}</b>${j.pid===g?`<em title="Cantó BASTA">🏁</em>`:""}</div>`;
+      celdas+=`<div class="tf-g-nom${j.pid===on.pid?" tf-yo":""}" data-nom="${j.pid}" style="${porFilas?pos(k+2,1):pos(1,k+2)}"><i class="tf-g-copa">🏆</i><b>${esc(j.nombre)}</b>${j.pid===g?`<em title="Cantó BASTA">🏁</em>`:""}<em class="tf-pen" title="Salió 3 veces del juego: 0 puntos" hidden>🚫</em></div>`;
       on.cats.forEach((c,i)=>{const v=r[i]||"",ok=marca(j.pid,i),mio=j.pid===on.pid;
         celdas+=`<div class="tf-cel${v?"":" tf-vacia"}${v&&!ok?" tf-dudosa":""}" data-a="${j.pid}" data-i="${i}" style="${porFilas?pos(k+2,i+2):pos(i+2,k+2)}">
           <span class="tf-w"${v&&!ok?` data-ver="1"`:""}>${esc(v||"—")}${v&&!ok?` <i class="tf-marca mal">⚠️</i>`:""}</span><small class="tf-pts">+0</small>
@@ -903,7 +932,7 @@ const TuttiFrutti=(()=>{
     const sumR=pid=>sumar(pr[pid]||[]);
     raiz.querySelectorAll("[data-tot]").forEach(el=>{el.textContent=sumR(el.dataset.tot);});
     const maxR=Math.max(...on.jug.map(j=>sumR(j.pid)));
-    raiz.querySelectorAll("[data-nom]").forEach(el=>el.classList.toggle("tf-lider",maxR>0&&sumR(el.dataset.nom)===maxR));
+    raiz.querySelectorAll("[data-nom]").forEach(el=>{el.classList.toggle("tf-lider",maxR>0&&sumR(el.dataset.nom)===maxR);const pe=el.querySelector(".tf-pen");if(pe)pe.hidden=!penalizado(el.dataset.nom);});
     raiz.querySelectorAll("[data-tot]").forEach(el=>el.classList.toggle("tf-lider",maxR>0&&sumR(el.dataset.tot)===maxR));
     const orden=on.jug.map(j=>[j,sumR(j.pid),(on.ganadas[j.pid]||0)+sumR(j.pid)]).sort((a,b)=>b[2]-a[2]);
     const t=raiz.querySelector("#tfTitulo");
