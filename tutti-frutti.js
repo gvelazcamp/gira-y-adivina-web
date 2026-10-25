@@ -749,7 +749,7 @@ const TuttiFrutti=(()=>{
       <p class="imp-ayuda tf-res-ayuda">Letra <b>${on.letra}</b> · <b>10</b> única · <b>5</b> repetida · <b>20</b> si sos el único.<br><b class="tf-amar">⚠️ amarilla</b> = vale 0, tocala para ver por qué · <b class="tf-verde">🙋 Apelar</b> la tuya ${on.bots?"y elegí sus puntos":"para que los demás decidan"} · <b>+/−</b> sumale a la de otro.</p>
       <div class="tf-grilla-caja"><div class="tf-grilla${porFilas?"":" tf-vuelta"}${P>3?" tf-muchos":""}" id="tfGrilla" lang="es" style="grid-template-columns:${cols}">${celdas}</div></div>
       <p class="tf-res-frase" id="tfFrase"></p>
-      <button type="button" class="bb-pasar imp-gris tf-anular-btn" id="tfAnular">🚫 Anular una respuesta</button>
+      <button type="button" class="tf-anular-btn" id="tfAnular">🚫 Anular una respuesta</button>
       <div class="qs-sub">🏆 Puntos (con esta ronda)</div><ul class="imp-tabla" id="tfTabla"></ul>
       ${salieronHtml()}
       ${on.host?((on.rj||1)>=(on.tot||RONDAS)?`<button type="button" class="mg-principal" id="tfOtra">🏆 Ver ganador de la partida</button>`:`<button type="button" class="mg-principal" id="tfOtra">🎲 Siguiente ronda (${(on.rj||1)+1} de ${on.tot||RONDAS})</button>`):`<p class="imp-ayuda">Esperando al anfitrión…</p>`}</div>`);

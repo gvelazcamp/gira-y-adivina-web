@@ -1504,3 +1504,7 @@ Fecha: 25/10/2026 — Tutti Frutti: botón "🚫 Anular una respuesta" arriba de
 ```text
 Fecha: 25/10/2026 — Tutti Frutti: "Anular una respuesta" ya no anula directo con amigos: es como Apelar al revés. Al que la pide le sale "Les preguntamos a los demás" y a los demás un popup "X quiere anular «palabra» ¿Vale o no vale?". Con que uno diga ❌ No vale, pasa a 0 y se recalculan los puntos; si dice ✅ Sí vale, queda como estaba y se avisa. Contra bots y "↩️ Devolver" siguen siendo directos. tutti-frutti.js v84, sw v425.
 ```
+
+```text
+Fecha: 25/10/2026 — Tutti Frutti: el botón "🚫 Anular una respuesta" ahora es chico, tipo pastilla como "🙋 Apelar" (rojo), en vez del botón grande. tutti-frutti.js v85, extensiones.css v121, sw v426.
+```
