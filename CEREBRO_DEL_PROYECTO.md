@@ -1528,3 +1528,7 @@ Fecha: 25/10/2026 — Reel del Tutti Frutti: el botón "🚫 Anular una respuest
 ```text
 Fecha: 25/10/2026 — Reel del Tutti Frutti con la música que eligió Gonzalo ("Sudden Victory Lap", desde el segundo 24): promo/reel-tutti-musica.mp3 = 0:23.65–0:54.1 con fundido final de 1,9 s (empieza en 23,65 para que el golpe de 0:26.1 caiga justo en el ¡BASTA! del gancho). Reemplaza a The Big Reveal en este reel.
 ```
+
+```text
+Fecha: 25/10/2026 — Rosco: las palabras se repetían entre partidas (había ~8 por letra y solo ~6 del nivel). Banco ampliado de 203 a 521 definiciones (≈13 a 30 por letra; todas chequeadas con tests/auditar-palabras.cjs: 0 errores, ninguna choca con otro juego). Nueva elección: por letra salen primero TODAS las que no viste (de cualquier nivel, prefiriendo el tuyo) y recién cuando se agotan esa letra vuelve a empezar (Vistas "rosco" en localStorage). Simulado: ~24 partidas seguidas sin repetir ninguna palabra en nivel 1 y ~13 en nivel 4 (24 letras; la K es la que limita). rosco-rioplatense.js v18, datos v5, sw v428.
+```
