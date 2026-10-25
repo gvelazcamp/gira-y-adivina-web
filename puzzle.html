@@ -57,6 +57,8 @@ select{padding:7px 8px}
 #tuto li b{color:var(--acc)}
 #tuto h2{font-size:21px}
 #tuto .card button{display:block;width:100%}
+/* segundo botón del popup: para que se vea de una que se puede armar de a dos */
+#tuto .card button.tu-pareja{margin-top:8px;background:#37D6C0;color:#160B24;box-shadow:0 4px 0 #1b8f80}
 #ayuda{font-weight:700;padding:7px 11px}
 /* Arte (assets/puzzle-arte): logo y dibujo en "Cómo jugar", categorías con dibujo, trofeo al terminar */
 #tuto .tu-logo{display:block;height:min(13dvh,118px);width:auto;max-width:56%;object-fit:contain;margin:-8px auto 0;filter:drop-shadow(0 6px 10px #0009)}
@@ -197,7 +199,7 @@ button:disabled,select:disabled{opacity:.4;cursor:default}
 <header>
   <button id="volver" type="button" aria-label="Volver">‹</button>
   <div class="brand">🧩 <b>Puzzle</b></div>
-  <select id="modo" aria-label="Modo"><option value="solo" selected>👤 Solo</option><option value="pareja">👥 Cooperativo</option></select>
+  <select id="modo" aria-label="Modo"><option value="solo" selected>👤 Solo</option><option value="pareja">👥 Con un amigo</option></select>
   <select id="count" aria-label="Piezas"><option value="12">12 piezas</option><option value="25" selected>25 piezas</option><option value="49">49 piezas</option><option value="70">70 piezas</option><option value="100">100 piezas</option><option value="150">150 piezas</option><option value="300">300 piezas</option><option value="500">500 piezas</option><option value="1000">1000 pzs</option></select>
   <select id="img" aria-label="Imagen"><option value="dibujo" selected>Dibujos</option><option value="aventura">Aventuras</option><option value="heroe">Héroes</option><option value="gigante">🧠 Gigantes</option><option value="p3d">🧊 3D</option><option value="ciudad">Ciudades</option><option value="paisaje">Paisaje</option><option value="geo">Geométrico</option><option value="foto">Foto (internet)</option><option value="propia">Tu imagen…</option></select>
   <div class="salto"></div>
@@ -224,13 +226,13 @@ button:disabled,select:disabled{opacity:.4;cursor:default}
 <div id="prev" class="hide"><canvas id="pv"></canvas><span>Tocá para volver a armar</span></div>
 <div id="toast"></div>
 <div id="tuto" class="hide"><div class="card"><img class="tu-logo" src="assets/puzzle-arte/logo.webp" alt="Puzzle"><img class="tu-como" src="assets/puzzle-arte/como.webp" alt=""><h2>Cómo jugar</h2><ul>
-<li class="tu-vivo"><span><img class="tu-ico" src="assets/puzzle-arte/vivo.webp" alt=""></span><div><b>En vivo:</b> arriba elegí <b>Cooperativo</b>, invitá a alguien y armen <b>el mismo puzzle</b>, cada uno en su celular.</div></li>
+<li class="tu-vivo"><span><img class="tu-ico" src="assets/puzzle-arte/vivo.webp" alt=""></span><div><b>¿Con alguien?</b> Tocá <b>👥 Armar con un amigo</b> (abajo) y armen <b>el mismo puzzle en vivo</b>, cada uno en su celular.</div></li>
 <li><span>✋</span><div><b>Arrastrá</b> las piezas a su lugar y <b>tocá una</b> para girarla. Pellizcá para acercar.</div></li>
 <li><span>🧲</span><div>Cerca de su lugar o de su compañera, <b>se pega sola</b>.</div></li>
 <li><span>🖼️</span><div>La <b>imagen chiquita</b> de abajo se agranda al tocarla. <b>Guía</b> la marca en el recuadro.</div></li>
 <li><span>🧩</span><div>En <b>Elegir</b>: dibujos, ciudades, <b>gigantes</b> de 1000 piezas y estadios <b>3D</b>.</div></li>
 <li><span>💾</span><div><b>Se guarda solo</b>: salí y seguí cuando quieras, aunque pasen días.</div></li>
-</ul><button id="bTuto">¡A armar!</button></div></div>
+</ul><button id="bTuto">🧩 Armar solo</button><button id="bTutoPareja" class="tu-pareja">👥 Armar con un amigo</button></div></div>
 <div id="pareja" class="hide"><div class="card"><h2>👥 Puzzle cooperativo</h2>
 <p class="pj-sub">Arman <b>el mismo puzzle</b>, cada uno en su celular. La sala <b>queda guardada hasta que lo terminen</b>: pueden entrar y salir cuando quieran, aunque pasen días.</p>
 <div id="pjLista"></div>
@@ -643,7 +645,7 @@ function verPrevia(v){$('#prev').classList.toggle('hide',!v);$('#pvBtn').classLi
 $('#pvBtn').onclick=()=>verPrevia($('#prev').classList.contains('hide'));
 $('#prev').onclick=()=>verPrevia(false);
 $('#mini').onclick=()=>verPrevia(true);
-$('#bTuto').onclick=()=>{$('#tuto').classList.add('hide');try{const d=JSON.parse(localStorage.getItem('gya_puzzle')||'{}');d.tuto=1;localStorage.setItem('gya_puzzle',JSON.stringify(d))}catch(_){}};$('#guide').onclick=toggleGuide;
+$('#bTuto').onclick=()=>{$('#tuto').classList.add('hide');try{const d=JSON.parse(localStorage.getItem('gya_puzzle')||'{}');d.tuto=1;localStorage.setItem('gya_puzzle',JSON.stringify(d))}catch(_){}};$('#bTutoPareja').onclick=()=>{$('#bTuto').onclick();abrirPj();};$('#guide').onclick=toggleGuide;
 $('#count').onchange=nuevoConfirmado;$('#rot').onchange=nuevoConfirmado;
 /* 🔲 Bordes (con 150+ piezas, solo): junta las piezas de borde sueltas
    alrededor del marco, para arrancar como en un puzzle de verdad. Tocándolo de
@@ -786,7 +788,7 @@ $('#chatEnviar').onclick=()=>{enviarChat($('#chatTxt').value);$('#chatTxt').valu
 $('#chatTxt').onkeydown=e=>{if(e.key==='Enter'){enviarChat($('#chatTxt').value);$('#chatTxt').value=''}};
 document.querySelectorAll('.ch-rap button').forEach(b=>b.onclick=()=>enviarChat(b.dataset.t));
 function bloquearControles(v){for(const id of['#count','#img','#new','#rot'])$(id).disabled=v}
-function menuModo(){const m=$('#modo');m.innerHTML=coop?`<option value="sala">👥 ${coop.sala}</option><option value="invitar">📲 Invitar</option><option value="pausa">⏸️ Pausar y salir</option>`:'<option value="solo">👤 Solo</option><option value="pareja">👥 Cooperativo</option>';m.value=coop?'sala':'solo'}
+function menuModo(){const m=$('#modo');m.innerHTML=coop?`<option value="sala">👥 ${coop.sala}</option><option value="invitar">📲 Invitar</option><option value="pausa">⏸️ Pausar y salir</option>`:'<option value="solo">👤 Solo</option><option value="pareja">👥 Con un amigo</option>';m.value=coop?'sala':'solo'}
 const estadoPj=t=>{$('#pjEstado').textContent=t};
 const hace=ms=>{const m=Math.round((Date.now()-ms)/60000);return m<1?'recién':m<60?`hace ${m} min`:m<1440?`hace ${Math.round(m/60)} h`:`hace ${Math.round(m/1440)} días`};
 /* Cada sala guardada tiene una ✕ para quitarla de "Tus salas" (solo de este
