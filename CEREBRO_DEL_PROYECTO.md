@@ -1460,3 +1460,7 @@ Fecha: 24/10/2026 — Tutti Frutti, "Famoso / banda": "Emanero" salió como mal 
 ```text
 Fecha: 24/10/2026 — Ruleta de la partida (a Gonzalo, jugando en una sala de a dos, le salió PIERDE TURNO de entrada y dos veces seguido; "era regla"). Antes solo se protegía el primerísimo giro de un usuario nuevo en ¡Jugar ahora! y se permitían hasta 2 PIERDE seguidos. Ahora en hostGirar() — por donde pasan TODOS los giros (anfitrión, invitado vía mensaje "girar", bots, Sala TV, local) — el primer giro de la partida nunca es PIERDE/QUIEBRA y después de un PIERDE o QUIEBRA el siguiente nunca es otro malo (S.girosHechos, S.ultimoMalo; S se crea de nuevo en cada partida). Simulación de 20.000 partidas: 0 primeros giros malos, 0 malos seguidos, ~13% de giros malos. Regla anotada en "Reglas de contenido y visuales". sw v414.
 ```
+
+```text
+Fecha: 24/10/2026 — Sala de a dos: en el turno de un jugador SIN tablero (Vale) el tablero pasaba a liso y las letras se agrandaban; en el turno de Gonzalo (con tablero) se achicaban. aplicarTableroSegunTurno(): en host/guest, si al que le toca no tiene tablero, se usa el tuyo equipado o, si tampoco tenés, el de otro jugador de la sala. Así el tablero y el tamaño de las letras quedan iguales toda la partida. Probado los 4 casos (vos con/sin tablero × turno de cada uno): siempre con marco. sw v415.
+```

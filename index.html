@@ -10950,7 +10950,9 @@ function aplicarTableroSegunTurno(){
   let tab=null;
   if(modo==="host"||modo==="guest"){
     const j=V&&V.jug&&V.jug[V.turno];
-    tab=j&&j.tab;
+    /* Si al que le toca no tiene tablero, se deja el tuyo (o el de otro jugador): antes el tablero
+       pasaba a liso y las letras cambiaban de tamaño en cada turno. Así queda siempre igual. */
+    tab=(j&&j.tab)||tableroEquipado||((V&&V.jug)||[]).map(x=>x&&x.tab).find(Boolean)||null;
   }else if(modo==="bot"||modo==="local"){
     /* Contra la máquina o en el mismo dispositivo se usa siempre el
        tablero que cada uno tiene equipado, en todas las partidas. */
