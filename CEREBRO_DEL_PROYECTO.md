@@ -1532,3 +1532,7 @@ Fecha: 25/10/2026 — Reel del Tutti Frutti con la música que eligió Gonzalo (
 ```text
 Fecha: 25/10/2026 — Rosco: las palabras se repetían entre partidas (había ~8 por letra y solo ~6 del nivel). Banco ampliado de 203 a 521 definiciones (≈13 a 30 por letra; todas chequeadas con tests/auditar-palabras.cjs: 0 errores, ninguna choca con otro juego). Nueva elección: por letra salen primero TODAS las que no viste (de cualquier nivel, prefiriendo el tuyo) y recién cuando se agotan esa letra vuelve a empezar (Vistas "rosco" en localStorage). Simulado: ~24 partidas seguidas sin repetir ninguna palabra en nivel 1 y ~13 en nivel 4 (24 letras; la K es la que limita). rosco-rioplatense.js v18, datos v5, sw v428.
 ```
+
+```text
+Fecha: 25/10/2026 — Tutti Frutti: se sacó el botón "Después" (si completabas todo con Después nunca llegaba al ¡BASTA!). Quedan solo "⟵ Anterior" y "Siguiente ➜": Siguiente con el campo vacío pasa a la que sigue; con algo escrito valida la letra. Apenas TODAS las categorías tienen una palabra válida (completadas en cualquier orden, con Siguiente o con Anterior) aparece la revisión con el botón ¡BASTA!. Probado con Playwright: saltear las 6 con Siguiente y completarlas solo con Anterior → aparece ¡BASTA!. tutti-frutti.js v87, sw v429.
+```
