@@ -342,13 +342,13 @@ const TuttiFrutti=(()=>{
   const BOT_NOMBRES=["Fede_UY","Male98","Tomi_ARG","CamiMdeo","PatoCanario","Vale_Punta","Juli.Salto","Nacho_10","Sofi.Cba","Lucho_MVD"];
   const BOT_MAYORES=[{n:"Abuelo_Tito",g:"m"},{n:"Marta1958",g:"f"},{n:"Don_Carlos",g:"m"},{n:"Nelly.Salto",g:"f"},{n:"Raúl_Pocitos",g:"m"},{n:"Chela_MVD",g:"f"},{n:"Oscar65",g:"m"},{n:"Beba.Minas",g:"f"}];
   /* Velocidad humana por categoría (pensar + escribir en el celular):
-     normal 3,5-5 s, difícil (rivales rápidos) 2-3 s, persona mayor 9-14 s
+     normal 3,5-5 s, difícil (rivales rápidos) 3-4,5 s (como estaba, Gonzalo: "el difícil está bien"), persona mayor 9-14 s
      (25/10/2026: Gonzalo completaba todo y los bots "normales" iban por la 2ª categoría).
      Las categorías y letras difíciles llevan un 25% más. "hab" es la
      probabilidad de saber una palabra para cada categoría. */
   const MODOS_BOT={
     normal:{nombre:"🙂 Normal",desc:"Rivales a velocidad normal",seg:[3.5,5],hab:[.9,.97]},
-    dificil:{nombre:"⚡ Difícil",desc:"Rivales rápidos que cantan BASTA enseguida",seg:[2,3],hab:[.96,1]},
+    dificil:{nombre:"⚡ Difícil",desc:"Rivales rápidos que cantan BASTA enseguida",seg:[3,4.5],hab:[.96,1]},
     mayor:{nombre:"👴 Persona mayor",desc:"Rivales tranquilos, sin apuro",seg:[9,14],hab:[.75,.9]}};
   const CATS_DIFICILES=["Famoso","Marca","Película o serie","Cosa","Profesión"],LETRAS_DIFICILES="UIJV";
   const azar=(a,b)=>a+Math.random()*(b-a);
