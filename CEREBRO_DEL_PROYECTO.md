@@ -1512,3 +1512,7 @@ Fecha: 25/10/2026 — Tutti Frutti: el botón "🚫 Anular una respuesta" ahora 
 ```text
 Fecha: 25/10/2026 — Tutti Frutti: el popup del pedido de anular ahora pregunta "¿La anulamos?" con botones "🚫 Anular (pasa a 0)" y "✅ No anular" (antes "Sí, vale / No vale" confundía). tutti-frutti.js v86, sw v427.
 ```
+
+```text
+Fecha: 25/10/2026 — REEL del Tutti Frutti: promo/reel-tutti.html (≈29 s, 9:16, mismo motor que reel.html). Gancho de 3 s: "NOMBRE, ANIMAL Y PAÍS CON U… ¿EN 3 SEGUNDOS?" con cuenta 3-2-1 → ULISES / URUBÚ / URUGUAY + ¡BASTA! (cae con el golpe de la música). Después: papelito de la escuela → "ahora es online" (como.webp), sale la letra M, copia de la pantalla de juego (Anterior/Después/Siguiente), ¡BASTA!, grilla de puntos Vos/Sofi (10 única · 5 repetida · 20 si sos el único), "¿Te quieren hacer trampa?" con el Anular de «UNA» (popup ¿La anulamos?, el otro pasa a 20), al mejor de 3 rondas, amigos o bots, y cierre Tutti Frutti + Girá y Adiviná + Google Play + girayadivina.com. Música: promo/reel-tutti-musica.mp3 (The Big Reveal 0:05.05–0:08.25 + 0:14.4–final; el golpe de 0:37 cae con el logo). MP4 1080×1920 exportado cuadro por cuadro (no se guarda en el repo).
+```
