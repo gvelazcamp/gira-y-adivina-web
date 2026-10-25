@@ -928,6 +928,8 @@ function abrirElegirSolo(siguiente){
   sel={cat,i,n:+$('#count').value>=1000?1000:500};miOk=otroOk=false;pintarElegir();$('#elegir').classList.remove('hide')}
 async function armarElegidoSolo(){
   if(enCurso()&&!won&&!confirm('¿Empezar este puzzle? Se pierde el que estás armando.'))return;
+  /* Cada puzzle nuevo que empezás solo gasta 1 ficha ⚡ del Puzzle (3, +1 cada 30 min). Seguir uno guardado o armar con un amigo no gasta. */
+  try{const F=parent&&parent!==window&&parent.Fichas;if(F&&!F.usar("puzzle",()=>armarElegidoSolo()))return;}catch(_){}
   cerrarElegir();forzar=rutaSel();$('#img').value=sel.cat;lastImgSel=sel.cat;if(sel.cat==='aventura'&&+$('#count').value<49)$('#count').value='49';if(sel.cat==='gigante')$('#count').value=String(sel.n);
   busy=false;await newGame()}
 /* ================= PUZZLES 3D (encastrables) =================
