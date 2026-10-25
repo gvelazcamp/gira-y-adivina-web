@@ -557,10 +557,10 @@ const TuttiFrutti=(()=>{
     q("tfSig").onclick=confirmarCampo;
     q("tfSaltar").onclick=()=>{guardarCampo(false);if(on.pend.length>1){on.pend.push(on.pend.shift());}pintarCampo();};
     inp.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();confirmarCampo();}});
-    /* Anterior: vuelve a la última categoría confirmada para corregirla;
-       después "Siguiente" sigue donde estaba (lo escrito queda guardado). */
-    q("tfAnt").onclick=()=>{if(!on||on.fase!=="jugando"||on.basta||!on.hist||!on.hist.length)return;
-      if(on.pend.length)guardarCampo();const k=on.hist.pop();irACampo(k);};
+    /* Anterior: va a la categoría de antes en el orden (vacía o completa,
+       da la vuelta); lo escrito queda guardado. */
+    q("tfAnt").onclick=()=>{if(!on||on.fase!=="jugando"||on.basta||!on.pend.length)return;
+      guardarCampo();const n=on.cats.length;irACampo((on.pend[0]-1+n)%n);};
     /* Los puntitos de arriba también llevan directo a cualquier categoría. */
     q("tfProg").onclick=e=>{const d=e.target.closest("i[data-i]");if(!d||!on||on.fase!=="jugando"||on.basta)return;if(on.pend.length)guardarCampo();irACampo(Number(d.dataset.i));};
     pintarCampo();relojOnline();
@@ -585,12 +585,14 @@ const TuttiFrutti=(()=>{
     const inp=q("tfInput");inp.value=on.mias[i]||"";inp.placeholder="Empieza con "+on.letra+"…";try{inp.focus();}catch(e){}
     q("tfProg").innerHTML=on.cats.map((c,j)=>`<i class="${on.mias[j]?"ok":""}${j===i?" act":""}" data-i="${j}"></i>`).join("");
     q("tfMsg").textContent="";
-    const a=q("tfAnt");if(a)a.disabled=!(on.hist&&on.hist.length);
+    const a=q("tfAnt");if(a)a.disabled=on.cats.length<2;
   }
   function guardarCampo(){const i=on.pend[0];on.mias[i]=(q("tfInput").value||"").trim().slice(0,30);}
   function confirmarCampo(){
     if(!on||on.fase!=="jugando"||on.basta)return;
     const v=(q("tfInput").value||"").trim();
+    /* Vacío: "Siguiente" pasa a la categoría que sigue sin trabar. */
+    if(!v&&on.cats.length>1){guardarCampo();irACampo((on.pend[0]+1)%on.cats.length);return;}
     if(v.length<2||N(v)[0]!==on.letra){
       q("tfMsg").textContent=v?"Tiene que empezar con "+on.letra:"Escribí una palabra con "+on.letra;
       if(v&&typeof sonidoErrorExt==="function")sonidoErrorExt();
