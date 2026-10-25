@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Caveat:wght@700&family=Outfit:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
 /* REEL del Tutti Frutti (~29 s, 9:16): gancho de 3 s "Nombre, animal y país
-   con U… ¿en 3 segundos?" → ¡BASTA! + papelito → online, letra, partida,
+   con U… ¿las completás antes que todos?" → ¡BASTA! + papelito → online, letra, partida,
    BASTA, puntos, anular, 3 rondas y cierre. Mismo motor que reel.html:
    todo sale del tiempo T. Música: reel-tutti-musica.mp3 (Sudden Victory Lap 0:23.65–final). */
 :root{--oro:#F5B301;--mag:#E5197C;--tur:#37D6C0;--vio:#160B24;--cre:#F6EFE2;--verde:#2ED18A}
@@ -115,7 +115,7 @@ body.limpio #ctrl,body.limpio #escenas{display:none}
     <div class="ficha capa" id="e0ficha" style="left:39cqw;top:29cqw;width:22cqw"><img src="../assets/tutti/ficha.webp"><b style="font-size:12cqw">U</b></div>
     <div id="e0filas" class="abs" style="inset:0"></div>
     <div class="titulo oro" id="e0num" style="top:124cqw;font-size:22cqw"></div>
-    <div class="titulo" id="e0b" style="top:146cqw;font-size:6.8cqw">¿LAS COMPLETÁS<br>EN <span class="oro">3 SEGUNDOS</span>?</div>
+    <div class="titulo" id="e0b" style="top:146cqw;font-size:6.8cqw">¿LAS COMPLETÁS<br><span class="oro">ANTES QUE TODOS</span>?</div>
     <img class="capa" id="e0basta" src="../assets/tutti/basta.webp" style="left:27cqw;top:124cqw;width:46cqw">
   </section>
   <!-- 1 · Papelito → online -->
@@ -261,14 +261,13 @@ const escribir=(w,t,a,d)=>w.slice(0,Math.floor(pr(t,a,a+d)*w.length+(t>=a+d?1:0)
 const ESC=[];
 function escena(id,nombre,dur,render){ESC.push({id,nombre,dur,render});}
 
-/* 0 · Gancho: Nombre, animal y país con U en 3 segundos → ¡BASTA! */
+/* 0 · Gancho: categorías con U, ¿las completás antes que todos? → ¡BASTA! */
 const GANCHO=[["c_nombre","Nombre","ULISES"],["c_animal","Animal","URUBÚ"],["c_pais","País","URUGUAY"],["c_fruta","Fruta","UVA"],["c_marca","Marca","UMBRO"],["c_profesion","Profesión","UTILERO"]];
 (function(){const b=$("e0filas");GANCHO.forEach(([ic,n],i)=>{const f=document.createElement("div");f.className="tfila";f.style.top=(56+i*11.4)+"cqw";f.innerHTML=`<img src="../assets/tutti/${ic}.webp"><span>${n}</span><em></em>`;b.appendChild(f);});})();
 escena("e0","Gancho",3.2,t=>{
   set("e0a",{o:1,s:t<.25?lerp(.92,1,eOut(pr(t,0,.25))):1});
   set("e0ficha",{o:1,r:t<2.45?Math.sin(t*14)*6:0,s:t<2.45?1+.05*Math.sin(t*22):lerp(1.3,1,eOut(pr(t,2.45,2.7)))});
-  const n=t<.7?"3":t<1.35?"2":t<2.0?"1":"";const el=$("e0num");el.textContent=n;
-  const k=t<.7?pr(t,0,.18):t<1.35?pr(t,.7,.88):pr(t,1.35,1.53);set(el,{o:t<2.0?1:0,s:lerp(1.8,1,eOut(k))});
+  set("e0num",{o:0});
   golpe("e0b",t,.25,2.3);
   document.querySelectorAll("#e0filas .tfila").forEach((f,i)=>{const w=GANCHO[i][2],a=1.9+i*.09;f.querySelector("em").textContent=escribir(w,t,a,.18);f.classList.toggle("ok",t>=a+.22);const e=pr(t,i*.08,i*.08+.18);f.style.opacity=e;f.style.translate=`${lerp(-12,0,eOut(e))}cqw 0`;
     f.style.transform=t>=2.45&&t<2.75?`translate(${Math.sin(t*90)*1}cqw,0)`:"";});

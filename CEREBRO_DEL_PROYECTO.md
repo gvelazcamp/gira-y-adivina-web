@@ -1560,3 +1560,8 @@ Fecha: 25/10/2026 — Tutti Frutti, pantalla de escribir (capturas de Gonzalo en
 ```text
 Fecha: 25/10/2026 — Tutti Frutti, aviso de salida (Gonzalo jugó contra un iPhone y no le apareció nada): al salir de la app el celu corta la conexión y el aviso se perdía; además al volver solo se reenviaba si la ronda seguía. Ahora al volver se reenvía 5 veces (0; 1,5; 4; 8 y 15 s) aunque la ronda ya haya terminado (los demás no lo cuentan dos veces). Nuevo: si alguien toca Salir y abandona la sala, a los demás les aparece "🚪 Pepito salió de la partida". OJO: los dos celulares tienen que tener la versión nueva (cerrar y abrir el juego). tutti-frutti.js v90, sw v433.
 ```
+
+```text
+Fecha: 25/10/2026 — REEL del Puzzle: promo/reel-puzzle.html (≈34,4 s, 9:16, mismo motor y misma música que el del Tutti: reel-tutti-musica.mp3, mismos golpes). Las piezas se dibujan en un canvas con forma de rompecabezas de verdad (pestañas). Escenas: gancho "¿TE ANIMÁS A ARMARLO? 🧩" (piezas del dragón volando a su lugar → ¡COMPLETO! en el golpe) · Más de 40 puzzles para elegir (miniaturas + Dibujos/Aventuras/Héroes/Ciudades/Gigantes) · De 12 a 1000 piezas · Arrastrá la pieza… ¡y se pega sola! 🧲 · ¿Y de a dos? (vivo.webp) · Armalo en vivo con un amigo (dos celulares, lo que pone uno aparece en el otro) · Chat · Se guarda solo (lunes 25% → miércoles 60% → sábado 100%) · ¡Puzzle completo! + Compartí la foto · cierre Puzzle + Girá y Adiviná + Google Play + girayadivina.com.
+REGLA de Gonzalo para los videos: los "3 segundos" son el tiempo del gancho para atrapar, NO se escriben en el video ("en 3 segundos", cuenta 3-2-1). Se sacaron del Tutti (ahora "¿LAS COMPLETÁS ANTES QUE TODOS?") y del Puzzle.
+```
