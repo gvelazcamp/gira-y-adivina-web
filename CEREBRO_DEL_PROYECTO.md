@@ -1540,3 +1540,7 @@ Fecha: 25/10/2026 — Tutti Frutti: se sacó el botón "Después" (si completaba
 ```text
 Fecha: 25/10/2026 — Reel del Tutti Frutti: nueva escena "Apelar" antes de "Anular": "¿EL JUEGO NO TE LA RECONOCIÓ?" → MATAMBRE en amarillo ⚠️ +0 → 🙋 Apelar → popup en el celu de Sofi "¿Le sumás los puntos?" → ✅ Sí, vale → pasa a verde +10 → "APELÁ Y SUMÁ TUS PUNTOS · tus amigos deciden si vale". Reel ≈34,4 s; música Sudden Victory Lap 0:23.65 hasta el final del tema (termina natural, fundido de 1 s).
 ```
+
+```text
+Fecha: 25/10/2026 — Reel del Tutti Frutti: la escena de Anular ya no dice "¿Te quieren hacer trampa?" (no es trampa) ni nada que haga pensar que el juego falla; ahora: "¿UNA RESPUESTA NO TE CONVENCE? 🤨" → Anulala y listo.
+```
