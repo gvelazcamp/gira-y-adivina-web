@@ -1488,3 +1488,7 @@ Fecha: 25/10/2026 — Texto: "Jugá a las extensiones de Girá y Adiviná" pasa 
 ```text
 Fecha: 25/10/2026 — Tutti Frutti contra la máquina: los bots "Normal" eran muy lentos (Gonzalo completó todo y ellos tenían 2). Nuevos tiempos por categoría (MODOS_BOT): Normal 3,5–5 s (antes 6–9), Difícil 2–3 s (antes 3–4,5), Persona mayor 9–14 s (antes 15–25); siguen +25% en categorías/letras difíciles. También saben un poco más (hab Normal .90–.97, Mayor .75–.90). tutti-frutti.js v80, sw v421.
 ```
+
+```text
+Fecha: 25/10/2026 — Tutti Frutti: el modo Difícil vuelve a como estaba (3–4,5 s por categoría; Gonzalo: "el difícil está bien, como estaba"). Normal (3,5–5 s) y Persona mayor (9–14 s) quedan con los tiempos nuevos. tutti-frutti.js v81, sw v422.
+```
