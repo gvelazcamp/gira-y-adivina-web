@@ -98,7 +98,7 @@ window.EXTENSIONES=EXTENSIONES;
    juego principal no se tocan. */
 const Fichas=(()=>{
   const MAX=3,MS=30*60*1000,CLAVE="gya_fichas_ext",PRECIO=400;
-  const JUEGOS=["palabra-secreta","sopa-fugaz","rueda-de-letras","frases-en-giro","memoria-en-giro","rosco-rioplatense","silabario-rioplatense","cien-rioplatenses","ahorcado-rioplatense","moon-tap"];
+  const JUEGOS=["palabra-secreta","sopa-fugaz","rueda-de-letras","frases-en-giro","memoria-en-giro","rosco-rioplatense","silabario-rioplatense","cien-rioplatenses","ahorcado-rioplatense","moon-tap","tutti-frutti","puzzle"];
   const TESTERS_LIBRES=new Set(["andres","flor","grace","juan e","mari","romina","ruben","vale"]);
   const activo=()=>{
     try{
@@ -122,6 +122,8 @@ const Fichas=(()=>{
   const falta=id=>{const d=de(id);return d.n<MAX&&d.prox?Math.max(0,d.prox-Date.now()):0;};
   const reloj=ms=>{const t=Math.ceil(ms/1000),m=Math.floor(t/60),s=t%60;return m+":"+String(s).padStart(2,"0");};
   const nombre=id=>{const e=EXTENSIONES.find(x=>x.id===id);return e?e.nombre:id;};
+  /* Tutti Frutti: 1 ficha por partida contra la máquina (3 rondas = 1 partida; con amigos no gasta).
+     Puzzle: 1 ficha por cada puzzle nuevo que empezás solo (seguir uno guardado o armar con un amigo no gasta). */
   function usar(id,reintentar){
     if(!cobra(id))return true;
     const d=de(id);

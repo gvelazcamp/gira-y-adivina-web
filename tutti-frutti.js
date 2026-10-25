@@ -375,6 +375,7 @@ const TuttiFrutti=(()=>{
     document.body.appendChild(c);
   }
   function jugarBots(modo){
+    if(window.Fichas&&!Fichas.usar("tutti-frutti",()=>jugarBots(modo)))return;
     nuevaSala(true,"BOTS");on.bots=true;on.modoBots=modo;
     const bots=elegirBots(2+Math.floor(Math.random()*2),modo),miAv=typeof perfil!=="undefined"&&perfil&&perfil.avatar;
     PantallaFija.activar({completa:false});
@@ -902,7 +903,11 @@ const TuttiFrutti=(()=>{
       <ol class="kar-podio">${orden.map(([j,rg,p],k)=>`<li style="--c:#E5197C"><span>${k+1}</span><i>${esc((j.nombre||"?")[0].toUpperCase())}</i><b>${esc(j.nombre)}${j.pid===on.pid?" (vos)":""}</b><em>${rg} ${rg===1?"ronda":"rondas"} · ${p} pts</em></li>`).join("")}</ol>
       ${salieronHtml()}
       ${on.host?`<button type="button" class="mg-principal" id="tfRevancha">🔄 Revancha</button>`:`<p class="imp-ayuda">Esperando que el anfitrión arranque la revancha…</p>`}</div>`);
-    if(on.host)q("tfRevancha").onclick=e=>{if(e&&e.currentTarget){if(e.currentTarget.disabled)return;e.currentTarget.disabled=true;}on.ganadas={};on.rg={};on.rj=0;on.tot=RONDAS;difundirSala();nuevaRonda();};
+    if(on.host)q("tfRevancha").onclick=e=>{const b=e&&e.currentTarget;if(b){if(b.disabled)return;b.disabled=true;}
+      const revancha=()=>{if(!on)return;on.ganadas={};on.rg={};on.rj=0;on.tot=RONDAS;difundirSala();nuevaRonda();};
+      /* contra la máquina, cada revancha es una partida nueva: gasta 1 ficha */
+      if(on.bots&&window.Fichas&&!Fichas.usar("tutti-frutti",revancha)){if(b)b.disabled=false;return;}
+      revancha();};
   }
   /* Link ?tutti=<SALA>&de=<nombre>: abre el juego y se une solo. */
   function abrirInvitacion(sala,de){

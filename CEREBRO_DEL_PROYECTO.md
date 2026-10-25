@@ -1476,3 +1476,7 @@ Fecha: 25/10/2026 — Puzzle (Gonzalo: "lo primero después del popup tiene que 
 ```text
 Fecha: 25/10/2026 — Puzzles 3D OCULTOS (Gonzalo: "ocultarlo porque tenemos que armarlo bien"). En puzzle.html ver3D() (true solo si el juego de afuera es Gonzalo: parent.esGonzalo()) controla: la tarjeta "3D" y el botón "🧊 Puzzles 3D" de Elegir, y la opción "🧊 3D" del selector de imagen (se quita). En el popup "Cómo jugar" se sacó la mención a los estadios 3D. Para volver a mostrarlos a todos: que ver3D() devuelva true y volver a poner el texto. puzzle v48, sw v418.
 ```
+
+```text
+Fecha: 25/10/2026 — Fichas ⚡ también en Tutti Frutti y Puzzle (pedido de Gonzalo). Mismas reglas que el resto (3 por juego, +1 cada 30 min, recarga 🪙 400, testers libres no gastan). Tutti Frutti: 1 ficha por PARTIDA contra la máquina (una partida = 3 rondas/letras; se cobra en jugarBots y en cada "Revancha" contra bots); con amigos no gasta. Puzzle: 1 ficha por cada puzzle NUEVO que empezás solo (armarElegidoSolo, desde puzzle.html vía parent.Fichas); seguir uno guardado o armar con un amigo no gasta. El cartel "sin fichas" sale arriba del iframe del Puzzle. Probado: 3 puzzles → 0 fichas, el 4.º muestra el cartel. extensiones.js v65, tutti-frutti.js v79, puzzle v49, sw v419.
+```
