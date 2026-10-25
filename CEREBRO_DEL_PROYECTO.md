@@ -1492,3 +1492,7 @@ Fecha: 25/10/2026 — Tutti Frutti contra la máquina: los bots "Normal" eran mu
 ```text
 Fecha: 25/10/2026 — Tutti Frutti: el modo Difícil vuelve a como estaba (3–4,5 s por categoría; Gonzalo: "el difícil está bien, como estaba"). Normal (3,5–5 s) y Persona mayor (9–14 s) quedan con los tiempos nuevos. tutti-frutti.js v81, sw v422.
 ```
+
+```text
+Fecha: 25/10/2026 — Tutti Frutti: "Anterior" y "Siguiente" recorren libre todas las categorías en orden (dan la vuelta), estén vacías o completas. Anterior ya no queda gris al principio; Siguiente con el campo vacío pasa a la que sigue en vez de trabar (si hay algo escrito sigue validando la letra). Lo escrito queda guardado. tutti-frutti.js v82, sw v423.
+```
