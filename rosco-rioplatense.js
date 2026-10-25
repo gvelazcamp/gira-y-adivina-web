@@ -46,16 +46,20 @@ const RoscoRioplatense=(()=>{
   function mezclar(lista){const a=[...lista];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
   function armarRonda(){
     const letras=mezclar([...ROSCO_CONFIG.letras]).slice(0,config.letras).sort();
-    return letras.map(letra=>{
+    /* Nunca se repite una palabra entre partidas: primero salen todas las que
+       todavía no viste de esa letra (de cualquier nivel, prefiriendo el tuyo);
+       recién cuando se agotan todas, esa letra vuelve a empezar. */
+    const vistas=Vistas.cargar("rosco");
+    const elegidas=letras.map(letra=>{
       const banco=ROSCO_DATOS.filter(d=>d.letra===letra);
-      const preferidas=banco.filter(d=>nivel<3?d.nivel<=2:d.nivel>=2);
-      const opciones=Vistas.filtrar("rosco",preferidas.length?preferidas:banco,d=>d.palabra);
-      const sinRepetirSesion=opciones.filter(d=>!usadasSesion.has(d.palabra));
-      const base=sinRepetirSesion.length?sinRepetirSesion:opciones;
-      const nuevas=base.filter(d=>d.palabra!==datos.ultimas[letra]);
-      const elegida=mezclar(nuevas.length?nuevas:base)[0];
-      datos.ultimas[letra]=elegida.palabra;usadasSesion.add(elegida.palabra);Vistas.marcar("rosco",elegida.palabra);return elegida;
+      let libres=banco.filter(d=>!vistas.has(d.palabra)&&!usadasSesion.has(d.palabra));
+      if(!libres.length){banco.forEach(d=>vistas.delete(d.palabra));libres=banco.filter(d=>d.palabra!==datos.ultimas[letra]);if(!libres.length)libres=banco;}
+      const preferidas=libres.filter(d=>nivel<3?d.nivel<=2:d.nivel>=2);
+      const elegida=mezclar(preferidas.length?preferidas:libres)[0];
+      datos.ultimas[letra]=elegida.palabra;usadasSesion.add(elegida.palabra);vistas.add(elegida.palabra);return elegida;
     });
+    Vistas.guardar("rosco",vistas);
+    return elegidas;
   }
   function pendientes(){return estados.map((s,i)=>s==="pendiente"?i:-1).filter(i=>i>=0);}
   function conteo(s){return estados.filter(x=>x===s).length;}
