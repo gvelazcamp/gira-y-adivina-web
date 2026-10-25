@@ -1472,3 +1472,7 @@ Fecha: 25/10/2026 — Puzzle (Gonzalo: "una persona nueva o mayor, ¿cómo se da
 ```text
 Fecha: 25/10/2026 — Puzzle (Gonzalo: "lo primero después del popup tiene que ser elegir qué puzzle y cuántas piezas, como en la sala; si no entra directo a un puzzle"). Ahora "🧩 Armar solo" abre "🧩 Elegí tu puzzle" (si no hay uno a medio armar para seguir) y "Empezar otro" también. En esa pantalla, jugando solo, hay botones de piezas: 12, 25, 49, 70, 100, 150, 300 (Aventuras desde 49; Gigantes siguen con 500/1000). En la sala sigue igual ("Elijan el puzzle"). pintarPiezasSolo() en puzzle.html. Probado: elegir 70 → arma 72 piezas (grilla más cercana). puzzle v47, sw v417.
 ```
+
+```text
+Fecha: 25/10/2026 — Puzzles 3D OCULTOS (Gonzalo: "ocultarlo porque tenemos que armarlo bien"). En puzzle.html ver3D() (true solo si el juego de afuera es Gonzalo: parent.esGonzalo()) controla: la tarjeta "3D" y el botón "🧊 Puzzles 3D" de Elegir, y la opción "🧊 3D" del selector de imagen (se quita). En el popup "Cómo jugar" se sacó la mención a los estadios 3D. Para volver a mostrarlos a todos: que ver3D() devuelva true y volver a poner el texto. puzzle v48, sw v418.
+```

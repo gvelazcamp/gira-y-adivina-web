@@ -231,7 +231,7 @@ button:disabled,select:disabled{opacity:.4;cursor:default}
 <li><span>✋</span><div><b>Arrastrá</b> las piezas a su lugar y <b>tocá una</b> para girarla. Pellizcá para acercar.</div></li>
 <li><span>🧲</span><div>Cerca de su lugar o de su compañera, <b>se pega sola</b>.</div></li>
 <li><span>🖼️</span><div>La <b>imagen chiquita</b> de abajo se agranda al tocarla. <b>Guía</b> la marca en el recuadro.</div></li>
-<li><span>🧩</span><div>En <b>Elegir</b>: dibujos, ciudades, <b>gigantes</b> de 1000 piezas y estadios <b>3D</b>.</div></li>
+<li><span>🧩</span><div>En <b>Elegir</b>: dibujos, aventuras, héroes, ciudades y <b>gigantes</b> de 1000 piezas.</div></li>
 <li><span>💾</span><div><b>Se guarda solo</b>: salí y seguí cuando quieras, aunque pasen días.</div></li>
 </ul><button id="bTuto">🧩 Armar solo</button><button id="bTutoPareja" class="tu-pareja">👥 Armar con un amigo</button></div></div>
 <div id="pareja" class="hide"><div class="card"><h2>👥 Puzzle cooperativo</h2>
@@ -259,6 +259,9 @@ button:disabled,select:disabled{opacity:.4;cursor:default}
 <canvas id="fx"></canvas>
 <script>
 const $=s=>document.querySelector(s);
+/* Puzzles 3D: OCULTOS mientras se terminan de armar bien (pedido de Gonzalo, 25/10/2026). Solo los ve Gonzalo para probarlos. */
+function ver3D(){try{return !!(parent&&parent!==window&&typeof parent.esGonzalo==="function"&&parent.esGonzalo());}catch(_){return false}}
+document.addEventListener('DOMContentLoaded',()=>{if(!ver3D()){const o=document.querySelector('#img option[value="p3d"]');if(o)o.remove();}});
 const cv=$('#c'),fx=$('#fx'),fctx=fx.getContext('2d');
 let ctx=cv.getContext('2d'),fuenteImg=null,mapa=null;
 const hctx=document.createElement('canvas').getContext('2d');
@@ -851,7 +854,7 @@ function anotarHecho(){const k=claveFuente();if(!k)return;try{const d=JSON.parse
 function pintarElegir(){if(sel.n!==1000)sel.n=500;$('#elN').hidden=sel.cat!=='gigante';$('#elN5').classList.toggle('on',sel.n===500);$('#elN10').classList.toggle('on',sel.n===1000);const L=listaCat(sel.cat);sel.i=((sel.i%L.length)+L.length)%L.length;$('#elCat').value=sel.cat;{const ru=rutaSel();$('#elImg').src=sel.cat==='ciudad'?ru:miniDe(ru)}
   const hechos=leerHechos(),hecho=hechos.has(sel.cat+':'+L[sel.i]),nH=L.filter(id=>hechos.has(sel.cat+':'+id)).length;
   $('#elImg').classList.toggle('hecho',hecho);$('#elSello').hidden=!hecho;
-  $('#el3d').hidden=!!coop;
+  $('#el3d').hidden=!!coop||!ver3D();
   if(!coop){$('#elegir h2').textContent='🧩 Elegí el puzzle';$('#elNombre').textContent=`${nombreSel()}${piezasSel()} · ${sel.i+1}/${L.length}`+(nH?` · ✅ ${nH} armado${nH>1?'s':''}`:'');
     $('#elOtro').textContent=hecho?'Ya lo armaste, pero podés volver a armarlo':'';$('#elOtro').classList.remove('pregunta');
     $('#elNo').hidden=true;$('#elChat').hidden=true;$('#elOk').disabled=false;$('#elOk').textContent=hecho?'🔁 Armarlo de nuevo':'▶ Armar este';$('#elSalir').textContent='Cancelar';return}
