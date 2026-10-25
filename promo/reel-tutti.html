@@ -109,12 +109,12 @@ body.limpio #ctrl,body.limpio #escenas{display:none}
   <!-- 0 · Gancho -->
   <section class="esc" id="e0">
     <div class="capa" style="inset:0;background:radial-gradient(ellipse at 50% 35%,#4a1450 0%,#120618 70%)"></div>
-    <div class="titulo" id="e0a" style="top:10cqw;font-size:7.6cqw">NOMBRE, ANIMAL<br>Y PAÍS CON <span class="oro">U</span>…</div>
-    <div class="ficha capa" id="e0ficha" style="left:35cqw;top:31cqw;width:30cqw"><img src="../assets/tutti/ficha.webp"><b style="font-size:16cqw">U</b></div>
+    <div class="titulo" id="e0a" style="top:10cqw;font-size:7.6cqw">ELEGÍ TUS<br><span class="oro">CATEGORÍAS</span>…</div>
+    <div class="ficha capa" id="e0ficha" style="left:39cqw;top:29cqw;width:22cqw"><img src="../assets/tutti/ficha.webp"><b style="font-size:12cqw">U</b></div>
     <div id="e0filas" class="abs" style="inset:0"></div>
-    <div class="titulo oro" id="e0num" style="top:106cqw;font-size:28cqw"></div>
-    <div class="titulo" id="e0b" style="top:142cqw;font-size:8cqw">¿EN <span class="oro">3 SEGUNDOS</span>?</div>
-    <img class="capa" id="e0basta" src="../assets/tutti/basta.webp" style="left:20cqw;top:104cqw;width:60cqw">
+    <div class="titulo oro" id="e0num" style="top:124cqw;font-size:22cqw"></div>
+    <div class="titulo" id="e0b" style="top:146cqw;font-size:6.8cqw">¿LAS COMPLETÁS<br>EN <span class="oro">3 SEGUNDOS</span>?</div>
+    <img class="capa" id="e0basta" src="../assets/tutti/basta.webp" style="left:27cqw;top:124cqw;width:46cqw">
   </section>
   <!-- 1 · Papelito → online -->
   <section class="esc" id="e1">
@@ -240,28 +240,30 @@ const ESC=[];
 function escena(id,nombre,dur,render){ESC.push({id,nombre,dur,render});}
 
 /* 0 · Gancho: Nombre, animal y país con U en 3 segundos → ¡BASTA! */
-const GANCHO=[["c_nombre","Nombre","ULISES"],["c_animal","Animal","URUBÚ"],["c_pais","País","URUGUAY"]];
-(function(){const b=$("e0filas");GANCHO.forEach(([ic,n],i)=>{const f=document.createElement("div");f.className="tfila";f.style.top=(68+i*12.4)+"cqw";f.innerHTML=`<img src="../assets/tutti/${ic}.webp"><span>${n}</span><em></em>`;b.appendChild(f);});})();
+const GANCHO=[["c_nombre","Nombre","ULISES"],["c_animal","Animal","URUBÚ"],["c_pais","País","URUGUAY"],["c_fruta","Fruta","UVA"],["c_marca","Marca","UMBRO"],["c_profesion","Profesión","UTILERO"]];
+(function(){const b=$("e0filas");GANCHO.forEach(([ic,n],i)=>{const f=document.createElement("div");f.className="tfila";f.style.top=(56+i*11.4)+"cqw";f.innerHTML=`<img src="../assets/tutti/${ic}.webp"><span>${n}</span><em></em>`;b.appendChild(f);});})();
 escena("e0","Gancho",3.2,t=>{
   set("e0a",{o:1,s:t<.25?lerp(.92,1,eOut(pr(t,0,.25))):1});
   set("e0ficha",{o:1,r:t<2.45?Math.sin(t*14)*6:0,s:t<2.45?1+.05*Math.sin(t*22):lerp(1.3,1,eOut(pr(t,2.45,2.7)))});
   const n=t<.7?"3":t<1.35?"2":t<2.0?"1":"";const el=$("e0num");el.textContent=n;
   const k=t<.7?pr(t,0,.18):t<1.35?pr(t,.7,.88):pr(t,1.35,1.53);set(el,{o:t<2.0?1:0,s:lerp(1.8,1,eOut(k))});
   golpe("e0b",t,.25,2.3);
-  document.querySelectorAll("#e0filas .tfila").forEach((f,i)=>{const w=GANCHO[i][2],a=2.0+i*.12;f.querySelector("em").textContent=escribir(w,t,a,.25);f.classList.toggle("ok",t>=a+.3);
+  document.querySelectorAll("#e0filas .tfila").forEach((f,i)=>{const w=GANCHO[i][2],a=1.9+i*.09;f.querySelector("em").textContent=escribir(w,t,a,.18);f.classList.toggle("ok",t>=a+.22);const e=pr(t,i*.08,i*.08+.18);f.style.opacity=e;f.style.translate=`${lerp(-12,0,eOut(e))}cqw 0`;
     f.style.transform=t>=2.45&&t<2.75?`translate(${Math.sin(t*90)*1}cqw,0)`:"";});
   const b=pr(t,2.45,2.65);set("e0basta",{o:t<2.45?0:1,s:lerp(2.6,1,eOut(b)),r:t<3.2?Math.sin(t*60)*2-6:-6});
   $("flash").style.opacity=t>=2.45&&t<2.7?.8*(1-pr(t,2.45,2.7)):0;
 });
 
 /* 1 · Papelito → online */
-escena("e1","Papelito",2.8,t=>{
-  golpe("e1a",t,.05,1.3);
-  const h=pr(t,0,.35),sale=pr(t,1.3,1.6);set("e1hoja",{o:t<1.6?eOut(h):0,y:lerp(30,0,eOut(h))+sale*60,r:lerp(-8,-3,h)-sale*25,s:1-sale*.3});
-  document.querySelectorAll("#e1hoja .ren").forEach((r,i)=>r.style.opacity=pr(t,.3+i*.18,.45+i*.18));
-  const c=pr(t,1.45,1.8);set("e1como",{o:t<1.45?0:c,s:lerp(.6,1,eBack(c)),y:Math.sin(t*3)*.6});
-  golpe("e1b",t,1.55);golpe("e1c",t,1.95);
-  $("flash").style.opacity=t>=1.45&&t<1.65?.5*(1-pr(t,1.45,1.65)):0;
+escena("e1","Papelito",4.0,t=>{
+  golpe("e1a",t,.05,2.5);
+  const h=pr(t,0,.35),sale=pr(t,2.5,2.8);set("e1hoja",{o:t<2.8?eOut(h):0,y:lerp(30,0,eOut(h))+sale*60,r:lerp(-8,-3,h)-sale*25,s:1-sale*.3});
+  /* se escribe a mano: cada palabra aparece de izquierda a derecha, fila por fila */
+  document.querySelectorAll("#e1hoja .ren").forEach((r,i)=>{r.querySelectorAll("span").forEach((sp,j)=>{const a=.35+i*.5+j*.11,x=pr(t,a,a+.12);sp.style.clipPath=`inset(0 ${100-x*100}% 0 0)`;});});
+  document.querySelectorAll("#e1hoja .let").forEach((l,i)=>l.style.opacity=pr(t,.25+i*.5,.35+i*.5));
+  const c=pr(t,2.65,3.0);set("e1como",{o:t<2.65?0:c,s:lerp(.6,1,eBack(c)),y:Math.sin(t*3)*.6});
+  golpe("e1b",t,2.75);golpe("e1c",t,3.15);
+  $("flash").style.opacity=t>=2.65&&t<2.85?.5*(1-pr(t,2.65,2.85)):0;
 });
 
 /* 2 · Sale la letra */
@@ -351,7 +353,7 @@ escena("e8","Final",3.7,t=>{
   const l=pr(t,0,.5);set("e8logo",{o:l,s:lerp(.3,1,eBack(l))*(1+.02*Math.sin(t*4)),r:Math.sin(t*2)*2});
   golpe("e8en",t,.7);const g=pr(t,.8,1.2);set("e8gya",{o:t<.8?0:g,s:lerp(.5,1,eBack(g))});
   golpe("e8play",t,1.4);golpe("e8web",t,1.9);
-  $("flash").style.opacity=t<.15?.7*(1-pr(t,0,.15)):0;
+  $("flash").style.opacity=t>=.08&&t<.25?.7*(1-pr(t,.08,.25)):0;
 });
 
 /* ---------- Motor ---------- */
