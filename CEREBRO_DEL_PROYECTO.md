@@ -1548,3 +1548,7 @@ Fecha: 25/10/2026 — Reel del Tutti Frutti: la escena de Anular ya no dice "¿T
 ```text
 Fecha: 25/10/2026 — Tutti Frutti online: aviso de salida. Si alguien sale de la app en plena ronda (por ej. a buscar en internet), a todos les aparece un aviso chico (el toast de arriba, no frena el juego): "Pepito: ¡no vale hacer trampa! Aviso 1 de 3", y al que salió "Saliste del juego. Aviso 1 de 3". A la 3ª salida en la MISMA ronda pierde los puntos de esa ronda (todo a 0, con 🚫 al lado del nombre en la grilla, y los demás se recalculan: si quedan únicos suman 20). Se cuenta con visibilitychange solo en fase "jugando" (antes del BASTA) y contra bots no cuenta. El aviso se manda al salir y se repite al volver (por si el celu cortó la conexión). Se reinicia en cada ronda. También queda anotado en el chat. Probado con Playwright (simulando salidas propias y de otro jugador). tutti-frutti.js v88, sw v430.
 ```
+
+```text
+Fecha: 25/10/2026 — Tutti Frutti: al sacar "Después" los botones quedaban corridos a la izquierda con un hueco; ahora "⟵ Anterior" y "Siguiente ➜" ocupan todo el ancho (2 columnas). extensiones.css v122, sw v431.
+```
