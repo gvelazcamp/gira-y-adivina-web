@@ -777,4 +777,4 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 @keyframes fxGasto{0%{transform:scale(1.35)}100%{transform:none}}
 @keyframes fxMenos{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(14px)}}
 
-.tf-anular-btn{display:block;margin:10px auto 4px}.tf-anular .pf-caja{max-height:88vh;display:flex;flex-direction:column}.tf-anular-lista{overflow:auto;max-height:55vh;margin:8px auto}.tf-anular-lista .tf-rev-fila span{white-space:nowrap;font-size:.8rem}.tf-anular-lista .tf-anulada-fila b{text-decoration:line-through;text-decoration-color:#FF6B81}
+.mg-panel .tf-anular-btn{display:block;width:fit-content;min-height:0;margin:10px auto 4px;padding:5px 14px;border-radius:99px;border:0;background:#C2334D;color:#fff;font:inherit;font-size:.72rem;font-weight:900;box-shadow:0 2px 0 #7D2348;cursor:pointer}.tf-anular .pf-caja{max-height:88vh;display:flex;flex-direction:column}.tf-anular-lista{overflow:auto;max-height:55vh;margin:8px auto}.tf-anular-lista .tf-rev-fila span{white-space:nowrap;font-size:.8rem}.tf-anular-lista .tf-anulada-fila b{text-decoration:line-through;text-decoration-color:#FF6B81}
