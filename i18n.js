@@ -24,7 +24,7 @@
   "Aceptar":"OK","Cancelar":"Cancel","Entendido":"Got it","Genial":"Great","Vamos":"Let's go","Ahora no":"Not now","Más tarde":"Later",
   "No, gracias":"No, thanks","Compartir":"Share","Comprar":"Buy","Usar":"Use","Enviar":"Send","Responder":"Reply","Revancha":"Rematch",
   "Abandonar":"Quit","Abandonar partida":"Quit match","Entrar":"Enter","Elegí":"Choose","Siguiente →":"Next →","Aviso":"Notice",
-  "Jugá a las extensiones de Girá y Adiviná":"Play Girá y Adiviná extensions","Más juegos para descubrir":"More games to discover",
+  "Jugá más juegos de Girá y Adiviná":"Play more Girá y Adiviná games","Más juegos para descubrir":"More games to discover",
   "Ranking de amigos":"Friends ranking","Objetivos diarios":"Daily goals","Racha de días jugados":"Days-played streak",
   "Ruleta de premios":"Prize wheel","Partida Diaria":"Daily Match","Jugar la Partida Diaria":"Play the Daily Match",
   "Evento diario":"Daily event","Evento de ciudad":"City event","Desafío especial":"Special challenge","Competí contra otros jugadores":"Compete against other players",
