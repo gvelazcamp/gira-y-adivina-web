@@ -526,6 +526,16 @@ const TuttiFrutti=(()=>{
       const quien=(on.jug.find(j=>j.pid===m.pid)||{}).nombre||"Alguien",de=(on.jug.find(j=>j.pid===m.a)||{}).nombre||"",pal=(on.resps[m.a]||[])[m.i]||"";
       const txt=(m.v?"🚫 "+quien+" anuló":"↩️ "+quien+" devolvió")+" «"+pal+"» de "+de+" ("+etiq(on.cats[m.i]||"")+")";
       anotarChat(txt);if(m.pid!==on.pid&&typeof mostrarToast==="function")mostrarToast(m.v?"🚫":"↩️",txt);
+      document.querySelector(`.tf-pide-anular[data-k="${k}"]`)?.remove();
+    }else if(m.t==="pideanular"&&m.n===on.n){
+      /* Como Apelar al revés: el que quiere anular pregunta y los demás deciden. */
+      const quien=(on.jug.find(j=>j.pid===m.pid)||{}).nombre||"Alguien",de=(on.jug.find(j=>j.pid===m.a)||{}).nombre||"",pal=(on.resps[m.a]||[])[m.i]||"";
+      anotarChat("🚫 "+quien+" pide anular «"+pal+"» de "+de+" ("+etiq(on.cats[m.i]||"")+")");
+      if(m.pid!==on.pid&&on.fase==="resultado")pedidoAnular(m.pid,m.a,m.i);
+    }else if(m.t==="vale"&&m.n===on.n){
+      const quien=(on.jug.find(j=>j.pid===m.pid)||{}).nombre||"Alguien",pal=(on.resps[m.a]||[])[m.i]||"",txt="✅ "+quien+" dice que «"+pal+"» vale: no se anula.";
+      anotarChat(txt);document.querySelector(`.tf-pide-anular[data-k="${m.a}|${m.i}"]`)?.remove();
+      if(m.pid!==on.pid&&typeof mostrarToast==="function")mostrarToast("✅",txt);
     }else if(m.t==="objecion"&&m.n===on.n){
       /* Las objeciones para quitar puntos también se retiraron. */
       return;
@@ -773,12 +783,29 @@ const TuttiFrutti=(()=>{
       filas.push(`<button type="button" class="tf-rev-fila${an?" tf-anulada-fila":""}" data-a="${j.pid}" data-i="${i}"><small>${esc(etiq(c))} · ${esc(j.nombre)}</small><b>${esc(v)}</b><span>${an?"↩️ Devolver":"🚫 +"+pr[j.pid][i]}</span></button>`);}));
     const c=document.createElement("div");c.className="pf-confirmar tf-anular";
     c.innerHTML=`<div class="mg-panel pf-caja"><h3>🚫 Anular una respuesta</h3>
-      <p class="imp-ayuda">Tocá la que está mal: pasa a 0 y los puntos se ajustan.</p>
+      <p class="imp-ayuda">Tocá la que está mal: ${on.bots?"pasa a 0":"los demás deciden si vale"} y los puntos se ajustan.</p>
       <div class="tf-rev tf-anular-lista">${filas.join("")||'<p class="imp-ayuda">No hay respuestas con puntos.</p>'}</div>
       <button type="button" data-x="1">Cancelar</button></div>`;
     c.addEventListener("click",e=>{const b=e.target.closest("button");if(e.target===c||b&&b.dataset.x){c.remove();return;}
       if(!b||!b.dataset.a||!on||on.fase!=="resultado")return;c.remove();
-      const a=b.dataset.a,i=Number(b.dataset.i);mandar({t:"anula",n:on.n,a,i,v:!anulada(a,i)});});
+      const a=b.dataset.a,i=Number(b.dataset.i);
+      /* Devolver o jugar contra bots: directo. Con amigos, deciden los demás. */
+      if(anulada(a,i)||on.bots){mandar({t:"anula",n:on.n,a,i,v:!anulada(a,i)});return;}
+      mandar({t:"pideanular",n:on.n,a,i});
+      if(typeof mostrarToast==="function")mostrarToast("🚫","Les preguntamos a los demás si vale o no.","Pediste anular");});
+    document.body.appendChild(c);
+  }
+  function pedidoAnular(quien,a,i){
+    const k=a+"|"+i;if(!on||anulada(a,i)||document.querySelector(`.tf-pide-anular[data-k="${k}"]`))return;
+    const nom=(on.jug.find(j=>j.pid===quien)||{}).nombre||"Alguien",de=a===on.pid?"tu respuesta":"la de "+((on.jug.find(j=>j.pid===a)||{}).nombre||""),pal=(on.resps[a]||[])[i]||"",cat=on.cats[i]||"";
+    if(typeof vibrar==="function")vibrar([40,60,40]);
+    const c=document.createElement("div");c.className="pf-confirmar tf-pide-anular";c.dataset.k=k;
+    c.innerHTML=`<div class="mg-panel pf-caja"><div class="bb-icono">🚫</div><h3>${esc(nom)} quiere anular ${esc(de)}</h3>
+      <p class="tf-obj-pal"><small>${esc(etiq(cat))}</small><b>${esc(pal)}</b></p><p class="imp-ayuda">¿Vale o no vale?</p>
+      <button type="button" class="mg-principal" data-r="si">✅ Sí, vale</button><button type="button" data-r="no">❌ No vale (0 pts)</button></div>`;
+    c.addEventListener("click",ev=>{const r=ev.target.closest("button[data-r]");if(!r)return;c.remove();
+      if(!on||on.fase!=="resultado")return;
+      if(r.dataset.r==="no")mandar({t:"anula",n:on.n,a,i,v:true});else mandar({t:"vale",n:on.n,a,i});});
     document.body.appendChild(c);
   }
   /* Mini popup: por qué está mal y cuál es la forma correcta (solo informa). */
@@ -838,7 +865,7 @@ const TuttiFrutti=(()=>{
       const existe=await enDiccionario(NORM(valor)).catch(()=>null);
       t.innerHTML=existe||sg?`<b>${esc(sg||valor)}</b> está bien escrita, pero no la encontré como ${nc}.<br><small>Por eso vale 0. Quien la escribió puede apelar.</small>`:`No la encontré como ${nc} y no hay una parecida.<br><small>Por eso vale 0.</small>`;});
   }
-  function cerrarApelaciones(){document.querySelectorAll(".tf-apelacion,.tf-revision-propia").forEach(x=>x.remove());}
+  function cerrarApelaciones(){document.querySelectorAll(".tf-apelacion,.tf-revision-propia,.tf-pide-anular,.tf-anular").forEach(x=>x.remove());}
   /* Apelación: el autor de una palabra en amarillo pide que se la cuenten;
      a cada uno le aparece el aviso y decide si le suma (+10, como el
      sumador) o no. Si alguien la acepta, además queda aprobada para siempre. */

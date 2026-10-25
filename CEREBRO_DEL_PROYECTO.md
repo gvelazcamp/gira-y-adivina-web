@@ -1500,3 +1500,7 @@ Fecha: 25/10/2026 — Tutti Frutti: "Anterior" y "Siguiente" recorren libre toda
 ```text
 Fecha: 25/10/2026 — Tutti Frutti: botón "🚫 Anular una respuesta" arriba de "Puntos (con esta ronda)". Abre la lista de respuestas que suman; tocás la que está mal (aunque el juego la diera por buena, ej. «una» como película) y pasa a 0, tachada en rojo; los puntos se recalculan (el otro puede pasar a 20 si queda único). Cualquiera puede anular; se avisa a todos y queda en el chat; se puede "↩️ Devolver". tutti-frutti.js v83, extensiones.css v120, sw v424.
 ```
+
+```text
+Fecha: 25/10/2026 — Tutti Frutti: "Anular una respuesta" ya no anula directo con amigos: es como Apelar al revés. Al que la pide le sale "Les preguntamos a los demás" y a los demás un popup "X quiere anular «palabra» ¿Vale o no vale?". Con que uno diga ❌ No vale, pasa a 0 y se recalculan los puntos; si dice ✅ Sí vale, queda como estaba y se avisa. Contra bots y "↩️ Devolver" siguen siendo directos. tutti-frutti.js v84, sw v425.
+```
