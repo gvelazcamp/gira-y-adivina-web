@@ -1593,3 +1593,7 @@ Fecha: 26/10/2026 — Reel de 100 Rioplatenses con música propia ("The Winner's
 ```text
 Fecha: 26/10/2026 — REEL del Ahorcado: promo/reel-ahorcado.html (≈34,4 s, 9:16, mismo motor; música reel-rosco-musica.mp3, tango). Gancho: "TE QUEDA UNA VIDA… 😰" con el muñeco casi completo en rojo, 1 corazón, tema Comida y MA_AMBRE → "¿QUÉ LETRA FALTA?" (para que comenten); en el golpe entra la T: MATAMBRE, el muñeco se pone verde y ¡SALVADO! 😮‍💨. Después: logo + gaucho "El clásico de siempre… pero bien nuestro 🧉", la ruleta elige el tema (Lunfardo), jugando CHAMUYERO con el teclado (una letra mala dibuja una parte), ¡AHORCADO!, palabras difíciles de verdad (MARACANAZO, GRAPAMIEL, CUPLETISTA, MISHIADURA, CEBOLLATI, reales del juego), de a dos por turnos (cada uno con su muñeco, si errás pasa el turno), temas bien nuestros, ¡Las sacaste todas! y cierre.
 ```
+
+```text
+Fecha: 26/10/2026 — Reel del Ahorcado con música propia ("Before the Blade Falls", Gemini): promo/reel-ahorcado-musica.mp3 armado con 3 tramos del tema para que los golpes caigan en su lugar: 0:09.05–0:22.0 (intro bajita de suspenso y el golpe de 0:11.5 cae en ¡SALVADO!) + 0:25.68–0:29.95 (1 s de silencio y el golpe de 0:26.8 cae en ¡AHORCADO!) + 0:34.88–0:52.4 (el de 0:40.7 cae en ¡GANASTE! y el de 0:48.6 en el logo), cruces de 0,12 s y fundido final. Se saltean los silencios largos del tema (0:22–0:26 y 0:30–0:31).
+```
