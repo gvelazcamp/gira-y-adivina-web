@@ -26,7 +26,7 @@
     {id:"cien",nombre:"100 Rioplatenses",icono:"assets/cien/logo.webp",desc:"Un celular, juega el grupo",ok:true},
     {id:"ruleta",nombre:"La Ruleta",icono:"assets/logo.webp",desc:"Cada uno con su celular",ok:true},
     {id:"tutti",nombre:"Tutti Frutti",icono:"assets/tutti/logo.webp",desc:"Todos juegan desde su celular",ok:true},
-    {id:"puzzle",nombre:"Puzzle",icono:"assets/puzzle-arte/icono.webp",desc:"Próximamente",ok:false}
+    {id:"puzzle",nombre:"Puzzle",icono:"assets/puzzle-arte/icono.webp",desc:"Armen el mismo puzzle desde sus celulares",ok:true}
   ];
 
   /* ---------- Conexión ---------- */
@@ -97,7 +97,7 @@
       if(m.t==="chau"){T.jug=T.jug.filter(x=>x.pid!==m.pid);if(T.mando===m.pid)T.mando=T.jug[0]?T.jug[0].pid:null;pintar();difundir();return;}
       if(m.t==="tomar"){if(T.juego==="tutti"&&T.g&&!T.g.participa(m.pid))return;T.mando=m.pid;pintar();difundir();return;}
       if(m.t!=="accion")return;
-      if(m.pid!==T.mando&&!(T.fase==="juego"&&T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente"))return;
+      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
       if(m.a==="elegir"&&T.fase==="menu"){elegir(String(m.juego||""));return;}
       if(m.a==="menu"){volverMenu();return;}
       if(T.g&&T.fase==="juego")T.g.accion(m);
@@ -107,7 +107,7 @@
       if(id==="tutti"&&T.jug.length<2){avisoTele("Tutti Frutti necesita al menos 2 celulares para revisar las respuestas");return;}
       despierta();
       if(id==="ruleta"){T.fase="ruleta";T.juego="ruleta";pintar();difundir();setTimeout(()=>{location.href="index.html?tvhost=1";},1500);return;}
-      T.fase="juego";T.juego=id;T.g=(id==="tutti"?juegoTutti:id==="rosco"?juegoRosco:id==="ahorcado"?juegoAhorcado:juegoCien)(T,actualizar);
+      T.fase="juego";T.juego=id;T.g=(id==="puzzle"?juegoPuzzle:id==="tutti"?juegoTutti:id==="rosco"?juegoRosco:id==="ahorcado"?juegoAhorcado:juegoCien)(T,actualizar);
       ultimoTic=performance.now();clearInterval(timerJuego);
       timerJuego=setInterval(()=>{const a=performance.now(),dt=a-ultimoTic;ultimoTic=a;if(T.g&&T.g.tic)T.g.tic(dt);},200);
       actualizar();
@@ -244,6 +244,82 @@
       if(fase==="fin")return{...comun,totales,ganadas,historial};
       return{...comun,respuestas,marcas,extra,anuladas,pendientes,resueltas,puntos:puntos(),totales,ganadas};}
     nueva();return{accion,tic,pintar,cel,participa:pid=>ids.has(pid),fin(){muerto=true;clearTimeout(timer);}};
+  }
+
+  /* ---------- Puzzle: el motor original dibuja en la tele; teléfonos = controles ---------- */
+  function juegoPuzzle(T,actualizar){
+    const nombres={dibujo:"Dibujos",aventura:"Aventuras",heroe:"Héroes",ciudad:"Ciudades",gigante:"Gigantes"};
+    const cantidades=[12,25,49,70,100,150,300,500,1000];
+    let fase="config",catalogo={},cat="dibujo",indice=0,n=25,rot=true,guardado=false,listo=false,iframe=null,muerto=false,errorTexto="";
+    let estado={n:0,pct:0,tiempo:0,ganado:false},dueno=null,duenoEn=0,ultimo={x:.5,y:.5};
+    const secuencias={};
+    const lista=()=>Array.isArray(catalogo[cat])?catalogo[cat]:[];
+    const imagen=()=>lista()[indice]||"";
+    const mini=()=>cat==="ciudad"?"assets/worlds/"+imagen()+".webp":"assets/puzzle/mini/"+imagen()+".webp";
+    const nombreDueno=()=>dueno?(T.jug.find(j=>j.pid===dueno)||{}).n||"Alguien":"";
+    const enviarFrame=(a,d={})=>{if(listo&&iframe?.contentWindow)iframe.contentWindow.postMessage({t:"gya-tv-puzzle",a,...d},location.origin);};
+    function mensaje(e){if(muerto||!iframe||e.source!==iframe.contentWindow||e.origin!==location.origin||e.data?.t!=="gya-tv-puzzle")return;
+      const m=e.data;
+      if(m.a==="listo"){catalogo=m.catalogo||{};guardado=!!m.guardado;listo=true;indice=0;actualizar();return;}
+      if(m.a==="estado"){estado={n:Number(m.n)||0,pct:Number(m.pct)||0,tiempo:Number(m.tiempo)||0,ganado:!!m.ganado};if(estado.ganado){fase="fin";dueno=null;guardado=false;}actualizar();return;}
+      if(m.a==="error"){fase="config";errorTexto=String(m.texto||"No se pudo abrir el puzzle");actualizar();}
+    }
+    window.addEventListener("message",mensaje);
+    function elegirCategoria(v){if(!Object.hasOwn(nombres,v)||!Array.isArray(catalogo[v]))return;cat=v;indice=0;
+      if(cat==="gigante"&&n<500)n=500;else if(cat==="aventura"&&n<49)n=49;else if(cat!=="gigante"&&n>=500)n=cat==="aventura"?49:25;actualizar();}
+    function elegirImagen(d){const a=lista();if(!a.length)return;indice=(indice+d+a.length)%a.length;actualizar();}
+    function elegirPiezas(v){if(!cantidades.includes(v))return;if(cat==="gigante"&&v<500)return;if(cat==="aventura"&&v<49)return;if(cat!=="gigante"&&v>=500)return;n=v;actualizar();}
+    function empezar(continuar){if(!listo)return;if(!continuar&&!imagen())return;
+      dueno=null;fase="cargando";errorTexto="";estado={n:0,pct:0,tiempo:0,ganado:false};actualizar();
+      enviarFrame(continuar?"continuar":"iniciar",continuar?{}:{cat,slug:imagen(),n,rot});
+      /* El motor envía estado cuando terminó de crear las piezas. */
+    }
+    function accion(m){if(muerto)return;const s=Number(m.s)||0;if(s&&s<=(secuencias[m.pid]||0))return;if(s)secuencias[m.pid]=s;
+      if(m.a==="pz_categoria"&&m.pid===T.mando&&fase==="config"){elegirCategoria(String(m.cat||""));return;}
+      if(m.a==="pz_imagen_elegir"&&m.pid===T.mando&&fase==="config"){elegirImagen(Number(m.delta)||0);return;}
+      if(m.a==="pz_piezas"&&m.pid===T.mando&&fase==="config"){elegirPiezas(Number(m.n));return;}
+      if(m.a==="pz_rotacion"&&m.pid===T.mando&&fase==="config"){rot=!!m.rot;actualizar();return;}
+      if(m.a==="pz_inicio"&&m.pid===T.mando&&fase==="config"){empezar(false);return;}
+      if(m.a==="pz_continuar"&&m.pid===T.mando&&fase==="config"&&guardado){empezar(true);return;}
+      if(m.a==="pz_config"&&m.pid===T.mando&&(fase==="juego"||fase==="fin")){if(dueno)enviarFrame("soltar",ultimo);if(fase==="juego"){enviarFrame("pausar");guardado=true;}dueno=null;fase="config";actualizar();return;}
+      if(fase!=="juego")return;
+      const x=Number(m.x),y=Number(m.y);if(!Number.isFinite(x)||!Number.isFinite(y))return;
+      const p={x:Math.max(0,Math.min(1,x)),y:Math.max(0,Math.min(1,y))};
+      if(m.a==="pz_bajar"){if(dueno)return;dueno=m.pid;duenoEn=Date.now();ultimo=p;enviarFrame("bajar",p);actualizar();return;}
+      if(m.a==="pz_mover"){if(dueno!==m.pid)return;duenoEn=Date.now();ultimo=p;enviarFrame("mover",p);return;}
+      if(m.a==="pz_soltar"){if(dueno!==m.pid)return;ultimo=p;enviarFrame("mover",p);enviarFrame("soltar",p);dueno=null;actualizar();return;}
+      if(dueno&&dueno!==m.pid)return;
+      const operaciones={pz_girar:"girar",pz_acercar:"acercar",pz_alejar:"alejar",pz_encuadrar:"encuadrar",pz_guia:"guia",pz_imagen:"imagen"};
+      if(operaciones[m.a]){ultimo=p;enviarFrame(operaciones[m.a],p);}
+    }
+    function tic(){if(dueno&&Date.now()-duenoEn>5000){enviarFrame("soltar",ultimo);dueno=null;actualizar();}}
+    function pintar(raiz){
+      if(!iframe||!raiz.contains(iframe)){
+        raiz.innerHTML=`<div class="tl-puzzle"><iframe id="tlPzFrame" src="puzzle.html?tvpuzzle=1&amp;v=50" title="Tablero del Puzzle"></iframe>
+          <div id="tlPzConfig" class="tl-pz-config"></div><div id="tlPzHud" class="tl-pz-hud" hidden></div></div>`;
+        iframe=raiz.querySelector("#tlPzFrame");
+      }
+      const config=raiz.querySelector("#tlPzConfig"),hud=raiz.querySelector("#tlPzHud");
+      config.hidden=fase!=="config";hud.hidden=fase==="config";
+      if(fase==="config"){
+        const a=lista();config.innerHTML=`<h1>🧩 Puzzle en la tele</h1><p>Elegí el dibujo con el celular que tiene el control. Después todos pueden mover piezas.</p>
+          <div class="tl-pz-categorias">${Object.entries(nombres).map(([k,v])=>`<button type="button" data-pz-cat="${k}" class="${cat===k?"tl-pz-activo":""}">${v}</button>`).join("")}</div>
+          <div class="tl-pz-seleccion"><button type="button" id="tlPzAnt">‹</button>${imagen()?`<img src="${mini()}" alt="Puzzle seleccionado">`:"<div class='tl-pz-espera'>Cargando catálogo…</div>"}<button type="button" id="tlPzSig">›</button></div>
+          <p>${imagen()?esc(imagen().replace(/-/g," ")):"Esperá un momento"} · ${n} piezas ${rot?"· con giro":"· sin giro"}</p>
+          <button type="button" class="tl-pz-empezar" id="tlPzStart" ${!listo?"disabled":""}>▶ Empezar puzzle</button>
+          ${guardado?'<button type="button" class="tl-pz-continuar" id="tlPzResume">↪ Continuar el puzzle guardado</button>':""}
+          <small id="tlPzError">${esc(errorTexto||(!listo?"Cargando el Puzzle…":""))}</small>`;
+        config.querySelectorAll("[data-pz-cat]").forEach(b=>b.onclick=()=>elegirCategoria(b.dataset.pzCat));
+        config.querySelector("#tlPzAnt").onclick=()=>elegirImagen(-1);config.querySelector("#tlPzSig").onclick=()=>elegirImagen(1);
+        config.querySelector("#tlPzStart").onclick=()=>empezar(false);config.querySelector("#tlPzResume")?.addEventListener("click",()=>empezar(true));
+      }else{
+        if(fase==="cargando"&&estado.n>0)fase="juego";
+        hud.innerHTML= fase==="cargando"?"🧩 Armando piezas…":fase==="fin"?"🏆 ¡Puzzle completo!":`🧩 ${estado.pct}% armado${dueno?" · "+esc(nombreDueno())+" mueve una pieza":" · Todos pueden jugar"}`;
+      }
+    }
+    function cel(){return{pantalla:"puzzle",fase,cat,lista:lista(),indice,n,rot,guardado,listo,estado,dueno,nombreDueno:nombreDueno(),jug:T.jug.map(j=>({pid:j.pid,n:j.n}))};}
+    function fin(){if(dueno)enviarFrame("soltar",ultimo);if(fase==="juego")enviarFrame("pausar");try{iframe?.contentWindow?.dispatchEvent(new Event("pagehide"));}catch(e){}muerto=true;window.removeEventListener("message",mensaje);}
+    return{accion,tic,pintar,cel,fin};
   }
 
   /* ---------- Rosco: juega uno, los demás miran ---------- */
@@ -396,6 +472,7 @@
     let nombre=limpio(P.get("n")||"",14);try{if(!nombre)nombre=limpio(localStorage.getItem("gya_tele_nombre")||localStorage.getItem("gya_nombre")||"",14);}catch(e){}
     let ultimo=null,conectado=false,visto=0,hola=null,pantallaPintada="";
     let tfRonda=0,tfCategoria=0,tfRespuestas=[],tfInicioReloj=0,tfSegundos=0,tfEnvio=0,tfCompleto=null;
+    let pzUltimo={x:.5,y:.5};
     const mandar=m=>{if(red)red.mandar(m);};
     function pedirNombre(){
       raiz.innerHTML=`<div class="tl-cel-caja"><h2>📺 Sala de la tele</h2><p>Código <b>${codCel}</b></p><label>Tu nombre<input id="tlNombre" maxlength="14" value="${esc(nombre)}" placeholder="¿Cómo te llamás?"></label><button type="button" class="tl-boton tl-oro" id="tlEntrar">Entrar</button></div>`;
@@ -411,6 +488,55 @@
       window.addEventListener("pagehide",()=>{try{mandar({t:"chau"});}catch(e){}});
     }
     const accion=(a,extra={})=>{mandar({t:"accion",a,...extra});try{if(typeof vibrar==="function")vibrar(25);}catch(e){}};
+    function pintarPuzzle(c,cab,soyMando){
+      const menu=soyMando?'<button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>':"";
+      const enlazarMenu=()=>{const b=raiz.querySelector("#tlMenu");if(b)b.onclick=()=>{if(confirm("¿Volver al menú? El puzzle queda guardado en la tele."))accion("menu");};};
+      if(c.fase==="config"){
+        const clave="pz-config-"+JSON.stringify([soyMando,c.cat,c.indice,c.n,c.rot,c.guardado,c.listo,c.lista]);
+        if(pantallaPintada===clave)return;pantallaPintada=clave;
+        if(!soyMando){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🧩 Eligiendo Puzzle</h2><p>El celular con el control elige la imagen. Después todos podrán mover piezas.</p><button type="button" class="tl-boton" id="tlTomar">Tomar el control</button></div>`;raiz.querySelector("#tlTomar").onclick=()=>mandar({t:"tomar"});return;}
+        const slug=c.lista?.[c.indice]||"",src=c.cat==="ciudad"?"assets/worlds/"+slug+".webp":"assets/puzzle/mini/"+slug+".webp";
+        const cats={dibujo:"Dibujos",aventura:"Aventuras",heroe:"Héroes",ciudad:"Ciudades",gigante:"Gigantes"};
+        const nums=c.cat==="gigante"?[500,1000]:c.cat==="aventura"?[49,70,100,150,300]:[12,25,49,70,100,150,300];
+        raiz.innerHTML=cab+`<div class="tl-cel-caja tl-pz-config-cel"><h2>🧩 Elegí el Puzzle</h2>
+          <div class="tl-pz-cel-cats">${Object.entries(cats).map(([k,v])=>`<button type="button" data-cat="${k}" class="${k===c.cat?"tl-pz-activo":""}">${v}</button>`).join("")}</div>
+          ${slug?`<div class="tl-pz-cel-foto"><button type="button" id="tlPzPrev">‹</button><img src="${src}" alt="${esc(slug.replace(/-/g," "))}"><button type="button" id="tlPzNext">›</button></div><p>${esc(slug.replace(/-/g," "))} · ${c.indice+1}/${c.lista.length}</p>`:"<p>Cargando dibujos…</p>"}
+          <div class="tl-pz-cel-nums">${nums.map(v=>`<button type="button" data-n="${v}" class="${v===c.n?"tl-pz-activo":""}">${v} piezas</button>`).join("")}</div>
+          <button type="button" class="tl-boton tl-chico" id="tlPzRot">${c.rot?"🔄 Con giros · tocar para quitar":"Sin giros · tocar para activar"}</button>
+          <button type="button" class="tl-boton tl-oro" id="tlPzStart" ${!slug||!c.listo?"disabled":""}>▶ Empezar</button>
+          ${c.guardado?'<button type="button" class="tl-boton" id="tlPzResume">↪ Continuar el guardado</button>':""}${menu}</div>`;
+        raiz.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>accion("pz_categoria",{cat:b.dataset.cat}));
+        raiz.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>accion("pz_piezas",{n:Number(b.dataset.n)}));
+        const prev=raiz.querySelector("#tlPzPrev"),next=raiz.querySelector("#tlPzNext");if(prev)prev.onclick=()=>accion("pz_imagen_elegir",{delta:-1});if(next)next.onclick=()=>accion("pz_imagen_elegir",{delta:1});
+        raiz.querySelector("#tlPzRot").onclick=()=>accion("pz_rotacion",{rot:!c.rot});
+        raiz.querySelector("#tlPzStart").onclick=()=>accion("pz_inicio");raiz.querySelector("#tlPzResume")?.addEventListener("click",()=>accion("pz_continuar"));enlazarMenu();return;
+      }
+      if(c.fase==="cargando"){
+        if(pantallaPintada==="pz-cargando")return;pantallaPintada="pz-cargando";
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🧩 Armando piezas…</h2><p>El tablero va a aparecer en la tele.</p>${menu}</div>`;enlazarMenu();return;
+      }
+      if(c.fase==="fin"){
+        if(pantallaPintada==="pz-fin-"+soyMando)return;pantallaPintada="pz-fin-"+soyMando;
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🏆 ¡Puzzle completo!</h2><p>${c.estado.n} piezas · ${Math.floor(c.estado.tiempo/60000)} min ${Math.floor(c.estado.tiempo%60000/1000)} s</p>${soyMando?'<button type="button" class="tl-boton tl-oro" id="tlPzOtro">Elegir otro Puzzle</button>':""}${menu}</div>`;
+        raiz.querySelector("#tlPzOtro")?.addEventListener("click",()=>accion("pz_config"));enlazarMenu();return;
+      }
+      if(pantallaPintada!=="pz-juego"){
+        pantallaPintada="pz-juego";
+        raiz.innerHTML=cab+`<div class="tl-cel-caja tl-pz-control"><h2>🧩 Mirá la tele</h2><p id="tlPzEstado">Mové las piezas con el dedo acá abajo.</p>
+          <div id="tlPzPad" class="tl-pz-pad" role="application" aria-label="Control táctil del puzzle"><span id="tlPzDot"></span><em>Arrastrá una pieza mirando la tele</em></div>
+          <div class="tl-pz-cel-herr"><button type="button" data-op="pz_girar">🔄 Girar</button><button type="button" data-op="pz_acercar">＋ Zoom</button><button type="button" data-op="pz_alejar">－ Zoom</button><button type="button" data-op="pz_encuadrar">⤢ Ver todo</button><button type="button" data-op="pz_guia">👁 Guía</button><button type="button" data-op="pz_imagen">🖼️ Imagen</button></div>
+          ${soyMando?'<button type="button" class="tl-boton tl-chico" id="tlPzOtro">Elegir otro Puzzle</button>':""}${menu}</div>`;
+        const pad=raiz.querySelector("#tlPzPad"),dot=raiz.querySelector("#tlPzDot");let dedo=null,ultimoEnvio=0;
+        const punto=e=>{const r=pad.getBoundingClientRect();return{x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))};};
+        const gesto=(a,p)=>{pzUltimo=p;dot.style.left=p.x*100+"%";dot.style.top=p.y*100+"%";mandar({t:"accion",a,...p});};
+        pad.onpointerdown=e=>{if(dedo!==null||ultimo?.cel?.dueno&&ultimo.cel.dueno!==yo)return;e.preventDefault();dedo=e.pointerId;try{pad.setPointerCapture(dedo);}catch(_){}gesto("pz_bajar",punto(e));};
+        pad.onpointermove=e=>{if(dedo!==e.pointerId)return;e.preventDefault();const p=punto(e);dot.style.left=p.x*100+"%";dot.style.top=p.y*100+"%";pzUltimo=p;if(performance.now()-ultimoEnvio>55){ultimoEnvio=performance.now();gesto("pz_mover",p);}};
+        const soltar=e=>{if(dedo!==e.pointerId)return;e.preventDefault();dedo=null;gesto("pz_soltar",punto(e));};pad.onpointerup=soltar;pad.onpointercancel=soltar;
+        raiz.querySelectorAll("[data-op]").forEach(b=>b.onclick=()=>accion(b.dataset.op,pzUltimo));
+        raiz.querySelector("#tlPzOtro")?.addEventListener("click",()=>{if(confirm("¿Elegir otro Puzzle? El actual queda guardado en la tele."))accion("pz_config");});enlazarMenu();
+      }
+      const estado=raiz.querySelector("#tlPzEstado");if(estado)estado.textContent=`${c.estado.pct}% armado · ${c.estado.n} piezas${c.dueno&&c.dueno!==yo?" · "+c.nombreDueno+" mueve una pieza":""}`;
+    }
     function pintarTutti(c,cab,soyMando){
       const ronda=c.r||0,cats=c.cats||[],jug=c.jug||[],mis=jug.find(j=>j.pid===yo);
       if(!mis){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Esperá a la próxima partida</h2></div>`;return;}
@@ -475,13 +601,14 @@
     }
     function pintar(){
       const m=ultimo;if(!m)return;const soyMando=m.mando===yo,c=m.cel||{},clave=JSON.stringify([soyMando,c,m.jug.length]);
-      if(c.pantalla!=="tutti"&&clave===pantallaPintada)return;
+      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&clave===pantallaPintada)return;
       const escribiendo=document.activeElement&&document.activeElement.id==="tlTexto"?document.activeElement.value:"";
-      if(c.pantalla!=="tutti")pantallaPintada=clave;
+      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle")pantallaPintada=clave;
       const cab=`<div class="tl-cel-cab">📺 Sala ${esc(m.cod)} · ${esc(nombre)}${soyMando?" · 🎮":""}</div>`;
       if(!m.jug.some(j=>j.pid===yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Entrando…</h2></div>`;return;}
       if(c.pantalla==="ruleta"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎡 La Ruleta</h2><p>La Ruleta tiene su propia entrada. Cuando la tele muestre el código nuevo, tocá acá y ponelo:</p><a class="tl-boton tl-oro" href="tv.html">Entrar a la Ruleta</a></div>`;return;}
       if(c.pantalla==="tutti"){pintarTutti(c,cab,soyMando);return;}
+      if(c.pantalla==="puzzle"){pintarPuzzle(c,cab,soyMando);return;}
       if(!soyMando){
         const mando=(m.jug.find(j=>j.pid===m.mando)||{}).n||"otro";
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2><p>El control lo tiene <b>${esc(mando)}</b>. Ayudalo con las respuestas 😉</p><button type="button" class="tl-boton" id="tlTomar">Tomar el control</button></div>`;

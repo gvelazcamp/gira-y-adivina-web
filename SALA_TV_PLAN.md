@@ -2,7 +2,7 @@
 
 Idea: **la tele muestra el juego en grande y se responde desde el celular.**
 
-**Hecho (26/10/2026, `tele.js` + `tele.css` + `tele/index.html`):** sala nueva con código y menú de juegos (también con el control remoto), **Rosco**, **Ahorcado**, **100 Rioplatenses** y **Tutti Frutti**. Entrada: tele `girayadivina.com/index.html?tele=1`; celulares `girayadivina.com/tele` (o la tarjeta "Juegos en la tele" de Extensiones, que por ahora ve solo Gonzalo). Falta: Puzzle. Tutti Frutti se probó con tele y dos celulares simulados, incluidas tres rondas, apelación y anulación; falta probar en una tele real.
+**Hecho (26/10/2026, `tele.js` + `tele.css` + `tele/index.html`):** sala nueva con código y menú de juegos (también con el control remoto), **Rosco**, **Ahorcado**, **100 Rioplatenses**, **Tutti Frutti** y **Puzzle**. Entrada: tele `girayadivina.com/index.html?tele=1`; celulares `girayadivina.com/tele` (o la tarjeta "Juegos en la tele" de Extensiones, que por ahora ve solo Gonzalo). Tutti Frutti se probó con tele y dos celulares simulados, incluidas tres rondas, apelación y anulación. Puzzle se probó con dos celulares, encastre, progreso y guardado; falta probar en una tele real.
 Estado de la prueba actual de la Ruleta: ver `SALA_TV_PRUEBA.md`.
 
 ## Cómo se entra (igual para todos los juegos)
@@ -22,7 +22,7 @@ Se hace una sola vez y sirve para todos los juegos.
 | 3 | **100 Rioplatenses Dicen** | **Uno solo**, el grupo juega junto | Pregunta, 6 respuestas tapadas, 3 cruces | Escribe lo que el grupo dice | ✅ Hecho (tele.js) |
 | 4 | **Ahorcado** | Uno (el grupo dice qué letra) | La partida igual que en el celular, en grande | Teclado de letras | ✅ Hecho (tele.js) |
 | 5 | **Rosco** | **Uno juega**, los demás miran (como programa de tele) | Rosco girando, letra, definición, reloj | Escribir la respuesta, "Enviar" y "Pasar" | ✅ Hecho (tele.js) |
-| 6 | **Puzzle** | De a uno **o cooperativo** (varios celulares) | El puzzle grande | Elegir piezas y ubicarlas | Por hacer (el más difícil) |
+| 6 | **Puzzle** | De a uno **o cooperativo** (varios celulares) | El puzzle grande | Arrastrar, girar, acercar y ubicar piezas desde el control táctil | ✅ Hecho (tele.js + puzzle.html; falta probar en tele real) |
 
 ### 1. Ruleta
 Ya existe ("Sala TV"). La tele muestra la ruleta y el tablero; cada jugador gira, elige letras y resuelve desde su celular.
@@ -55,9 +55,10 @@ Ya existe ("Sala TV"). La tele muestra la ruleta y el tablero; cada jugador gira
 - **Final:** resultado en grande (aciertos, errores, tiempo). Si después juega otro, se compara quién hizo más.
 
 ### 6. Puzzle
-- **De a uno o cooperativo** (ya existe el puzzle cooperativo online).
-- **Tele:** el puzzle grande para que todos miren cómo se arma.
-- **Celular(es):** elegir piezas y ubicarlas.
+- **De a uno o cooperativo:** todos los celulares conectados a la sala de la tele pueden mover piezas del mismo tablero; un dedo a la vez para evitar choques. El celular con el control elige la imagen, cantidad de piezas y giros.
+- **Tele:** usa el motor original del Puzzle, con piezas, encastre, imagen de referencia, progreso y festejo al completarlo.
+- **Celular(es):** superficie táctil que corresponde a la pantalla de la tele; arrastrar para mover, tocar para girar, y botones para girar, zoom, ver todo, guía e imagen.
+- **Guardado:** separado del Puzzle normal del celular, en el navegador de esa tele. Se puede volver al menú y continuar la partida allí. Probar en una tele real antes de dar por terminado el ajuste de controles.
 
 ## Orden propuesto para hacerlos
 1. Entrada única (código + menú de juegos en la tele).
@@ -73,5 +74,5 @@ Ya existe ("Sala TV"). La tele muestra la ruleta y el tablero; cada jugador gira
 ## Mientras tanto (para jugar ya)
 - **Tele:** abrir el navegador de la tele (en Android/Google TV se puede instalar uno gratis de su Play Store, por ejemplo "TV Bro" o "Puffin TV Browser") y entrar a `girayadivina.com/index.html?tele=1`.
 - **Celulares:** `girayadivina.com/tele` con nombre y código. La Ruleta da otro código y pasa a `tv.html` al elegirla.
-- Rosco, Ahorcado, 100 Rioplatenses y Tutti Frutti ya están integrados al menú; Puzzle sigue pendiente. Cerrar o recargar la tele corta la partida. **Probarlo antes en casa**: las pruebas en código usaron navegadores simulados y todavía no se probó en una tele real.
+- Rosco, Ahorcado, 100 Rioplatenses, Tutti Frutti y Puzzle están integrados al menú. Puzzle conserva su partida en el navegador de esa tele; los otros juegos se cortan al cerrar o recargar la tele. **Probarlo antes en casa**: las pruebas en código usaron navegadores simulados y todavía no se probó en una tele real.
 - Propuesto y no confirmado todavía por Gonzalo: un botón "Sala TV" en el menú que solo vea él.
