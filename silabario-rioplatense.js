@@ -60,13 +60,28 @@ const SilabarioRioplatense=(()=>{
     }
     return null;
   }
+  /* Ninguna respuesta se repite en todo el juego (Gonzalo, 26/10/2026): primero
+     las nuevas del nivel; si con esas no cierra el cuadrado, cualquier nueva; si
+     quedan pocas nuevas, se usan todas y se completa con ya vistas; recién cuando
+     viste TODAS vuelven a salir. */
+  function intentarMezcla(primero,resto){
+    for(let intento=0;intento<80;intento++){
+      const elegidas=[];let suma=0;
+      for(const palabra of [...mezclar(primero),...mezclar(resto)]){
+        const n=palabra.silabas.length;
+        if(suma+n<=config.fichas){elegidas.push(palabra);suma+=n;}
+        if(suma===config.fichas)return elegidas;
+      }
+    }
+    return null;
+  }
   function armarRonda(){
-    const preferidas=SILABARIO_DATOS.filter(d=>nivel<3?d.nivel<=2:d.nivel>=2);
-    const pool=preferidas.length?preferidas:SILABARIO_DATOS;
-    const noVistas=Vistas.filtrar("silabario",pool,d=>d.respuesta).filter(d=>!usadasSesion.has(d.respuesta));
-    const sinRepetir=pool.filter(d=>!usadasSesion.has(d.respuesta));
-    const elegidas=(noVistas.length?intentarCuadrado(noVistas):null)||(sinRepetir.length?intentarCuadrado(sinRepetir):null)||intentarCuadrado(pool)||(()=>{
-      const candidatas=mezclar(pool),out=[];let suma=0;
+    const prefiere=d=>nivel<3?d.nivel<=2:d.nivel>=2,disponibles=SILABARIO_DATOS.filter(d=>!usadasSesion.has(d.respuesta));
+    let vistas=Vistas.cargar("silabario"),nuevas=disponibles.filter(d=>!vistas.has(d.respuesta));
+    if(!nuevas.length){Vistas.guardar("silabario",new Set());vistas=new Set();nuevas=disponibles;}
+    const viejas=disponibles.filter(d=>vistas.has(d.respuesta));
+    const elegidas=intentarCuadrado(nuevas.filter(prefiere))||intentarCuadrado(nuevas)||intentarMezcla(nuevas,viejas)||intentarCuadrado(SILABARIO_DATOS)||(()=>{
+      const candidatas=mezclar(SILABARIO_DATOS),out=[];let suma=0;
       for(const palabra of candidatas){const n=palabra.silabas.length;if(suma+n<=config.fichas){out.push(palabra);suma+=n;}}
       return out;
     })();
