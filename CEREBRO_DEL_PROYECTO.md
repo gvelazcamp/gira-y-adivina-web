@@ -1625,3 +1625,7 @@ Fecha: 26/10/2026 — REEL de Memoria en Giro: promo/reel-memoria.html (≈34,4 
 ```text
 Fecha: 26/10/2026 — Reel de Memoria en Giro: el tablero era chico (12 cartas, "van a pensar que es fácil"). Ahora todas las escenas usan 16 cartas grandes (4×4, 8 pares, como los niveles más altos del juego); el gancho pregunta "¿DÓNDE ESTÁN LAS 🍓?".
 ```
+
+```text
+Fecha: 26/10/2026 — Reel de Memoria en Giro con música propia ("Sleight of Thought", Gemini, 62 s): promo/reel-memoria-musica.mp3 armado con 3 tramos para que caigan los golpes: 0:12.75–0:21.85 (el de 0:15.2 cae en el gancho y el de 0:20.7 en el giro) + 0:20.58–0:28.9 (el de 0:25.4 cae en ¡GIRÓ!) + 0:41.48–0:58.75 (parte tranquila para "memorizá", el de 0:46.7 en ¡GANASTE! y termina con el final natural del tema). Cruces de 0,12 s.
+```
