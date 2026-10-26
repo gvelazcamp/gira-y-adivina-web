@@ -1569,3 +1569,7 @@ REGLA de Gonzalo para los videos: los "3 segundos" son el tiempo del gancho para
 ```text
 Fecha: 26/10/2026 — Reel del Puzzle: el gancho tenía un puzzle de 9 piezas ("van a decir qué fácil"). Ahora son 100 piezas (10×10, ciudad-vapor) desparramadas por toda la pantalla con "🧩 100 PIEZAS", que vuelan a su lugar en ola y en el golpe de la música queda ¡COMPLETO! con el marco dorado.
 ```
+
+```text
+Fecha: 26/10/2026 — Inicio: el botón "¡Jugar ahora!" ahora dice abajo "Girá, resolvé y recorré Uruguay y Argentina" (antes "Uruguay, vos contra la máquina", que no contaba de qué se trata). Elegido por Gonzalo. En celulares chicos (360 px) baja a 2 líneas. También en inglés (i18n.js v4). sw v434.
+```
