@@ -1637,3 +1637,7 @@ Fecha: 26/10/2026 — REEL del Silabario Rioplatense: promo/reel-silabario.html 
 ```text
 Fecha: 26/10/2026 — Reel de Silabario con música propia ("Victory in the Plaza", Gemini, 66,7 s): promo/reel-silabario-musica.mp3 armado con 2 tramos sin el silencio del medio: 0:05.25–0:23.0 (el golpe de 0:07.7 cae en el gancho TERERÉ y el de 0:18.8 en ¡SE MEZCLA!) + 0:35.43–0:52.25 (el de 0:38.4 cae en ¡GANASTE! y la parte fuerte en el cierre). Cruce de 0,12 s y fundido final.
 ```
+
+```text
+Fecha: 26/10/2026 — REEL de Rueda de Letras: promo/reel-rueda.html (≈34,4 s, 9:16, mismo motor; música provisoria reel-tutti-musica.mp3). Gancho: "¿QUÉ PALABRA DE 7 LETRAS ES? 🤔" con la rueda desordenada (J A R L O F A) y el crucigrama vacío de ALFAJOR (10 palabras) → el dedo traza y en el golpe ¡ALFAJOR! 🍪. Después: logo + personaje "Deslizá el dedo… y armá palabras con la rueda", crucigrama escondido, jugando MILONGA (AMIGO, LINO y la base +170), ¡GIRÁ! (las letras cambian de lugar), niveles (6 letras · letra del medio · 7 letras, como RUEDA_CONFIG), 1 vs 1 contra reloj, cajón de extras (cada 3 una pista), ¡Rueda completada! y cierre. Crucigramas armados con la misma armarCruz del juego.
+```
