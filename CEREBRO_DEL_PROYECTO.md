@@ -1672,3 +1672,7 @@ Fecha: 26/10/2026 — Sopa Fugaz: dos modos, escaleritas y dibujos (Gonzalo: "s�
 ```text
 Fecha: 26/10/2026 — Sopa Fugaz, ventana de elegir modo (Gonzalo): los tres botones uno abajo del otro, mismo tamaño y alineados: 🔎 Sopa clásica (magenta), 🌀 Sopa giratoria (violeta), Jugar con un amigo (turquesa, con el dibujo chico). extensiones.css v126, sopa-fugaz.js v13, sw v438.
 ```
+
+```text
+Fecha: 26/10/2026 — Sopa Fugaz: se sacó el logo grande de arriba del tablero (Gonzalo: "no es necesario y así entra sin scroll"). En un celular de 412×870 el tablero, la lista y los botones Pista/Pausa entran sin deslizar. sopa-fugaz.js v14, sw v439.
+```

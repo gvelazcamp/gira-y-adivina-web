@@ -432,7 +432,7 @@ const SopaFugaz=(()=>{
   }
   function abrir(contenedor){
     salir();datos=cargar();nivel=SOPA_CONFIG.primerNivel;puntaje=0;modo="clasica";raiz=document.createElement("div");raiz.className="sf-game";
-    raiz.innerHTML='<button type="button" class="ext-volver" id="sfVolver">⟵ Extensiones</button><h2 class="sf-logo-h"><img class="sf-logo" src="'+ARTE("logo")+'" alt="Sopa Fugaz" draggable="false"></h2>'
+    raiz.innerHTML='<button type="button" class="ext-volver" id="sfVolver">⟵ Extensiones</button>'
       +'<div class="sf-cabeza"><img src="'+ARTE("libro")+'" alt=""><div><small id="sfForma">Tema</small><b id="sfCategoria">Sopa de letras</b></div><span class="sf-cuenta" id="sfCuenta">0/0</span></div>'
       +'<div class="sf-hud"><div><small>Nivel</small><b id="sfNivel">1</b></div><div><small>Puntos</small><b id="sfPuntos">0</b></div><div><small>Mejor</small><b id="sfMejor">0</b></div><div><small><img class="sf-ico" src="'+ARTE("reloj")+'" alt="">Tiempo</small><b id="sfTiempo">0:00</b></div></div>'
       +'<div class="sf-bar"><i id="sfTiempoBarra"></i></div>'
