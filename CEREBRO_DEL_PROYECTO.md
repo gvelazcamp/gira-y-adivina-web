@@ -1613,3 +1613,7 @@ Fecha: 26/10/2026 — REEL de Sopa Fugaz: promo/reel-sopa.html (≈34,4 s, 9:16,
 ```text
 Fecha: 26/10/2026 — Reel de Sopa Fugaz con música propia ("Before the Last Gear Turns", Gemini): promo/reel-sopa-musica.mp3 = 0:37.35–0:71.95 con fundido. Arranca en la parte bajita y el golpe de 0:39.8 cae en ¡SE MUDÓ!; además 0:51.1 cae en ¡SE MUDARON! y 0:60.1 en ¡GANASTE!.
 ```
+
+```text
+Fecha: 26/10/2026 — REEL de Frases en Giro: promo/reel-frases.html (≈34,4 s, 9:16, mismo motor; música provisoria reel-tutti-musica.mp3 hasta que Gonzalo mande la suya). Gancho: "¿QUÉ DICE? 🤔" con la pista "Partido de potrero" y las palabras desordenadas (frase real: El árbitro cobró un penal fantasma) → en el golpe vuelan a su lugar: ¡ARMADA! ✅. Después: logo + personaje "Ordená la frase… antes del giro 🌀", ¡las palabras giran!, jugando "El termo se quedó sin agua" tocando en orden (con la barra del próximo giro), ¡GIRO!, ojo con las trampas ("La murga cantó bajo la lluvia" con la trampa real "bailó": pierde un corazón), 1 vs 1, frases bien nuestras (pistas reales), ¡Frase armada! con racha y cierre.
+```
