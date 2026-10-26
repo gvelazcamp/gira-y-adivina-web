@@ -283,3 +283,31 @@ const SOPA_DATOS={
     ]}
   ]
 };
+/* Palabras del banco que tienen un dibujo claro: en algunos niveles se muestra
+   el dibujo en vez de la palabra (hay que adivinar cuál es y después buscarla). */
+const SOPA_DIBUJOS={
+  ARANDANO:"🫐",MELON:"🍈",ANANA:"🍍",MANGO:"🥭",PALTA:"🥑",COCO:"🥥",PERA:"🍐",
+  LECHUGA:"🥬",BROCOLI:"🥦",PEPINO:"🥒",MORRON:"🫑",PAPA:"🥔",BERENJENA:"🍆",ARVEJAS:"🫛",
+  MEDIALUNA:"🥐",CARAMELO:"🍬",GALLETITA:"🍪",ENSALADA:"🥗",TORTA:"🎂",
+  CHAMPAGNE:"🍾",COCTEL:"🍸",CORTADO:"☕",TINTO:"🍷",
+  PANTALON:"👖",CAMISA:"👔",BOTAS:"👢",SANDALIAS:"👡",MEDIAS:"🧦",SHORT:"🩳",GORRO:"🧢",LENTES:"🕶️",BIKINI:"👙",
+  SOMBRILLA:"⛱️",OLAS:"🌊",CASTILLO:"🏰",BALDE:"🪣",
+  TRANVIA:"🚋",CAMIONETA:"🛻",VAGON:"🚃",TROLEBUS:"🚎",BUQUE:"🚢",
+  BOCA:"👄",LABIOS:"💋",DIENTES:"🦷",LENGUA:"👅",MANO:"✋",PULMON:"🫁",BRAZO:"💪",
+  TORO:"🐂",CERDO:"🐖",GALLO:"🐓",POLLITO:"🐣",PATO:"🦆",PAVO:"🦃",CONEJO:"🐇",CABRA:"🐐",GATO:"🐈",
+  MOSCA:"🪰",CUCARACHA:"🪳",VAQUITA:"🐞",ALACRAN:"🦂",LOMBRIZ:"🪱",GUSANO:"🐛",
+  AGUILA:"🦅",CISNE:"🦢",LEON:"🦁",MONO:"🐒",PANDA:"🐼",PEREZOSO:"🦥",BISONTE:"🦬",ERIZO:"🦔",CASTOR:"🦫",
+  ZORRO:"🦊",CIERVO:"🦌",PALOMA:"🕊️",CULEBRA:"🐍",
+  LLUVIA:"🌧️",TORMENTA:"⛈️",NIEBLA:"🌫️",NEVADA:"🌨️",SOLEADO:"☀️",NUBLADO:"☁️",
+  LUNA:"🌙",PLANETA:"🪐",METEORITO:"☄️",
+  SAXOFON:"🎷",BATERIA:"🥁",MICROFONO:"🎤",DISCO:"💿",MARACAS:"🪇",BANJO:"🪕",
+  TORNILLO:"🔩",HACHA:"🪓",
+  CELULAR:"📱",COMPUTADORA:"💻",MOUSE:"🖱️",CAMARA:"📷",IMPRESORA:"🖨️",
+  GLOBOS:"🎈",PIÑATA:"🪅",REGALITO:"🎁",ARBOLITO:"🎄",PAPANOEL:"🎅",CAMPANA:"🔔",
+  DADOS:"🎲",NAIPES:"🃏",PRINCESA:"👸",DRAGON:"🐉",OGRO:"👹",ZOMBI:"🧟",NINJA:"🥷",
+  TULIPAN:"🌷",CACTUS:"🌵",MARGARITA:"🌼",ROSAL:"🌹",PINO:"🌲",TREBOL:"☘️",
+  CALAMAR:"🦑",CAMARON:"🦐",PULPITO:"🐙",TROFEO:"🏆",CRONOMETRO:"⏱️",ARCO:"🥅",
+  CARRITO:"🛒",ARROZ:"🍚",HUEVOS:"🥚",PASTILLA:"💊",CURITA:"🩹",MULETA:"🩼",CARPA:"⛺",
+  CLIPS:"📎",LAPIZ:"✏️",ESPIRAL:"🌀",ABUELO:"👴",ABUELA:"👵",MIEDO:"😱",ENOJO:"😠",
+  NADAR:"🏊",CORRER:"🏃",DORMIR:"😴",LEER:"📖",PELICULA:"🎬",CASCADA:"🏞️",HONGO:"🍄",ROCA:"🪨"
+};

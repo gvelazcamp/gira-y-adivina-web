@@ -397,11 +397,23 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .sf-game .sf-palabra.hecho{text-decoration:line-through;color:#FFFFFF59}
 .sf-game .sf-botonera{margin-top:10px}.sf-game .sf-botonera button{display:flex;align-items:center;justify-content:center;gap:4px;padding:10px 6px;font-size:.8rem}
 .sf-game .sf-botonera img{width:20px;height:20px;object-fit:contain}.sf-game .sf-botonera button:disabled{opacity:.45}
+.sf-game .sf-panel p{white-space:pre-line}
+.sf-game .sf-panel .sf-acciones{flex-direction:column}.sf-game .sf-acciones .sf-modo-giro{background:#7B3FE4;color:#fff;border-color:#7B3FE4}
+/* Palabras con dibujo: se ve el dibujo y un cuadradito por letra hasta encontrarla. */
+.sf-game .sf-palabra.dibujo{display:flex;flex-direction:column;align-items:center;gap:1px;background:#29193D;border-radius:10px;padding:3px 2px}
+.sf-game .sf-palabra.dibujo i{font-style:normal;font-size:1.45rem;line-height:1.1}
+.sf-game .sf-palabra.dibujo small{font-size:.5rem;letter-spacing:-.5px;color:#D7C8E5;white-space:nowrap}
+.sf-game .sf-palabra.dibujo.hecho{text-decoration:none;opacity:.5}.sf-game .sf-palabra.dibujo.hecho small{font-size:.66rem;letter-spacing:0;text-decoration:line-through}
+/* Sopa giratoria: remolino, aviso de mudanza y fundido de letras. */
+.sf-game .sf-mudanza{display:none}.sf-game.giratoria .sf-mudanza{display:block;margin-top:6px}
+.sf-game.giratoria .sf-celda{transition:opacity .22s,transform .22s}
+.sf-game .sf-remolino{position:absolute;left:50%;top:50%;width:62%;max-width:260px;transform:translate(-50%,-50%) scale(.4);opacity:0;pointer-events:none;transition:opacity .3s,transform .5s;filter:drop-shadow(0 8px 16px #000a);z-index:3}
+.sf-game .sf-tablero.mudando .sf-remolino{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-25deg)}
 .sf-game .sf-estallido{position:absolute;width:120px;height:auto;pointer-events:none;transform:translate(-50%,-50%) scale(.3);opacity:0;animation:sfEstalla .75s ease-out forwards;z-index:2}
 @keyframes sfEstalla{30%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.4)}}
 .sf-game .sf-panel-dibujo{display:block;width:auto;height:auto;max-width:min(70vw,260px);max-height:30vh;margin:-6px auto 8px;filter:drop-shadow(0 8px 14px #0009)}
 .sf-game .sf-acciones button.sf-con-dibujo{display:flex;align-items:center;justify-content:center;gap:8px;padding:6px 10px}.sf-game .sf-con-dibujo img{width:52px;height:auto}
-@media(prefers-reduced-motion:reduce){.sf-game .sf-estallido{animation:none;display:none}}
+@media(prefers-reduced-motion:reduce){.sf-game .sf-estallido{animation:none;display:none}.sf-game .sf-tablero.mudando .sf-remolino{transform:translate(-50%,-50%)}}
 /* Rueda de Letras con dibujos (assets/rueda-letras/), todo bajo .rl-game */
 .rl-game .rl-logo-h{margin:0;line-height:0}.rl-game .rl-logo{height:clamp(52px,10vh,84px);width:auto;filter:drop-shadow(0 5px 8px #0009)}
 .rl-game .rl-ico{width:1.4em;height:1.4em;object-fit:contain;vertical-align:-.38em;margin-right:5px}
