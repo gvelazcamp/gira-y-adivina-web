@@ -46,7 +46,8 @@ const QuienSoy=(()=>{
   function elegirPalabras(id){
     const cats=window.QUIEN_SOY_CATEGORIAS||[];
     const lista=id==="mezcla"?cats.flatMap(c=>c.palabras):(cats.find(c=>c.id===id)||cats[0]).palabras;
-    const libres=Vistas.filtrar("quien_soy_"+id,lista,x=>x);
+    Vistas.unir("quien_soy");
+    const libres=Vistas.filtrar("quien_soy",lista,x=>x);
     /* Primero las que no salieron; si no alcanzan, se completan con el resto. */
     return mezclar(libres).concat(mezclar(lista.filter(x=>!libres.includes(x))));
   }
@@ -92,7 +93,7 @@ const QuienSoy=(()=>{
   function responder(ok){
     if(!jugando||Date.now()<bloqueoToque)return;
     bloqueoToque=Date.now()+250;
-    resultados.push({w:palabras[idx],ok});Vistas.marcar("quien_soy_"+cat.id,palabras[idx]);idx++;
+    resultados.push({w:palabras[idx],ok});Vistas.marcar("quien_soy",palabras[idx]);idx++;
     const j=q("qsJuego");j.classList.remove("flash-ok","flash-paso");void j.offsetWidth;j.classList.add(ok?"flash-ok":"flash-paso");
     const m=q("qsMarca");m.src=src(ok?"ok":"paso");m.classList.remove("pop");void m.offsetWidth;m.classList.add("pop");
     if(typeof bip==="function"){if(ok){bip(660,.15,"sine",.06);bip(990,.22,"triangle",.04);}}

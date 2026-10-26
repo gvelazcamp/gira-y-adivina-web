@@ -45,7 +45,8 @@ const Bomba=(()=>{
     if(bv){pintarVoz();bv.onclick=()=>{conVoz=!conVoz;guardar();pintarVoz();};}
     q("bbWpp").onclick=()=>PantallaFija.invitar("bomba","Bomba");
   }
-  function silaba(){let s;do{s=SILABAS[Math.floor(Math.random()*SILABAS.length)];}while(s===ultima);ultima=s;return s;}
+  /* Ninguna sílaba se repite hasta que salieron todas (Vistas "bomba"). */
+  function silaba(){const libres=Vistas.filtrar("bomba",SILABAS,x=>x).filter(x=>x!==ultima);const s=(libres.length?libres:SILABAS.filter(x=>x!==ultima))[Math.floor(Math.random()*(libres.length||SILABAS.length-1))];Vistas.marcar("bomba",s);ultima=s;return s;}
   function empezar(){
     raiz.innerHTML=`<div class="qns-pantalla bb-juego" id="bbJuego">
       <div class="qs-tope"><span class="bb-tit">${img("bomba","bb-mini")}Bomba</span><b id="bbPasadas">0</b><button type="button" class="pf-salir" id="bbSalir">✕ Salir</button></div>

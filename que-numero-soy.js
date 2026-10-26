@@ -54,7 +54,9 @@ const QueNumeroSoy=(()=>{
   function pintarRangos(){raiz.querySelectorAll("#qnsRangos button").forEach(b=>b.classList.toggle("activo",Number(b.dataset.max)===max));}
   function empezar(){
     if(!raiz)return;
-    numero=1+Math.floor(Math.random()*max);
+    /* Ningún número se repite en ese rango hasta que salieron todos. */
+    const todos=Array.from({length:max},(_,i)=>i+1),libres=Vistas.filtrar("qns_"+max,todos,x=>x);
+    numero=libres[Math.floor(Math.random()*libres.length)];Vistas.marcar("qns_"+max,numero);
     bloqueado=true;
     PantallaFija.activar();
     q("qnsFin").hidden=true;capa.hidden=false;document.body.classList.add("qns-bloqueado");

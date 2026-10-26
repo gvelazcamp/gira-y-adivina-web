@@ -64,9 +64,12 @@ const Impostor=(()=>{
   function elegirPalabra(){
     const todas=cats().flatMap(c=>c.palabras.map(w=>({w,cat:c})));
     const lista=catId==="mezcla"?todas:todas.filter(x=>x.cat.id===catId);
-    const libres=Vistas.filtrar("impostor_"+catId,lista,x=>x.w);
+    /* Una sola memoria para todas las categorías (antes "mezcla" y cada categoría
+       llevaban la cuenta por separado y una palabra podía volver a salir). */
+    Vistas.unir("impostor");
+    const libres=Vistas.filtrar("impostor",lista,x=>x.w);
     const p=libres[Math.floor(Math.random()*libres.length)];
-    Vistas.marcar("impostor_"+catId,p.w);return p;
+    Vistas.marcar("impostor",p.w);return p;
   }
   function nuevaRonda(){
     const p=elegirPalabra(),idx=[...Array(cant).keys()];
