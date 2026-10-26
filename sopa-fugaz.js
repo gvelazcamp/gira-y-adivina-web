@@ -1,13 +1,16 @@
-/* Sopa Fugaz: sopa de letras grande con reloj. Desde el 26/10/2026 ya no gira
-   (Gonzalo): tablero liso de 14×14 desde el nivel 1, palabras en las 8
-   direcciones, cada palabra encontrada queda marcada con una cápsula de color
-   y cada tantos niveles el tablero tiene forma (corazón, mate, mapa…).
-   Cada palabra sale una sola vez en todo el juego (Vistas "sopa"). */
+/* Sopa Fugaz (26/10/2026, Gonzalo). Al entrar se elige el modo:
+   - Sopa clásica: tablero liso 14×14 desde el nivel 1, 8 direcciones, cápsulas
+     de color, tableros con forma cada 3 niveles, palabras en escalerita desde el
+     nivel 4 y palabras con dibujo (algunas mezcladas, y cada 4 niveles uno entero).
+   - Sopa giratoria: la de siempre, las letras se mudan cada pocos segundos.
+   Cada palabra sale una sola vez en todo el juego (Vistas "sopa"), en los dos modos. */
 const SOPA_CONFIG={
   n:14,primerNivel:1,palabrasInicial:12,palabrasMax:16,subirPalabrasCada:3,
   segundosBasePalabra:6,segundosPorLetra:1.3,margenInicial:1,margenPaso:.03,margenPiso:.75,
   puntosPalabra:100,puntosSegundo:5,pistasPorRonda:3,pistaMs:2600,formaCada:3,
-  ticMs:200,registroPalabrasMax:100,intentosTablero:40,intentosColocacion:900,minLargo:4
+  escaleraDesde:4,escaleraDobleDesde:10,escaleraMaxLargo:9,dibujosDesde:2,dibujosMezcla:3,nivelDibujosCada:4,
+  giratoria:{palabrasInicial:8,palabrasMax:12,mudanzaInicial:10,mudanzaPaso:.5,mudanzaPiso:5,factorTiempo:1.15,graciaArrastreMs:2500,giroMs:1100},
+  ticMs:100,registroPalabrasMax:100,intentosTablero:40,intentosColocacion:900,minLargo:4
 };
 /* Formas (14×14, "#" = casilla). Cada una prefiere un tema que le pegue. */
 const SOPA_FORMAS=[
@@ -22,12 +25,15 @@ const SopaFugaz=(()=>{
   const CLAVE="gya_sopa_fugaz",VISTAS="sopa";
   const DIRS=[[0,1],[1,0],[1,1],[-1,1],[0,-1],[-1,0],[-1,-1],[1,-1]];
   const COLORES=["#F5B301A6","#37D6C0A6","#E5197C8C","#7B3FE48C","#2ED18AA6","#FF8A3DA6","#3DA5FF99"];
+  const DIBUJOS=typeof SOPA_DIBUJOS==="object"?SOPA_DIBUJOS:{};
   const azar=n=>Math.floor(Math.random()*n);
   /* Dibujos en assets/sopa/ (hoja de ChatGPT recortada). */
   const ARTE=n=>"assets/sopa/"+n+".webp";
   let datos=cargar(),raiz=null,gridEl=null,listaEl=null,capsEl=null,celdas=[],tablero=[],mascara=null,forma=null,objetivos=[],halladas=new Map(),ubicadas={};
+  let escaleras=new Set(),conDibujo=new Set(),todoDibujos=false,modo="clasica";
   let nivel=1,puntaje=0,tiempoMs=0,duracionMs=0,ultimaMarca=0,pistas=0,pistaTimer=null,pausado=false;
-  let jugando=false,arrastre=null,camino=[],intervalo=null,token=0,ultimoTic=0,ocultoDesde=0,categoria="",duelo=false;
+  let mudanzaMs=0,proximaMudanza=0,mudando=false,trasladoTimer=null;
+  let jugando=false,arrastre=null,camino=[],rastro=[],intervalo=null,token=0,ultimoTic=0,ocultoDesde=0,categoria="",duelo=false;
   let audioMusica=null;
   function iniciarMusicaJuego(){
     try{
@@ -49,10 +55,15 @@ const SopaFugaz=(()=>{
   }
   function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify(datos));}catch(e){}}
   function mejorPuntaje(){return datos.mejor;}
-  function configNivel(nivelActual){
-    const c=SOPA_CONFIG,p=Math.max(0,nivelActual-1);
-    return{n:c.n,palabras:Math.min(c.palabrasMax,c.palabrasInicial+Math.floor(p/c.subirPalabrasCada)),
-      margen:Math.max(c.margenPiso,c.margenInicial-p*c.margenPaso),forma:nivelActual%c.formaCada===0?SOPA_FORMAS[(nivelActual/c.formaCada-1)%SOPA_FORMAS.length]:null};
+  function configNivel(nivelActual,modoJuego="clasica"){
+    const c=SOPA_CONFIG,p=Math.max(0,nivelActual-1),margen=Math.max(c.margenPiso,c.margenInicial-p*c.margenPaso);
+    if(modoJuego==="giratoria"){const g=c.giratoria;
+      return{n:c.n,palabras:Math.min(g.palabrasMax,g.palabrasInicial+Math.floor(p/c.subirPalabrasCada)),margen:margen*g.factorTiempo,forma:null,escaleras:0,dibujos:null,
+        mudanza:Math.max(g.mudanzaPiso,g.mudanzaInicial-p*g.mudanzaPaso)};}
+    const forma=nivelActual%c.formaCada===0?SOPA_FORMAS[(nivelActual/c.formaCada-1)%SOPA_FORMAS.length]:null;
+    return{n:c.n,palabras:Math.min(c.palabrasMax,c.palabrasInicial+Math.floor(p/c.subirPalabrasCada)),margen,forma,
+      escaleras:nivelActual>=c.escaleraDobleDesde?2:nivelActual>=c.escaleraDesde?1:0,
+      dibujos:!forma&&nivelActual%c.nivelDibujosCada===0?"todo":nivelActual>=c.dibujosDesde?"mezcla":null,mudanza:0};
   }
   function mezclar(lista){
     const a=[...lista];for(let i=a.length-1;i>0;i--){const j=azar(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;
@@ -73,40 +84,59 @@ const SopaFugaz=(()=>{
     const libres=new Set(Vistas.filtrar(VISTAS,todas,w=>w));
     const largo=Math.min(largoMaximo(m),c.n),cuantas=Math.min(c.palabras,Math.floor(casillas(m)/9));
     const sirve=w=>libres.has(w)&&w.length>=SOPA_CONFIG.minLargo&&w.length<=largo;
+    const elegidas=[],sumar=lista=>{for(const w of mezclar(lista.filter(sirve))){if(elegidas.length>=cuantas)break;if(elegidas.some(x=>x.includes(w)||w.includes(x)))continue;elegidas.push(w);}};
+    todoDibujos=false;
+    /* Nivel con dibujos: todas las palabras se muestran como dibujo. */
+    if(c.dibujos==="todo"){const pool=Object.keys(DIBUJOS).filter(sirve);
+      if(pool.length>=cuantas){sumar(pool);if(elegidas.length>=cuantas){todoDibujos=true;categoria="Con dibujos 🖼️";return elegidas;}elegidas.length=0;}}
     let fuente=c.forma&&temas().find(t=>t.nombre===c.forma.tema&&t.palabras.filter(sirve).length>=cuantas);
     if(!fuente){const opciones=temas().filter(t=>t.palabras.filter(sirve).length>=cuantas);fuente=opciones.length?opciones[azar(opciones.length)]:null;}
-    const elegidas=[],sumar=lista=>{for(const w of mezclar(lista.filter(sirve))){if(elegidas.length>=cuantas)break;if(elegidas.some(x=>x.includes(w)||w.includes(x)))continue;elegidas.push(w);}};
     if(fuente)sumar(fuente.palabras);
     if(elegidas.length<cuantas)sumar(todas);
     categoria=fuente&&elegidas.every(w=>fuente.palabras.includes(w))?fuente.nombre:"Palabras variadas";
     return elegidas;
   }
+  function libre(matriz,m,palabra,celdasW){
+    const n=m.length;
+    return celdasW.every(([r,c],i)=>dentro(m,r,c)&&(!matriz[r*n+c]||matriz[r*n+c]===palabra[i]));
+  }
+  function escribir(matriz,m,palabra,celdasW){const n=m.length;return celdasW.map(([r,c],i)=>{const k=r*n+c;matriz[k]=palabra[i];return k;});}
   function colocar(palabra,matriz,m){
     const n=m.length;
     for(let intento=0;intento<SOPA_CONFIG.intentosColocacion;intento++){
-      const [dr,dc]=DIRS[azar(DIRS.length)],r0=azar(n),c0=azar(n);let ok=true;
-      for(let i=0;i<palabra.length&&ok;i++){const r=r0+dr*i,c=c0+dc*i;if(!dentro(m,r,c)){ok=false;break;}const x=matriz[r*n+c];if(x&&x!==palabra[i])ok=false;}
-      if(!ok)continue;
-      const indices=[];for(let i=0;i<palabra.length;i++){const k=(r0+dr*i)*n+c0+dc*i;matriz[k]=palabra[i];indices.push(k);}
-      return indices;
+      const [dr,dc]=DIRS[azar(DIRS.length)],r0=azar(n),c0=azar(n);
+      const cw=Array.from({length:palabra.length},(_,i)=>[r0+dr*i,c0+dc*i]);
+      if(libre(matriz,m,palabra,cw))return escribir(matriz,m,palabra,cw);
     }
     return null;
   }
-  /* Arma el tablero. Si en la forma no entran todas, se juega con las que entraron
-     (se intenta varias veces antes); si no entra casi ninguna, va el cuadrado. */
-  function construir(c){
-    const n=c.n;let mejor=null;
-    for(let intento=0;intento<SOPA_CONFIG.intentosTablero;intento++){
-      const matriz=Array(n*n).fill(""),pos={};
-      for(const w of [...objetivos].sort((a,b)=>b.length-a.length)){const ind=colocar(w,matriz,mascara);if(ind)pos[w]=ind;}
-      const k=Object.keys(pos).length;
-      if(!mejor||k>mejor.k)mejor={k,matriz,pos};
-      if(k===objetivos.length)break;
+  /* Escalerita: un paso al costado, uno para arriba o abajo (o al revés). */
+  function colocarEscalera(palabra,matriz,m){
+    const n=m.length;
+    for(let intento=0;intento<SOPA_CONFIG.intentosColocacion;intento++){
+      const h=[0,azar(2)?1:-1],v=[azar(2)?1:-1,0],[a,b]=azar(2)?[h,v]:[v,h],r0=azar(n),c0=azar(n);
+      const cw=Array.from({length:palabra.length},(_,i)=>{const x=Math.ceil(i/2),y=Math.floor(i/2);return[r0+a[0]*x+b[0]*y,c0+a[1]*x+b[1]*y];});
+      if(libre(matriz,m,palabra,cw))return escribir(matriz,m,palabra,cw);
     }
-    if(forma&&mejor.k<objetivos.length*.75){forma=null;mascara=mascaraCuadrada(n);return construir(c);}
+    return null;
+  }
+  /* Arma el tablero. Si en la forma no entran casi todas, va el cuadrado. */
+  function construir(c,lista=objetivos,cantEscaleras=c.escaleras){
+    const n=c.n;let mejor=null;
+    const candidatasEsc=lista.filter(w=>w.length>=5&&w.length<=SOPA_CONFIG.escaleraMaxLargo);
+    for(let intento=0;intento<SOPA_CONFIG.intentosTablero;intento++){
+      const matriz=Array(n*n).fill(""),pos={},esc=new Set();
+      const enEscalera=new Set(mezclar(candidatasEsc).slice(0,cantEscaleras));
+      for(const w of [...enEscalera])  {const ind=colocarEscalera(w,matriz,mascara);if(ind){pos[w]=ind;esc.add(w);}}
+      for(const w of [...lista].filter(w=>!pos[w]).sort((a,b)=>b.length-a.length)){const ind=colocar(w,matriz,mascara);if(ind)pos[w]=ind;}
+      const k=Object.keys(pos).length;
+      if(!mejor||k>mejor.k)mejor={k,matriz,pos,esc};
+      if(k===lista.length)break;
+    }
+    if(forma&&mejor.k<lista.length*.75){forma=null;mascara=mascaraCuadrada(n);return construir(c,lista,cantEscaleras);}
     const relleno=("AAAEEEIIOOUUBCDFGLMNPRSTVZ"+objetivos.join("")).split("");
     tablero=mejor.matriz.map((letra,k)=>dentro(mascara,Math.floor(k/n),k%n)?(letra||relleno[azar(relleno.length)]):"");
-    ubicadas=mejor.pos;
+    ubicadas=mejor.pos;escaleras=mejor.esc;
   }
   function dibujarTablero(n){
     const caja=raiz.querySelector("#sfTablero");caja.classList.toggle("con-forma",!!forma);
@@ -124,19 +154,26 @@ const SopaFugaz=(()=>{
     capsEl=document.createElementNS("http://www.w3.org/2000/svg","svg");capsEl.setAttribute("class","sf-caps");capsEl.setAttribute("viewBox","0 0 "+n+" "+n);capsEl.setAttribute("preserveAspectRatio","none");
     gridEl.appendChild(capsEl);pintarCapsulas();
   }
-  function linea(ind,color,n){
-    const a=ind[0],b=ind[ind.length-1],l=document.createElementNS("http://www.w3.org/2000/svg","line");
-    l.setAttribute("x1",a%n+.5);l.setAttribute("y1",Math.floor(a/n)+.5);l.setAttribute("x2",b%n+.5);l.setAttribute("y2",Math.floor(b/n)+.5);
-    l.setAttribute("stroke",color);l.setAttribute("stroke-width",".8");l.setAttribute("stroke-linecap","round");return l;
+  function trazo(ind,color,n){
+    const l=document.createElementNS("http://www.w3.org/2000/svg","polyline");
+    l.setAttribute("points",ind.map(k=>(k%n+.5)+","+(Math.floor(k/n)+.5)).join(" "));
+    l.setAttribute("fill","none");l.setAttribute("stroke",color);l.setAttribute("stroke-width",".8");l.setAttribute("stroke-linecap","round");l.setAttribute("stroke-linejoin","round");return l;
   }
+  const quiebra=r=>r.length>2&&r.some((k,i)=>i>1&&k-r[i-1]!==r[1]-r[0]);
   function pintarCapsulas(){
     if(!capsEl)return;const n=SOPA_CONFIG.n;capsEl.replaceChildren();
-    [...halladas.values()].forEach((h,i)=>capsEl.appendChild(linea(h.ind,COLORES[i%COLORES.length],n)));
-    if(camino.length)capsEl.appendChild(linea(camino,"#E5197C99",n));
+    if(modo!=="giratoria")[...halladas.values()].forEach((h,i)=>capsEl.appendChild(trazo(h.ind,COLORES[i%COLORES.length],n)));
+    const actual=quiebra(rastro)?rastro:camino;
+    if(actual.length)capsEl.appendChild(trazo(actual,"#E5197C99",n));
   }
   function dibujarLista(){
-    listaEl.replaceChildren();objetivos.forEach(palabra=>{
-      const s=document.createElement("span");s.className="sf-palabra"+(halladas.has(palabra)?" hecho":"");s.textContent=palabra;listaEl.appendChild(s);
+    listaEl.replaceChildren();listaEl.classList.toggle("con-dibujos",conDibujo.size>0);
+    objetivos.forEach(palabra=>{
+      const s=document.createElement("span"),hecha=halladas.has(palabra);s.className="sf-palabra"+(hecha?" hecho":"");
+      if(conDibujo.has(palabra)){s.classList.add("dibujo");const i=document.createElement("i");i.textContent=DIBUJOS[palabra];const t=document.createElement("small");
+        t.textContent=hecha?palabra:"▢".repeat(palabra.length);s.append(i,t);s.title=palabra.length+" letras";}
+      else s.textContent=palabra;
+      listaEl.appendChild(s);
     });
     raiz.querySelector("#sfCuenta").textContent=halladas.size+"/"+objetivos.length;
   }
@@ -155,10 +192,16 @@ const SopaFugaz=(()=>{
     raiz.querySelector("#sfMejor").textContent=datos.mejor;
     raiz.querySelector("#sfTiempo").textContent=reloj(tiempoMs);
     raiz.querySelector("#sfTiempoBarra").style.width=Math.max(0,duracionMs?tiempoMs/duracionMs*100:0)+"%";
-    const b=raiz.querySelector("#sfPista");b.lastChild.textContent=" Pista ("+pistas+")";b.disabled=!jugando||pistas<=0||pausado;
+    const b=raiz.querySelector("#sfPista");b.lastChild.textContent=" Pista ("+pistas+")";b.disabled=!jugando||pistas<=0||pausado||mudando;
     raiz.querySelector("#sfPausa").disabled=!jugando;
   }
-  function mostrarPanel(titulo,detalle,boton,accion,compartir=false,extra,dibujo){
+  function actualizarMudanza(ahora){
+    if(!raiz||modo!=="giratoria")return;
+    raiz.querySelector("#sfMudanzaBarra").style.width=mudando?"0%":Math.max(0,(proximaMudanza-ahora)/mudanzaMs*100)+"%";
+    raiz.querySelector("#sfMudanzaTexto").textContent=mudando?"¡Las letras se están mudando!":
+      proximaMudanza<=ahora&&arrastre!==null?"Mudanza en espera: terminá de marcar":"Las letras se mudan en "+Math.max(0,Math.ceil((proximaMudanza-ahora)/1000))+" s";
+  }
+  function mostrarPanel(titulo,detalle,boton,accion,compartir=false,extras,dibujo){
     const panel=raiz.querySelector("#sfPanel");
     panel.innerHTML="";panel.hidden=false;
     const tarjeta=document.createElement("div");tarjeta.className="sf-panel";
@@ -168,21 +211,22 @@ const SopaFugaz=(()=>{
     const acciones=document.createElement("div");acciones.className="sf-acciones";
     const principal=document.createElement("button");principal.className="sf-principal";principal.type="button";principal.textContent=boton;principal.onclick=accion;acciones.appendChild(principal);
     if(compartir){const b=document.createElement("button");b.type="button";b.textContent="📤 Compartir";b.onclick=()=>compartirResultado(b);acciones.appendChild(b);}
-    if(extra){const b=document.createElement("button");b.type="button";b.textContent=extra.texto;b.onclick=extra.accion;
+    [].concat(extras||[]).forEach(extra=>{const b=document.createElement("button");b.type="button";b.textContent=extra.texto;b.onclick=extra.accion;
+      if(extra.clase)b.classList.add(extra.clase);
       if(extra.dibujo){b.classList.add("sf-con-dibujo");const im=document.createElement("img");im.src=ARTE(extra.dibujo);im.alt="";b.prepend(im);}
-      acciones.appendChild(b);}
+      acciones.appendChild(b);});
     tarjeta.append(h,p,acciones);panel.appendChild(tarjeta);
   }
   function guardarMejor(){if(puntaje>datos.mejor){datos.mejor=puntaje;guardar();}}
   function registrarResultado(gano){
-    const clave=String(nivel),r=datos.niveles[clave]||{ganadas:0,perdidas:0,tiempoTotalMs:0};
+    const clave=(modo==="giratoria"?"g":"")+nivel,r=datos.niveles[clave]||{ganadas:0,perdidas:0,tiempoTotalMs:0};
     r[gano?"ganadas":"perdidas"]++;
     r.tiempoTotalMs+=Math.round(duracionMs-Math.max(0,tiempoMs));
     datos.niveles[clave]=r;datos.nivelMax=Math.max(datos.nivelMax,nivel);guardar();
   }
   function terminar(gano){
     if(!jugando)return;
-    jugando=false;pausado=false;arrastre=null;camino=[];token++;clearTimeout(pistaTimer);
+    jugando=false;pausado=false;mudando=false;arrastre=null;camino=[];rastro=[];token++;clearTimeout(pistaTimer);clearTimeout(trasladoTimer);
     const faltantes=objetivos.filter(w=>!halladas.has(w));
     if(gano){
       const sobrantes=Math.ceil(tiempoMs/1000);
@@ -201,14 +245,18 @@ const SopaFugaz=(()=>{
       gano?"Siguiente nivel":"Jugar de nuevo",()=>{
         if(gano)nivel++;else{nivel=SOPA_CONFIG.primerNivel;puntaje=0;}
         iniciarRonda();
-      },true,null,gano?"gano":"tiempo");
+      },true,{texto:"Cambiar de modo",accion:elegirModo},gano?"gano":"tiempo");
   }
   function prepararRonda(){
-    token++;clearTimeout(pistaTimer);pausado=false;arrastre=null;camino=[];halladas=new Map();
-    raiz.querySelector("#sfTablero").classList.remove("pausa");
-    const c=configNivel(nivel);forma=c.forma;mascara=forma?forma.mascara:mascaraCuadrada(c.n);return c;
+    token++;clearTimeout(pistaTimer);clearTimeout(trasladoTimer);pausado=false;mudando=false;arrastre=null;camino=[];rastro=[];halladas=new Map();conDibujo=new Set();todoDibujos=false;
+    const caja=raiz.querySelector("#sfTablero");caja.classList.remove("pausa","mudando");gridEl.classList.remove("spin");
+    const c=configNivel(nivel,modo);forma=c.forma;mascara=forma?forma.mascara:mascaraCuadrada(c.n);return c;
   }
-  function armar(c){objetivos=elegirPalabras(c,mascara);construir(c);objetivos=objetivos.filter(w=>ubicadas[w]);Vistas.marcar(VISTAS,objetivos);}
+  function elegirDibujos(c){
+    const con=objetivos.filter(w=>DIBUJOS[w]);
+    conDibujo=new Set(todoDibujos?con:c.dibujos==="mezcla"?mezclar(con).slice(0,SOPA_CONFIG.dibujosMezcla):[]);
+  }
+  function armar(c){objetivos=elegirPalabras(c,mascara);construir(c);objetivos=objetivos.filter(w=>ubicadas[w]);elegirDibujos(c);Vistas.marcar(VISTAS,objetivos);}
   function iniciarRonda(){
     if(window.Fichas&&!Fichas.usar("sopa-fugaz",iniciarRonda))return;
     duelo=false;
@@ -216,14 +264,16 @@ const SopaFugaz=(()=>{
   }
   function arrancarRonda(c){
     duracionMs=Math.round(objetivos.reduce((sum,w)=>sum+SOPA_CONFIG.segundosBasePalabra+SOPA_CONFIG.segundosPorLetra*w.length,0)*c.margen*1000);
-    tiempoMs=duracionMs;pistas=SOPA_CONFIG.pistasPorRonda;
+    tiempoMs=duracionMs;pistas=SOPA_CONFIG.pistasPorRonda;mudanzaMs=c.mudanza*1000;
     dibujarTablero(c.n);dibujarLista();
+    raiz.classList.toggle("giratoria",modo==="giratoria");
     raiz.querySelector("#sfCategoria").textContent=categoria;
-    raiz.querySelector("#sfForma").textContent=forma?"Tablero "+forma.nombre:"Tema";
+    raiz.querySelector("#sfForma").textContent=forma?"Tablero "+forma.nombre:todoDibujos?"Nivel con dibujos: adiviná y buscá":modo==="giratoria"?"Sopa giratoria 🌀":"Tema";
     raiz.querySelector("#sfPanel").hidden=true;
-    ultimoTic=performance.now();ultimaMarca=ultimoTic;
-    jugando=true;actualizarHUD();
+    ultimoTic=performance.now();ultimaMarca=ultimoTic;proximaMudanza=ultimoTic+mudanzaMs;
+    jugando=true;actualizarHUD();actualizarMudanza(ultimoTic);
     objSumar("sopaRonda",1);
+    if(escaleras.size&&!datos.vioEscalera){datos.vioEscalera=true;guardar();mostrarToast("🪜","Ojo: desde ahora hay palabras en escalerita. Marcalas siguiendo el camino con el dedo.","Escalerita");}
     if(duelo){
       Duelo.mostrarBadge();Duelo.actualizarBadge("0/"+objetivos.length);
       Duelo.onProgresoRival(p=>Duelo.actualizarBadge(p.halladas+"/"+p.total));
@@ -231,15 +281,17 @@ const SopaFugaz=(()=>{
   }
   function iniciarDuelo(){
     if(typeof Duelo==="undefined")return;
+    modo="clasica";
     Duelo.mostrarLobby("Sopa Fugaz","sopa",{onListo:(soyHost)=>{
-      duelo=true;
+      duelo=true;modo="clasica";
       if(soyHost){
         const c=prepararRonda();armar(c);
-        Duelo.enviarRonda({objetivos,categoria,nivel,tablero,ubicadas,forma:forma&&forma.id});arrancarRonda(c);
+        Duelo.enviarRonda({objetivos,categoria,nivel,tablero,ubicadas,forma:forma&&forma.id,escaleras:[...escaleras],dibujos:[...conDibujo],todoDibujos});arrancarRonda(c);
       }else Duelo.onRondaRecibida(d=>{
         nivel=d.nivel;const c=prepararRonda();objetivos=d.objetivos;categoria=d.categoria;
         /* El tablero viene armado del anfitrión: los dos juegan exactamente la misma sopa. */
-        if(Array.isArray(d.tablero)&&d.ubicadas){forma=SOPA_FORMAS.find(f=>f.id===d.forma)||null;mascara=forma?forma.mascara:mascaraCuadrada(c.n);tablero=d.tablero;ubicadas=d.ubicadas;}
+        if(Array.isArray(d.tablero)&&d.ubicadas){forma=SOPA_FORMAS.find(f=>f.id===d.forma)||null;mascara=forma?forma.mascara:mascaraCuadrada(c.n);tablero=d.tablero;ubicadas=d.ubicadas;
+          escaleras=new Set(d.escaleras||[]);conDibujo=new Set(d.dibujos||[]);todoDibujos=!!d.todoDibujos;}
         else construir(c);
         arrancarRonda(c);
       });
@@ -254,7 +306,25 @@ const SopaFugaz=(()=>{
     im.style.left=(x/seleccion.length-cr.left)+"px";im.style.top=(y/seleccion.length-cr.top)+"px";
     caja.appendChild(im);setTimeout(()=>im.remove(),800);
   }
-  function cancelarArrastre(){arrastre=null;camino=[];pintarCapsulas();}
+  function cancelarArrastre(){arrastre=null;camino=[];rastro=[];pintarCapsulas();}
+  /* Sopa giratoria: las letras se mudan (se rearma el tablero con las que faltan). */
+  function mudar(){
+    if(!jugando||mudando)return;
+    mudando=true;cancelarArrastre();actualizarHUD();
+    if(typeof sonarGiroExt==="function")sonarGiroExt();gridEl.classList.add("spin");raiz.querySelector("#sfTablero").classList.add("mudando");
+    celdas.forEach(c=>c.classList.add("gone"));
+    const esteToken=token,c=configNivel(nivel,modo);
+    trasladoTimer=setTimeout(()=>{
+      if(esteToken!==token||!jugando)return;
+      construir(c,objetivos.filter(w=>!halladas.has(w)),0);dibujarTablero(c.n);celdas.forEach(x=>x.classList.add("gone"));
+      requestAnimationFrame(()=>celdas.forEach(x=>x.classList.remove("gone")));
+      trasladoTimer=setTimeout(()=>{
+        if(esteToken!==token||!jugando)return;
+        gridEl.classList.remove("spin");raiz.querySelector("#sfTablero").classList.remove("mudando");mudando=false;
+        proximaMudanza=performance.now()+mudanzaMs;actualizarHUD();
+      },SOPA_CONFIG.giratoria.giroMs/2);
+    },SOPA_CONFIG.giratoria.giroMs/2);
+  }
   function tic(){
     const ahora=performance.now();
     if(!jugando||pausado){ultimoTic=ahora;return;}
@@ -262,13 +332,15 @@ const SopaFugaz=(()=>{
     tiempoMs-=Math.max(0,ahora-ultimoTic);ultimoTic=ahora;
     if(tiempoMs<=0){tiempoMs=0;terminar(false);return;}
     actualizarHUD();
+    if(modo==="giratoria"){actualizarMudanza(ahora);
+      if(!mudando&&ahora>=proximaMudanza){if(arrastre!==null&&ahora<proximaMudanza+SOPA_CONFIG.giratoria.graciaArrastreMs)return;mudar();}}
   }
   function alVolver(){
     if(document.hidden){detenerMusicaJuego();if(jugando&&!ocultoDesde)ocultoDesde=performance.now();return;}
     iniciarMusicaJuego();
     if(!ocultoDesde)return;
     const pausa=performance.now()-ocultoDesde;
-    ultimaMarca+=pausa;ultimoTic=performance.now();ocultoDesde=0;
+    proximaMudanza+=pausa;ultimaMarca+=pausa;ultimoTic=performance.now();ocultoDesde=0;
   }
   function indiceDesdePuntero(e){
     const el=document.elementFromPoint(e.clientX,e.clientY);
@@ -278,31 +350,44 @@ const SopaFugaz=(()=>{
   function extender(k){
     const n=SOPA_CONFIG.n,inicio=arrastre.k;
     const r0=Math.floor(inicio/n),c0=inicio%n,dr=Math.floor(k/n)-r0,dc=k%n-c0;
-    if(!dr&&!dc){camino=[inicio];pintarCapsulas();return;}
+    if(!dr&&!dc){camino=[inicio];return;}
     if(dr&&dc&&Math.abs(dr)!==Math.abs(dc))return;
     const pasos=Math.max(Math.abs(dr),Math.abs(dc)),sr=Math.sign(dr),sc=Math.sign(dc);
     camino=Array.from({length:pasos+1},(_,i)=>(r0+sr*i)*n+c0+sc*i);
-    pintarCapsulas();
+  }
+  /* Rastro: las casillas por las que pasa el dedo (para las escaleritas). */
+  function sumarRastro(k){
+    const n=SOPA_CONFIG.n,u=rastro[rastro.length-1];if(k===u)return;
+    if(rastro.length>1&&k===rastro[rastro.length-2]){rastro.pop();return;}
+    let r=Math.floor(u/n),c=u%n;const r1=Math.floor(k/n),c1=k%n;
+    while(r!==r1||c!==c1){if(Math.abs(r1-r)>=Math.abs(c1-c))r+=Math.sign(r1-r);else c+=Math.sign(c1-c);rastro.push(r*n+c);}
   }
   function punteroAbajo(e){
-    if(!jugando||pausado)return;
+    if(!jugando||pausado||mudando)return;
     const k=indiceDesdePuntero(e);if(k<0||!tablero[k])return;
-    e.preventDefault();arrastre={id:e.pointerId,k};camino=[k];pintarCapsulas();
+    e.preventDefault();arrastre={id:e.pointerId,k};camino=[k];rastro=[k];pintarCapsulas();
     gridEl.setPointerCapture(e.pointerId);
   }
   function punteroMueve(e){
-    if(!arrastre||arrastre.id!==e.pointerId)return;
-    const k=indiceDesdePuntero(e);if(k>=0)extender(k);
+    if(!arrastre||arrastre.id!==e.pointerId||mudando)return;
+    const k=indiceDesdePuntero(e);if(k>=0){extender(k);sumarRastro(k);pintarCapsulas();}
+  }
+  function aciertoEscalera(){
+    if(rastro.length<2)return null;const a=rastro[0],b=rastro[rastro.length-1];
+    for(const w of escaleras){if(halladas.has(w))continue;const P=ubicadas[w],s=new Set(P);
+      if(((a===P[0]&&b===P[P.length-1])||(a===P[P.length-1]&&b===P[0]))&&rastro.every(k=>s.has(k)))return{w,sel:P};}
+    return null;
   }
   function punteroArriba(e){
     if(!arrastre||arrastre.id!==e.pointerId)return;
-    const ultimo=indiceDesdePuntero(e);if(ultimo>=0)extender(ultimo);
-    const seleccion=[...camino],letras=seleccion.map(k=>tablero[k]).join("");
+    const ultimo=indiceDesdePuntero(e);if(ultimo>=0){extender(ultimo);sumarRastro(ultimo);}
+    let seleccion=[...camino];const letras=seleccion.map(k=>tablero[k]).join("");
     const reverso=[...letras].reverse().join("");
-    const acierto=objetivos.find(w=>!halladas.has(w)&&(w===letras||w===reverso));
+    let acierto=objetivos.find(w=>!halladas.has(w)&&(w===letras||w===reverso));
+    if(!acierto){const esc=aciertoEscalera();if(esc){acierto=esc.w;seleccion=esc.sel;}}
     cancelarArrastre();
-    if(!jugando||pausado||!acierto)return;
-    halladas.set(acierto,{ind:seleccion});puntaje+=SOPA_CONFIG.puntosPalabra;
+    if(!jugando||pausado||mudando||!acierto)return;
+    halladas.set(acierto,{ind:seleccion});puntaje+=SOPA_CONFIG.puntosPalabra+(escaleras.has(acierto)?50:0);
     datos.palabrasTotal++;
     const ahora=performance.now();
     datos.palabras.push({nivel,palabra:acierto,ms:Math.round(ahora-ultimaMarca),fecha:new Date().toISOString()});
@@ -319,7 +404,7 @@ const SopaFugaz=(()=>{
   }
   /* Pista: titila la primera letra de una palabra que falta. */
   function usarPista(){
-    if(!jugando||pausado||pistas<=0)return;
+    if(!jugando||pausado||mudando||pistas<=0)return;
     const faltan=objetivos.filter(w=>!halladas.has(w)&&ubicadas[w]);if(!faltan.length)return;
     const w=faltan[azar(faltan.length)],k=ubicadas[w][0];pistas--;actualizarHUD();
     celdas.forEach(c=>c.classList.remove("pista"));celdas[k].classList.add("pista");tac();
@@ -327,21 +412,32 @@ const SopaFugaz=(()=>{
   }
   function pausar(){
     if(!jugando||pausado)return;
-    pausado=true;cancelarArrastre();raiz.querySelector("#sfTablero").classList.add("pausa");actualizarHUD();
-    mostrarPanel("Pausa","El reloj está parado y el tablero tapado.","Seguir",()=>{pausado=false;ultimoTic=performance.now();raiz.querySelector("#sfTablero").classList.remove("pausa");raiz.querySelector("#sfPanel").hidden=true;actualizarHUD();},false,null,"reloj");
+    pausado=true;cancelarArrastre();raiz.querySelector("#sfTablero").classList.add("pausa");actualizarHUD();const desde=performance.now();
+    mostrarPanel("Pausa","El reloj está parado y el tablero tapado.","Seguir",()=>{pausado=false;const ahora=performance.now();proximaMudanza+=ahora-desde;ultimoTic=ahora;raiz.querySelector("#sfTablero").classList.remove("pausa");raiz.querySelector("#sfPanel").hidden=true;actualizarHUD();},false,null,"reloj");
   }
   function compartirResultado(boton){
-    const texto="🔎 Sopa Fugaz · nivel "+nivel+" · "+puntaje+" puntos. ¡Jugá en Girá y Adiviná! "+location.origin+location.pathname;
+    const texto="🔎 Sopa Fugaz"+(modo==="giratoria"?" giratoria":"")+" · nivel "+nivel+" · "+puntaje+" puntos. ¡Jugá en Girá y Adiviná! "+location.origin+location.pathname;
     csCompartirImagen(generarCanvasCompartirJuego,"sopa-fugaz.png",texto,texto,boton);
   }
-  const AYUDA="Encontrá todas las palabras de la lista antes de que se acabe el reloj. Arrastrá el dedo en línea recta: pueden estar horizontales, verticales, en diagonal y al revés. Cada pocos niveles el tablero cambia de forma. ¿Trabado? Usá 💡 Pista. Las palabras no se repiten nunca.";
+  const AYUDA={
+    clasica:"Encontrá todas las palabras antes de que se acabe el reloj. Arrastrá el dedo: pueden estar horizontales, verticales, en diagonal, al revés y, desde el nivel 4, en escalerita (seguí el camino). Algunas se muestran con un dibujo: adiviná cuál es y buscala. Cada pocos niveles el tablero cambia de forma. Las palabras no se repiten nunca.",
+    giratoria:"Encontrá las palabras antes de que se acabe el reloj, pero ojo: cada pocos segundos la sopa gira y las letras se mudan de lugar. Si estás marcando una palabra, la mudanza te espera un ratito."
+  };
+  function jugarModo(m){modo=m;nivel=SOPA_CONFIG.primerNivel;puntaje=0;iniciarRonda();}
+  /* Al entrar siempre se elige el modo. */
+  function elegirModo(){
+    jugando=false;token++;clearTimeout(trasladoTimer);mudando=false;
+    mostrarPanel("¿Cómo querés jugar?","🔎 Clásica: tablero gigante, formas, escaleritas y dibujos.\n🌀 Giratoria: las letras se mudan cada pocos segundos.","🔎 Sopa clásica",()=>jugarModo("clasica"),false,
+      [{texto:"🌀 Sopa giratoria",accion:()=>jugarModo("giratoria"),clase:"sf-modo-giro"},{texto:"Jugar con un amigo",accion:iniciarDuelo,dibujo:"duelo"}],"mascota");
+  }
   function abrir(contenedor){
-    salir();datos=cargar();nivel=SOPA_CONFIG.primerNivel;puntaje=0;raiz=document.createElement("div");raiz.className="sf-game";
+    salir();datos=cargar();nivel=SOPA_CONFIG.primerNivel;puntaje=0;modo="clasica";raiz=document.createElement("div");raiz.className="sf-game";
     raiz.innerHTML='<button type="button" class="ext-volver" id="sfVolver">⟵ Extensiones</button><h2 class="sf-logo-h"><img class="sf-logo" src="'+ARTE("logo")+'" alt="Sopa Fugaz" draggable="false"></h2>'
       +'<div class="sf-cabeza"><img src="'+ARTE("libro")+'" alt=""><div><small id="sfForma">Tema</small><b id="sfCategoria">Sopa de letras</b></div><span class="sf-cuenta" id="sfCuenta">0/0</span></div>'
       +'<div class="sf-hud"><div><small>Nivel</small><b id="sfNivel">1</b></div><div><small>Puntos</small><b id="sfPuntos">0</b></div><div><small>Mejor</small><b id="sfMejor">0</b></div><div><small><img class="sf-ico" src="'+ARTE("reloj")+'" alt="">Tiempo</small><b id="sfTiempo">0:00</b></div></div>'
       +'<div class="sf-bar"><i id="sfTiempoBarra"></i></div>'
-      +'<div class="sf-tablero" id="sfTablero"><div class="sf-grid" id="sfGrid" aria-label="Sopa de letras"></div></div>'
+      +'<div class="sf-tablero" id="sfTablero"><div class="sf-grid" id="sfGrid" aria-label="Sopa de letras"></div><img class="sf-remolino" src="'+ARTE("mudanza")+'" alt="" draggable="false"></div>'
+      +'<div class="sf-mudanza"><p class="sf-mudanza-texto" id="sfMudanzaTexto"></p><div class="sf-bar mudanza"><i id="sfMudanzaBarra"></i></div></div>'
       +'<div class="sf-lista" id="sfLista"></div>'
       +'<div class="sf-acciones sf-botonera"><button type="button" id="sfPista"><img src="'+ARTE("record")+'" alt=""> Pista (3)</button><button type="button" id="sfPausa">⏸ Pausa</button><button type="button" id="sfAyuda">¿Cómo se juega?</button></div>'
       +'<details class="sf-historial"><summary id="sfHistorialTitulo">📖 Mis palabras encontradas (0)</summary><div class="sf-historial-lista" id="sfHistorialLista"></div></details><div class="sf-panel-capa" id="sfPanel"></div>';
@@ -354,18 +450,18 @@ const SopaFugaz=(()=>{
     raiz.querySelector("#sfPista").onclick=usarPista;
     raiz.querySelector("#sfPausa").onclick=pausar;
     raiz.querySelector("#sfAyuda").onclick=()=>{
-      if(jugando){mostrarToast("🔎","Marcá en línea recta: horizontal, vertical o diagonal, también al revés.");return;}
-      mostrarPanel("¿Cómo se juega?",AYUDA,"Jugar",iniciarRonda,false,null,"mascota");
+      if(jugando){mostrarToast("🔎",modo==="giratoria"?"Marcá en línea recta. Cada pocos segundos las letras se mudan.":"Marcá en línea recta (también diagonal y al revés). Las escaleritas se marcan siguiendo el camino.");return;}
+      mostrarPanel("¿Cómo se juega?",AYUDA[modo],"Elegir modo",elegirModo,false,null,"mascota");
     };
     intervalo=setInterval(tic,SOPA_CONFIG.ticMs);
     document.addEventListener("visibilitychange",alVolver);
     iniciarMusicaJuego();
     actualizarHUD();
     dibujarHistorial();
-    mostrarPanel("Sopa Fugaz",AYUDA,"Jugar",iniciarRonda,false,{texto:"Jugar con un amigo",accion:iniciarDuelo,dibujo:"duelo"},"mascota");
+    elegirModo();
   }
   function salir(){
-    jugando=false;pausado=false;arrastre=null;token++;clearInterval(intervalo);clearTimeout(pistaTimer);
+    jugando=false;pausado=false;mudando=false;arrastre=null;token++;clearInterval(intervalo);clearTimeout(pistaTimer);clearTimeout(trasladoTimer);
     document.removeEventListener("visibilitychange",alVolver);
     detenerMusicaJuego();
     if(typeof Duelo!=="undefined")Duelo.salir();

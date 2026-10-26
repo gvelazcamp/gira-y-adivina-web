@@ -52,9 +52,9 @@ async function arrastrar(page,indices){
       assert.equal(niveles[0].palabras,12);assert.equal(niveles[0].forma,null);assert.equal(niveles[1].forma.id,'corazon');assert.equal(niveles[2].palabras,16);assert(niveles[2].margen>=.75);
       const layout=await page.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,innerWidth,gridWidth:document.querySelector('#sfGrid').getBoundingClientRect().width}));
       assert(layout.scrollWidth<=layout.innerWidth,'sin desborde horizontal '+JSON.stringify(layout));
-      const resolver=async(revesPrimera)=>{const words=await page.locator('.sf-palabra').allTextContents();
+      const resolver=async(revesPrimera)=>{const words=await page.evaluate(()=>{const inv=Object.fromEntries(Object.entries(SOPA_DIBUJOS).map(([w,e])=>[e,w]));return[...document.querySelectorAll('.sf-palabra')].map(x=>x.classList.contains('dibujo')?inv[x.querySelector('i').textContent]:x.textContent);});
         for(const [i,word] of words.entries()){const letras=await page.locator('.sf-celda').allTextContents();const ks=encontrarPalabra(letras,N,word);await arrastrar(page,i===0&&revesPrimera?ks.reverse():ks);
-          assert.equal(await page.locator('.sf-palabra').filter({hasText:new RegExp('^'+word+'$')}).getAttribute('class'),'sf-palabra hecho');}
+          assert(await page.evaluate(w=>[...document.querySelectorAll('.sf-palabra.hecho')].some(x=>x.textContent===w||x.textContent.endsWith(w)),word),'tacha '+word);}
         return words;};
       /* Pista y pausa */
       await page.locator('#sfPista').click();assert.equal(await page.locator('.sf-celda.pista').count(),1);
@@ -62,12 +62,12 @@ async function arrastrar(page,indices){
       assert.equal(await page.locator('#sfTiempo').textContent(),t1,'la pausa para el reloj');await page.locator('.sf-panel .sf-principal').click();
       const w1=await resolver(true);
       await page.locator('.sf-panel h3').waitFor();assert.match(await page.locator('.sf-panel h3').textContent(),/Sopa completa/);
-      assert.equal(await page.locator('.sf-caps line').count(),w1.length,'cada palabra queda marcada con una cápsula');
+      assert.equal(await page.locator('.sf-caps polyline').count(),w1.length,'cada palabra queda marcada con una cápsula');
       await page.locator('.sf-panel .sf-principal').click();
       const w2=await resolver(false);assert(w2.every(w=>!w1.includes(w)),'no repite palabras');
       await page.locator('.sf-panel .sf-principal').click();
       assert.match(await page.locator('#sfForma').textContent(),/Corazón/);assert(await page.locator('.sf-celda.fuera').count()>0,'nivel 3 con forma');
-      const w3=await page.locator('.sf-palabra').allTextContents();assert(w3.every(w=>!w1.includes(w)&&!w2.includes(w)));
+      const w3=await page.evaluate(()=>{const inv=Object.fromEntries(Object.entries(SOPA_DIBUJOS).map(([w,e])=>[e,w]));return[...document.querySelectorAll('.sf-palabra')].map(x=>x.classList.contains('dibujo')?inv[x.querySelector('i').textContent]:x.textContent);});assert(w3.every(w=>!w1.includes(w)&&!w2.includes(w)));
       const vistas=await page.evaluate(()=>JSON.parse(localStorage.getItem('gya_vistas_sopa')).length);assert.equal(vistas,w1.length+w2.length+w3.length);
       const economiaDespues=await page.evaluate(()=>({monedas:meta.monedas,vidas:meta.vidas,tickets:meta.tickets}));
       assert.deepEqual(economiaDespues,economiaAntes);
