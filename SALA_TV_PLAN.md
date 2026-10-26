@@ -2,7 +2,7 @@
 
 Idea: **la tele muestra el juego en grande y se responde desde el celular.**
 
-**Hecho (26/10/2026, `tele.js` + `tele.css` + `tele/index.html`):** sala nueva con código y menú de juegos (también con el control remoto), **Rosco**, **Ahorcado**, **100 Rioplatenses**, **Tutti Frutti** y **Puzzle**. Entrada: tele `girayadivina.com/index.html?tele=1`; celulares `girayadivina.com/tele` (o la tarjeta "Juegos en la tele" de Extensiones, que por ahora ve solo Gonzalo). Tutti Frutti se probó con tele y dos celulares simulados, incluidas tres rondas, apelación y anulación. Puzzle se probó con dos celulares, encastre, progreso y guardado; falta probar en una tele real.
+**Hecho (26/10/2026, `tele.js` + `tele.css` + `tele/index.html`):** sala nueva con código y menú de juegos (también con el control remoto), **Rosco**, **Ahorcado**, **100 Rioplatenses**, **Tutti Frutti** y **Puzzle**. Entrada: tele `girayadivina.com/index.html?tele=1`; celulares `girayadivina.com/tele`. El botón "Sala TV / Familia" del inicio y la tarjeta "Juegos en la tele" de Extensiones se muestran a Andrés, Romina, Gonzalo y Vale y abren la sala nueva. Tutti Frutti se probó con tele y dos celulares simulados, incluidas tres rondas, apelación y anulación. Puzzle se probó con dos celulares, encastre, progreso y guardado; falta probar en una tele real.
 Estado de la prueba actual de la Ruleta: ver `SALA_TV_PRUEBA.md`.
 
 ## Cómo se entra (igual para todos los juegos)
@@ -75,4 +75,4 @@ Ya existe ("Sala TV"). La tele muestra la ruleta y el tablero; cada jugador gira
 - **Tele:** abrir el navegador de la tele (en Android/Google TV se puede instalar uno gratis de su Play Store, por ejemplo "TV Bro" o "Puffin TV Browser") y entrar a `girayadivina.com/index.html?tele=1`.
 - **Celulares:** `girayadivina.com/tele` con nombre y código. La Ruleta da otro código y pasa a `tv.html` al elegirla.
 - Rosco, Ahorcado, 100 Rioplatenses, Tutti Frutti y Puzzle están integrados al menú. Puzzle conserva su partida en el navegador de esa tele; los otros juegos se cortan al cerrar o recargar la tele. **Probarlo antes en casa**: las pruebas en código usaron navegadores simulados y todavía no se probó en una tele real.
-- Propuesto y no confirmado todavía por Gonzalo: un botón "Sala TV" en el menú que solo vea él.
+- El botón "Sala TV / Familia" del inicio abre "Juegos en la tele" para Andrés, Romina, Gonzalo y Vale.

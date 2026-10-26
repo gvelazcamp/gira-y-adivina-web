@@ -69,7 +69,7 @@ const EXTENSIONES=[
   {id:"cien-rioplatenses",nombre:"100 Rioplatenses Dicen",descripcion:"Girá por un tema y descubrí el panel",icono:"logo-cien-rioplatenses.svg",estado:CIEN_HABILITADO?"disponible":"proximamente",abrir:contenedor=>CienRioplatenses.abrir(contenedor),record:()=>CienRioplatenses.mejorPuntaje()+" puntos"},
   {id:"ahorcado-rioplatense",nombre:"Ahorcado Rioplatense",descripcion:"La ruleta elige la categoría, adiviná la palabra",icono:"logo-ahorcado-rioplatense.svg",estado:AHORCADO_HABILITADO?"disponible":"proximamente",abrir:contenedor=>AhorcadoRioplatense.abrir(contenedor),record:()=>AhorcadoRioplatense.mejorPuntaje()+" puntos"},
   {id:"contra-reloj-rioplatense",grupo:"previa",soloGonzalo:true,/* oculto para todos menos Gonzalo hasta que esté listo (17/10/2026) */nombre:"Contra Reloj",descripcion:"Describí 5 palabras antes de que termine el tiempo · 4+ jugadores",icono:"logo-contra-reloj-rioplatense.svg",estado:"disponible",insignia:"👥 4+",abrir:contenedor=>ContraRelojRioplatense.abrir(contenedor),record:()=>ContraRelojRioplatense.mejorPuntaje()+" puntos"},
-  {id:"tele",grupo:"previa",soloGonzalo:true,/* juegos en la tele (tele.js, SALA_TV_PLAN.md): solo Gonzalo mientras se prueba (26/10/2026) */nombre:"Juegos en la tele",descripcion:"La tele muestra el juego y respondés desde el celular",icono:"assets/social/tv-familia-icono.webp",estado:"disponible",insignia:"📺 Prueba",abrir:contenedor=>Tele.abrir(contenedor),record:()=>"Rosco · Ahorcado · 100"},
+  {id:"tele",grupo:"previa",soloUsuarios:["andres","romina","gonzalo","vale"],nombre:"Juegos en la tele",descripcion:"La tele muestra el juego y respondés desde el celular",icono:"assets/social/tv-familia-icono.webp",estado:"disponible",insignia:"📺 Prueba",abrir:contenedor=>Tele.abrir(contenedor),record:()=>"Rosco · Ahorcado · Puzzle"},
   {id:"impostor",grupo:"previa",nombre:"Impostor",descripcion:"Todos tienen la misma palabra… menos uno",icono:"logo-impostor.svg",estado:"disponible",insignia:"👥 3+",abrir:contenedor=>Impostor.abrir(contenedor),record:()=>Impostor.partidasJugadas()+" rondas"},
   {id:"mimica",grupo:"previa",nombre:"Mímica rioplatense",descripcion:"Actuá sin hablar, tu equipo adivina",icono:"assets/mimica/icono.webp",estado:"disponible",insignia:"👥 4+",abrir:contenedor=>Mimica.abrir(contenedor),record:()=>Mimica.partidasJugadas()+" partidas"},
   {id:"canta-la-cancion",grupo:"previa",nombre:"Canta la Canción",descripcion:"Cantá una canción con la palabra antes de que se acabe el tiempo",icono:"assets/canta/icono.webp",estado:"disponible",abrir:contenedor=>CantaLaCancion.abrir(contenedor),record:()=>CantaLaCancion.partidasJugadas()+" partidas"},
@@ -85,7 +85,7 @@ const EXTENSIONES=[
      sumar de nuevo esta entrada cuando el inicio esté arreglado. */
 ];
 function extensionVisible(ext){
-  if(ext.soloUsuarios){let n="";try{n=(perfil&&perfil.nombre||"").trim().toLowerCase();}catch(e){}return ext.soloUsuarios.includes(n);}
+  if(ext.soloUsuarios){let n="";try{n=(perfil&&perfil.nombre||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}catch(e){}return ext.soloUsuarios.includes(n);}
   if(!ext.soloGonzalo)return true;
   return typeof esGonzalo==="function"&&esGonzalo();
 }
