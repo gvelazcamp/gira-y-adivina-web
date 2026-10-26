@@ -1581,3 +1581,7 @@ Fecha: 26/10/2026 — REEL del Rosco: promo/reel-rosco.html (≈34,4 s, 9:16, mi
 ```text
 Fecha: 26/10/2026 — Reel del Rosco con música propia para adultos ("Velvet and Steel", tango electrónico, Gemini): promo/reel-rosco-musica.mp3 = 0:13.65–0:48.15 con fundido final (Gonzalo pidió desde el 16; arranca 2,35 s antes para que el primer golpe del tema, 0:16.1, caiga justo en ¡BOTIJA!). Los reels de Tutti y Puzzle siguen con reel-tutti-musica.mp3.
 ```
+
+```text
+Fecha: 26/10/2026 — REEL de 100 Rioplatenses Dicen: promo/reel-cien.html (≈34,4 s, 9:16, mismo motor; música reel-rosco-musica.mp3, la de tango para adultos). Gancho: "100 RIOPLATENSES DICEN: Algo que ponés en la mesa cuando hay asado 🥩" con el panel de 6 barras del juego y "¿Qué dirías vos? 👇"; en el golpe se da vuelta PAN · 30 → ¡LA MÁS DICHA!. Después: logo + conductora "¿Pensás como la mayoría?", girá la rueda de temas → Costumbres, jugando el panel del mate (YERBA 32, AGUA 23, TERMO 9), "Mate cocido"… ¡NO ESTÁ! (cruz), 3 errores y afuera + rondas ×1 ×2 ×3, desafiá a un amigo 1 vs 1, 12 temas bien nuestros, ¡Nuevo récord! y cierre. OJO: los puntajes del juego son de práctica (no encuestas reales): NO decir "le preguntamos a 100 uruguayos".
+```
