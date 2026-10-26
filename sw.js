@@ -1,4 +1,6 @@
-const CACHE_NAME = "gya-cache-v434";
+const CACHE_NAME = "gya-cache-v435";
+// Máximo que se espera a la red (HTML/JS) antes de abrir con la copia guardada.
+const ESPERA_RED_MS = 2000;
 // Imágenes, audios y videos van en una caché APARTE que NO se borra cuando se
 // sube CACHE_NAME. Antes cada actualización del juego (CACHE_NAME nuevo) borraba
 // todo y el celular volvía a bajar mapas, videos e íconos: se veía negro/lento
@@ -98,18 +100,28 @@ self.addEventListener("fetch", (e) => {
   // que manda GitHub Pages) sin ir realmente a la red, y el celular
   // seguía viendo una versión vieja aunque "network-first" pareciera
   // estar andando.
-  e.respondWith(
-    fetch(e.request, { cache: "no-store" })
-      .then((resp) => {
-        if (resp && resp.status === 200 && resp.type === "basic") {
-          const clone = resp.clone();
-          caches.open(CACHE_NAME).then((c) => c.put(e.request, clone));
-        }
-        return resp;
-      })
-      .catch(() => caches.match(e.request).then((cached) =>
-        cached || (e.request.mode === "navigate" ? caches.match("./index.html") : undefined)))
-  );
+  // Con señal floja (no cortada) la red puede tardar muchísimo y mientras
+  // tanto el celular quedaba en la pantalla de Android con el ícono. Si en
+  // ESPERA_RED_MS no llegó la respuesta y hay copia guardada, se abre con la
+  // copia; la descarga sigue atrás y la versión nueva entra la próxima vez.
+  const deCache = () => caches.match(e.request).then((cached) =>
+    cached || (e.request.mode === "navigate" ? caches.match("./index.html") : undefined));
+  const red = fetch(e.request, { cache: "no-store" })
+    .then((resp) => {
+      if (resp && resp.status === 200 && resp.type === "basic") {
+        const clone = resp.clone();
+        return caches.open(CACHE_NAME).then((c) => c.put(e.request, clone)).catch(() => {}).then(() => resp);
+      }
+      return resp;
+    });
+  e.waitUntil(red.catch(() => {}));
+  e.respondWith(new Promise((resolve) => {
+    let listo = false;
+    const dar = (r) => { if (!listo && r) { listo = true; resolve(r); } };
+    const timer = setTimeout(() => deCache().then(dar), ESPERA_RED_MS);
+    red.then((r) => { clearTimeout(timer); dar(r); })
+      .catch(() => { clearTimeout(timer); deCache().then((c) => { if (c) dar(c); else if (!listo) { listo = true; resolve(Response.error()); } }); });
+  }));
 });
 
 
