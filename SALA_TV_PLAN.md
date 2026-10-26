@@ -1,7 +1,8 @@
 # Juegos en la tele — plan de Gonzalo (26/10/2026)
 
 Idea: **la tele muestra el juego en grande y se responde desde el celular.**
-Todavía es un plan: salvo la Ruleta, nada de esto está hecho.
+
+**Hecho (26/10/2026, `tele.js` + `tele.css` + `tele/index.html`):** sala nueva con código y menú de juegos (también con el control remoto), **Rosco**, **Ahorcado** y **100 Rioplatenses**. Entrada: tele `girayadivina.com/index.html?tele=1`; celulares `girayadivina.com/tele` (o la tarjeta "Juegos en la tele" de Extensiones, que por ahora ve solo Gonzalo). Falta: Tutti Frutti y Puzzle. Probado con dos pantallas simuladas; falta probar en una tele real.
 Estado de la prueba actual de la Ruleta: ver `SALA_TV_PRUEBA.md`.
 
 ## Cómo se entra (igual para todos los juegos)
@@ -18,9 +19,9 @@ Se hace una sola vez y sirve para todos los juegos.
 |---|---|---|---|---|---|
 | 1 | **Ruleta** | Cada uno con el suyo (2 a 6) | Ruleta y tablero | Girar, elegir letras, resolver | ✅ Hecho (en prueba) |
 | 2 | **Tutti Frutti** | Cada uno con el suyo | Ver abajo: **nunca muestra las respuestas** | Escribir las palabras, revisar y anular | Por hacer (fácil) |
-| 3 | **100 Rioplatenses Dicen** | **Uno solo**, el grupo juega junto | Pregunta, 6 respuestas tapadas, 3 cruces | Escribe lo que el grupo dice | Por hacer |
-| 4 | **Ahorcado** | Uno (el grupo dice qué letra) | La partida igual que en el celular, en grande | Teclado de letras | Por hacer |
-| 5 | **Rosco** | **Uno juega**, los demás miran (como programa de tele) | Rosco girando, letra, definición, reloj | Escribir la respuesta, "Enviar" y "Pasar" | Por hacer |
+| 3 | **100 Rioplatenses Dicen** | **Uno solo**, el grupo juega junto | Pregunta, 6 respuestas tapadas, 3 cruces | Escribe lo que el grupo dice | ✅ Hecho (tele.js) |
+| 4 | **Ahorcado** | Uno (el grupo dice qué letra) | La partida igual que en el celular, en grande | Teclado de letras | ✅ Hecho (tele.js) |
+| 5 | **Rosco** | **Uno juega**, los demás miran (como programa de tele) | Rosco girando, letra, definición, reloj | Escribir la respuesta, "Enviar" y "Pasar" | ✅ Hecho (tele.js) |
 | 6 | **Puzzle** | De a uno **o cooperativo** (varios celulares) | El puzzle grande | Elegir piezas y ubicarlas | Por hacer (el más difícil) |
 
 ### 1. Ruleta
