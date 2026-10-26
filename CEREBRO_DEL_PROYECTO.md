@@ -1647,3 +1647,7 @@ Fecha: 26/10/2026 — Carga con señal floja (Gonzalo: "que no se vea" la pantal
 PENDIENTE (próxima versión de la app en Play): la pantalla de Android con el ícono la pone el sistema (Android 12+ siempre muestra una) y viene del paquete de la app, no del juego. Para que sea solo violeta, sin ícono, hay que cambiar el ícono de la pantalla de inicio por uno transparente al armar el paquete (Android Studio / Bubblewrap). Con buena señal ya dura un instante.
 PENDIENTE (Gonzalo no confirmó todavía): el aviso de racha diaria (con su bip) sale a los 0,7 s, todavía con la pantalla de carga; moverlo a después de la carga.
 ```
+
+```text
+Fecha: 26/10/2026 — Reel de Rueda de Letras con música propia ("Sharp Turn at Midnight", Gemini, 67 s): promo/reel-rueda-musica.mp3 con 2 tramos de frase entera: 0:04.88–0:23.3 (los tics del comienzo acompañan el gancho y la entrada fuerte de 0:07.3 cae justo en ¡ALFAJOR!) + 0:47.3–0:63.95 (el golpe de 0:51.6 cae en ¡GANASTE!). Cruce de 0,12 s y fundido final.
+```

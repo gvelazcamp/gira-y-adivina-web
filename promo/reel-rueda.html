@@ -12,7 +12,7 @@
    Gancho: "¿Qué palabra de 7 letras es? 🤔" con la rueda desordenada y el
    crucigrama vacío → en el golpe el dedo arma ALFAJOR. Ruedas, palabras y
    crucigramas reales del juego (rueda-de-letras-datos.js, armado con la misma
-   función armarCruz). Música: reel-tutti-musica.mp3 (provisoria). */
+   función armarCruz). Música: reel-rueda-musica.mp3 ("Sharp Turn at Midnight", Gemini). */
 :root{--oro:#F5B301;--mag:#E5197C;--tur:#37D6C0;--vio:#160B24;--cre:#F6EFE2;--verde:#2ED18A;--rojo:#FF7E8B}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:#000;color:#fff;font-family:Outfit,sans-serif}
@@ -180,7 +180,7 @@ body.limpio #ctrl,body.limpio #escenas{display:none}
   <button id="bLimpio" title="Ocultar controles para grabar">⛶</button>
 </div>
 <div id="escenas"></div>
-<audio id="musica" src="reel-tutti-musica.mp3" preload="auto"></audio>
+<audio id="musica" src="reel-rueda-musica.mp3" preload="auto"></audio>
 <script>
 const $=id=>document.getElementById(id);
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
