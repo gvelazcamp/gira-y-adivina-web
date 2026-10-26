@@ -1023,6 +1023,6 @@ const TuttiFrutti=(()=>{
     Extensiones.abrirJuego("tutti-frutti");
     setTimeout(()=>{if(raiz)unirse(sala,de);},300);
   }
-  return{abrir,salir,abrirInvitacion,verDudas,_revisar:(c,v)=>revisar(c,v),_explicar:(c,v)=>explicar(c,v),_sugerir:(c,v)=>sugerir(c,v),enter:()=>{try{confirmarCampo();}catch(e){}},partidasJugadas:()=>{cargar();return partidas;}};
+  return{abrir,salir,abrirInvitacion,verDudas,_revisar:(c,v)=>revisar(c,v),_aprobarPalabra:(c,v)=>aprobarPalabra(c,v),_explicar:(c,v)=>explicar(c,v),_sugerir:(c,v)=>sugerir(c,v),enter:()=>{try{confirmarCampo();}catch(e){}},partidasJugadas:()=>{cargar();return partidas;}};
 })();
 window.TuttiFrutti=TuttiFrutti;

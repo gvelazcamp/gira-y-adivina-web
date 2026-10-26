@@ -3,8 +3,8 @@
    los celulares (index.html?telecel=CÓDIGO) solo responden. Conexión: la de
    los duelos (MultiBroker: 4 servidores MQTT + Supabase), tema gya/tele/<código>.
    Es aparte de la Sala TV de la Ruleta (sala-tv.js, ?tvhost=1): no la toca.
-   Juegos: Rosco (juega uno, los demás miran), Ahorcado (el celular es el
-   teclado), 100 Rioplatenses (un celular, juega el grupo). Las palabras salen
+   Juegos: Tutti Frutti (todos responden), Rosco (juega uno, los demás miran),
+   Ahorcado (el celular es el teclado), 100 Rioplatenses (juega el grupo). Las palabras salen
    de los mismos bancos y la misma memoria que en el celular: no se repiten. */
 (()=>{
   "use strict";
@@ -13,11 +13,11 @@
   const codCel=(P.get("telecel")||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
   const esCel=!!codCel&&!esTele;
   const CHARS="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const yo="t"+Math.random().toString(36).slice(2,10);
+  const yo=(()=>{try{let id=sessionStorage.getItem("gya_tele_pid");if(!id){id="t"+Math.random().toString(36).slice(2,10);sessionStorage.setItem("gya_tele_pid",id);}return id;}catch(e){return"t"+Math.random().toString(36).slice(2,10);}})();
   const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const limpio=(s,max)=>String(s||"").replace(/[<>&"'\u0000-\u001F]/g,"").trim().slice(0,max);
   const mezclar=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
-  const sinTilde=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase();
+  const sinTilde=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
   const sonar=(f,d,t,g)=>{try{if(typeof bip==="function")bip(f,d,t,g);}catch(e){}};
   const sfx=id=>{try{if(typeof sonarSFX==="function")sonarSFX(id);}catch(e){}};
   const JUEGOS=[
@@ -25,7 +25,7 @@
     {id:"ahorcado",nombre:"Ahorcado",icono:"assets/ahorcado/logo.webp",desc:"El celular es el teclado",ok:true},
     {id:"cien",nombre:"100 Rioplatenses",icono:"assets/cien/logo.webp",desc:"Un celular, juega el grupo",ok:true},
     {id:"ruleta",nombre:"La Ruleta",icono:"assets/logo.webp",desc:"Cada uno con su celular",ok:true},
-    {id:"tutti",nombre:"Tutti Frutti",icono:"assets/tutti/logo.webp",desc:"Próximamente",ok:false},
+    {id:"tutti",nombre:"Tutti Frutti",icono:"assets/tutti/logo.webp",desc:"Todos juegan desde su celular",ok:true},
     {id:"puzzle",nombre:"Puzzle",icono:"assets/puzzle-arte/icono.webp",desc:"Próximamente",ok:false}
   ];
 
@@ -88,24 +88,26 @@
     function difundir(){mandar({t:"estado",cod,fase:T.fase,juego:T.juego,jug:T.jug.map(j=>({pid:j.pid,n:j.n})),mando:T.mando,cel:estadoCel()});}
     function recibir(m){
       if(m.t==="hola"){
-        const n=limpio(m.n,14)||"Jugador";let j=T.jug.find(x=>x.pid===m.pid);
-        if(!j){if(T.jug.length>=8)return;j={pid:m.pid,n};T.jug.push(j);sonar(880,.12,"triangle",.06);}
-        j.n=n;j.visto=Date.now();if(!T.mando||!T.jug.some(x=>x.pid===T.mando))T.mando=m.pid;
-        pintar();difundir();return;
+        const n=limpio(m.n,14)||"Jugador";let j=T.jug.find(x=>x.pid===m.pid),cambio=false;
+        if(!j){if(T.jug.length>=8)return;j={pid:m.pid,n};T.jug.push(j);sonar(880,.12,"triangle",.06);cambio=true;}
+        if(j.n!==n){j.n=n;cambio=true;}j.visto=Date.now();if(!T.mando||!T.jug.some(x=>x.pid===T.mando)){T.mando=m.pid;cambio=true;}
+        if(cambio){pintar();difundir();}return;
       }
       const j=T.jug.find(x=>x.pid===m.pid);if(!j)return;j.visto=Date.now();
       if(m.t==="chau"){T.jug=T.jug.filter(x=>x.pid!==m.pid);if(T.mando===m.pid)T.mando=T.jug[0]?T.jug[0].pid:null;pintar();difundir();return;}
-      if(m.t==="tomar"){T.mando=m.pid;pintar();difundir();return;}
-      if(m.t!=="accion"||m.pid!==T.mando)return;
+      if(m.t==="tomar"){if(T.juego==="tutti"&&T.g&&!T.g.participa(m.pid))return;T.mando=m.pid;pintar();difundir();return;}
+      if(m.t!=="accion")return;
+      if(m.pid!==T.mando&&!(T.fase==="juego"&&T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente"))return;
       if(m.a==="elegir"&&T.fase==="menu"){elegir(String(m.juego||""));return;}
       if(m.a==="menu"){volverMenu();return;}
       if(T.g&&T.fase==="juego")T.g.accion(m);
     }
     function elegir(id){
       const j=JUEGOS.find(x=>x.id===id);if(!j||!j.ok)return;
+      if(id==="tutti"&&T.jug.length<2){avisoTele("Tutti Frutti necesita al menos 2 celulares para revisar las respuestas");return;}
       despierta();
       if(id==="ruleta"){T.fase="ruleta";T.juego="ruleta";pintar();difundir();setTimeout(()=>{location.href="index.html?tvhost=1";},1500);return;}
-      T.fase="juego";T.juego=id;T.g=(id==="rosco"?juegoRosco:id==="ahorcado"?juegoAhorcado:juegoCien)(T,actualizar);
+      T.fase="juego";T.juego=id;T.g=(id==="tutti"?juegoTutti:id==="rosco"?juegoRosco:id==="ahorcado"?juegoAhorcado:juegoCien)(T,actualizar);
       ultimoTic=performance.now();clearInterval(timerJuego);
       timerJuego=setInterval(()=>{const a=performance.now(),dt=a-ultimoTic;ultimoTic=a;if(T.g&&T.g.tic)T.g.tic(dt);},200);
       actualizar();
@@ -140,6 +142,103 @@
     });
     pintar();
     conectar(cod,()=>{difundir();setInterval(difundir,2500);},()=>{avisoTele("No se pudo conectar. Revisá el internet de la tele y recargá.");},recibir);
+  }
+
+  /* ---------- Tutti Frutti: todos responden; la tele nunca muestra palabras ---------- */
+  function juegoTutti(T,actualizar){
+    const BASE=["Nombre","Apellido","País o ciudad","Comida","Animal","Cosa"];
+    const LETRAS="ABCDEFGHIJLMNOPRSTUV".split(""),RONDAS=3;
+    let config={};try{config=JSON.parse(localStorage.getItem("gya_tutti")||"{}")||{};}catch(e){}
+    const elegidas=Array.isArray(config.cats)?config.cats.filter(c=>["Nombre","Apellido","País o ciudad","Comida","Animal","Color","Marca","Fruta o verdura","Cosa","Profesión","Famoso","Película o serie"].includes(c)).slice(0,12):[];
+    const cats=elegidas.length>=3?elegidas:BASE.slice();
+    const duracion=[60,90,120].includes(config.tiempo)?config.tiempo:90;
+    const jugadores=T.jug.map(j=>({pid:j.pid,n:j.n})),ids=new Set(jugadores.map(j=>j.pid));
+    const totales=Object.fromEntries(jugadores.map(j=>[j.pid,0])),ganadas=Object.fromEntries(jugadores.map(j=>[j.pid,0]));
+    const historial=[];
+    let ronda=0,letra="",restante=0,fase="jugando",ganador=null,muerto=false,timer=null,corteEn=0,resolucionProgramada=false;
+    let respuestas={},recibidas={},progreso={},marcas={},extra={},anuladas={},pendientes={},resueltas={};
+    const clave=(pid,i)=>pid+"|"+i;
+    const puntos=()=>{
+      const out=Object.fromEntries(jugadores.map(j=>[j.pid,cats.map(()=>0)]));
+      cats.forEach((cat,i)=>{
+        const validos=jugadores.filter(j=>{const k=clave(j.pid,i);return !anuladas[k]&&(respuestas[j.pid]||[])[i]&&(marcas[j.pid]?.[i]||extra[k]>0);});
+        validos.forEach(j=>{const iguales=validos.filter(o=>o.pid!==j.pid&&sinTilde((respuestas[o.pid]||[])[i]).trim()===sinTilde((respuestas[j.pid]||[])[i]).trim()).length;
+          const k=clave(j.pid,i);out[j.pid][i]=!marcas[j.pid]?.[i]&&extra[k]!=null?extra[k]:validos.length===1?20:iguales?5:10;});
+      });return out;
+    };
+    const suma=a=>a.reduce((n,x)=>n+x,0);
+    function elegirLetra(){
+      let usadas=[];try{usadas=JSON.parse(localStorage.getItem("gya_tf_letras_usadas")||"[]");}catch(e){}
+      if(!Array.isArray(usadas))usadas=[];
+      let libres=LETRAS.filter(l=>!usadas.includes(l));if(!libres.length){usadas=[];libres=LETRAS.slice();}
+      const l=libres[Math.floor(Math.random()*libres.length)];usadas.push(l);
+      try{localStorage.setItem("gya_tf_letras_usadas",JSON.stringify(usadas));}catch(e){}return l;
+    }
+    function nueva(){ronda++;letra=elegirLetra();restante=duracion*1000;fase="jugando";ganador=null;respuestas={};recibidas={};progreso={};marcas={};extra={};anuladas={};pendientes={};resueltas={};resolucionProgramada=false;}
+    const limpiar=r=>cats.map((_,i)=>{const v=limpio(Array.isArray(r)?r[i]:"",30);return v.length>=2&&sinTilde(v)[0]===letra?v:"";});
+    function cortar(pid,r){if(fase!=="jugando")return;ganador=pid;fase="cortada";corteEn=Date.now();if(pid){respuestas[pid]=limpiar(r);recibidas[pid]=true;progreso[pid]=true;
+        try{if(typeof sonidoErrorExt==="function")sonidoErrorExt();}catch(e){}}
+      clearTimeout(timer);timer=setTimeout(resolver,4200);actualizar();siEstanTodos();}
+    function siEstanTodos(){if(fase!=="cortada"||resolucionProgramada||!jugadores.every(j=>recibidas[j.pid]))return;
+      resolucionProgramada=true;clearTimeout(timer);timer=setTimeout(resolver,Math.max(0,1700-(Date.now()-corteEn)));}
+    async function resolver(){if(muerto||fase!=="cortada")return;fase="validando";actualizar();const actual=ronda;
+      const filas=await Promise.all(jugadores.map(async j=>{const r=respuestas[j.pid]||[];
+        const m=await Promise.all(cats.map(async(c,i)=>{if(!r[i])return false;try{return(await TuttiFrutti._revisar(c,r[i]))!==false;}catch(e){return true;}}));return[j.pid,m];}));
+      if(muerto||actual!==ronda||fase!=="validando")return;marcas=Object.fromEntries(filas);fase="resultado";actualizar();}
+    function cerrarRonda(){const pr=puntos(),sumas=Object.fromEntries(jugadores.map(j=>[j.pid,suma(pr[j.pid])]));
+      historial.push({letra,puntos:sumas});const max=Math.max(...Object.values(sumas));
+      jugadores.forEach(j=>{totales[j.pid]+=sumas[j.pid];if(max>0&&sumas[j.pid]===max)ganadas[j.pid]++;});
+      if(ronda>=RONDAS){fase="fin";sfx("aplausos");}else nueva();actualizar();}
+    function accion(m){
+      if(m.a==="otra"&&fase==="fin"&&m.pid===T.mando){T.otra();return;}
+      if(m.a==="siguiente"&&fase==="resultado"&&m.pid===T.mando&&!Object.keys(pendientes).length){cerrarRonda();return;}
+      if(!ids.has(m.pid)||Number(m.r)!==ronda)return;
+      if(m.a==="progreso"&&fase==="jugando"){const v=!!m.completo;if(progreso[m.pid]!==v){progreso[m.pid]=v;actualizar();}return;}
+      if(m.a==="basta"&&fase==="jugando"){const r=limpiar(m.respuestas);if(r.every(Boolean))cortar(m.pid,r);return;}
+      if(m.a==="respuesta"&&fase==="cortada"&&!recibidas[m.pid]){respuestas[m.pid]=limpiar(m.respuestas);recibidas[m.pid]=true;actualizar();siEstanTodos();return;}
+      if(fase!=="resultado")return;
+      const i=Number(m.i),a=String(m.aid||""),k=clave(a,i);
+      if(m.a==="apelar"&&a===m.pid&&Number.isInteger(i)&&i>=0&&i<cats.length&&(respuestas[a]||[])[i]&&!marcas[a]?.[i]&&!anuladas[k]&&!pendientes["apelar:"+k]&&!resueltas["apelar:"+k]){
+        pendientes["apelar:"+k]={tipo:"apelar",solicita:m.pid,a,i};actualizar();return;}
+      if(m.a==="anular"&&a!==m.pid&&ids.has(a)&&Number.isInteger(i)&&i>=0&&i<cats.length&&puntos()[a][i]>0&&!pendientes["anular:"+k]&&!resueltas["anular:"+k]){
+        pendientes["anular:"+k]={tipo:"anular",solicita:m.pid,a,i};actualizar();return;}
+      if(m.a==="devolver"&&m.pid===T.mando&&anuladas[k]){delete anuladas[k];delete resueltas["anular:"+k];actualizar();return;}
+      if(m.a!=="decidir")return;
+      const id=String(m.id||""),p=pendientes[id];if(!p||p.solicita===m.pid)return;
+      if(p.tipo==="apelar"){
+        const valor=Number(m.p);if(![0,5,10,20].includes(valor))return;extra[clave(p.a,p.i)]=valor;
+        if(valor>0&&window.TuttiFrutti?._aprobarPalabra)TuttiFrutti._aprobarPalabra(cats[p.i],(respuestas[p.a]||[])[p.i]);
+      }else{if(m.v!==true&&m.v!==false)return;if(m.v)anuladas[clave(p.a,p.i)]=true;}
+      delete pendientes[id];resueltas[id]=true;actualizar();
+    }
+    function tic(dt){if(fase!=="jugando")return;restante=Math.max(0,restante-dt);
+      const el=document.querySelector("#tlTuttiReloj");if(el){el.textContent=String(Math.ceil(restante/1000));el.classList.toggle("tl-urgente",restante<=10000);}
+      if(restante<=0)cortar(null,null);}
+    function pintar(raiz){
+      if(fase==="jugando"){
+        raiz.innerHTML=`<div class="tl-tutti"><header><img src="assets/tutti/logo.webp" alt=""><h1>RONDA ${ronda} DE ${RONDAS}</h1></header>
+          <div class="tl-tutti-centro"><p>LETRA</p><strong>${letra}</strong><div id="tlTuttiReloj" class="tl-tutti-reloj${restante<=10000?" tl-urgente":""}">${Math.ceil(restante/1000)}</div></div>
+          <ul class="tl-tutti-jug">${jugadores.map(j=>`<li class="${progreso[j.pid]?"tl-listo":""}">${esc(j.n)} <b>${progreso[j.pid]?"✓":"·"}</b></li>`).join("")}</ul></div>`;return;}
+      if(fase==="cortada"||fase==="validando"){
+        raiz.innerHTML=`<div class="tl-centro tl-tutti-espera"><h1>${fase==="cortada"?(ganador?"¡BASTA!":"¡TIEMPO!"):"Revisando respuestas…"}</h1>
+          <p>${fase==="cortada"?(ganador?esc((jugadores.find(j=>j.pid===ganador)||{}).n||"Alguien")+" terminó primero":"Terminó el tiempo de la letra "+letra):"Los jugadores revisan desde sus celulares"}</p></div>`;return;}
+      if(fase==="resultado"){
+        const pr=puntos();raiz.innerHTML=`<div class="tl-tutti-resultado"><h1>🍓 LETRA ${letra} · RONDA ${ronda}/${RONDAS}</h1>
+          <p>Revisando respuestas en los celulares… ${Object.keys(pendientes).length?"· "+Object.keys(pendientes).length+" decisión pendiente":""}</p>
+          <div class="tl-tutti-tabla"><div class="tl-tutti-fila tl-tutti-cab"><span>JUGADOR</span><span>ESTA LETRA</span><span>TOTAL</span><span>RONDAS</span></div>
+          ${jugadores.map(j=>`<div class="tl-tutti-fila"><span>${esc(j.n)}${j.pid===ganador?" 🏁":""}</span><b>+${suma(pr[j.pid])}</b><b>${totales[j.pid]+suma(pr[j.pid])}</b><b>${ganadas[j.pid]}</b></div>`).join("")}</div>
+          <p>Las palabras y las apelaciones se ven solo en los celulares.</p></div>`;return;}
+      const orden=[...jugadores].sort((a,b)=>ganadas[b.pid]-ganadas[a.pid]||totales[b.pid]-totales[a.pid]);
+      raiz.innerHTML=`<div class="tl-tutti-final"><h1>🏆 TUTTI FRUTTI · RESULTADO FINAL</h1>
+        <div class="tl-tutti-tabla"><div class="tl-tutti-fila tl-tutti-final-cab"><span>JUGADOR</span>${historial.map(h=>`<span>LETRA ${h.letra}</span>`).join("")}<span>TOTAL</span><span>RONDAS</span></div>
+        ${orden.map((j,i)=>`<div class="tl-tutti-fila"><span>${["🥇","🥈","🥉"][i]||""} ${esc(j.n)}</span>${historial.map(h=>`<b>+${h.puntos[j.pid]||0}</b>`).join("")}<b>${totales[j.pid]}</b><b>${ganadas[j.pid]}</b></div>`).join("")}</div>
+        <p>En el celular con el control: jugar otra vez o volver al menú.</p></div>`;
+    }
+    function cel(){const comun={pantalla:"tutti",fase,r:ronda,letra,cats,jug:jugadores,ganador,resta:Math.ceil(restante),recibidas};
+      if(fase==="jugando"||fase==="cortada"||fase==="validando")return comun;
+      if(fase==="fin")return{...comun,totales,ganadas,historial};
+      return{...comun,respuestas,marcas,extra,anuladas,pendientes,resueltas,puntos:puntos(),totales,ganadas};}
+    nueva();return{accion,tic,pintar,cel,participa:pid=>ids.has(pid),fin(){muerto=true;clearTimeout(timer);}};
   }
 
   /* ---------- Rosco: juega uno, los demás miran ---------- */
@@ -291,6 +390,7 @@
     const raiz=document.createElement("div");raiz.id="teleCel";raiz.className="tl-cel";document.body.appendChild(raiz);
     let nombre=limpio(P.get("n")||"",14);try{if(!nombre)nombre=limpio(localStorage.getItem("gya_tele_nombre")||localStorage.getItem("gya_nombre")||"",14);}catch(e){}
     let ultimo=null,conectado=false,visto=0,hola=null,pantallaPintada="";
+    let tfRonda=0,tfCategoria=0,tfRespuestas=[],tfInicioReloj=0,tfSegundos=0,tfEnvio=0,tfCompleto=null;
     const mandar=m=>{if(red)red.mandar(m);};
     function pedirNombre(){
       raiz.innerHTML=`<div class="tl-cel-caja"><h2>📺 Sala de la tele</h2><p>Código <b>${codCel}</b></p><label>Tu nombre<input id="tlNombre" maxlength="14" value="${esc(nombre)}" placeholder="¿Cómo te llamás?"></label><button type="button" class="tl-boton tl-oro" id="tlEntrar">Entrar</button></div>`;
@@ -306,14 +406,77 @@
       window.addEventListener("pagehide",()=>{try{mandar({t:"chau"});}catch(e){}});
     }
     const accion=(a,extra={})=>{mandar({t:"accion",a,...extra});try{if(typeof vibrar==="function")vibrar(25);}catch(e){}};
+    function pintarTutti(c,cab,soyMando){
+      const ronda=c.r||0,cats=c.cats||[],jug=c.jug||[],mis=jug.find(j=>j.pid===yo);
+      if(!mis){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Esperá a la próxima partida</h2></div>`;return;}
+      const clave="gya_tele_tf_"+codCel+"_"+ronda;
+      if(tfRonda!==ronda){tfRonda=ronda;tfCategoria=0;tfCompleto=null;tfEnvio=0;
+        try{const v=JSON.parse(sessionStorage.getItem(clave)||"[]");tfRespuestas=Array.isArray(v)?v.slice(0,cats.length):[];}catch(e){tfRespuestas=[];}
+        pantallaPintada="";}
+      const guardar=()=>{try{sessionStorage.setItem(clave,JSON.stringify(tfRespuestas));}catch(e){}};
+      const completas=()=>cats.length>0&&cats.every((_,i)=>{const v=(tfRespuestas[i]||"").trim();return v.length>=2&&sinTilde(v)[0]===c.letra;});
+      const mandarProgreso=()=>{const v=completas();if(v!==tfCompleto){tfCompleto=v;accion("progreso",{r:ronda,completo:v});}};
+      const enviar=()=>{tfEnvio=Date.now();accion("respuesta",{r:ronda,respuestas:tfRespuestas});};
+      const menu=soyMando?'<button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>':"";
+      const enlazarMenu=()=>{const b=raiz.querySelector("#tlMenu");if(b)b.onclick=()=>{if(confirm("¿Terminar la partida y volver al menú?"))accion("menu");};};
+      if(c.fase==="jugando"){
+        /* El reloj llega cada 2,5 s; no se reconstruye el formulario con el teclado abierto. */
+        if(pantallaPintada!=="tf-juego-"+ronda){
+          pantallaPintada="tf-juego-"+ronda;
+          raiz.innerHTML=cab+`<div class="tl-cel-caja tl-tf-juego"><div class="tl-tf-cab"><span>Ronda ${ronda}/3 · Letra <b>${esc(c.letra)}</b></span><strong id="tlTfReloj"></strong></div>
+            <div class="tl-tf-cats">${cats.map((cat,i)=>`<button type="button" data-cat="${i}" class="${tfRespuestas[i]?"tl-tf-hecha":""}">${esc(cat)} ${tfRespuestas[i]?"✓":""}</button>`).join("")}</div>
+            <label id="tlTfLabel">${esc(cats[tfCategoria]||"")}<input id="tlTfPalabra" maxlength="30" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Con ${esc(c.letra)}"></label>
+            <div class="tl-tf-navega"><button type="button" class="tl-boton" id="tlTfAnterior">← Anterior</button><button type="button" class="tl-boton tl-oro" id="tlTfSiguiente">Siguiente →</button></div>
+            <button type="button" class="tl-boton tl-tf-basta" id="tlTfBasta" disabled>¡BASTA! · Enviar todo</button><p id="tlTfAyuda">Completá todas las categorías para cantar basta.</p>${menu}</div>`;
+          const input=raiz.querySelector("#tlTfPalabra");
+          const actualizarCampo=()=>{const botones=raiz.querySelectorAll("[data-cat]");botones.forEach((b,i)=>{b.classList.toggle("tl-tf-activa",i===tfCategoria);b.classList.toggle("tl-tf-hecha",!!tfRespuestas[i]);b.textContent=cats[i]+(tfRespuestas[i]?" ✓":"");});
+            raiz.querySelector("#tlTfLabel").firstChild.textContent=cats[tfCategoria]||"";input.value=tfRespuestas[tfCategoria]||"";input.placeholder="Con "+c.letra;raiz.querySelector("#tlTfBasta").disabled=!completas();};
+          const salvar=()=>{tfRespuestas[tfCategoria]=limpio(input.value,30);guardar();mandarProgreso();const b=raiz.querySelector(`[data-cat="${tfCategoria}"]`);if(b){b.classList.toggle("tl-tf-hecha",!!tfRespuestas[tfCategoria]);b.textContent=cats[tfCategoria]+(tfRespuestas[tfCategoria]?" ✓":"");}raiz.querySelector("#tlTfBasta").disabled=!completas();};
+          input.oninput=salvar;input.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();salvar();tfCategoria=Math.min(cats.length-1,tfCategoria+1);actualizarCampo();input.focus();}};
+          raiz.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>{salvar();tfCategoria=Number(b.dataset.cat);actualizarCampo();input.focus();});
+          raiz.querySelector("#tlTfAnterior").onclick=()=>{salvar();tfCategoria=Math.max(0,tfCategoria-1);actualizarCampo();input.focus();};
+          raiz.querySelector("#tlTfSiguiente").onclick=()=>{salvar();tfCategoria=Math.min(cats.length-1,tfCategoria+1);actualizarCampo();input.focus();};
+          raiz.querySelector("#tlTfBasta").onclick=()=>{salvar();if(!completas())return;accion("basta",{r:ronda,respuestas:tfRespuestas});raiz.querySelector("#tlTfBasta").disabled=true;raiz.querySelector("#tlTfAyuda").textContent="¡BASTA! Esperando a los demás…";setTimeout(()=>{const b=raiz.querySelector("#tlTfBasta");if(b)b.disabled=false;},1800);};
+          actualizarCampo();enlazarMenu();mandarProgreso();
+        }
+        tfInicioReloj=Date.now();tfSegundos=c.resta||0;
+        const reloj=raiz.querySelector("#tlTfReloj");if(reloj)reloj.textContent=Math.ceil(tfSegundos/1000)+" s";
+        return;
+      }
+      if(c.fase==="cortada"||c.fase==="validando"){
+        if(c.fase==="cortada"&&!c.recibidas?.[yo]&&Date.now()-tfEnvio>1200)enviar();
+        const id="tf-espera-"+ronda+"-"+c.fase;if(pantallaPintada===id)return;pantallaPintada=id;
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>${c.fase==="cortada"?"¡BASTA!":"Revisando respuestas…"}</h2><p>${c.fase==="cortada"?"Se enviaron las palabras. Esperá los puntajes.":"La revisión se abre en todos los celulares."}</p>${menu}</div>`;enlazarMenu();return;
+      }
+      const clavePantalla=JSON.stringify([c.fase,c.puntos,c.pendientes,c.anuladas,c.extra,c.totales,c.historial,soyMando]);if(pantallaPintada===clavePantalla)return;pantallaPintada=clavePantalla;
+      if(c.fase==="fin"){
+        const orden=[...jug].sort((a,b)=>(c.ganadas[b.pid]||0)-(c.ganadas[a.pid]||0)||(c.totales[b.pid]||0)-(c.totales[a.pid]||0));
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🏆 Resultado final</h2>${orden.map((j,i)=>`<p>${["🥇","🥈","🥉"][i]||""} <b>${esc(j.n)}</b> · ${c.totales[j.pid]||0} puntos · ${c.ganadas[j.pid]||0} rondas</p>`).join("")}${soyMando?`<button type="button" class="tl-boton tl-oro" id="tlTfOtra">Jugar otra vez</button>${menu}`:""}</div>`;
+        const otra=raiz.querySelector("#tlTfOtra");if(otra)otra.onclick=()=>accion("otra");enlazarMenu();return;
+      }
+      const pendientes=Object.entries(c.pendientes||{}),puntos=c.puntos||{};
+      raiz.innerHTML=cab+`<div class="tl-cel-caja tl-tf-result"><h2>Letra ${esc(c.letra)} · ronda ${ronda}/3</h2><p>Revisá las palabras y los puntos. La tele solo muestra los totales.</p>
+        <div class="tl-tf-total">${jug.map(j=>`<span>${esc(j.n)} <b>+${(puntos[j.pid]||[]).reduce((x,y)=>x+y,0)}</b></span>`).join("")}</div>
+        ${cats.map((cat,i)=>`<section class="tl-tf-revision"><h3>${esc(cat)}</h3>${jug.map(j=>{const v=c.respuestas?.[j.pid]?.[i]||"",p=puntos[j.pid]?.[i]||0,k=j.pid+"|"+i,pend=pendientes.some(([,o])=>o.a===j.pid&&o.i===i);
+          return`<div class="tl-tf-palabra"><span><b>${esc(j.n)}</b>: ${esc(v)||"—"}${c.anuladas?.[k]?" · anulada":""}</span><strong>${p}</strong>${v&&!pend&&j.pid===yo&&!c.marcas?.[j.pid]?.[i]&&!c.resueltas?.["apelar:"+k]?`<button data-apelar="${i}" type="button">Apelar</button>`:""}${p>0&&!pend&&j.pid!==yo&&!c.resueltas?.["anular:"+k]?`<button data-anular="${esc(j.pid)}|${i}" type="button">Anular</button>`:""}</div>`;}).join("")}</section>`).join("")}
+        ${pendientes.filter(([,p])=>p.solicita!==yo).map(([id,p])=>`<div class="tl-tf-voto"><p>${p.tipo==="apelar"?"Apelación":"Pedido de anulación"}: <b>${esc((jug.find(j=>j.pid===p.a)||{}).n)}</b> · ${esc(c.cats[p.i])} · ${esc(c.respuestas?.[p.a]?.[p.i]||"")}</p>
+          ${p.tipo==="apelar"?[0,5,10,20].map(n=>`<button data-decidir="${esc(id)}" data-p="${n}" type="button">${n} puntos</button>`).join(""):`<button data-decidir="${esc(id)}" data-v="1" type="button">Sí, anular</button><button data-decidir="${esc(id)}" data-v="0" type="button">Mantener</button>`}</div>`).join("")}
+        ${pendientes.some(([,p])=>p.solicita===yo)?"<p>Esperando que otro jugador decida tu apelación.</p>":""}
+        ${soyMando?`<button type="button" class="tl-boton tl-oro" id="tlTfSiguienteRonda" ${pendientes.length?"disabled":""}>${ronda===3?"Ver resultado final":"Siguiente letra →"}</button>${menu}`:""}</div>`;
+      raiz.querySelectorAll("[data-apelar]").forEach(b=>b.onclick=()=>accion("apelar",{r:ronda,aid:yo,i:Number(b.dataset.apelar)}));
+      raiz.querySelectorAll("[data-anular]").forEach(b=>b.onclick=()=>{const [aid,i]=b.dataset.anular.split("|");accion("anular",{r:ronda,aid,i:Number(i)});});
+      raiz.querySelectorAll("[data-decidir]").forEach(b=>b.onclick=()=>accion("decidir",{r:ronda,id:b.dataset.decidir,...(b.dataset.p!==undefined?{p:Number(b.dataset.p)}:{v:b.dataset.v==="1"})}));
+      const sig=raiz.querySelector("#tlTfSiguienteRonda");if(sig)sig.onclick=()=>accion("siguiente",{r:ronda});enlazarMenu();
+    }
     function pintar(){
       const m=ultimo;if(!m)return;const soyMando=m.mando===yo,c=m.cel||{},clave=JSON.stringify([soyMando,c,m.jug.length]);
-      if(clave===pantallaPintada)return;
+      if(c.pantalla!=="tutti"&&clave===pantallaPintada)return;
       const escribiendo=document.activeElement&&document.activeElement.id==="tlTexto"?document.activeElement.value:"";
-      pantallaPintada=clave;
+      if(c.pantalla!=="tutti")pantallaPintada=clave;
       const cab=`<div class="tl-cel-cab">📺 Sala ${esc(m.cod)} · ${esc(nombre)}${soyMando?" · 🎮":""}</div>`;
       if(!m.jug.some(j=>j.pid===yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Entrando…</h2></div>`;return;}
       if(c.pantalla==="ruleta"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎡 La Ruleta</h2><p>La Ruleta tiene su propia entrada. Cuando la tele muestre el código nuevo, tocá acá y ponelo:</p><a class="tl-boton tl-oro" href="tv.html">Entrar a la Ruleta</a></div>`;return;}
+      if(c.pantalla==="tutti"){pintarTutti(c,cab,soyMando);return;}
       if(!soyMando){
         const mando=(m.jug.find(j=>j.pid===m.mando)||{}).n||"otro";
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2><p>El control lo tiene <b>${esc(mando)}</b>. Ayudalo con las respuestas 😉</p><button type="button" class="tl-boton" id="tlTomar">Tomar el control</button></div>`;
@@ -345,6 +508,7 @@
       raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2></div>`;
     }
     /* Si la tele deja de contestar, avisar. */
+    setInterval(()=>{const el=raiz.querySelector("#tlTfReloj");if(el){const ms=Math.max(0,tfSegundos-(Date.now()-tfInicioReloj));el.textContent=Math.ceil(ms/1000)+" s";el.classList.toggle("tl-urgente",ms<=10000);}},250);
     setInterval(()=>{if(conectado&&ultimo&&Date.now()-visto>12000){pantallaPintada="";raiz.innerHTML=`<div class="tl-cel-caja"><h2>La tele no responde 📺</h2><p>Revisá que la tele siga abierta y con internet.</p></div>`;}},4000);
     if(nombre&&P.get("n"))entrar();else pedirNombre();
   }

@@ -2,13 +2,13 @@
 
 Idea: **la tele muestra el juego en grande y se responde desde el celular.**
 
-**Hecho (26/10/2026, `tele.js` + `tele.css` + `tele/index.html`):** sala nueva con código y menú de juegos (también con el control remoto), **Rosco**, **Ahorcado** y **100 Rioplatenses**. Entrada: tele `girayadivina.com/index.html?tele=1`; celulares `girayadivina.com/tele` (o la tarjeta "Juegos en la tele" de Extensiones, que por ahora ve solo Gonzalo). Falta: Tutti Frutti y Puzzle. Probado con dos pantallas simuladas; falta probar en una tele real.
+**Hecho (26/10/2026, `tele.js` + `tele.css` + `tele/index.html`):** sala nueva con código y menú de juegos (también con el control remoto), **Rosco**, **Ahorcado**, **100 Rioplatenses** y **Tutti Frutti**. Entrada: tele `girayadivina.com/index.html?tele=1`; celulares `girayadivina.com/tele` (o la tarjeta "Juegos en la tele" de Extensiones, que por ahora ve solo Gonzalo). Falta: Puzzle. Tutti Frutti se probó con tele y dos celulares simulados, incluidas tres rondas, apelación y anulación; falta probar en una tele real.
 Estado de la prueba actual de la Ruleta: ver `SALA_TV_PRUEBA.md`.
 
 ## Cómo se entra (igual para todos los juegos)
 
 1. La tele abre el juego en modo tele y muestra un **código de sala**.
-2. Los celulares entran con ese código (página `tv.html`, sin instalar nada).
+2. Los celulares entran con ese código desde `girayadivina.com/tele`, sin instalar nada. La Ruleta usa su propia entrada en `tv.html` después de elegirla en el menú.
 3. **En la tele se elige a qué jugar** (menú de juegos de tele).
 
 Se hace una sola vez y sirve para todos los juegos.
@@ -18,7 +18,7 @@ Se hace una sola vez y sirve para todos los juegos.
 | # | Juego | Cuántos celulares | Qué se ve en la tele | Qué se hace en el celular | Estado |
 |---|---|---|---|---|---|
 | 1 | **Ruleta** | Cada uno con el suyo (2 a 6) | Ruleta y tablero | Girar, elegir letras, resolver | ✅ Hecho (en prueba) |
-| 2 | **Tutti Frutti** | Cada uno con el suyo | Ver abajo: **nunca muestra las respuestas** | Escribir las palabras, revisar y anular | Por hacer (fácil) |
+| 2 | **Tutti Frutti** | Cada uno con el suyo | Ver abajo: **nunca muestra las respuestas** | Escribir las palabras, revisar y anular | ✅ Hecho (tele.js; falta probar en tele real) |
 | 3 | **100 Rioplatenses Dicen** | **Uno solo**, el grupo juega junto | Pregunta, 6 respuestas tapadas, 3 cruces | Escribe lo que el grupo dice | ✅ Hecho (tele.js) |
 | 4 | **Ahorcado** | Uno (el grupo dice qué letra) | La partida igual que en el celular, en grande | Teclado de letras | ✅ Hecho (tele.js) |
 | 5 | **Rosco** | **Uno juega**, los demás miran (como programa de tele) | Rosco girando, letra, definición, reloj | Escribir la respuesta, "Enviar" y "Pasar" | ✅ Hecho (tele.js) |
@@ -33,6 +33,7 @@ Ya existe ("Sala TV"). La tele muestra la ruleta y el tablero; cada jugador gira
 - **Revisión y anulación:** en los celulares, como hoy. La tele dice "Revisando respuestas…" y sigue sin mostrar respuestas.
 - **Final de cada ronda:** puntajes de la ronda y quién la ganó.
 - **Final de la partida:** podio con el ganador, puntos totales y rondas ganadas, con festejo.
+- **Envío:** cada teléfono conserva las palabras mientras se escriben; el primero que termina y toca **¡BASTA!** envía sus respuestas y corta la ronda. Los demás envían lo que tenían al recibir el corte. La tele solo recibe y muestra progreso, reloj y puntajes; las palabras aparecen exclusivamente en los teléfonos durante la revisión.
 
 ### 3. 100 Rioplatenses Dicen
 - **Un solo celular**; el grupo del living juega junto ("¡poné chorizo!").
@@ -70,7 +71,7 @@ Ya existe ("Sala TV"). La tele muestra la ruleta y el tablero; cada jugador gira
 - Subirla cuando ya haya varios juegos de tele andando (una sola revisión de Google).
 
 ## Mientras tanto (para jugar ya)
-- **Tele:** abrir el navegador de la tele (en Android/Google TV se puede instalar uno gratis de su Play Store, por ejemplo "TV Bro" o "Puffin TV Browser") y entrar a `girayadivina.com/index.html?tvhost=1` → "Mostrar código de sala".
-- **Celulares:** `girayadivina.com/tv.html` con nombre y código.
-- Solo está la Ruleta. Cerrar o recargar la tele corta la partida. **Probarlo antes en casa**: las pruebas de `SALA_TV_PRUEBA.md` se hicieron con la dirección vieja (gvelazcamp.github.io) y nunca en una tele real.
+- **Tele:** abrir el navegador de la tele (en Android/Google TV se puede instalar uno gratis de su Play Store, por ejemplo "TV Bro" o "Puffin TV Browser") y entrar a `girayadivina.com/index.html?tele=1`.
+- **Celulares:** `girayadivina.com/tele` con nombre y código. La Ruleta da otro código y pasa a `tv.html` al elegirla.
+- Rosco, Ahorcado, 100 Rioplatenses y Tutti Frutti ya están integrados al menú; Puzzle sigue pendiente. Cerrar o recargar la tele corta la partida. **Probarlo antes en casa**: las pruebas en código usaron navegadores simulados y todavía no se probó en una tele real.
 - Propuesto y no confirmado todavía por Gonzalo: un botón "Sala TV" en el menú que solo vea él.

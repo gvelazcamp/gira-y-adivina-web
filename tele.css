@@ -93,6 +93,19 @@ html.tele-modo body{background:#160B24}
 .tl-cel-teclado{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
 .tl-cel-teclado button{height:48px;border:0;border-radius:10px;background:#F6EFE2;color:#160B24;font:900 20px 'Archivo Black'}
 .tl-cel-teclado button:disabled{opacity:.25}
+/* Tutti Frutti: respuestas y decisiones solo en celulares; puntajes en TV. */
+.tl-juego-tutti{background:radial-gradient(ellipse at 50% 20%,#482161,#160B24 68%)}
+.tl-tutti{height:100%;display:grid;grid-template-rows:auto 1fr auto;padding:3vh 5vw;text-align:center}
+.tl-tutti header{display:flex;justify-content:center;align-items:center;gap:2vw;color:#F5B301}.tl-tutti header img{height:9vh;max-width:9vw;object-fit:contain}.tl-tutti header h1{font-size:3vw}
+.tl-tutti-centro{display:flex;flex-direction:column;align-items:center;justify-content:center}.tl-tutti-centro p{font:900 2.8vw 'Archivo Black';margin:0;color:#D7C8E5}
+.tl-tutti-centro strong{font:900 min(24vw,42vh)/1 'Archivo Black';color:#F5B301;text-shadow:0 1vh 0 #7a4b00}
+.tl-tutti-reloj{font:900 7vw 'Archivo Black';color:#37D6C0}.tl-tutti-reloj.tl-urgente{color:#FF6B7A}
+.tl-tutti-jug{display:flex;justify-content:center;flex-wrap:wrap;gap:1vw;list-style:none;margin:0;padding:0}.tl-tutti-jug li{background:#2A1A3C;padding:1vw 1.6vw;border-radius:1vw;font:800 2vw Outfit}.tl-tutti-jug li b{color:#897996}.tl-tutti-jug li.tl-listo b{color:#37D6C0}
+.tl-tutti-espera h1{font-size:8vw}.tl-tutti-resultado,.tl-tutti-final{padding:4vh 5vw;text-align:center}.tl-tutti-resultado h1,.tl-tutti-final h1{font-size:4vw;color:#F5B301}.tl-tutti-resultado p,.tl-tutti-final p{font-size:1.8vw;color:#D7C8E5}
+.tl-tutti-tabla{margin:4vh auto 0;max-width:86vw;background:#211330;border:1px solid #7B3FE4;border-radius:1.5vw;overflow:hidden}.tl-tutti-fila{display:grid;grid-template-columns:3fr repeat(3,1fr);align-items:center;padding:1.6vh 2vw;border-bottom:1px solid #ffffff1d;text-align:left;font-size:2.1vw}.tl-tutti-fila:last-child{border:0}.tl-tutti-fila b{text-align:center;color:#F5B301}.tl-tutti-cab,.tl-tutti-final-cab{font:900 1.3vw 'Archivo Black';color:#37D6C0}.tl-tutti-final .tl-tutti-fila{grid-template-columns:3fr repeat(5,1fr)}
+.tl-tf-cab{display:flex;justify-content:space-between;align-items:center;gap:12px}.tl-tf-cab b,.tl-tf-cab strong{color:#F5B301;font:900 23px 'Archivo Black'}.tl-tf-cab strong.tl-urgente{color:#FF6B7A}
+.tl-tf-cats{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}.tl-tf-cats button,.tl-tf-voto button,.tl-tf-palabra button{border:1px solid #7B3FE4;border-radius:9px;background:#37204c;color:#fff;padding:8px;font:700 13px Outfit}.tl-tf-cats button.tl-tf-activa{background:#7B3FE4}.tl-tf-cats button.tl-tf-hecha{border-color:#37D6C0}
+.tl-tf-navega{display:flex;gap:8px}.tl-tf-navega button{flex:1;font-size:13px}.tl-tf-basta{background:#E5197C}.tl-tf-result{text-align:left}.tl-tf-result h2{text-align:center}.tl-tf-result h3{margin:3px 0;color:#F5B301}.tl-tf-total{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.tl-tf-total span{background:#160B24;border-radius:8px;padding:7px}.tl-tf-revision{background:#1b102b;padding:10px;border-radius:12px}.tl-tf-palabra{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #ffffff1c}.tl-tf-palabra span{flex:1}.tl-tf-palabra strong{color:#F5B301}.tl-tf-voto{background:#4b265e;padding:12px;border-radius:12px}.tl-tf-voto button{margin:3px;background:#7B3FE4}
 /* Entrada desde Extensiones */
 .tl-entrada{display:flex;flex-direction:column;gap:14px;max-width:460px;margin:0 auto;text-align:center}
 .tl-entrada h2{font-family:'Archivo Black';color:#F5B301;margin:0}.tl-entrada small{color:#D7C8E5}
