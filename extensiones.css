@@ -398,7 +398,7 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .sf-game .sf-botonera{margin-top:10px}.sf-game .sf-botonera button{display:flex;align-items:center;justify-content:center;gap:4px;padding:10px 6px;font-size:.8rem}
 .sf-game .sf-botonera img{width:20px;height:20px;object-fit:contain}.sf-game .sf-botonera button:disabled{opacity:.45}
 .sf-game .sf-panel p{white-space:pre-line}
-.sf-game .sf-panel .sf-acciones{flex-direction:column}.sf-game .sf-acciones .sf-modo-giro{background:#7B3FE4;color:#fff;border-color:#7B3FE4}
+.sf-game .sf-panel .sf-acciones{flex-direction:column;align-items:stretch}.sf-game .sf-panel .sf-acciones button{flex:none;width:100%;min-height:54px;margin:0;display:flex;align-items:center;justify-content:center;gap:8px;font-size:1rem}.sf-game .sf-panel .sf-acciones button.sf-con-dibujo{padding:6px 12px}.sf-game .sf-panel .sf-acciones button.sf-con-dibujo img{width:auto;height:40px}.sf-game .sf-acciones .sf-modo-amigo{background:#37D6C0;color:#160B24;border-color:#37D6C0}.sf-game .sf-acciones .sf-modo-giro{background:#7B3FE4;color:#fff;border-color:#7B3FE4}
 /* Palabras con dibujo: se ve el dibujo y un cuadradito por letra hasta encontrarla. */
 .sf-game .sf-palabra.dibujo{display:flex;flex-direction:column;align-items:center;gap:1px;background:#29193D;border-radius:10px;padding:3px 2px}
 .sf-game .sf-palabra.dibujo i{font-style:normal;font-size:1.45rem;line-height:1.1}
