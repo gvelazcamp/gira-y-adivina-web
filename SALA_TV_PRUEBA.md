@@ -1,13 +1,15 @@
 # Sala TV — prueba de septiembre de 2026
 
+> Plan completo de juegos en la tele (Tutti Frutti, 100 Rioplatenses, Ahorcado, Rosco, Puzzle) y de la versión para la Play Store de la tele: ver `SALA_TV_PLAN.md`.
+
 Sala TV ya es parte del juego. La pantalla de TV mantiene la partida; los celulares
 envían acciones y escriben las respuestas. No hay que instalar otra app en los celulares.
 La tarjeta del menú normal permanece oculta mientras se prueba.
 
 ## Abrir
 
-- TV o computadora: https://gvelazcamp.github.io/gira-y-adivina-rioplatense/index.html?tvhost=1
-- Celulares: https://gvelazcamp.github.io/gira-y-adivina-rioplatense/tv.html
+- TV o computadora: https://girayadivina.com/index.html?tvhost=1 (antes: gvelazcamp.github.io/gira-y-adivina-rioplatense/…; con el dominio nuevo todavía no se probó)
+- Celulares: https://girayadivina.com/tv.html
 - APK para Android TV: https://github.com/gvelazcamp/gira-y-adivina-tv/releases
 
 En la TV, elegir «Mostrar código de sala». En cada celular escribir nombre y código.
