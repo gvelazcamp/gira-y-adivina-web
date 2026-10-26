@@ -1585,3 +1585,7 @@ Fecha: 26/10/2026 — Reel del Rosco con música propia para adultos ("Velvet an
 ```text
 Fecha: 26/10/2026 — REEL de 100 Rioplatenses Dicen: promo/reel-cien.html (≈34,4 s, 9:16, mismo motor; música reel-rosco-musica.mp3, la de tango para adultos). Gancho: "100 RIOPLATENSES DICEN: Algo que ponés en la mesa cuando hay asado 🥩" con el panel de 6 barras del juego y "¿Qué dirías vos? 👇"; en el golpe se da vuelta PAN · 30 → ¡LA MÁS DICHA!. Después: logo + conductora "¿Pensás como la mayoría?", girá la rueda de temas → Costumbres, jugando el panel del mate (YERBA 32, AGUA 23, TERMO 9), "Mate cocido"… ¡NO ESTÁ! (cruz), 3 errores y afuera + rondas ×1 ×2 ×3, desafiá a un amigo 1 vs 1, temas bien nuestros (sin número, por si se agregan más), ¡Nuevo récord! y cierre. OJO: los puntajes del juego son de práctica (no encuestas reales): NO decir "le preguntamos a 100 uruguayos".
 ```
+
+```text
+Fecha: 26/10/2026 — Reel de 100 Rioplatenses con música propia ("The Winner's Ascent", Gemini, estilo programa de concursos): promo/reel-cien-musica.mp3 = 0:25.05–0:59.65 con fundido final. Se eligió ese tramo porque 0:25–0:27 es un corte en silencio (suspenso del gancho) y el golpe de 0:27.5 cae justo en PAN · 30.
+```
