@@ -1668,3 +1668,7 @@ PENDIENTE: el reel promo/reel-sopa.html muestra la mudanza vieja (las letras que
 ```text
 Fecha: 26/10/2026 — Sopa Fugaz: dos modos, escaleritas y dibujos (Gonzalo: "sí, todo me encantó"; el nombre queda Sopa Fugaz). (1) Al entrar SIEMPRE se elige el modo: 🔎 Sopa clásica (la nueva) o 🌀 Sopa giratoria (vuelve la de antes con el remolino, el aviso "Las letras se mudan en…" y la barra; ahora en 14×14, 8 a 12 palabras, mudanza de 10 s que baja a 5 s, espera 2,5 s si estás marcando). El 1 vs 1 es siempre clásica. Al terminar hay "Cambiar de modo". (2) Escalerita (clásica): desde el nivel 4 una palabra por tablero, desde el 10 dos, va en escalones (un paso al costado y uno arriba/abajo). Se marca siguiendo el camino con el dedo (se guarda el rastro del dedo; vale si empieza y termina en las puntas y no se sale de la escalera). +50 puntos extra. La primera vez sale un aviso. (3) Dibujos (clásica): SOPA_DIBUJOS en sopa-fugaz-datos.js (145 palabras del banco con un emoji claro). Desde el nivel 2 hasta 3 palabras por tablero se muestran como dibujo con un cuadradito por letra; cada 4 niveles (si no toca forma) un "Nivel con dibujos" entero. Al encontrarla aparece escrita. sopa-fugaz.js v12, datos v5, extensiones.css v125, sw v437. Test PASS.
 ```
+
+```text
+Fecha: 26/10/2026 — Sopa Fugaz, ventana de elegir modo (Gonzalo): los tres botones uno abajo del otro, mismo tamaño y alineados: 🔎 Sopa clásica (magenta), 🌀 Sopa giratoria (violeta), Jugar con un amigo (turquesa, con el dibujo chico). extensiones.css v126, sopa-fugaz.js v13, sw v438.
+```

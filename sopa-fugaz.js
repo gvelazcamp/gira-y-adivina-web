@@ -428,7 +428,7 @@ const SopaFugaz=(()=>{
   function elegirModo(){
     jugando=false;token++;clearTimeout(trasladoTimer);mudando=false;
     mostrarPanel("¿Cómo querés jugar?","🔎 Clásica: tablero gigante, formas, escaleritas y dibujos.\n🌀 Giratoria: las letras se mudan cada pocos segundos.","🔎 Sopa clásica",()=>jugarModo("clasica"),false,
-      [{texto:"🌀 Sopa giratoria",accion:()=>jugarModo("giratoria"),clase:"sf-modo-giro"},{texto:"Jugar con un amigo",accion:iniciarDuelo,dibujo:"duelo"}],"mascota");
+      [{texto:"🌀 Sopa giratoria",accion:()=>jugarModo("giratoria"),clase:"sf-modo-giro"},{texto:"Jugar con un amigo",accion:iniciarDuelo,dibujo:"duelo",clase:"sf-modo-amigo"}],"mascota");
   }
   function abrir(contenedor){
     salir();datos=cargar();nivel=SOPA_CONFIG.primerNivel;puntaje=0;modo="clasica";raiz=document.createElement("div");raiz.className="sf-game";
