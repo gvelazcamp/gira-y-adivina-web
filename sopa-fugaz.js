@@ -159,11 +159,16 @@ const SopaFugaz=(()=>{
     l.setAttribute("points",ind.map(k=>(k%n+.5)+","+(Math.floor(k/n)+.5)).join(" "));
     l.setAttribute("fill","none");l.setAttribute("stroke",color);l.setAttribute("stroke-width",".8");l.setAttribute("stroke-linecap","round");l.setAttribute("stroke-linejoin","round");return l;
   }
-  const quiebra=r=>r.length>2&&r.some((k,i)=>i>1&&k-r[i-1]!==r[1]-r[0]);
+  /* ¿El rastro del dedo es una escalerita (pasos que alternan costado y arriba/abajo)? */
+  function esEscalera(r){
+    if(!escaleras.size||r.length<3)return false;const n=SOPA_CONFIG.n,p=r.slice(1).map((k,i)=>k-r[i]);
+    if(p.some(d=>Math.abs(d)!==1&&Math.abs(d)!==n))return false;
+    return p.every((d,i)=>i<2||d===p[i-2])&&p[0]!==p[1]&&Math.abs(p[0])!==Math.abs(p[1]);
+  }
   function pintarCapsulas(){
     if(!capsEl)return;const n=SOPA_CONFIG.n;capsEl.replaceChildren();
     if(modo!=="giratoria")[...halladas.values()].forEach((h,i)=>capsEl.appendChild(trazo(h.ind,COLORES[i%COLORES.length],n)));
-    const actual=quiebra(rastro)?rastro:camino;
+    const actual=esEscalera(rastro)?rastro:camino;
     if(actual.length)capsEl.appendChild(trazo(actual,"#E5197C99",n));
   }
   function dibujarLista(){
@@ -347,12 +352,16 @@ const SopaFugaz=(()=>{
     const celda=el&&el.closest(".sf-celda");
     return celda&&gridEl.contains(celda)?Number(celda.dataset.k):-1;
   }
+  /* La marca se "pega" a la dirección más cercana de las 8 (la mano nunca va
+     justo en diagonal); antes había que caer exacto y la marca quedaba trabada. */
   function extender(k){
     const n=SOPA_CONFIG.n,inicio=arrastre.k;
     const r0=Math.floor(inicio/n),c0=inicio%n,dr=Math.floor(k/n)-r0,dc=k%n-c0;
     if(!dr&&!dc){camino=[inicio];return;}
-    if(dr&&dc&&Math.abs(dr)!==Math.abs(dc))return;
-    const pasos=Math.max(Math.abs(dr),Math.abs(dc)),sr=Math.sign(dr),sc=Math.sign(dc);
+    const oct=Math.round(Math.atan2(dr,dc)/(Math.PI/4)),sr=Math.round(Math.sin(oct*Math.PI/4)),sc=Math.round(Math.cos(oct*Math.PI/4));
+    let pasos=sr&&sc?Math.round((Math.abs(dr)+Math.abs(dc))/2):Math.abs(sr?dr:dc);
+    const fuera=p=>{const r=r0+sr*p,c=c0+sc*p;return r<0||r>=n||c<0||c>=n||!tablero[r*n+c];};
+    while(pasos>0&&fuera(pasos))pasos--;
     camino=Array.from({length:pasos+1},(_,i)=>(r0+sr*i)*n+c0+sc*i);
   }
   /* Rastro: las casillas por las que pasa el dedo (para las escaleritas). */

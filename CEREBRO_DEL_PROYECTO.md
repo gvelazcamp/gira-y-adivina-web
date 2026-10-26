@@ -1676,3 +1676,7 @@ Fecha: 26/10/2026 — Sopa Fugaz, ventana de elegir modo (Gonzalo): los tres bot
 ```text
 Fecha: 26/10/2026 — Sopa Fugaz: se sacó el logo grande de arriba del tablero (Gonzalo: "no es necesario y así entra sin scroll"). En un celular de 412×870 el tablero, la lista y los botones Pista/Pausa entran sin deslizar. sopa-fugaz.js v14, sw v439.
 ```
+
+```text
+Fecha: 26/10/2026 — Sopa Fugaz, arrastre con el dedo (Gonzalo: "a veces al dedo le cuesta, se mueve a lo último"). Auditoría con toques reales simulados y temblor de mano: (1) la marca recta solo avanzaba si el dedo caía EXACTO en la diagonal; si no, quedaba trabada y saltaba al final; (2) en todas las diagonales la marca rosa se dibujaba en zigzag (se mostraba el rastro del dedo pensando que era una escalerita). Arreglo: la marca se "pega" a la dirección más cercana de las 8 (ángulo redondeado a 45°) y el rastro solo se dibuja si de verdad es una escalerita (pasos que alternan costado y arriba/abajo, y solo si en el tablero hay escaleritas). Resultado: 0 zigzags (antes 4 a 14 por partida), todas las palabras acertadas con temblor de ±50% de casilla, escaleritas OK, test PASS. sopa-fugaz.js v15, sw v440.
+```
