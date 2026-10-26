@@ -43,12 +43,15 @@ const FrasesEnGiro=(()=>{
   function mezclar(lista){
     const a=[...lista];for(let i=a.length-1;i>0;i--){const j=azar(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;
   }
+  /* Ninguna frase se repite en todo el juego (Gonzalo, 26/10/2026): primero las
+     nuevas del nivel; si ya viste todas las de ese nivel, una nueva del nivel más
+     cercano; recién cuando viste TODAS las frases del juego vuelven a salir. */
   function elegir(n){
-    const grupo=configNivel(n).grupo;
-    const posibles=Vistas.filtrar("frases",FRASES_EN_GIRO_DATOS.map((d,id)=>({...d,id})).filter(d=>d.nivel===grupo),d=>d.texto);
-    const recientes=new Set(datos.recientes.slice(-Math.min(8,posibles.length-1)));
-    const libres=posibles.filter(d=>!recientes.has(d.id));
-    const elegida=(libres.length?libres:posibles)[azar((libres.length?libres:posibles).length)];
+    const grupo=configNivel(n).grupo,todas=FRASES_EN_GIRO_DATOS.map((d,id)=>({...d,id}));
+    const libres=Vistas.filtrar("frases",todas,d=>d.texto);
+    const cerca=Math.min(...libres.map(d=>Math.abs(d.nivel-grupo)));
+    const posibles=libres.filter(d=>Math.abs(d.nivel-grupo)===cerca);
+    const elegida=posibles[azar(posibles.length)];
     Vistas.marcar("frases",elegida.texto);return elegida;
   }
   /* Dibujos en assets/frases-giro/ (hoja de ChatGPT recortada). */
