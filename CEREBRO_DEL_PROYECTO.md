@@ -1609,3 +1609,7 @@ REGLA de Gonzalo (26/10/2026) para los videos: con CADA video nuevo, darle SIEMP
 ```text
 Fecha: 26/10/2026 — REEL de Sopa Fugaz: promo/reel-sopa.html (≈34,4 s, 9:16, mismo motor; por ahora con reel-tutti-musica.mp3). Gancho: "¿ENCONTRÁS BONDI? 👀" con la sopa de 10×10 y el tiempo bajando → en el golpe las fichas vuelan y se revuelven con el remolino: ¡SE MUDÓ! 🌪️ (la gracia del juego). Después: logo + mascota "Una sopa de letras… pero las palabras se mueven", encontralas antes de que se muden (reloj de arena), jugando PATIO/CIELO/BONDI arrastrando el dedo, ¡SE MUDARON!, cada nivel más difícil (MATEADA en diagonal y ZORRO al revés, como desde el nivel 3), 1 vs 1, temas bien nuestros (categorías reales), ¡Nivel superado! y cierre.
 ```
+
+```text
+Fecha: 26/10/2026 — Reel de Sopa Fugaz con música propia ("Before the Last Gear Turns", Gemini): promo/reel-sopa-musica.mp3 = 0:37.35–0:71.95 con fundido. Arranca en la parte bajita y el golpe de 0:39.8 cae en ¡SE MUDÓ!; además 0:51.1 cae en ¡SE MUDARON! y 0:60.1 en ¡GANASTE!.
+```
