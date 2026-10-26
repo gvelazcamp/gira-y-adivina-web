@@ -1621,3 +1621,7 @@ Fecha: 26/10/2026 — REEL de Frases en Giro: promo/reel-frases.html (≈34,4 s,
 ```text
 Fecha: 26/10/2026 — REEL de Memoria en Giro: promo/reel-memoria.html (≈34,4 s, 9:16, mismo motor; música provisoria reel-tutti-musica.mp3). Gancho: "MEMORIZALAS 👀" con 12 cartas a la vista → se dan vuelta y en el golpe "¿DÓNDE ESTÁ LA 🍓?" + "contestá abajo 👇" (para que comenten). Después: logo + personaje "Encontrá los pares… pero el tablero gira 🌀", las cartas cambian de lugar, jugando de a dos (🍓🍓 bien, 🦋🌈 mal, 🦋🦋 bien), ¡GIRÓ!, otra miradita (la fase "recuerdo" del juego: memorizá en 3 s), 1 vs 1, cada nivel más cartas (3, 4, 6 y 8 pares como el juego), ¡Todos los pares! y cierre.
 ```
+
+```text
+Fecha: 26/10/2026 — Reel de Memoria en Giro: el tablero era chico (12 cartas, "van a pensar que es fácil"). Ahora todas las escenas usan 16 cartas grandes (4×4, 8 pares, como los niveles más altos del juego); el gancho pregunta "¿DÓNDE ESTÁN LAS 🍓?".
+```
