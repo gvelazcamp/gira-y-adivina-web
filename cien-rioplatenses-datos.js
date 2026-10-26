@@ -50,7 +50,57 @@ campo|animales|Un animal que podés ver en el campo rioplatense|Vaca:30:vacas,te
 paseoperro|animales|Algo que llevás cuando sacás a pasear al perro|Correa:32:correas;Bolsitas:23:bolsa,bolsas,bolsita;Agua:17:botella de agua;Collar:12:arnes;Pelota:9:pelotita,juguete;Premios:7:galletitas,snacks,comida
 mochila|escuela|Algo que llevás en la mochila para ir a clase|Cuaderno:30:cuadernos;Lápiz:24:lapices,lapicera,boligrafo;Libro:18:libros;Goma:12:goma de borrar,borrador;Regla:9:reglas;Merienda:7:comida,colacion
 recreo|escuela|Algo que hacés durante el recreo|Jugar:32:juegos;Comer:23:merendar,tomar la merienda;Charlar:17:hablar,conversar;Correr:12:carrera;Ir al baño:9:bano,banio;Tomar agua:7:agua,beber agua
-materias|escuela|Una materia que se estudia en la escuela|Matemática:30:matematicas;Lengua:24:idioma espanol,lenguaje;Historia:18;Geografía:12;Ciencias:9:ciencias naturales;Educación física:7:gimnasia,deporte,deportes`
+materias|escuela|Una materia que se estudia en la escuela|Matemática:30:matematicas;Lengua:24:idioma espanol,lenguaje;Historia:18;Geografía:12;Ciencias:9:ciencias naturales;Educación física:7:gimnasia,deporte,deportes
+heladeria|comida|Un gusto de helado que todos piden|Dulce de leche:30:ddl,dulce;Chocolate:24:choco;Frutilla:18:frutillas;Vainilla:12:crema americana;Limón:9:limon;Sambayón:7:sambayon
+picada|comida|Algo que no puede faltar en una picada|Queso:30:quesos;Salame:24:salamin;Aceitunas:18:aceituna;Jamón:12:jamon,fiambre;Maní:9:mani;Pan:7:pancito,galletas
+domingo_almuerzo|comida|Una comida típica del almuerzo de domingo|Asado:30:parrilla;Pastas:24:ravioles,tallarines,noquis,ñoquis;Milanesas:18:milanesa;Pollo:12:pollo al horno;Pizza:9:pizzas;Guiso:7:puchero
+desayuno|comida|Algo que tomás en el desayuno|Café:30:cafe,cafe con leche;Mate:24:mates;Té:18:te;Leche:12:chocolatada;Jugo:9:jugo de naranja;Agua:7:
+sandwich|comida|Algo que le ponés a un sándwich|Jamón:30:jamon;Queso:24:quesos;Lechuga:18:verdes;Tomate:12:tomates;Mayonesa:9:mayo;Huevo:7:huevos
+murga_cosas|carnaval|Algo que lleva puesto un murguista|Maquillaje:30:pintura;Galera:24:sombrero;Traje:18:vestuario;Guantes:12:guante;Zapatos:9:zapatos de colores;Moño:7:moño,corbata
+carnaval_festejo|carnaval|Algo que tirás en carnaval|Agua:30:bombitas,globos de agua;Papelitos:24:papel picado;Espuma:18:nieve,espuma de carnaval;Serpentinas:12:serpentina;Harina:9:;Huevos:7:huevo
+futbol_gritos|futbol|Algo que le grita la hinchada al árbitro|Vendido:30:;Ladrón:24:ladron;Ciego:18:;Bombero:12:;Penal:9:;Fuera:7:afuera
+futbol_puestos|futbol|Una posición en un equipo de fútbol|Golero:30:arquero;Delantero:24:nueve,goleador;Defensa:18:zaguero,defensor;Volante:12:mediocampista;Lateral:9:;Enganche:7:diez
+futbol_cancha|futbol|Algo que hay en una cancha de fútbol|Arcos:30:arco;Pelota:24:;Césped:18:pasto,cesped;Tribuna:12:tribunas;Banderines:9:banderin;Red:7:redes
+habito_noche|costumbres|Algo que hacés antes de dormir|Lavarte los dientes:30:dientes,cepillarse;Mirar el celular:24:celular;Ver tele:18:tele,television;Leer:12:;Bañarte:9:ducharse,ducha;Rezar:7:
+costumbre_verano|costumbres|Algo que hacés en verano|Ir a la playa:30:playa;Tomar helado:24:helado;Piscina:18:pileta;Tomar mate:12:mate;Viajar:9:vacaciones;Dormir siesta:7:siesta
+lunfardo_amigo|lunfardo|Una forma de llamar a un amigo|Bo:30:vo;Hermano:24:hermanito;Loco:18:;Amigo:12:amigazo;Che:9:;Compañero:7:compa
+lunfardo_lindo|lunfardo|Una forma de decir que algo está muy bueno|Bárbaro:30:barbaro;Buenísimo:24:buenisimo;Genial:18:;De más:12:demas;Espectacular:9:;Piola:7:
+lunfardo_enojo|lunfardo|Una forma de decir que alguien está enojado|Caliente:30:;Re caliente:24:recaliente;Con bronca:18:bronca;Furioso:12:;Rabioso:9:;Sacado:7:
+ciudades_pasear|ciudades|Un lugar para pasear en Montevideo|Rambla:30:la rambla;Ciudad Vieja:24:;Prado:18:el prado;Parque Rodó:12:parque rodo;Mercado del Puerto:9:mercado;Tres Cruces:7:
+ciudades_playas|ciudades|Un balneario uruguayo para veranear|Punta del Este:30:punta;Piriápolis:24:piriapolis;La Paloma:18:;Atlántida:12:atlantida;Cabo Polonio:9:polonio;Punta del Diablo:7:
+ciudades_frontera|ciudades|Una ciudad uruguaya de frontera|Rivera:30:;Chuy:24:;Salto:18:;Artigas:12:;Paysandú:9:paysandu;Fray Bentos:7:
+ciudades_turismo|ciudades|Algo que visita un turista en Colonia|Faro:30:el faro;Calle de los Suspiros:24:suspiros;Murallas:18:muralla,portón,porton;Puerto:12:;Plaza:9:plaza mayor;Museos:7:museo
+playa_vender|playa|Algo que venden en la playa|Helados:30:helado;Churros:24:churro;Choclos:18:choclo;Bebidas:12:refresco,agua;Alfajores:9:alfajor;Bizcochos:7:
+playa_animales|playa|Un animal que ves en la playa|Gaviota:30:gaviotas;Perro:24:perros;Cangrejo:18:cangrejos;Medusa:12:aguaviva,aguavivas;Lobo marino:9:lobos;Caracol:7:caracoles
+musica_fogon|musica|Algo que no falta en un fogón con guitarra|Guitarra:30:;Canciones:24:cantar;Fuego:18:leña;Mate:12:;Amigos:9:;Bombo:7:
+musica_recital|musica|Algo que llevás a un recital|Entrada:30:ticket;Celular:24:;Plata:18:dinero;Agua:12:;Campera:9:abrigo;Bandera:7:
+viajes_problemas|viajes|Algo que sale mal en un viaje|Perder la valija:30:valija;Retraso:24:demora;Llueve:18:lluvia;Se pincha la rueda:12:rueda;Olvidarse algo:9:olvido;Mareo:7:
+viajes_hotel|viajes|Algo que hay en la habitación de un hotel|Cama:30:;Tele:24:televisor;Baño:18:;Toallas:12:toalla;Aire acondicionado:9:aire;Frigobar:7:heladerita
+casa_living|casa|Algo que hay en el living|Sillón:30:sillon,sofa;Tele:24:televisor;Mesa:18:mesita;Alfombra:12:;Cuadros:9:cuadro;Lámpara:7:lampara
+casa_arreglos|casa|Algo que siempre se rompe en la casa|Canilla:30:;Lamparita:24:luz;Enchufe:18:;Cisterna:12:;Persiana:9:;Calefón:7:calefon
+animales_miedo|animales|Un animal que da miedo|Araña:30:arana;Víbora:24:vibora,serpiente;Tiburón:18:tiburon;León:12:leon;Alacrán:9:alacran;Rata:7:
+animales_zoo|animales|Un animal que ves en el zoológico|León:30:leon;Jirafa:24:;Elefante:18:;Mono:12:;Tigre:9:;Cebra:7:
+escuela_maestra|escuela|Algo que dice siempre la maestra|Silencio:30:;Abran el cuaderno:24:cuaderno;Hagan fila:18:fila;Presten atención:12:atencion;Deberes:9:;Pasen al pizarrón:7:pizarron
+comida_parrilla|comida|Un corte que se tira a la parrilla|Asado de tira:30:tira,asado;Vacío:24:vacio;Entraña:18:entrana;Chorizo:12:chorizos;Pollo:9:;Morcilla:7:morcillas
+comida_feria|comida|Algo que comprás en la feria vecinal|Frutas:30:fruta;Verduras:24:verdura;Huevos:18:huevo;Queso:12:quesos;Pescado:9:;Flores:7:
+comida_rapida|comida|Una comida rápida para la noche|Pizza:30:pizzas;Chivito:24:chivitos;Hamburguesa:18:hamburguesas;Milanesa al pan:12:milanesa;Panchos:9:pancho;Empanadas:7:empanada
+carnaval_teatro|carnaval|Una categoría del concurso de carnaval|Murga:30:murgas;Parodistas:24:parodia;Humoristas:18:humor;Revista:12:revistas;Lubolos:9:comparsa;Sociedades de negros:7:
+futbol_festejo|futbol|Algo que hace un jugador al festejar un gol|Gritar:30:grito;Abrazarse:24:abrazo;Correr:18:;Besar la camiseta:12:camiseta;Bailar:9:baile;Tirarse al pasto:7:
+futbol_mundial|futbol|Algo que hacés cuando juega la Celeste en un Mundial|Ver el partido:30:mirar,partido;Ponerte la camiseta:24:camiseta;Gritar:18:;Juntarte con amigos:12:amigos;Comer asado:9:asado;Faltar al trabajo:7:faltar
+costumbre_cumple|costumbres|Algo que no falta en un cumpleaños|Torta:30:;Velitas:24:velas;Globos:18:globo;Regalos:12:regalo;Música:9:musica;Sándwiches:7:sanguchitos
+costumbre_fin_de_anio|costumbres|Algo que hacés el 31 de diciembre|Brindar:30:brindis;Comer:24:cena;Abrazarse:18:abrazos;Fuegos artificiales:12:cuetes;Tirar papeles:9:papeles;Bailar:7:
+lunfardo_nino|lunfardo|Una forma de decir niño en el Río de la Plata|Gurí:30:guri;Botija:24:;Pibe:18:;Chiquilín:12:chiquilin;Nene:9:;Purrete:7:
+lunfardo_cansado|lunfardo|Una forma de decir que estás muy cansado|Muerto:30:;Reventado:24:;Fundido:18:;Hecho pelota:12:;Molido:9:;Destruido:7:
+lunfardo_trabajar|lunfardo|Una forma de decir que vas a trabajar|Voy a laburar:30:laburar;Voy al laburo:24:laburo;Voy a yugarla:18:yugar;Voy a trabajar:12:;Voy a la oficina:9:;Voy al trabajo:7:
+ciudades_interior|ciudades|Un departamento del interior de Uruguay|Canelones:30:;Maldonado:24:;Salto:18:;Colonia:12:;Rivera:9:;Tacuarembó:7:tacuarembo
+ciudades_bsas|ciudades|Un barrio de Buenos Aires|Palermo:30:;La Boca:24:boca;San Telmo:18:;Recoleta:12:;Belgrano:9:;Puerto Madero:7:
+playa_problemas|playa|Algo que te arruina un día de playa|Viento:30:;Lluvia:24:;Quemarte:18:quemadura,sol;Aguavivas:12:medusas;Mucha gente:9:gente;Arena en la comida:7:arena
+musica_cantar|musica|Un lugar donde cantás aunque no sepas|Ducha:30:baño;Auto:24:;Karaoke:18:;Fiesta:12:;Fogón:9:fogon;Cancha:7:
+viajes_avion|viajes|Algo que pasa en un vuelo|Turbulencia:30:;Te dan comida:24:comida;Dormís:18:dormir;Se te tapan los oídos:12:oidos;Ves una película:9:pelicula;Bebé llorando:7:bebe
+casa_dormitorio|casa|Algo que hay en el dormitorio|Cama:30:;Ropero:24:placard;Mesita de luz:18:mesita;Almohada:12:;Lámpara:9:lampara,velador;Espejo:7:
+animales_ruido|animales|Un animal que hace mucho ruido|Perro:30:;Gallo:24:;Gato:18:;Loro:12:cotorra;Vaca:9:;Teru teru:7:terutero
+escuela_tunica|escuela|Algo típico de la escuela pública uruguaya|Túnica:30:tunica;Moña:24:mona,moña azul;Copa de leche:18:leche;Recreo:12:;Pizarrón:9:pizarron;Ceibalita:7:ceibal,computadora
+escuela_excusas|escuela|Una excusa para no hacer los deberes|Me olvidé:30:olvide;Se lo comió el perro:24:perro;Estaba enfermo:18:enfermo;No entendí:12:no entendi;Se cortó la luz:9:luz;No tenía cuaderno:7:cuaderno`
 .split("\n").map(linea=>{
   const [id,categoria,pregunta,panel]=linea.split("|");
   return{id,categoria,pregunta,respuestas:panel.split(";").map(entrada=>{

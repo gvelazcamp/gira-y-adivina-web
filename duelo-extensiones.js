@@ -11,6 +11,8 @@ const Vistas={
   clave:j=>"gya_vistas_"+j,
   cargar(j){try{const a=JSON.parse(localStorage.getItem(this.clave(j)));return new Set(Array.isArray(a)?a:[]);}catch(e){return new Set();}},
   guardar(j,s){try{localStorage.setItem(this.clave(j),JSON.stringify([...s]));}catch(e){}},
+  /* Junta en una sola memoria las que antes se guardaban por categoría (j_xxx). */
+  unir(j){try{const s=this.cargar(j);let hubo=false;for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith(this.clave(j)+"_")){try{(JSON.parse(localStorage.getItem(k))||[]).forEach(x=>s.add(String(x)));}catch(e){}localStorage.removeItem(k);hubo=true;}}if(hubo)this.guardar(j,s);}catch(e){}},
   marcar(j,ids){const s=this.cargar(j);[].concat(ids).forEach(x=>s.add(String(x)));this.guardar(j,s);},
   filtrar(j,lista,id){
     const s=this.cargar(j),libres=lista.filter(x=>!s.has(String(id(x))));
