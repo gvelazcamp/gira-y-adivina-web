@@ -1605,3 +1605,7 @@ Fecha: 26/10/2026 — REEL de Palabra Secreta: promo/reel-palabra.html (≈34,4 
 ```text
 REGLA de Gonzalo (26/10/2026) para los videos: con CADA video nuevo, darle SIEMPRE el prompt para Gemini de la música (estilo para adultos, sin sonidos infantiles, con los segundos exactos de cada golpe del video), sin que lo pida. Claude no compone música: las pistas las hace Gonzalo con Gemini y Claude las corta y acomoda a los golpes.
 ```
+
+```text
+Fecha: 26/10/2026 — REEL de Sopa Fugaz: promo/reel-sopa.html (≈34,4 s, 9:16, mismo motor; por ahora con reel-tutti-musica.mp3). Gancho: "¿ENCONTRÁS BONDI? 👀" con la sopa de 10×10 y el tiempo bajando → en el golpe las fichas vuelan y se revuelven con el remolino: ¡SE MUDÓ! 🌪️ (la gracia del juego). Después: logo + mascota "Una sopa de letras… pero las palabras se mueven", encontralas antes de que se muden (reloj de arena), jugando PATIO/CIELO/BONDI arrastrando el dedo, ¡SE MUDARON!, cada nivel más difícil (MATEADA en diagonal y ZORRO al revés, como desde el nivel 3), 1 vs 1, temas bien nuestros (categorías reales), ¡Nivel superado! y cierre.
+```
