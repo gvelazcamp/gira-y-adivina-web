@@ -1655,3 +1655,7 @@ Fecha: 26/10/2026 — Reel de Rueda de Letras con música propia ("Sharp Turn at
 ```text
 Fecha: 26/10/2026 — REEL de los juegos de previa: promo/reel-previa.html (≈34,4 s, 9:16, mismo motor; música provisoria reel-tutti-musica.mp3). Gancho: "¿NO SABÉS A QUÉ JUGAR EN LA PREVIA? 🍻" con el grupo aburrido (impostor/ronda en gris) → en el golpe salen los íconos de los juegos y "¡ARMÁ LA PREVIA! 🔥". Después: un solo celular ¡y juegan todos!, Impostor (cartas PIZZA / impostor / PIZZA), Bomba (sílaba CHA, la bomba acelera) → ¡BOOM! en el golpe de 13,8 s, ¿Quién soy? (PINGÜINO en la frente), Mímica (CEBAR UN MATE), Canta la Canción (LUNA, jurado 👍👍👎 → ¡VALE! en el golpe de 22,6 s), ¿Qué número soy? (37 con pistas), "Juegos de previa" con todos los íconos y cierre "¿Quién se suma? 🍻". Contra Reloj no aparece (oculto para todos menos Gonzalo).
 ```
+
+```text
+Fecha: 26/10/2026 — Reel de los juegos de previa con música propia ("Brass After the Tick", Gemini, 108 s): promo/reel-previa-musica.mp3 con 3 tramos cortados en el pulso (128 BPM): 0:27.67–0:37.29 (la entrada fuerte de 0:30.1 cae en el gancho) + 0:40.92–0:51.38 (el corte y el golpe de 0:45.15 caen en ¡BOOM!) + 1:27.42–1:43.0 (el golpe de 1:30.15 cae en ¡VALE!). Cruces de 0,12 s y fundido final.
+```
