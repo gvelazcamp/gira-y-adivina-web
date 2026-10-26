@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="es-UY">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Juegos de previa · Reel</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* REEL de los juegos de previa (≈34 s, 9:16), mismo motor que los otros reels.
+   Gancho: "¿No sabés a qué jugar en la previa? 🍻" → en el golpe salen los
+   juegos. Después: un solo celular, Impostor, Bomba (¡BOOM! en el golpe),
+   ¿Quién soy?, Mímica, Canta la Canción (¡VALE!), ¿Qué número soy? y cierre.
+   Palabras reales de los *-datos.js. Música: reel-tutti-musica.mp3 (provisoria). */
+:root{--oro:#F5B301;--mag:#E5197C;--tur:#37D6C0;--vio:#160B24;--cre:#F6EFE2;--verde:#2ED18A;--rojo:#FF7E8B}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;color:#fff;font-family:Outfit,sans-serif}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+#escenario{position:relative;width:min(100vw,calc((100vh - 64px) * 9 / 16));aspect-ratio:9/16;overflow:hidden;background:#000;container-type:inline-size}
+body.limpio #escenario{width:min(100vw,calc(100vh * 9 / 16))}
+.esc{position:absolute;inset:0;display:none;overflow:hidden}
+.capa{position:absolute;will-change:transform,opacity}
+img{display:block;-webkit-user-drag:none;user-select:none}
+.titulo{position:absolute;left:4cqw;right:4cqw;text-align:center;font-family:'Archivo Black',sans-serif;line-height:1.04;color:#fff;text-shadow:0 .6cqw 0 #000,0 0 4cqw rgba(229,25,124,.55);letter-spacing:.02em;z-index:20}
+.oro{color:var(--oro);text-shadow:0 .7cqw 0 #7a4b00,0 0 5cqw rgba(245,179,1,.55)}
+.mag{color:#ff4fa8}.tur{color:var(--tur)}.verde{color:var(--verde)}
+#lienzo{position:absolute;inset:0;width:100%;height:100%;z-index:22;pointer-events:none}
+.viñeta{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.8) 100%);z-index:30}
+.barras::before,.barras::after{content:"";position:absolute;left:0;right:0;height:7cqw;background:#000;z-index:40}
+.barras::before{top:0}.barras::after{bottom:0}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:60}
+#negro{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:59}
+#marca{position:absolute;right:2cqw;top:8cqw;z-index:70;font:700 2.6cqw Outfit;color:#fff9;background:#0008;border-radius:9px;padding:.6cqw 1.6cqw;pointer-events:none}
+body.limpio #marca{display:none}
+#ctrl{width:min(100vw,520px);display:flex;align-items:center;gap:6px;padding:0 8px}
+#ctrl button{flex:none;height:40px;min-width:40px;border:0;border-radius:10px;background:#2A1A3C;color:#fff;font:800 15px Outfit;padding:0 10px}
+#ctrl button.prin{background:var(--mag)}
+#barra{flex:1;accent-color:var(--oro)}
+#tiempo{font:700 12px Outfit;color:#ccc;min-width:62px;text-align:right}
+#escenas{width:min(100vw,520px);display:flex;gap:4px;overflow-x:auto;padding:0 8px 6px}
+#escenas button{flex:none;border:0;border-radius:8px;background:#1a1024;color:#ccc;font:700 11px Outfit;padding:6px 8px}
+#escenas button.activa{background:var(--oro);color:#160B24}
+body.limpio #ctrl,body.limpio #escenas{display:none}
+.rayos{position:absolute;border-radius:50%;background:repeating-conic-gradient(#F5B30144 0 10deg,transparent 10deg 20deg);mask:radial-gradient(circle,#000 20%,transparent 65%);-webkit-mask:radial-gradient(circle,#000 20%,transparent 65%)}
+.ico{position:absolute;border-radius:22%;box-shadow:0 1.6cqw 4cqw #000c}
+.carta{position:absolute;width:26cqw;height:38cqw;border-radius:3cqw}
+.carta img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.carta .pal{position:absolute;left:12%;right:12%;top:52%;height:22%;display:grid;place-items:center;font:900 4cqw 'Archivo Black';color:#160B24;text-align:center;line-height:1}
+.carta.dada .dorso,.carta:not(.dada) .frente{display:none}
+.sil{position:absolute;left:0;right:0;text-align:center;font:900 22cqw 'Archivo Black';color:#fff;text-shadow:0 1.4cqw 0 #E5197C,0 0 8cqw #E5197Caa}
+.chip{display:inline-flex;align-items:center;gap:1.4cqw;background:#2A1A3C;border:.4cqw solid #ffffff44;border-radius:99cqw;padding:1.4cqw 3.4cqw;font:800 5cqw Outfit;white-space:nowrap}
+.chip.ok{background:#1FA866;border-color:#7CF0BE}.chip.mal{background:#B3223B;border-color:#FF7E8B}
+.cel{position:absolute;background:#0C0616;border:1.4cqw solid #2A1A3C;border-radius:7cqw;box-shadow:0 2cqw 5cqw #000c,inset 0 0 0 .5cqw #ffffff22;display:grid;place-items:center;text-align:center}
+.cel b{font:900 9cqw/1 'Archivo Black';color:#fff}
+.voto{position:absolute;width:20cqw}
+</style>
+</head>
+<body>
+<div id="escenario" class="barras">
+  <!-- 0 · Gancho -->
+  <section class="esc" id="e0">
+    <div class="capa" id="e0fondo" style="inset:0;background:radial-gradient(ellipse at 50% 45%,#2a1440 0%,#0a0410 72%)"></div>
+    <img class="capa" id="e0ronda" src="../assets/impostor/ronda.webp" style="left:12cqw;top:58cqw;width:76cqw">
+    <div class="titulo" id="e0a" style="top:16cqw;font-size:8.4cqw">¿NO SABÉS<br>A QUÉ JUGAR<br>EN LA <span class="oro">PREVIA?</span> 🍻</div>
+    <div class="titulo" id="e0z" style="top:136cqw;font-size:6cqw">😴 … … …</div>
+    <div id="e0icos"></div>
+    <div class="titulo oro" id="e0ok" style="top:144cqw;font-size:9cqw">¡ARMÁ LA PREVIA! 🔥</div>
+  </section>
+  <!-- 1 · Un solo celular -->
+  <section class="esc" id="e1">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 40%,#2e1648,#0b0614 72%)"></div>
+    <div class="titulo" id="e1a" style="top:12cqw;font-size:8.6cqw">UN SOLO<br><span class="tur">CELULAR</span> 📱</div>
+    <img class="capa" id="e1pasar" src="../assets/bomba/pasar.webp" style="left:14cqw;top:40cqw;width:72cqw">
+    <img class="capa" id="e1grupo" src="../assets/quien-soy/como.webp" style="left:10cqw;top:88cqw;width:80cqw">
+    <div class="titulo" id="e1b" style="top:150cqw;font-size:8cqw">¡Y JUEGAN <span class="oro">TODOS</span>!</div>
+  </section>
+  <!-- 2 · Impostor -->
+  <section class="esc" id="e2">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 50%,#3a0f3a,#0b0614 72%)"></div>
+    <img class="capa" id="e2logo" src="../assets/impostor/logo.webp" style="left:24cqw;top:9cqw;width:52cqw">
+    <div class="titulo" id="e2a" style="top:56cqw;font-size:6.4cqw">TODOS TIENEN LA MISMA<br>PALABRA… <span class="mag">MENOS UNO</span></div>
+    <div class="carta capa" id="e2c0" style="left:7cqw;top:80cqw"><img class="dorso" src="../assets/impostor/carta_dorso.webp"><img class="frente" src="../assets/impostor/carta_palabra.webp"><div class="pal frente">PIZZA</div></div>
+    <div class="carta capa" id="e2c1" style="left:37cqw;top:80cqw"><img class="dorso" src="../assets/impostor/carta_dorso.webp"><img class="frente" src="../assets/impostor/carta_impostor.webp"></div>
+    <div class="carta capa" id="e2c2" style="left:67cqw;top:80cqw"><img class="dorso" src="../assets/impostor/carta_dorso.webp"><img class="frente" src="../assets/impostor/carta_palabra.webp"><div class="pal frente">PIZZA</div></div>
+    <div class="titulo oro" id="e2b" style="top:126cqw;font-size:7cqw">¿QUIÉN ES? 👀</div>
+  </section>
+  <!-- 3 · Bomba -->
+  <section class="esc" id="e3">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 45%,#3a1a10,#0b0614 72%)"></div>
+    <img class="capa" id="e3logo" src="../assets/bomba/logo.webp" style="left:28cqw;top:9cqw;width:44cqw">
+    <div class="titulo" id="e3a" style="top:44cqw;font-size:6cqw">DECÍ UNA PALABRA CON…</div>
+    <div class="sil capa" id="e3sil" style="top:52cqw">CHA</div>
+    <img class="capa" id="e3bomba" src="../assets/bomba/bomba.webp" style="left:30cqw;top:84cqw;width:40cqw">
+    <img class="capa" id="e3chispa" src="../assets/bomba/chispa.webp" style="left:56cqw;top:78cqw;width:18cqw">
+    <div class="titulo" id="e3p" style="top:132cqw;font-size:5.6cqw">…y pasala antes de que explote 😬</div>
+    <div id="e3pal"></div>
+  </section>
+  <!-- 4 · ¡BOOM! -->
+  <section class="esc" id="e4">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 50%,#ff7a00,#5a0d00 70%)"></div>
+    <img class="capa" id="e4boom" src="../assets/bomba/boom.webp" style="left:6cqw;top:40cqw;width:88cqw">
+    <img class="capa" id="e4perd" src="../assets/bomba/perdedor.webp" style="left:26cqw;top:96cqw;width:48cqw">
+    <div class="titulo" id="e4tt" style="top:14cqw;font-size:13cqw">¡BOOM! 💥</div>
+  </section>
+  <!-- 5 · ¿Quién soy? + Mímica -->
+  <section class="esc" id="e5">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 40%,#123a48,#0b0614 72%)"></div>
+    <img class="capa" id="e5qlogo" src="../assets/quien-soy/logo.webp" style="left:30cqw;top:9cqw;width:40cqw">
+    <div class="titulo" id="e5qa" style="top:50cqw;font-size:6.4cqw">CELULAR EN LA <span class="tur">FRENTE</span>…</div>
+    <div class="cel capa" id="e5cel" style="left:20cqw;top:64cqw;width:60cqw;height:30cqw"><b>PINGÜINO</b></div>
+    <img class="capa" id="e5frente" src="../assets/quien-soy/frente.webp" style="left:25cqw;top:100cqw;width:50cqw">
+    <div class="titulo" id="e5qb" style="top:157cqw;font-size:5.6cqw">…¡y adiviná quién sos! 🤔</div>
+    <img class="capa" id="e5mlogo" src="../assets/mimica/logo.webp" style="left:27cqw;top:8cqw;width:46cqw">
+    <img class="capa" id="e5telon" src="../assets/mimica/telon.webp" style="left:6cqw;top:56cqw;width:88cqw">
+    <div class="titulo" id="e5ma" style="top:50cqw;font-size:6.4cqw">ACTUÁ <span class="mag">SIN HABLAR</span> 🤐</div>
+    <div class="cel capa" id="e5frase" style="left:14cqw;top:80cqw;width:72cqw;height:26cqw"><b style="font-size:8cqw">CEBAR UN MATE 🧉</b></div>
+    <div class="titulo" id="e5mb" style="top:140cqw;font-size:6cqw">tu equipo adivina 🙌</div>
+  </section>
+  <!-- 6 · Canta la Canción -->
+  <section class="esc" id="e6">
+    <div class="capa" style="inset:0;background:radial-gradient(ellipse at 50% 35%,#4a1250 0%,#0b0614 66%)"></div>
+    <img class="capa" id="e6logo" src="../assets/canta/logo.webp" style="left:24cqw;top:8cqw;width:52cqw">
+    <div class="titulo" id="e6a" style="top:53cqw;font-size:5.6cqw;white-space:nowrap">CANTÁ ALGO QUE TENGA…</div>
+    <div class="sil capa" id="e6pal" style="top:61cqw;font-size:17cqw">LUNA 🌙</div>
+    <img class="capa" id="e6mic" src="../assets/canta/micro.webp" style="left:6cqw;top:92cqw;width:30cqw">
+    <img class="capa" id="e6crono" src="../assets/canta/crono.webp" style="left:64cqw;top:94cqw;width:28cqw">
+    <div class="titulo" id="e6b" style="top:96cqw;left:34cqw;right:34cqw;font-size:5cqw">🎶 la la la…</div>
+    <img class="voto capa" id="e6v0" src="../assets/canta/arriba.webp" style="left:14cqw;top:128cqw">
+    <img class="voto capa" id="e6v1" src="../assets/canta/arriba.webp" style="left:40cqw;top:128cqw">
+    <img class="voto capa" id="e6v2" src="../assets/canta/abajo.webp" style="left:66cqw;top:128cqw">
+    <div class="titulo oro" id="e6ok" style="top:150cqw;font-size:9cqw">¡VALE! 🎤</div>
+  </section>
+  <!-- 7 · ¿Qué número soy? -->
+  <section class="esc" id="e7">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 45%,#123a48,#0b0614 72%)"></div>
+    <img class="capa" id="e7logo" src="../assets/que-numero-soy/logo.webp" style="left:28cqw;top:8cqw;width:44cqw">
+    <div class="titulo" id="e7a" style="top:50cqw;font-size:6.2cqw">UN NÚMERO <span class="tur">GIGANTE</span>…</div>
+    <div class="cel capa" id="e7cel" style="left:22cqw;top:62cqw;width:56cqw;height:56cqw"><b id="e7num" style="font-size:30cqw;color:var(--oro)">37</b></div>
+    <div id="e7pistas"></div>
+    <img class="capa" id="e7rev" src="../assets/que-numero-soy/revela.webp" style="left:24cqw;top:100cqw;width:52cqw">
+    <div class="titulo oro" id="e7ok" style="top:154cqw;font-size:8cqw">¡ES EL 37!</div>
+  </section>
+  <!-- 8 · Para toda ocasión -->
+  <section class="esc" id="e8">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 45%,#5a1a6a,#0b0614 72%)"></div>
+    <div class="rayos capa" id="e8rayos" style="left:50%;top:92cqw;width:150cqw;height:150cqw;margin:-75cqw"></div>
+    <div class="titulo oro" id="e8t" style="top:10cqw;font-size:7.6cqw;white-space:nowrap">JUEGOS DE PREVIA</div>
+    <div class="titulo" id="e8b" style="top:22cqw;font-size:5.6cqw">para la previa, el cumple<br>y las vacaciones 🎉</div>
+    <div id="e8icos"></div>
+  </section>
+  <!-- 9 · Final -->
+  <section class="esc" id="e9">
+    <div class="capa" id="e9fondo" style="inset:-10%;background:radial-gradient(ellipse at 50% 40%,#5a1a6a 0%,#160B24 50%,#000 80%)"></div>
+    <div class="titulo oro" id="e9t" style="top:16cqw;font-size:9cqw">¿QUIÉN SE<br>SUMA? 🍻</div>
+    <div class="titulo" id="e9en" style="top:76cqw;font-size:5cqw;color:#E4D8EB">GRATIS EN</div>
+    <img class="capa" id="e9gya" src="../assets/logo.webp" style="left:23cqw;top:83cqw;width:54cqw">
+    <div class="titulo" id="e9play" style="top:134cqw;font-size:5.2cqw"><span style="display:inline-block;white-space:nowrap;background:#fff;color:#160B24;border-radius:3cqw;padding:2cqw 5cqw;text-shadow:none">▶ Disponible en Google Play</span></div>
+    <div class="titulo" id="e9web" style="top:150cqw;font-size:7cqw;color:var(--tur)">girayadivina.com</div>
+  </section>
+  <canvas id="lienzo" width="1080" height="1920"></canvas>
+  <div class="viñeta"></div>
+  <div id="negro"></div><div id="flash"></div>
+  <div id="marca"></div>
+</div>
+<div id="ctrl">
+  <button class="prin" id="bPlay">▶</button>
+  <button id="bStop">⏹</button>
+  <button id="bAnt">⏮</button>
+  <button id="bSig">⏭</button>
+  <input type="range" id="barra" min="0" max="1000" value="0">
+  <span id="tiempo">0:00</span>
+  <button id="bSon">🔊</button>
+  <button id="bLimpio" title="Ocultar controles para grabar">⛶</button>
+</div>
+<div id="escenas"></div>
+<audio id="musica" src="reel-tutti-musica.mp3" preload="auto"></audio>
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const pr=(t,a,b)=>clamp((t-a)/(b-a));
+const eOut=x=>1-Math.pow(1-x,3),eIn=x=>x*x*x,eIO=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eBack=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2);};
+const lerp=(a,b,x)=>a+(b-a)*x;
+function set(el,o){if(typeof el==="string")el=$(el);if(!el)return;
+  if("o" in o)el.style.opacity=o.o;
+  el.style.transform=`translate(${o.x||0}cqw,${o.y||0}cqw) scale(${o.s==null?1:o.s}) rotate(${o.r||0}deg)`;}
+function golpe(el,t,a,fuera=null){const x=pr(t,a,a+.3);if(t<a||(fuera!=null&&t>fuera+.25)){set(el,{o:0});return;}
+  const sale=fuera!=null?pr(t,fuera,fuera+.25):0;const sh=t-a<.45?Math.sin((t-a)*80)*(1-pr(t,a,a+.45))*1.2:0;
+  set(el,{o:(x<1?x:1)*(1-sale),s:lerp(2.2,1,eOut(x))*(1+sale*.3),x:sh});}
+const pop=(el,t,a,fuera=null)=>{const x=pr(t,a,a+.3);set(el,{o:t<a?0:x*(fuera!=null?1-pr(t,fuera,fuera+.2):1),s:lerp(.3,1,eBack(x))});};
+const escribir=(w,t,a,d)=>w.slice(0,Math.floor(pr(t,a,a+d)*w.length+(t>=a+d?1:0)));
+function rnd(semilla){let s=semilla;return()=>{s=(s*9301+49297)%233280;return s/233280;};}
+const CV=$("lienzo"),X=CV.getContext("2d"),U=10.8;
+const ESC=[];
+function escena(id,nombre,dur,render){ESC.push({id,nombre,dur,render});}
+const ICOS=["impostor/logo.webp","bomba/icono.webp","quien-soy/icono.webp","mimica/icono.webp","canta/icono.webp","que-numero-soy/icono.webp"];
+function iconos(id,pos,tam){const c=$(id);return ICOS.map((f,i)=>{const im=document.createElement("img");im.className="ico capa";im.src="../assets/"+f;im.style.left=pos[i][0]+"cqw";im.style.top=pos[i][1]+"cqw";im.style.width=tam+"cqw";c.appendChild(im);return im;});}
+
+/* 0 · Gancho: aburridos → en el golpe salen los juegos */
+const P0=[[6,52],[37,46],[68,52],[6,90],[37,96],[68,90]],I0=iconos("e0icos",P0,26);
+escena("e0","Gancho",3.2,t=>{
+  set("e0a",{o:1,s:t<.25?lerp(.92,1,eOut(pr(t,0,.25))):1});
+  const g=t>=2.45;set("e0ronda",{o:g?1-pr(t,2.45,2.7):.5,s:1+t*.02});$("e0ronda").style.filter="grayscale(1) brightness(.7)";
+  golpe("e0z",t,.6,2.3);
+  I0.forEach((im,i)=>{const a=2.45+i*.04,p=pr(t,a,a+.3);set(im,{o:t<a?0:1,s:lerp(.2,1,eBack(p)),x:lerp(50-P0[i][0]-13,0,eOut(p)),y:lerp(80-P0[i][1]-13,0,eOut(p)),r:lerp(-30,0,eOut(p))+Math.sin(t*4+i)*2});});
+  golpe("e0ok",t,2.55);$("e0fondo").style.background=g?"radial-gradient(ellipse at 50% 45%,#6a1a6a 0%,#160B24 72%)":"radial-gradient(ellipse at 50% 45%,#2a1440 0%,#0a0410 72%)";
+  $("flash").style.opacity=t>=2.45&&t<2.7?.8*(1-pr(t,2.45,2.7)):0;
+});
+
+/* 1 · Un solo celular, juegan todos */
+escena("e1","Un celular",4.0,t=>{
+  golpe("e1a",t,0);const p=pr(t,.3,.7);set("e1pasar",{o:p,x:lerp(-30,0,eOut(p))+Math.sin(t*3)*1.5});
+  const g=pr(t,1.4,1.8);set("e1grupo",{o:g,s:lerp(.6,1,eBack(g))});golpe("e1b",t,2.2);
+  $("flash").style.opacity=t<.15?.6*(1-pr(t,0,.15)):0;
+});
+
+/* 2 · Impostor: se dan vuelta las cartas */
+escena("e2","Impostor",2.2,t=>{
+  pop("e2logo",t,0);golpe("e2a",t,.2);
+  [0,1,2].forEach(i=>{const a=.5+i*.25,c=$("e2c"+i),f=pr(t,a,a+.35);c.style.opacity=pr(t,.3,.45);c.classList.toggle("dada",f>=.5);c.style.transform=`scaleX(${Math.max(.02,Math.abs(Math.cos(eIO(f)*Math.PI)))}) scale(${i===1&&t>1.5?1+.08*Math.sin((t-1.5)*14):1})`;});
+  golpe("e2b",t,1.55);
+});
+
+/* 3 · Bomba: sílaba real (CHA), pasan el celular y la mecha se acorta */
+const PAL3=[["CHACRA",.9,"ok"],["MUCHACHO",1.6,"ok"],["CHANCHO",2.3,"ok"],["CHAMPÚ",3.0,"ok"],["¿CHA… CHA…? 😰",3.6,""]];
+(function(){const c=$("e3pal");PAL3.forEach(([w,,k],i)=>{const s=document.createElement("span");s.className="chip capa "+k;s.textContent=w;s.style.left=[8,52,10,54,24][i]+"cqw";s.style.top=[142,142,152,152,162][i]+"cqw";c.appendChild(s);});})();
+escena("e3","Bomba",4.4,t=>{
+  pop("e3logo",t,0);golpe("e3a",t,.15);golpe("e3sil",t,.35);
+  const v=1+2.5*pr(t,.5,4.4);set("e3bomba",{o:pr(t,.4,.6),s:1+.06*Math.sin(t*v*9),r:Math.sin(t*v*7)*4});
+  set("e3chispa",{o:t<.5?0:.6+.4*Math.abs(Math.sin(t*20)),s:.7+.4*Math.abs(Math.sin(t*15))});
+  golpe("e3p",t,.6,.85);$("e3pal").querySelectorAll(".chip").forEach((c,i)=>pop(c,t,PAL3[i][1]));
+  $("flash").style.opacity=t>3.9?.15*Math.abs(Math.sin(t*30)):0;
+});
+
+/* 4 · ¡BOOM! */
+escena("e4","Boom",1.4,t=>{
+  const b=pr(t,0,.3);set("e4boom",{o:1-pr(t,1.0,1.3)*.4,s:lerp(.3,1.1,eOut(b)),r:t*20});
+  golpe("e4tt",t,.05);pop("e4perd",t,.5);
+  $("flash").style.opacity=t<.25?1-pr(t,0,.25):0;
+  const sh=t<.5?Math.sin(t*90)*(1-t/.5)*2:0;$("e4").style.transform=`translate(${sh}cqw,${sh*.6}cqw)`;
+});
+
+/* 5 · ¿Quién soy? (2,2 s) y Mímica (2,2 s) */
+escena("e5","Quién soy · Mímica",4.4,t=>{
+  const q=t<2.2,qq=["e5qlogo","e5qa","e5cel","e5frente","e5qb"],mm=["e5mlogo","e5telon","e5ma","e5frase","e5mb"];
+  if(q){mm.forEach(id=>set(id,{o:0}));pop("e5qlogo",t,0);golpe("e5qa",t,.2);pop("e5cel",t,.45);const f=pr(t,.6,1);set("e5frente",{o:f,y:lerp(20,0,eOut(f))});golpe("e5qb",t,1.2);}
+  else{const m=t-2.2;qq.forEach(id=>set(id,{o:0}));pop("e5mlogo",m,0);const tl=pr(m,.1,.5);set("e5telon",{o:tl*.9,s:lerp(1.3,1,eOut(tl))});golpe("e5ma",m,.2);pop("e5frase",m,.5);golpe("e5mb",m,1.1);}
+  $("flash").style.opacity=(t<.15)||(t>=2.2&&t<2.35)?.5:0;
+});
+
+/* 6 · Canta la Canción: el jurado vota y ¡VALE! en el golpe */
+escena("e6","Canta",4.0,t=>{
+  pop("e6logo",t,0);golpe("e6a",t,.25);golpe("e6pal",t,.5);
+  set("e6mic",{o:pr(t,.7,.9),r:Math.sin(t*6)*8,y:Math.sin(t*5)*1.2});set("e6crono",{o:pr(t,.8,1),s:1+.05*Math.sin(t*12)});
+  set("e6b",{o:pr(t,1,1.2)*(1-pr(t,2.9,3)),y:Math.sin(t*4)*1});
+  [0,1,2].forEach(i=>pop("e6v"+i,t,2.1+i*.25));golpe("e6ok",t,3.0);
+  $("flash").style.opacity=t>=3.0&&t<3.2?.45*(1-pr(t,3.0,3.2)):0;
+});
+
+/* 7 · ¿Qué número soy?: pistas y se revela */
+const PIS=[["¿Es par? NO",.9],["¿Más de 30? SÍ",1.5],["¿Menos de 40? SÍ",2.1]];
+(function(){const c=$("e7pistas");PIS.forEach(([w],i)=>{const s=document.createElement("span");s.className="chip capa";s.textContent=w;s.style.left=[8,40,14][i]+"cqw";s.style.top=[124,134,144][i]+"cqw";c.appendChild(s);});})();
+escena("e7","Qué número soy",4.2,t=>{
+  pop("e7logo",t,0);golpe("e7a",t,.2);const c=pr(t,.4,.7);set("e7cel",{o:c*(1-pr(t,2.8,3)),s:lerp(.5,1,eBack(c))});
+  $("e7pistas").querySelectorAll(".chip").forEach((s,i)=>pop(s,t,PIS[i][1],2.8));
+  pop("e7rev",t,3.0);golpe("e7ok",t,3.2);
+  $("flash").style.opacity=t>=3.0&&t<3.15?.4:0;
+});
+
+/* 8 · Juegos de previa: todos los iconos */
+const P8=[[8,46],[38,46],[68,46],[8,82],[38,82],[68,82]],I8=iconos("e8icos",P8,24);
+const CONF=Array.from({length:70},(_,i)=>{const r=rnd(100+i);return{x:r()*100,v:30+r()*50,d:r()*1.2,c:["#F5B301","#E5197C","#37D6C0","#7B3FE4","#2ED18A"][i%5],w:1.2+r()*1.6,g:r()*360};});
+escena("e8","Previa",2.9,t=>{
+  golpe("e8t",t,0);golpe("e8b",t,.3);set("e8rayos",{o:pr(t,.4,.7),r:t*35});
+  I8.forEach((im,i)=>{pop(im,t,.4+i*.1);if(t>.7+i*.1)im.style.transform+=` rotate(${Math.sin(t*4+i)*3}deg)`;});
+  CONF.forEach(c=>{const tt=t-c.d;if(tt<0)return;const y=-10+c.v*tt+12*tt*tt,x=c.x+Math.sin(tt*3+c.g)*4;X.save();X.translate(x*U,y*U);X.rotate(c.g+tt*6);X.fillStyle=c.c;X.fillRect(-c.w*U/2,-c.w*U/4,c.w*U,c.w*U/2);X.restore();});
+});
+
+/* 9 · Final */
+escena("e9","Final",3.7,t=>{
+  set("e9fondo",{o:pr(t,0,.4),s:1+t*.03});golpe("e9t",t,0);
+  golpe("e9en",t,.7);const g=pr(t,.8,1.2);set("e9gya",{o:t<.8?0:g,s:lerp(.5,1,eBack(g))*(1+.02*Math.sin(t*4))});
+  golpe("e9play",t,1.4);golpe("e9web",t,1.9);
+  $("flash").style.opacity=t>=.08&&t<.25?.7*(1-pr(t,.08,.25)):0;
+});
+
+/* ---------- Motor ---------- */
+let T=0;const INI=[];let acc=0;ESC.forEach(e=>{INI.push(acc);acc+=e.dur;});const TOTAL=acc;
+let tocando=false,ult=null,sonido=true;
+function cual(t){for(let i=ESC.length-1;i>=0;i--)if(t>=INI[i])return i;return 0;}
+function pintar(){
+  const i=cual(T),e=ESC[i],lt=T-INI[i];
+  document.querySelectorAll("#escenario .esc").forEach(el=>{el.style.display="none";});$(e.id).style.display="block";
+  $("flash").style.opacity=0;X.clearRect(0,0,CV.width,CV.height);
+  e.render(lt);
+  const fin=e.dur-lt;$("negro").style.opacity=i===0?0:Math.max(lt<.08?1-lt/.08:0,fin<.06&&i<ESC.length-1?1-fin/.06:0);
+  $("barra").value=Math.round(T/TOTAL*1000);
+  const mm=s=>Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,"0");
+  $("tiempo").textContent=mm(T)+" / "+mm(TOTAL);
+  $("marca").textContent=`Escena ${i+1} · ${e.nombre} · ${lt.toFixed(1)}s`;
+  document.querySelectorAll("#escenas button").forEach((b,k)=>b.classList.toggle("activa",k===i));
+}
+function syncMusica(){const m=$("musica");m.muted=!sonido;if(tocando){try{if(Math.abs(m.currentTime-T)>.25)m.currentTime=T;}catch(e){}m.play().catch(()=>{});}else m.pause();}
+function loop(now){if(tocando){const dt=ult==null?0:(now-ult)/1000;T=Math.min(TOTAL,T+dt);if(T>=TOTAL){tocando=false;$("bPlay").textContent="▶";$("musica").pause();}}
+  ult=now;pintar();requestAnimationFrame(loop);}
+function play(){if(T>=TOTAL)T=0;try{$("musica").currentTime=T;}catch(e){}tocando=true;$("bPlay").textContent="⏸";syncMusica();}
+function pausa(){tocando=false;$("bPlay").textContent="▶";$("musica").pause();}
+function ir(t){T=clamp(t,0,TOTAL);try{$("musica").currentTime=T;}catch(e){}syncMusica();}
+$("bPlay").onclick=()=>tocando?pausa():play();
+$("bStop").onclick=()=>{pausa();T=0;};
+$("bAnt").onclick=()=>{const i=cual(T);ir(T-INI[i]>1?INI[i]:INI[Math.max(0,i-1)]);};
+$("bSig").onclick=()=>{const i=cual(T);ir(INI[Math.min(ESC.length-1,i+1)]);};
+$("barra").oninput=e=>ir(e.target.value/1000*TOTAL);
+$("bSon").onclick=()=>{sonido=!sonido;$("bSon").textContent=sonido?"🔊":"🔇";syncMusica();};
+$("bLimpio").onclick=()=>{document.body.classList.add("limpio");if(!tocando)play();};
+$("escenario").onclick=()=>{if(document.body.classList.contains("limpio")){document.body.classList.remove("limpio");pausa();}};
+ESC.forEach((e,i)=>{const b=document.createElement("button");b.textContent=(i+1)+" · "+e.nombre;b.onclick=()=>ir(INI[i]);$("escenas").appendChild(b);});
+document.addEventListener("keydown",e=>{if(e.code==="Space"){e.preventDefault();tocando?pausa():play();}if(e.code==="ArrowRight")$("bSig").click();if(e.code==="ArrowLeft")$("bAnt").click();});
+const q=new URLSearchParams(location.search);if(q.get("e"))T=INI[clamp(+q.get("e")-1,0,ESC.length-1)];if(q.get("t"))T=clamp(+q.get("t"),0,TOTAL);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

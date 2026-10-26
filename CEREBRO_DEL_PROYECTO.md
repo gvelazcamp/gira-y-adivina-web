@@ -1651,3 +1651,7 @@ PENDIENTE (Gonzalo no confirmó todavía): el aviso de racha diaria (con su bip)
 ```text
 Fecha: 26/10/2026 — Reel de Rueda de Letras con música propia ("Sharp Turn at Midnight", Gemini, 67 s): promo/reel-rueda-musica.mp3 con 2 tramos de frase entera: 0:04.88–0:23.3 (los tics del comienzo acompañan el gancho y la entrada fuerte de 0:07.3 cae justo en ¡ALFAJOR!) + 0:47.3–0:63.95 (el golpe de 0:51.6 cae en ¡GANASTE!). Cruce de 0,12 s y fundido final.
 ```
+
+```text
+Fecha: 26/10/2026 — REEL de los juegos de previa: promo/reel-previa.html (≈34,4 s, 9:16, mismo motor; música provisoria reel-tutti-musica.mp3). Gancho: "¿NO SABÉS A QUÉ JUGAR EN LA PREVIA? 🍻" con el grupo aburrido (impostor/ronda en gris) → en el golpe salen los íconos de los juegos y "¡ARMÁ LA PREVIA! 🔥". Después: un solo celular ¡y juegan todos!, Impostor (cartas PIZZA / impostor / PIZZA), Bomba (sílaba CHA, la bomba acelera) → ¡BOOM! en el golpe de 13,8 s, ¿Quién soy? (PINGÜINO en la frente), Mímica (CEBAR UN MATE), Canta la Canción (LUNA, jurado 👍👍👎 → ¡VALE! en el golpe de 22,6 s), ¿Qué número soy? (37 con pistas), "Juegos de previa" con todos los íconos y cierre "¿Quién se suma? 🍻". Contra Reloj no aparece (oculto para todos menos Gonzalo).
+```
