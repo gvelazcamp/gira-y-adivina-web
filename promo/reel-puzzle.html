@@ -66,8 +66,8 @@ body.limpio #ctrl,body.limpio #escenas{display:none}
   <section class="esc" id="e0">
     <div class="capa" style="inset:0;background:radial-gradient(ellipse at 50% 40%,#3a1a5c 0%,#120618 70%)"></div>
     <div class="titulo" id="e0a" style="top:10cqw;font-size:8.6cqw">¿TE ANIMÁS<br>A <span class="oro">ARMARLO</span>? 🧩</div>
-    <div class="titulo oro" id="e0num" style="top:118cqw;font-size:24cqw"></div>
-    <div class="titulo oro" id="e0ok" style="top:124cqw;font-size:11cqw">¡COMPLETO!</div>
+    <div class="titulo oro" id="e0num" style="top:128cqw;font-size:8cqw"></div>
+    <div class="titulo oro" id="e0ok" style="top:126cqw;font-size:11cqw">¡COMPLETO!</div>
     <div class="titulo" id="e0b" style="top:150cqw;font-size:5.4cqw">sin mirar la imagen 👀</div>
   </section>
   <!-- 1 · Elegí tu puzzle -->
@@ -162,6 +162,7 @@ body.limpio #ctrl,body.limpio #escenas{display:none}
   <img id="imPiratas" src="../assets/puzzle/piratas.webp">
   <img id="imValle" src="../assets/puzzle/valle-dragones.webp">
   <img id="imSelva" src="../assets/puzzle/selva.webp">
+  <img id="imVapor" src="../assets/puzzle/ciudad-vapor.webp">
 </div>
 <audio id="musica" src="reel-tutti-musica.mp3" preload="auto"></audio>
 <script>
@@ -215,14 +216,18 @@ const IM={};
 /* 0 · Gancho */
 let G0;
 escena("e0","Gancho",3.2,t=>{
-  G0=G0||{tb:tablero(IM.dragon,3,3,5)};if(!G0.p)G0.p=piezasSueltas(G0.tb,11,[2,36,74,108]);
+  G0=G0||{tb:tablero(IM.vapor,10,10,5)};if(!G0.p)G0.p=piezasSueltas(G0.tb,11,[-2,30,94,126]);
   set("e0a",{o:1,s:t<.25?lerp(.92,1,eOut(pr(t,0,.25))):1});
-  const bx=15,by=42,w=70/3;
-  marco(bx,by,70,70,t>=2.45?"rgba(245,179,1,.9)":"rgba(255,255,255,.28)");
+  const bx=10,by=38,w=8;
+  marco(bx,by,80,80,t>=2.45?"rgba(245,179,1,.95)":"rgba(255,255,255,.28)");
   const orden=[...G0.p].sort((a,b)=>a.ord-b.ord);
-  orden.forEach((q,i)=>{const a=1.85+i*.06,k=eIO(pr(t,a,a+.3)),wob=t<a?Math.sin(t*6+i)*3:0;
-    pieza(G0.tb,q.c,q.r,lerp(q.x,bx+q.c*w,k),lerp(q.y,by+q.r*w,k),w,w,{rot:lerp(q.rot,0,k)+wob,s:lerp(.9,1,k),sombra:k<1,brillo:t>=2.45&&t<2.9?"rgba(245,179,1,.8)":null});});
-  set("e0num",{o:0});
+  /* 100 piezas: primero las que ya están puestas (abajo), las sueltas encima */
+  const vuelo=q=>1.45+q.ord*.75;
+  orden.filter(q=>t>=vuelo(q)+.25).forEach(q=>pieza(G0.tb,q.c,q.r,bx+q.c*w,by+q.r*w,w,w,{sombra:false}));
+  orden.filter(q=>t<vuelo(q)+.25).forEach((q,i)=>{const a=vuelo(q),k=eIO(pr(t,a,a+.25)),wob=t<a?Math.sin(t*5+i)*4:0;
+    pieza(G0.tb,q.c,q.r,lerp(q.x,bx+q.c*w,k),lerp(q.y,by+q.r*w,k),w,w,{rot:lerp(q.rot,0,k)+wob,s:lerp(1.1,1,k)});});
+  if(t>=2.45&&t<3.0){X.save();X.shadowColor="#F5B301";X.shadowBlur=40*(1-pr(t,2.45,3));X.lineWidth=8;X.strokeStyle="rgba(245,179,1,"+(1-pr(t,2.45,3))+")";X.strokeRect(bx*U,by*U,80*U,80*U);X.restore();}
+  const nn=$("e0num");nn.textContent="🧩 100 PIEZAS";nn.style.fontSize="8cqw";set(nn,{o:t<2.35?pr(t,.3,.6):0,s:t<.6?lerp(1.6,1,eOut(pr(t,.3,.6))):1});
   golpe("e0b",t,.25,2.3);golpe("e0ok",t,2.45);
   $("flash").style.opacity=t>=2.45&&t<2.7?.8*(1-pr(t,2.45,2.7)):0;
 });
@@ -340,7 +345,7 @@ let T=0;const INI=[];let acc=0;ESC.forEach(e=>{INI.push(acc);acc+=e.dur;});const
 let tocando=false,ult=null,sonido=true;
 function cual(t){for(let i=ESC.length-1;i>=0;i--)if(t>=INI[i])return i;return 0;}
 function pintar(){
-  IM.dragon=$("imDragon");IM.mercado=$("imMercado");IM.piratas=$("imPiratas");IM.valle=$("imValle");IM.selva=$("imSelva");
+  IM.dragon=$("imDragon");IM.mercado=$("imMercado");IM.piratas=$("imPiratas");IM.valle=$("imValle");IM.selva=$("imSelva");IM.vapor=$("imVapor");
   const i=cual(T),e=ESC[i],lt=T-INI[i];
   document.querySelectorAll("#escenario .esc").forEach(el=>{el.style.display="none";});$(e.id).style.display="block";
   $("flash").style.opacity=0;X.clearRect(0,0,CV.width,CV.height);

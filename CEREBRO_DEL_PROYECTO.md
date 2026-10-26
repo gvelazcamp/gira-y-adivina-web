@@ -1565,3 +1565,7 @@ Fecha: 25/10/2026 — Tutti Frutti, aviso de salida (Gonzalo jugó contra un iPh
 Fecha: 25/10/2026 — REEL del Puzzle: promo/reel-puzzle.html (≈34,4 s, 9:16, mismo motor y misma música que el del Tutti: reel-tutti-musica.mp3, mismos golpes). Las piezas se dibujan en un canvas con forma de rompecabezas de verdad (pestañas). Escenas: gancho "¿TE ANIMÁS A ARMARLO? 🧩" (piezas del dragón volando a su lugar → ¡COMPLETO! en el golpe) · Más de 40 puzzles para elegir (miniaturas + Dibujos/Aventuras/Héroes/Ciudades/Gigantes) · De 12 a 1000 piezas · Arrastrá la pieza… ¡y se pega sola! 🧲 · ¿Y de a dos? (vivo.webp) · Armalo en vivo con un amigo (dos celulares, lo que pone uno aparece en el otro) · Chat · Se guarda solo (lunes 25% → miércoles 60% → sábado 100%) · ¡Puzzle completo! + Compartí la foto · cierre Puzzle + Girá y Adiviná + Google Play + girayadivina.com.
 REGLA de Gonzalo para los videos: los "3 segundos" son el tiempo del gancho para atrapar, NO se escriben en el video ("en 3 segundos", cuenta 3-2-1). Se sacaron del Tutti (ahora "¿LAS COMPLETÁS ANTES QUE TODOS?") y del Puzzle.
 ```
+
+```text
+Fecha: 26/10/2026 — Reel del Puzzle: el gancho tenía un puzzle de 9 piezas ("van a decir qué fácil"). Ahora son 100 piezas (10×10, ciudad-vapor) desparramadas por toda la pantalla con "🧩 100 PIEZAS", que vuelan a su lugar en ola y en el golpe de la música queda ¡COMPLETO! con el marco dorado.
+```
