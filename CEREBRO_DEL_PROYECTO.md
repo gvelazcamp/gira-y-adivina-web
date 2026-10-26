@@ -1601,3 +1601,7 @@ Fecha: 26/10/2026 — Reel del Ahorcado con música propia ("Before the Blade Fa
 ```text
 Fecha: 26/10/2026 — REEL de Palabra Secreta: promo/reel-palabra.html (≈34,4 s, 9:16, mismo motor; música reel-cien-musica.mp3). Gancho: "ÚLTIMO INTENTO… 😬" con 4 filas jugadas (PLAYA, TERMO, CERDA, PERLA) → "¿CUÁL ES?" (para que comenten); en el golpe se escribe YERBA y queda toda verde → ¡YERBA! 🧉. Después: logo + personaje "Una palabra de 5 letras · 6 intentos", los colores (verde/amarilla/gris), jugando MURGA en 3 (CARTA, PURGA, MURGA), ¡EN 3! 🔥, compartilo por WhatsApp ("la saqué en 3/6") y Sofi contesta, más de 600 palabras y no se repiten, 1 vs 1 con la misma palabra (TANGO: Vos en 3, Sofi en 4 → ¡Ganaste en 3!), ¡La sacaste! y cierre. Todas las palabras del tablero son válidas en el juego. NO se habla de "palabra del día" (Gonzalo: es un juego normal con fichas).
 ```
+
+```text
+REGLA de Gonzalo (26/10/2026) para los videos: con CADA video nuevo, darle SIEMPRE el prompt para Gemini de la música (estilo para adultos, sin sonidos infantiles, con los segundos exactos de cada golpe del video), sin que lo pida. Claude no compone música: las pistas las hace Gonzalo con Gemini y Claude las corta y acomoda a los golpes.
+```
