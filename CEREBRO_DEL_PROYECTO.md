@@ -1573,3 +1573,7 @@ Fecha: 26/10/2026 — Reel del Puzzle: el gancho tenía un puzzle de 9 piezas ("
 ```text
 Fecha: 26/10/2026 — Inicio: el botón "¡Jugar ahora!" ahora dice abajo "Girá, resolvé y recorré Uruguay y Argentina" (antes "Uruguay, vos contra la máquina", que no contaba de qué se trata). Elegido por Gonzalo. En celulares chicos (360 px) baja a 2 líneas. También en inglés (i18n.js v4). sw v434.
 ```
+
+```text
+Fecha: 26/10/2026 — REEL del Rosco: promo/reel-rosco.html (≈34,4 s, 9:16, mismo motor y misma música que los de Tutti y Puzzle). Gancho: "SI SOS URUGUAYO, ESTA LA SABÉS 🧉" con la B en el rosco y la pista real "Forma uruguaya de llamar a un niño" → se escribe BOTIJA y en el golpe queda verde + ¡BOTIJA!. Después: logo + personaje "Una letra, una pista, una palabra · bien rioplatense", el rosco gira y te toca la C, jugando con pistas reales (CHAMUYO, YAPA, QUINCHO), ¡Pasapalabra!, completá todo el rosco (letras verdes/rojas + reloj), 1 vs 1 con un amigo, más de 500 definiciones (palabras nuevas en cada partida), ¡Rosco perfecto! y cierre. Ojo: no poner "el Pasapalabra rioplatense" (es marca de un programa de TV).
+```
