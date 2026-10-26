@@ -72,7 +72,7 @@ Los 18 juegos siguientes aparecen en `EXTENSIONES`. En esta revisión los flags 
 
 | Juego | Archivo principal | Mecánica y ubicación |
 |---|---|---|
-| Sopa Fugaz | `sopa-fugaz.js` | Encontrar palabras antes de que cambien de lugar. |
+| Sopa Fugaz | `sopa-fugaz.js` | Sopa de letras 14×14 con reloj (sin giro desde el 26/10/2026), tableros con forma cada 3 niveles, palabras que no se repiten nunca. |
 | Rueda de Letras | `rueda-de-letras.js` | Unir letras contra el tiempo; datos y diccionario propios. |
 | Palabra Secreta | `palabra-secreta.js` | Palabra de 5 letras en 6 intentos. |
 | Frases en Giro | `frases-en-giro.js` | Ordenar frases entre giros y señuelos. |
@@ -1658,4 +1658,9 @@ Fecha: 26/10/2026 — REEL de los juegos de previa: promo/reel-previa.html (≈3
 
 ```text
 Fecha: 26/10/2026 — Reel de los juegos de previa con música propia ("Brass After the Tick", Gemini, 108 s): promo/reel-previa-musica.mp3 con 3 tramos cortados en el pulso (128 BPM): 0:27.67–0:37.29 (la entrada fuerte de 0:30.1 cae en el gancho) + 0:40.92–0:51.38 (el corte y el golpe de 0:45.15 caen en ¡BOOM!) + 1:27.42–1:43.0 (el golpe de 1:30.15 cae en ¡VALE!). Cruces de 0,12 s y fundido final.
+```
+
+```text
+Fecha: 26/10/2026 — Sopa Fugaz rehecha (Gonzalo: "que no gire, mucho más cuadraditos y más palabras, nada fácil"; eligió el estilo B de los bocetos y le encantaron los tableros con forma). (1) Sin giro: se sacaron la mudanza, el remolino y el aviso "Las letras se mudan en…". (2) Estilo B: tablero liso crema de 14×14 DESDE EL NIVEL 1 (no hay tablero chico), palabras en las 8 direcciones y al revés, cada palabra encontrada queda marcada con una cápsula de color (SVG), lista en 3 columnas tachando las encontradas, reloj en mm:ss (6 s + 1,3 s por letra por palabra, margen 1 → baja 0,03 por nivel, piso 0,75). 12 palabras en el nivel 1, +1 cada 3 niveles, tope 16. Botones 💡 Pista (3 por ronda: titila la primera letra de una que falta), ⏸ Pausa (para el reloj y tapa el tablero) y ¿Cómo se juega?. (3) Cada 3 niveles el tablero tiene forma (SOPA_FORMAS en sopa-fugaz.js: Corazón→Amor y amigos, Mate→Ritual del mate, Sol de Mayo→Playa y balneario, Mapa de Uruguay→Ciudades del mapa, Pelota→Fútbol de potrero, Estrella→Noche y espacio); las palabras van solo adentro de la forma; si no entran, se cambia por el cuadrado. (4) Banco de 142 a 1.510 palabras en 67 temas (sopa-fugaz-datos.js; se permite Ñ). Cada palabra sale UNA sola vez en todo el juego (Vistas "sopa", gya_vistas_sopa); cuando se agotan todas, vuelven. Auditoría 0 errores: se descartaron ~530 que ya estaban en otros juegos. En el 1 vs 1 el anfitrión manda el tablero armado (los dos juegan la misma sopa). tests/sopa-fugaz.cjs reescrito (PASS 360 y 1280). sopa-fugaz.js v11, datos v4, extensiones.css v124, extensiones.js v67, sw v436.
+PENDIENTE: el reel promo/reel-sopa.html muestra la mudanza vieja (las letras que se mudan); rehacerlo si Gonzalo lo pide.
 ```
