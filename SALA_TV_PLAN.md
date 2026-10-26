@@ -18,7 +18,7 @@ Se hace una sola vez y sirve para todos los juegos.
 | # | Juego | Cuántos celulares | Qué se ve en la tele | Qué se hace en el celular | Estado |
 |---|---|---|---|---|---|
 | 1 | **Ruleta** | Cada uno con el suyo (2 a 6) | Ruleta y tablero | Girar, elegir letras, resolver | ✅ Hecho (en prueba) |
-| 2 | **Tutti Frutti** | Cada uno con el suyo | Ver abajo: **nunca muestra las respuestas** | Escribir las palabras, revisar y anular | ✅ Hecho (tele.js; falta probar en tele real) |
+| 2 | **Tutti Frutti** | Cada uno con el suyo | Letra y reloj durante la ronda; después grilla de palabras y puntos | Escribir, apelar, anular y votar | ✅ Hecho (tele.js; falta probar en tele real) |
 | 3 | **100 Rioplatenses Dicen** | **Uno solo**, el grupo juega junto | Pregunta, 6 respuestas tapadas, 3 cruces | Escribe lo que el grupo dice | ✅ Hecho (tele.js) |
 | 4 | **Ahorcado** | Uno (el grupo dice qué letra) | La partida igual que en el celular, en grande | Teclado de letras | ✅ Hecho (tele.js) |
 | 5 | **Rosco** | **Uno juega**, los demás miran (como programa de tele) | Rosco girando, letra, definición, reloj | Escribir la respuesta, "Enviar" y "Pasar" | ✅ Hecho (tele.js) |
@@ -30,10 +30,10 @@ Ya existe ("Sala TV"). La tele muestra la ruleta y el tablero; cada jugador gira
 ### 2. Tutti Frutti
 - **Mientras se juega:** la letra grande y el **reloj gigante ocupando casi toda la pantalla** (cambia de color cuando quedan pocos segundos). Abajo los nombres con una tilde ✓ cuando cada uno termina, **sin mostrar qué escribió**.
 - **¡BASTA!:** en grande con el nombre de quién lo cantó.
-- **Revisión y anulación:** en los celulares, como hoy. La tele dice "Revisando respuestas…" y sigue sin mostrar respuestas.
-- **Final de cada ronda:** puntajes de la ronda y quién la ganó.
+- **Revisión y anulación:** los celulares deciden, como hoy. Mientras se juntan y validan respuestas, la tele dice "Revisando respuestas…". Después aparece la grilla en la tele: categorías, lo que escribió cada jugador, puntos por respuesta, dudas, apelaciones y anulaciones. Los puntos se actualizan al votar.
+- **Final de cada ronda:** grilla de respuestas y puntos, total de la letra, acumulado y quién cantó basta.
 - **Final de la partida:** podio con el ganador, puntos totales y rondas ganadas, con festejo.
-- **Envío:** cada teléfono conserva las palabras mientras se escriben; el primero que termina y toca **¡BASTA!** envía sus respuestas y corta la ronda. Los demás envían lo que tenían al recibir el corte. La tele solo recibe y muestra progreso, reloj y puntajes; las palabras aparecen exclusivamente en los teléfonos durante la revisión.
+- **Envío:** cada teléfono conserva las palabras mientras se escriben; el primero que termina y toca **¡BASTA!** envía sus respuestas y corta la ronda. Los demás envían lo que tenían al recibir el corte. La tele no muestra palabras hasta que estén juntas y validadas; entonces abre la grilla de resultados.
 
 ### 3. 100 Rioplatenses Dicen
 - **Un solo celular**; el grupo del living juega junto ("¡poné chorizo!").

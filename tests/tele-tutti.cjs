@@ -18,9 +18,11 @@ const server=http.createServer((req,res)=>{
   });await p.goto(base+url);return p;};
   try{
     const tv=await open('/index.html?tele=1&telered=local');
+    await tv.setViewportSize({width:1920,height:1080});
     const code=await tv.locator('.tl-codigo').textContent();
     const a=await open('/index.html?telecel='+code+'&telered=local&n=Ana');
     const b=await open('/index.html?telecel='+code+'&telered=local&n=Beto');
+    await a.setViewportSize({width:390,height:844});await b.setViewportSize({width:390,height:844});
     await tv.waitForFunction(()=>document.querySelectorAll('.tl-jugadores li').length===2);
     await tv.evaluate(()=>{localStorage.setItem('gya_tutti',JSON.stringify({cats:['Nombre','Animal','Comida'],tiempo:60}));localStorage.setItem('gya_tf_letras_usadas',JSON.stringify('BCDEFGHIJLMNOPRSTUV'.split('')));TuttiFrutti._revisar=async(c,v)=>v!=='Alegre';});
     await tv.locator('[data-j="tutti"]').click();
@@ -30,17 +32,21 @@ const server=http.createServer((req,res)=>{
     await fill(a,['Ana','Abeja','Asado']);await fill(b,['Alberto','Alegre','Asado']);
     assert(!(await tv.locator('#teleTV').textContent()).includes('Abeja'),'La TV mostró una palabra antes de Basta');
     await a.locator('#tlTfBasta').click();
+    await tv.locator('.tl-tutti-espera').waitFor();
+    assert(!(await tv.locator('#teleTV').textContent()).includes('Abeja'),'La TV mostró una palabra durante el corte');
     await tv.locator('.tl-tutti-resultado').waitFor({timeout:20000});
-    assert(!(await tv.locator('#teleTV').textContent()).includes('Abeja'),'La TV mostró una palabra en resultados');
+    assert((await tv.locator('#teleTV').textContent()).includes('Abeja'),'Faltan las palabras en el resultado de TV');
+    assert((await tv.locator('#teleTV').textContent()).includes('Animal'),'Faltan las categorías en el resultado de TV');
+    if(process.env.TUTTI_TV_SCREENSHOT)await tv.screenshot({path:process.env.TUTTI_TV_SCREENSHOT});
     await b.locator('.tl-tf-result').waitFor();
     await b.locator('[data-apelar="1"]').click();
     await a.locator('[data-decidir][data-p="10"]').click();
     await b.waitForFunction(()=>[...document.querySelectorAll('.tl-tf-revision')][1].textContent.includes('Alegre')&&[...document.querySelectorAll('.tl-tf-revision')][1].textContent.includes('10'));
-    await tv.waitForFunction(()=>document.querySelector('.tl-tutti-tabla')?.textContent.includes('+25'));
+    await tv.waitForFunction(()=>document.querySelector('.tl-tf-board')?.textContent.includes('+25'));
     const bPid=await b.evaluate(()=>sessionStorage.getItem('gya_tele_pid'));
     await a.locator(`[data-anular="${bPid}|1"]`).click();
     await b.locator('[data-decidir][data-v="1"]').click();
-    await tv.waitForFunction(()=>document.querySelector('.tl-tutti-tabla')?.textContent.includes('+15'));
+    await tv.waitForFunction(()=>document.querySelector('.tl-tf-board')?.textContent.includes('+15'));
     await a.locator('#tlTfSiguienteRonda').click();
     await tv.waitForFunction(()=>document.querySelector('.tl-tutti h1')?.textContent.includes('RONDA 2'));
     for(let ronda=2;ronda<=3;ronda++){
@@ -50,13 +56,13 @@ const server=http.createServer((req,res)=>{
       await fill(b,[letra+'lberto',letra+'guila',letra+'sado']);
       await a.locator('#tlTfBasta').click();
       await tv.waitForFunction(n=>document.querySelector('.tl-tutti-resultado h1')?.textContent.includes('RONDA '+n),ronda);
-      assert(!(await tv.locator('#teleTV').textContent()).includes(letra+'beja'),'La TV mostró palabras');
+      assert((await tv.locator('#teleTV').textContent()).includes(letra+'beja'),'La TV no mostró las palabras al terminar la letra');
       await a.locator('#tlTfSiguienteRonda').click();
       if(ronda===2)await tv.waitForFunction(()=>document.querySelector('.tl-tutti h1')?.textContent.includes('RONDA 3'));
     }
     await tv.locator('.tl-tutti-final').waitFor();
     assert((await tv.locator('.tl-tutti-final').textContent()).includes('LETRA A'));
     assert.equal(errors.length,0,errors.join('\n'));
-    console.log('PASS Tutti TV: dos teléfonos, Basta, palabras privadas, apelación, anulación, tres rondas y final');
+    console.log('PASS Tutti TV: dos teléfonos, Basta, respuestas visibles al terminar, apelación, anulación, tres rondas y final');
   }finally{await browser.close();await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e);process.exitCode=1});

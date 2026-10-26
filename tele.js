@@ -144,7 +144,7 @@
     conectar(cod,()=>{difundir();setInterval(difundir,2500);},()=>{avisoTele("No se pudo conectar. Revisá el internet de la tele y recargá.");},recibir);
   }
 
-  /* ---------- Tutti Frutti: todos responden; la tele nunca muestra palabras ---------- */
+  /* ---------- Tutti Frutti: todos responden; la tele revela palabras al terminar la letra ---------- */
   function juegoTutti(T,actualizar){
     const BASE=["Nombre","Apellido","País o ciudad","Comida","Animal","Cosa"];
     const LETRAS="ABCDEFGHIJLMNOPRSTUV".split(""),RONDAS=3;
@@ -223,11 +223,16 @@
         raiz.innerHTML=`<div class="tl-centro tl-tutti-espera"><h1>${fase==="cortada"?(ganador?"¡BASTA!":"¡TIEMPO!"):"Revisando respuestas…"}</h1>
           <p>${fase==="cortada"?(ganador?esc((jugadores.find(j=>j.pid===ganador)||{}).n||"Alguien")+" terminó primero":"Terminó el tiempo de la letra "+letra):"Los jugadores revisan desde sus celulares"}</p></div>`;return;}
       if(fase==="resultado"){
-        const pr=puntos();raiz.innerHTML=`<div class="tl-tutti-resultado"><h1>🍓 LETRA ${letra} · RONDA ${ronda}/${RONDAS}</h1>
-          <p>Revisando respuestas en los celulares… ${Object.keys(pendientes).length?"· "+Object.keys(pendientes).length+" decisión pendiente":""}</p>
-          <div class="tl-tutti-tabla"><div class="tl-tutti-fila tl-tutti-cab"><span>JUGADOR</span><span>ESTA LETRA</span><span>TOTAL</span><span>RONDAS</span></div>
-          ${jugadores.map(j=>`<div class="tl-tutti-fila"><span>${esc(j.n)}${j.pid===ganador?" 🏁":""}</span><b>+${suma(pr[j.pid])}</b><b>${totales[j.pid]+suma(pr[j.pid])}</b><b>${ganadas[j.pid]}</b></div>`).join("")}</div>
-          <p>Las palabras y las apelaciones se ven solo en los celulares.</p></div>`;return;}
+        const pr=puntos(),pend=Object.values(pendientes);
+        raiz.innerHTML=`<div class="tl-tutti-resultado"><header><h1>🍓 LETRA ${letra} · RONDA ${ronda}/${RONDAS}</h1>
+          <p>Respuestas y puntajes · apelaciones desde los celulares${pend.length?` · ⏳ ${pend.length} pendiente${pend.length===1?"":"s"}`:""}</p></header>
+          <div class="tl-tf-board${cats.length>8||jugadores.length>5?" tl-tf-board-densa":""}" style="--tf-jug:${jugadores.length};--tf-cats:${cats.length}">
+            <div class="tl-tf-board-esquina">CATEGORÍA</div>${jugadores.map(j=>`<div class="tl-tf-board-nombre">${esc(j.n)}${j.pid===ganador?" 🏁":""}</div>`).join("")}
+            ${cats.map((cat,i)=>`<div class="tl-tf-board-cat">${esc(cat)}</div>${jugadores.map(j=>{const v=(respuestas[j.pid]||[])[i]||"",k=clave(j.pid,i),p=pr[j.pid][i],solicitud=pend.find(x=>x.a===j.pid&&x.i===i);
+              const estado=anuladas[k]?"🚫 Anulada":solicitud?"⏳ En revisión":v&&!marcas[j.pid]?.[i]&&extra[k]==null?"⚠️ Dudosa":"";
+              return`<div class="tl-tf-board-celda${anuladas[k]?" tl-tf-board-anulada":solicitud?" tl-tf-board-pendiente":v&&!marcas[j.pid]?.[i]&&extra[k]==null?" tl-tf-board-dudosa":""}"><span>${esc(v)||"—"}</span><small>+${p}${estado?` · ${estado}`:""}</small></div>`;}).join("")}`).join("")}
+            <div class="tl-tf-board-total">TOTAL LETRA</div>${jugadores.map(j=>`<div class="tl-tf-board-suma">+${suma(pr[j.pid])}<small>Acumulado: ${totales[j.pid]+suma(pr[j.pid])}</small></div>`).join("")}</div>
+          <footer>Los puntos se actualizan al resolver apelaciones y anulaciones. 🎮 Siguiente letra desde el celular con el control.</footer></div>`;return;}
       const orden=[...jugadores].sort((a,b)=>ganadas[b.pid]-ganadas[a.pid]||totales[b.pid]-totales[a.pid]);
       raiz.innerHTML=`<div class="tl-tutti-final"><h1>🏆 TUTTI FRUTTI · RESULTADO FINAL</h1>
         <div class="tl-tutti-tabla"><div class="tl-tutti-fila tl-tutti-final-cab"><span>JUGADOR</span>${historial.map(h=>`<span>LETRA ${h.letra}</span>`).join("")}<span>TOTAL</span><span>RONDAS</span></div>
