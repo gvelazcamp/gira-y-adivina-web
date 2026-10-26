@@ -1629,3 +1629,7 @@ Fecha: 26/10/2026 — Reel de Memoria en Giro: el tablero era chico (12 cartas, 
 ```text
 Fecha: 26/10/2026 — Reel de Memoria en Giro con música propia ("Sleight of Thought", Gemini, 62 s): promo/reel-memoria-musica.mp3 armado con 3 tramos para que caigan los golpes: 0:12.75–0:21.85 (el de 0:15.2 cae en el gancho y el de 0:20.7 en el giro) + 0:20.58–0:28.9 (el de 0:25.4 cae en ¡GIRÓ!) + 0:41.48–0:58.75 (parte tranquila para "memorizá", el de 0:46.7 en ¡GANASTE! y termina con el final natural del tema). Cruces de 0,12 s.
 ```
+
+```text
+Fecha: 26/10/2026 — REEL del Silabario Rioplatense: promo/reel-silabario.html (≈34,4 s, 9:16, mismo motor; música provisoria reel-tutti-musica.mp3). Gancho: "¿QUÉ PALABRA ES? 🤔" con la pista real "Mate frío de verano que se prepara con agua helada o jugo." y un tablero de 36 sílabas → en el golpe se arma TERERÉ: ¡TERERÉ! 🧉. Después: logo + personaje "Leé la pista… y armá la palabra con sílabas", un solo tablero con las sílabas de todas las respuestas, jugando PONCHO y PICADA (pistas reales; las usadas quedan apagadas), ¡SE MEZCLA!, cada nivel más sílabas (25, 36 y 49 como el juego), 1 vs 1, palabras bien nuestras (respuestas reales), ¡Perfecto! y cierre.
+```

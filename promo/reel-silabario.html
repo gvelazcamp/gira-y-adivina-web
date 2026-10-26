@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="es-UY">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Silabario · Reel</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* REEL del Silabario Rioplatense (≈34 s, 9:16), mismo motor que los otros reels.
+   Gancho: "¿Qué palabra es? 🤔" con la pista real "Mate frío de verano…" y el
+   tablero de sílabas → en el golpe se arma TERERÉ. Pistas y sílabas reales
+   (silabario-rioplatense-datos.js). Música: reel-tutti-musica.mp3 (provisoria). */
+
+/* REEL del Rosco Rioplatense (≈34 s, 9:16), mismo motor y misma música que
+   reel-tutti.html / reel-puzzle.html. Gancho: "Si sos uruguayo, esta la sabés"
+   con la B de BOTIJA (definición real del juego) → ¡BOTIJA! en el golpe.
+   Las definiciones que aparecen son las del juego (rosco-rioplatense-datos.js). */
+:root{--oro:#F5B301;--mag:#E5197C;--tur:#37D6C0;--vio:#160B24;--cre:#F6EFE2;--verde:#2ED18A;--rojo:#FF7E8B}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;color:#fff;font-family:Outfit,sans-serif}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+#escenario{position:relative;width:min(100vw,calc((100vh - 64px) * 9 / 16));aspect-ratio:9/16;overflow:hidden;background:#000;container-type:inline-size}
+body.limpio #escenario{width:min(100vw,calc(100vh * 9 / 16))}
+.esc{position:absolute;inset:0;display:none;overflow:hidden}
+.capa{position:absolute;will-change:transform,opacity}
+.abs{position:absolute}
+img{display:block;-webkit-user-drag:none;user-select:none}
+.titulo{position:absolute;left:4cqw;right:4cqw;text-align:center;font-family:'Archivo Black',sans-serif;line-height:1.04;color:#fff;text-shadow:0 .6cqw 0 #000,0 0 4cqw rgba(229,25,124,.55);letter-spacing:.02em;z-index:20}
+.oro{color:var(--oro);text-shadow:0 .7cqw 0 #7a4b00,0 0 5cqw rgba(245,179,1,.55)}
+.mag{color:#ff4fa8}.tur{color:var(--tur)}.verde{color:var(--verde)}
+#lienzo{position:absolute;inset:0;width:100%;height:100%;z-index:22;pointer-events:none}
+.viñeta{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.8) 100%);z-index:30}
+.barras::before,.barras::after{content:"";position:absolute;left:0;right:0;height:7cqw;background:#000;z-index:40}
+.barras::before{top:0}.barras::after{bottom:0}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:60}
+#negro{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:59}
+#marca{position:absolute;right:2cqw;top:8cqw;z-index:70;font:700 2.6cqw Outfit;color:#fff9;background:#0008;border-radius:9px;padding:.6cqw 1.6cqw;pointer-events:none}
+body.limpio #marca{display:none}
+#ctrl{width:min(100vw,520px);display:flex;align-items:center;gap:6px;padding:0 8px}
+#ctrl button{flex:none;height:40px;min-width:40px;border:0;border-radius:10px;background:#2A1A3C;color:#fff;font:800 15px Outfit;padding:0 10px}
+#ctrl button.prin{background:var(--mag)}
+#barra{flex:1;accent-color:var(--oro)}
+#tiempo{font:700 12px Outfit;color:#ccc;min-width:62px;text-align:right}
+#escenas{width:min(100vw,520px);display:flex;gap:4px;overflow-x:auto;padding:0 8px 6px}
+#escenas button{flex:none;border:0;border-radius:8px;background:#1a1024;color:#ccc;font:700 11px Outfit;padding:6px 8px}
+#escenas button.activa{background:var(--oro);color:#160B24}
+body.limpio #ctrl,body.limpio #escenas{display:none}
+.rayos{position:absolute;border-radius:50%;background:repeating-conic-gradient(#F5B30144 0 10deg,transparent 10deg 20deg);mask:radial-gradient(circle,#000 20%,transparent 65%);-webkit-mask:radial-gradient(circle,#000 20%,transparent 65%)}
+.tab{position:absolute;left:6cqw;width:88cqw}
+.f{position:absolute;background:url('../assets/silabario/ficha.webp') center/100% 100% no-repeat;display:grid;place-items:center;font:900 5cqw 'Archivo Black';color:#2A1A3C}
+.f.sel{background-image:url('../assets/silabario/ficha_sel.webp');color:#fff;transform:scale(1.08)}
+.f.usada{background-image:url('../assets/silabario/ficha_usada.webp');color:#FFFFFF66}
+.pista{position:absolute;left:6cqw;right:6cqw;padding:3cqw 4cqw;background:#2A1A3C;border:.4cqw solid #F5B30177;border-radius:4cqw;font:700 4.6cqw/1.25 Outfit;color:#F6EFE2;text-align:center;box-shadow:0 1.6cqw 4cqw #000a}
+.resp{position:absolute;left:10cqw;right:10cqw;height:12cqw;border-radius:3.4cqw;background:#F6EFE2;color:#160B24;display:grid;place-items:center;font:900 7cqw 'Archivo Black';letter-spacing:.06em}
+.resp.ok{background:#37D6C0}
+.resp .ph{font:600 4.4cqw Outfit;letter-spacing:0;color:#160B2466}
+.hud{position:absolute;left:6cqw;right:6cqw;display:flex;justify-content:space-between;align-items:center;font:900 5cqw 'Archivo Black'}
+.hud span{display:inline-flex;align-items:center;gap:1.6cqw}
+.hud img{width:7.6cqw;height:7.6cqw;object-fit:contain}
+.dedo{position:absolute;font-size:10cqw;z-index:26;filter:drop-shadow(0 1cqw 1cqw #000a)}
+.chips{position:absolute;left:4cqw;right:4cqw;display:flex;flex-wrap:wrap;justify-content:center;gap:2cqw}
+.chip{display:inline-flex;align-items:center;gap:1.4cqw;background:#2A1A3C;border:.4cqw solid #ffffff44;border-radius:99cqw;padding:1.4cqw 3.4cqw;font:800 4.4cqw Outfit;white-space:nowrap}
+.duo{position:absolute;left:6cqw;right:6cqw;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:3cqw}
+.jug{background:#0C0616D9;border:.6cqw solid #FFFFFF22;border-radius:5cqw;padding:3cqw;text-align:center}
+.jug img{width:18cqw;height:18cqw;border-radius:50%;margin:0 auto 1.6cqw;border:.8cqw solid var(--c)}
+.jug b{display:block;font:900 5cqw 'Archivo Black'}
+.jug em{display:block;font:900 9cqw 'Archivo Black';font-style:normal;color:var(--c)}
+.jug small{font:700 3.2cqw Outfit;color:#E4D8EB}
+.nivel{position:absolute;left:0;right:0;text-align:center;font:900 6cqw 'Archivo Black';color:var(--oro)}
+</style>
+</head>
+<body>
+<div id="escenario" class="barras">
+  <!-- 0 · Gancho -->
+  <section class="esc" id="e0">
+    <div class="capa" style="inset:0;background:radial-gradient(ellipse at 50% 40%,#3a1a5c 0%,#120618 70%)"></div>
+    <div class="titulo" id="e0a" style="top:9cqw;font-size:7.2cqw;white-space:nowrap">¿QUÉ PALABRA ES? 🤔</div>
+    <div class="pista capa" id="e0p" style="top:22cqw">Mate frío de verano que se prepara con agua helada o jugo.</div>
+    <div class="tab capa" id="e0t" style="top:46cqw;height:62cqw"></div>
+    <div class="resp capa" id="e0r" style="top:112cqw"></div>
+    <div class="titulo oro" id="e0ok" style="top:132cqw;font-size:10cqw">¡TERERÉ! 🧉</div>
+    <div class="titulo" id="e0b" style="top:134cqw;font-size:6cqw">buscá las sílabas 👀</div>
+  </section>
+  <!-- 1 · Presentación -->
+  <section class="esc" id="e1">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 40%,#2e1648,#0b0614 72%)"></div>
+    <img class="capa" id="e1logo" src="../assets/silabario/logo.webp" style="left:14cqw;top:10cqw;width:72cqw">
+    <img class="capa" id="e1pers" src="../assets/silabario/personaje.webp" style="left:60cqw;top:70cqw;width:34cqw">
+    <div class="titulo" id="e1a" style="top:84cqw;left:5cqw;right:42cqw;font-size:6.6cqw;text-align:left">LEÉ<br>LA PISTA…</div>
+    <div class="titulo" id="e1b" style="top:108cqw;left:5cqw;right:42cqw;font-size:6.6cqw;text-align:left">…Y ARMÁ LA<br>PALABRA CON<br><span class="tur">SÍLABAS</span></div>
+  </section>
+  <!-- 2 · Un solo tablero -->
+  <section class="esc" id="e2">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 50%,#123a48,#0b0614 72%)"></div>
+    <div class="titulo" id="e2a" style="top:12cqw;font-size:7.6cqw">UN SOLO TABLERO…</div>
+    <div class="tab capa" id="e2t" style="top:40cqw;height:80cqw"></div>
+    <div class="titulo" id="e2b" style="top:128cqw;font-size:7cqw">…CON LAS SÍLABAS<br>DE <span class="oro">TODAS</span> LAS RESPUESTAS</div>
+  </section>
+  <!-- 3 · Jugando -->
+  <section class="esc" id="e3">
+    <div class="capa" style="inset:0;background:radial-gradient(ellipse at 50% 20%,#3a1a5c 0%,#160B24 60%)"></div>
+    <div class="hud capa" id="e3hud" style="top:9cqw"><span><img src="../assets/silabario/reloj.webp"><b id="e3reloj">0:14</b></span><span><img src="../assets/silabario/aciertos.webp"><b id="e3ok" class="tur">0</b></span></div>
+    <div class="pista capa" id="e3p" style="top:21cqw"></div>
+    <div class="tab capa" id="e3t" style="top:46cqw;height:70cqw"></div>
+    <div class="resp capa" id="e3r" style="top:122cqw"></div>
+    <div class="dedo" id="e3dedo">👆</div>
+  </section>
+  <!-- 4 · ¡Se mezcla! -->
+  <section class="esc" id="e4">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 45%,#E5197C,#4a0a2a 70%)"></div>
+    <div class="tab capa" id="e4t" style="top:40cqw;height:70cqw"></div>
+    <img class="capa" id="e4mez" src="../assets/silabario/mezcla.webp" style="left:14cqw;top:46cqw;width:72cqw">
+    <div class="titulo" id="e4tt" style="top:14cqw;font-size:10cqw">¡SE MEZCLA! 🌀</div>
+  </section>
+  <!-- 5 · Niveles -->
+  <section class="esc" id="e5">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 40%,#2b1745,#0b0614 72%)"></div>
+    <div class="titulo" id="e5a" style="top:10cqw;font-size:7.6cqw">CADA NIVEL<br><span class="mag">MÁS SÍLABAS</span> 😈</div>
+    <div class="nivel capa" id="e5n" style="top:32cqw">NIVEL 1</div>
+    <div class="tab capa" id="e5t" style="top:44cqw;height:96cqw"></div>
+  </section>
+  <!-- 6 · Duelo -->
+  <section class="esc" id="e6">
+    <div class="capa" style="inset:0;background:radial-gradient(ellipse at 50% 35%,#123a48 0%,#0b0614 66%)"></div>
+    <div class="titulo" id="e6a" style="top:10cqw;font-size:8cqw">DESAFIÁ A UN<br><span class="tur">AMIGO</span> 1 VS 1 ⚔️</div>
+    <div class="duo capa" id="e6duo" style="top:44cqw">
+      <div class="jug" style="--c:#37D6C0"><img src="../assets/avatars/avatar-01.webp"><b>Vos</b><em id="e6v">0</em><small>aciertos</small></div>
+      <div class="titulo" style="position:static;font-size:9cqw;color:#ff4fa8">VS</div>
+      <div class="jug" style="--c:#FF4FA8"><img src="../assets/avatars/avatar-02.webp"><b>Sofi</b><em id="e6s">0</em><small>aciertos</small></div>
+    </div>
+    <div class="titulo" id="e6b" style="top:120cqw;font-size:5.4cqw">las mismas pistas, en vivo 📱</div>
+    <div class="titulo oro" id="e6gan" style="top:142cqw;font-size:8cqw">¡GANASTE!</div>
+  </section>
+  <!-- 7 · Palabras bien nuestras -->
+  <section class="esc" id="e7">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 45%,#3a1250,#0b0614 72%)"></div>
+    <div class="titulo" id="e7a" style="top:10cqw;font-size:8.6cqw"><span class="oro">PALABRAS</span><br>BIEN NUESTRAS</div>
+    <div class="chips capa" id="e7chips" style="top:42cqw"></div>
+    <div class="titulo" id="e7b" style="top:140cqw;font-size:5.6cqw">del campo al carnaval 🐎🥁</div>
+  </section>
+  <!-- 8 · Perfecto -->
+  <section class="esc" id="e8">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 45%,#5a1a6a,#0b0614 72%)"></div>
+    <div class="rayos capa" id="e8rayos" style="left:50%;top:84cqw;width:150cqw;height:150cqw;margin:-75cqw"></div>
+    <img class="capa" id="e8img" src="../assets/silabario/perfecto.webp" style="left:20cqw;top:34cqw;width:60cqw">
+    <div class="titulo oro" id="e8t" style="top:12cqw;font-size:10cqw">¡PERFECTO!</div>
+    <div class="titulo" id="e8c" style="top:148cqw;font-size:5cqw"><span class="chip" style="background:#1FA866;border-color:#7CF0BE">🏅 ¿Hasta qué nivel llegás?</span></div>
+  </section>
+  <!-- 9 · Final -->
+  <section class="esc" id="e9">
+    <div class="capa" id="e9fondo" style="inset:-10%;background:radial-gradient(ellipse at 50% 40%,#5a1a6a 0%,#160B24 50%,#000 80%)"></div>
+    <img class="capa" id="e9logo" src="../assets/silabario/logo.webp" style="left:14cqw;top:14cqw;width:72cqw">
+    <div class="titulo" id="e9en" style="top:76cqw;font-size:5cqw;color:#E4D8EB">GRATIS EN</div>
+    <img class="capa" id="e9gya" src="../assets/logo.webp" style="left:23cqw;top:83cqw;width:54cqw">
+    <div class="titulo" id="e9play" style="top:134cqw;font-size:5.2cqw"><span style="display:inline-block;white-space:nowrap;background:#fff;color:#160B24;border-radius:3cqw;padding:2cqw 5cqw;text-shadow:none">▶ Disponible en Google Play</span></div>
+    <div class="titulo" id="e9web" style="top:150cqw;font-size:7cqw;color:var(--tur)">girayadivina.com</div>
+  </section>
+  <canvas id="lienzo" width="1080" height="1920"></canvas>
+  <div class="viñeta"></div>
+  <div id="negro"></div><div id="flash"></div>
+  <div id="marca"></div>
+</div>
+<div id="ctrl">
+  <button class="prin" id="bPlay">▶</button>
+  <button id="bStop">⏹</button>
+  <button id="bAnt">⏮</button>
+  <button id="bSig">⏭</button>
+  <input type="range" id="barra" min="0" max="1000" value="0">
+  <span id="tiempo">0:00</span>
+  <button id="bSon">🔊</button>
+  <button id="bLimpio" title="Ocultar controles para grabar">⛶</button>
+</div>
+<div id="escenas"></div>
+<audio id="musica" src="reel-tutti-musica.mp3" preload="auto"></audio>
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const pr=(t,a,b)=>clamp((t-a)/(b-a));
+const eOut=x=>1-Math.pow(1-x,3),eIn=x=>x*x*x,eIO=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eBack=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2);};
+const lerp=(a,b,x)=>a+(b-a)*x;
+function set(el,o){if(typeof el==="string")el=$(el);if(!el)return;
+  if("o" in o)el.style.opacity=o.o;
+  el.style.transform=`translate(${o.x||0}cqw,${o.y||0}cqw) scale(${o.s==null?1:o.s}) rotate(${o.r||0}deg)`;}
+function golpe(el,t,a,fuera=null){const x=pr(t,a,a+.3);if(t<a||(fuera!=null&&t>fuera+.25)){set(el,{o:0});return;}
+  const sale=fuera!=null?pr(t,fuera,fuera+.25):0;const sh=t-a<.45?Math.sin((t-a)*80)*(1-pr(t,a,a+.45))*1.2:0;
+  set(el,{o:(x<1?x:1)*(1-sale),s:lerp(2.2,1,eOut(x))*(1+sale*.3),x:sh});}
+const pop=(el,t,a,fuera=null)=>{const x=pr(t,a,a+.3);set(el,{o:t<a?0:x*(fuera!=null?1-pr(t,fuera,fuera+.2):1),s:lerp(.3,1,eBack(x))});};
+const escribir=(w,t,a,d)=>w.slice(0,Math.floor(pr(t,a,a+d)*w.length+(t>=a+d?1:0)));
+function rnd(semilla){let s=semilla;return()=>{s=(s*9301+49297)%233280;return s/233280;};}
+const CV=$("lienzo"),X=CV.getContext("2d"),U=10.8;
+/* Tablero de sílabas: n columnas que ocupan 88cqw */
+function tablero(id,sil,cols,alto){const b=$(id);b.innerHTML="";const g=1.2,w=(88-(cols-1)*g)/cols,h=Math.min(alto,w*.62);
+  return sil.map((s,i)=>{const d=document.createElement("div");d.className="f";d.textContent=s;d.style.width=w+"cqw";d.style.height=h+"cqw";d.style.fontSize=(cols>6?3.6:cols>5?4.2:5)+"cqw";
+    d.style.left=(i%cols)*(w+g)+"cqw";d.style.top=Math.floor(i/cols)*(h+g)+"cqw";d.dataset.x=(i%cols)*(w+g)+w/2;d.dataset.y=Math.floor(i/cols)*(h+g)+h/2;b.appendChild(d);return d;});}
+function resp(id,txt,ok,ph="Tocá las sílabas…"){const r=$(id);r.className="resp capa"+(ok?" ok":"");r.innerHTML=txt?`<span>${txt}</span>`:`<span class="ph">${ph}</span>`;}
+/* Sílabas reales de respuestas del juego */
+const SIL0=["CAM","PI","TE","DA","PLA","RA","DIO","FI","RE","PON","CHO","FAC","TU","CA","NI","PE","LO","RÉ","BAN","ZA","ÓN","DE","O","LLA","TA"];
+const SIL3=["MAN","PON","DIO","PI","CHA","CRA","A","PE","CHO","RO","DIS","FRAZ","CA","GA","LE","RÍ","PIL","CA","CO","TI","DA","LLÓN","SO","GA","BU","DÍN","FA","CÓN","O","BE","LIS","CO","CEN","CE","RRO","YER"];
+const ESC=[];
+function escena(id,nombre,dur,render){ESC.push({id,nombre,dur,render});}
+const SIL0b=SIL3.slice();SIL0b[10]="TE";SIL0b[23]="RE";SIL0b[31]="RÉ";const T0=tablero("e0t",SIL0b,6,12);
+
+/* 0 · Gancho: TERERÉ */
+escena("e0","Gancho",3.2,t=>{
+  set("e0a",{o:1,s:t<.25?lerp(.92,1,eOut(pr(t,0,.25))):1});set("e0p",{o:1});set("e0t",{o:1});
+  const toques=[[10,1.75],[23,1.95],[31,2.15]];let txt="";
+  T0.forEach(d=>d.className="f");toques.forEach(([k,a])=>{if(t>=a){T0[k].className="f sel";txt+=SIL0b[k];}});
+  if(t>=2.45)toques.forEach(([k])=>T0[k].className="f usada");
+  resp("e0r",txt,t>=2.45);set("e0r",{o:1,s:t>=2.45?lerp(1.12,1,eOut(pr(t,2.45,2.75))):1});
+  golpe("e0b",t,.5,1.6);golpe("e0ok",t,2.45);
+  $("flash").style.opacity=t>=2.45&&t<2.7?.8*(1-pr(t,2.45,2.7)):0;
+});
+
+/* 1 · Presentación */
+escena("e1","Silabario",4.0,t=>{
+  const l=pr(t,0,.45);set("e1logo",{o:l,s:lerp(.3,1,eBack(l))*(1+.015*Math.sin(t*3))});
+  const p=pr(t,.6,1.1);set("e1pers",{o:p,x:lerp(30,0,eOut(p)),y:Math.sin(t*2)*.6});
+  golpe("e1a",t,1.0);golpe("e1b",t,2.0);
+  $("flash").style.opacity=t<.15?.6*(1-pr(t,0,.15)):0;
+});
+
+/* 2 · Un solo tablero */
+const T2=tablero("e2t",SIL3,6,12);
+escena("e2","Tablero",2.2,t=>{
+  golpe("e2a",t,0);T2.forEach((d,i)=>{const a=.15+i*.02;d.style.opacity=pr(t,a,a+.15);d.style.transform=`scale(${lerp(.3,1,eBack(pr(t,a,a+.2)))})`;});golpe("e2b",t,1.1);
+});
+
+/* 3 · Jugando: PONCHO y PICADA (pistas reales) */
+const T3=tablero("e3t",SIL3,6,10.5);
+const P3=[["Prenda de abrigo, cuadrada y con abertura para la cabeza, típica del gaucho.",[1,8],"PONCHO",.4],["Tabla con fiambres, quesos y aceitunas para comer antes del plato principal.",[3,12,20],"PICADA",2.2]];
+escena("e3","Jugando",4.4,t=>{
+  ["e3hud","e3p","e3t","e3r"].forEach(id=>set(id,{o:pr(t,0,.2)}));
+  const k=t<P3[1][3]?0:1,[pista,ks,w,a]=P3[k];$("e3p").textContent=pista;
+  T3.forEach(d=>d.className="f");if(k===1)P3[0][1].forEach(i=>T3[i].className="f usada");
+  let txt="",dedo=null;ks.forEach((i,n)=>{const ti=a+.35+n*.32;if(t>=ti){T3[i].className="f sel";txt+=SIL3[i];}if(t>=ti-.16&&t<ti+.02)dedo=[6+(+T3[i].dataset.x)-2,46+(+T3[i].dataset.y)];});
+  const fin=a+.35+ks.length*.32+.1,ok=t>=fin;if(ok)ks.forEach(i=>T3[i].className="f usada");
+  resp("e3r",txt,ok);$("e3ok").textContent=(t>=P3[0][3]+1.1?1:0)+(t>=P3[1][3]+1.4?1:0);
+  $("e3reloj").textContent="0:"+String(14-Math.floor((t%2.2)*3)).padStart(2,"0");
+  const d=$("e3dedo");d.style.opacity=dedo?1:0;if(dedo){d.style.left=dedo[0]+"cqw";d.style.top=dedo[1]+"cqw";}
+  $("flash").style.opacity=(t>=1.45&&t<1.6)||(t>=3.55&&t<3.7)?.3:0;
+});
+
+/* 4 · ¡Se mezcla!: las fichas cambian de lugar */
+const T4=tablero("e4t",SIL3,6,10.5),D4=(()=>{const r=rnd(4);return T4.map(()=>[(r()-.5)*70,(r()-.5)*60,(r()-.5)*200]);})();
+escena("e4","Mezcla",1.4,t=>{
+  T4.forEach((d,i)=>{const k=Math.sin(Math.PI*pr(t,.05,1.0));d.style.transform=`translate(${D4[i][0]*k}cqw,${D4[i][1]*k}cqw) rotate(${D4[i][2]*k}deg)`;});
+  const m=pr(t,0,.25);set("e4mez",{o:1-pr(t,1.0,1.3),s:lerp(2.2,1,eOut(m)),r:t*200});golpe("e4tt",t,.1);
+  $("flash").style.opacity=t<.2?.8*(1-pr(t,0,.2)):0;
+});
+
+/* 5 · Niveles: 25, 36 y 49 fichas (como el juego) */
+const NIV=[[25,5],[36,6],[49,7]],TODAS=[...SIL3,...SIL0];
+escena("e5","Niveles",4.4,t=>{
+  golpe("e5a",t,0);const k=Math.min(2,Math.floor(pr(t,.3,3.6)*3)),[n,cols]=NIV[k];
+  const b=$("e5t");if(b.dataset.n!=String(n)){b.dataset.n=n;tablero("e5t",TODAS.slice(0,n),cols,13);}
+  b.querySelectorAll(".f").forEach((d,i)=>{const a=.3+k*1.1+i*.012;d.style.opacity=pr(t,a,a+.12);d.style.transform=`scale(${lerp(.3,1,eBack(pr(t,a,a+.2)))})`;});
+  const el=$("e5n");el.textContent="NIVEL "+(k+1)+" · "+n+" SÍLABAS";set(el,{o:pr(t,.3,.5),s:1+.2*(1-pr(t,.3+k*1.1,.55+k*1.1))});
+});
+
+/* 6 · Duelo */
+escena("e6","1 vs 1",4.0,t=>{
+  golpe("e6a",t,0);const d=pr(t,.2,.5);set("e6duo",{o:d,s:lerp(.7,1,eBack(d))});
+  $("e6v").textContent=Math.round(9*pr(t,.6,3));$("e6s").textContent=Math.round(7*pr(t,.6,3));
+  golpe("e6b",t,1.1);golpe("e6gan",t,3.0);
+  $("flash").style.opacity=t>=3.0&&t<3.2?.45*(1-pr(t,3.0,3.2)):0;
+});
+
+/* 7 · Palabras bien nuestras (respuestas reales) */
+const PAL=["TERERÉ 🧉","PONCHO","PICADA","CANILLITA","BANDONEÓN","CARNAVAL","MATERO","PILCHA","ATORRANTE","COTILLÓN","FACÓN","CHACRA"];
+(function(){const c=$("e7chips");PAL.forEach(n=>{const s=document.createElement("span");s.className="chip";s.textContent=n;c.appendChild(s);});})();
+escena("e7","Palabras",4.2,t=>{
+  golpe("e7a",t,0);$("e7chips").querySelectorAll(".chip").forEach((c,i)=>pop(c,t,.4+i*.18));golpe("e7b",t,2.8);
+});
+
+/* 8 · ¡Perfecto! */
+const CONF=Array.from({length:70},(_,i)=>{const r=rnd(100+i);return{x:r()*100,v:30+r()*50,d:r()*1.2,c:["#F5B301","#E5197C","#37D6C0","#7B3FE4","#2ED18A"][i%5],w:1.2+r()*1.6,g:r()*360};});
+escena("e8","Perfecto",2.9,t=>{
+  golpe("e8t",t,0);const k=pr(t,.15,.45);set("e8img",{o:t<.15?0:1,s:lerp(2,1,eIn(k))*(1+.02*Math.sin(t*8))});
+  set("e8rayos",{o:pr(t,.4,.7),r:t*35});pop("e8c",t,1.3);
+  CONF.forEach(c=>{const tt=t-c.d;if(tt<0)return;const y=-10+c.v*tt+12*tt*tt,x=c.x+Math.sin(tt*3+c.g)*4;X.save();X.translate(x*U,y*U);X.rotate(c.g+tt*6);X.fillStyle=c.c;X.fillRect(-c.w*U/2,-c.w*U/4,c.w*U,c.w*U/2);X.restore();});
+  $("flash").style.opacity=t>=.4&&t<.6?.5*(1-pr(t,.4,.6)):0;
+});
+
+/* 9 · Final */
+escena("e9","Final",3.7,t=>{
+  set("e9fondo",{o:pr(t,0,.4),s:1+t*.03});
+  const l=pr(t,0,.5);set("e9logo",{o:l,s:lerp(.3,1,eBack(l))*(1+.02*Math.sin(t*4)),r:Math.sin(t*2)*2});
+  golpe("e9en",t,.7);const g=pr(t,.8,1.2);set("e9gya",{o:t<.8?0:g,s:lerp(.5,1,eBack(g))});
+  golpe("e9play",t,1.4);golpe("e9web",t,1.9);
+  $("flash").style.opacity=t>=.08&&t<.25?.7*(1-pr(t,.08,.25)):0;
+});
+
+/* ---------- Motor ---------- */
+let T=0;const INI=[];let acc=0;ESC.forEach(e=>{INI.push(acc);acc+=e.dur;});const TOTAL=acc;
+let tocando=false,ult=null,sonido=true;
+function cual(t){for(let i=ESC.length-1;i>=0;i--)if(t>=INI[i])return i;return 0;}
+function pintar(){
+  const i=cual(T),e=ESC[i],lt=T-INI[i];
+  document.querySelectorAll("#escenario .esc").forEach(el=>{el.style.display="none";});$(e.id).style.display="block";
+  $("flash").style.opacity=0;X.clearRect(0,0,CV.width,CV.height);
+  e.render(lt);
+  const fin=e.dur-lt;$("negro").style.opacity=i===0?0:Math.max(lt<.08?1-lt/.08:0,fin<.06&&i<ESC.length-1?1-fin/.06:0);
+  $("barra").value=Math.round(T/TOTAL*1000);
+  const mm=s=>Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,"0");
+  $("tiempo").textContent=mm(T)+" / "+mm(TOTAL);
+  $("marca").textContent=`Escena ${i+1} · ${e.nombre} · ${lt.toFixed(1)}s`;
+  document.querySelectorAll("#escenas button").forEach((b,k)=>b.classList.toggle("activa",k===i));
+}
+function syncMusica(){const m=$("musica");m.muted=!sonido;if(tocando){try{if(Math.abs(m.currentTime-T)>.25)m.currentTime=T;}catch(e){}m.play().catch(()=>{});}else m.pause();}
+function loop(now){if(tocando){const dt=ult==null?0:(now-ult)/1000;T=Math.min(TOTAL,T+dt);if(T>=TOTAL){tocando=false;$("bPlay").textContent="▶";$("musica").pause();}}
+  ult=now;pintar();requestAnimationFrame(loop);}
+function play(){if(T>=TOTAL)T=0;try{$("musica").currentTime=T;}catch(e){}tocando=true;$("bPlay").textContent="⏸";syncMusica();}
+function pausa(){tocando=false;$("bPlay").textContent="▶";$("musica").pause();}
+function ir(t){T=clamp(t,0,TOTAL);try{$("musica").currentTime=T;}catch(e){}syncMusica();}
+$("bPlay").onclick=()=>tocando?pausa():play();
+$("bStop").onclick=()=>{pausa();T=0;};
+$("bAnt").onclick=()=>{const i=cual(T);ir(T-INI[i]>1?INI[i]:INI[Math.max(0,i-1)]);};
+$("bSig").onclick=()=>{const i=cual(T);ir(INI[Math.min(ESC.length-1,i+1)]);};
+$("barra").oninput=e=>ir(e.target.value/1000*TOTAL);
+$("bSon").onclick=()=>{sonido=!sonido;$("bSon").textContent=sonido?"🔊":"🔇";syncMusica();};
+$("bLimpio").onclick=()=>{document.body.classList.add("limpio");if(!tocando)play();};
+$("escenario").onclick=()=>{if(document.body.classList.contains("limpio")){document.body.classList.remove("limpio");pausa();}};
+ESC.forEach((e,i)=>{const b=document.createElement("button");b.textContent=(i+1)+" · "+e.nombre;b.onclick=()=>ir(INI[i]);$("escenas").appendChild(b);});
+document.addEventListener("keydown",e=>{if(e.code==="Space"){e.preventDefault();tocando?pausa():play();}if(e.code==="ArrowRight")$("bSig").click();if(e.code==="ArrowLeft")$("bAnt").click();});
+const q=new URLSearchParams(location.search);if(q.get("e"))T=INI[clamp(+q.get("e")-1,0,ESC.length-1)];if(q.get("t"))T=clamp(+q.get("t"),0,TOTAL);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
