@@ -17,7 +17,7 @@
   /* ---- Inicio / menú ---- */
   "Jugar ahora":"Play now","¡Jugar ahora!":"Play now!","Jugar online":"Play online","Jugar con amigos":"Play with friends",
   "Buscá un rival y arrancá ya":"Find a rival and start right away","Compartí y conectá con amigos":"Share and connect with friends",
-  "Uruguay, vos contra la máquina":"Uruguay, you vs. the computer","Social":"Social","Tienda":"Shop","Eventos":"Events","EVENTOS":"EVENTS",
+  "Girá, resolvé y recorré Uruguay y Argentina":"Spin, solve and travel across Uruguay and Argentina","Social":"Social","Tienda":"Shop","Eventos":"Events","EVENTOS":"EVENTS",
   "Torneos":"Tournaments","Torneo":"Tournament","Logros":"Achievements","Mis récords":"My records","Compartir el juego":"Share the game",
   "Pruebas":"Tests","Instalar app en el celular":"Install the app on your phone","Más opciones":"More options","Cerrar":"Close",
   "Volver":"Back","Volver al inicio":"Back to home","Volver al mapa":"Back to map","Salir":"Exit","Continuar":"Continue","CONTINUAR":"CONTINUE",
