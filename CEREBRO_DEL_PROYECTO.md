@@ -1597,3 +1597,7 @@ Fecha: 26/10/2026 — REEL del Ahorcado: promo/reel-ahorcado.html (≈34,4 s, 9:
 ```text
 Fecha: 26/10/2026 — Reel del Ahorcado con música propia ("Before the Blade Falls", Gemini): promo/reel-ahorcado-musica.mp3 armado con 3 tramos del tema para que los golpes caigan en su lugar: 0:09.05–0:22.0 (intro bajita de suspenso y el golpe de 0:11.5 cae en ¡SALVADO!) + 0:25.68–0:29.95 (1 s de silencio y el golpe de 0:26.8 cae en ¡AHORCADO!) + 0:34.88–0:52.4 (el de 0:40.7 cae en ¡GANASTE! y el de 0:48.6 en el logo), cruces de 0,12 s y fundido final. Se saltean los silencios largos del tema (0:22–0:26 y 0:30–0:31).
 ```
+
+```text
+Fecha: 26/10/2026 — REEL de Palabra Secreta: promo/reel-palabra.html (≈34,4 s, 9:16, mismo motor; música reel-cien-musica.mp3). Gancho: "ÚLTIMO INTENTO… 😬" con 4 filas jugadas (PLAYA, TERMO, CERDA, PERLA) → "¿CUÁL ES?" (para que comenten); en el golpe se escribe YERBA y queda toda verde → ¡YERBA! 🧉. Después: logo + personaje "Una palabra de 5 letras · 6 intentos", los colores (verde/amarilla/gris), jugando MURGA en 3 (CARTA, PURGA, MURGA), ¡EN 3! 🔥, compartilo por WhatsApp ("la saqué en 3/6") y Sofi contesta, más de 600 palabras y no se repiten, 1 vs 1 con la misma palabra (TANGO: Vos en 3, Sofi en 4 → ¡Ganaste en 3!), ¡La sacaste! y cierre. Todas las palabras del tablero son válidas en el juego. NO se habla de "palabra del día" (Gonzalo: es un juego normal con fichas).
+```

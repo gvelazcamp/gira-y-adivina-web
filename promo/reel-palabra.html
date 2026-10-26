@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="es-UY">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Palabra Secreta · Reel</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* REEL de Palabra Secreta (≈34 s, 9:16), mismo motor que los otros reels.
+   Gancho: "ÚLTIMO INTENTO… 😬" con 4 filas jugadas (PLAYA, TERMO, CERDA, PERLA)
+   y _ E R _ A → "¿Cuál es?" (para que comenten); en el golpe se escribe YERBA y se
+   pone toda verde. Palabras válidas del juego (palabra-secreta-datos.js).
+   Música: reel-cien-musica.mp3. */
+
+/* REEL del Rosco Rioplatense (≈34 s, 9:16), mismo motor y misma música que
+   reel-tutti.html / reel-puzzle.html. Gancho: "Si sos uruguayo, esta la sabés"
+   con la B de BOTIJA (definición real del juego) → ¡BOTIJA! en el golpe.
+   Las definiciones que aparecen son las del juego (rosco-rioplatense-datos.js). */
+:root{--oro:#F5B301;--mag:#E5197C;--tur:#37D6C0;--vio:#160B24;--cre:#F6EFE2;--verde:#2ED18A;--rojo:#FF7E8B}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;color:#fff;font-family:Outfit,sans-serif}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+#escenario{position:relative;width:min(100vw,calc((100vh - 64px) * 9 / 16));aspect-ratio:9/16;overflow:hidden;background:#000;container-type:inline-size}
+body.limpio #escenario{width:min(100vw,calc(100vh * 9 / 16))}
+.esc{position:absolute;inset:0;display:none;overflow:hidden}
+.capa{position:absolute;will-change:transform,opacity}
+.abs{position:absolute}
+img{display:block;-webkit-user-drag:none;user-select:none}
+.titulo{position:absolute;left:4cqw;right:4cqw;text-align:center;font-family:'Archivo Black',sans-serif;line-height:1.04;color:#fff;text-shadow:0 .6cqw 0 #000,0 0 4cqw rgba(229,25,124,.55);letter-spacing:.02em;z-index:20}
+.oro{color:var(--oro);text-shadow:0 .7cqw 0 #7a4b00,0 0 5cqw rgba(245,179,1,.55)}
+.mag{color:#ff4fa8}.tur{color:var(--tur)}.verde{color:var(--verde)}
+#lienzo{position:absolute;inset:0;width:100%;height:100%;z-index:22;pointer-events:none}
+.viñeta{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.8) 100%);z-index:30}
+.barras::before,.barras::after{content:"";position:absolute;left:0;right:0;height:7cqw;background:#000;z-index:40}
+.barras::before{top:0}.barras::after{bottom:0}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:60}
+#negro{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:59}
+#marca{position:absolute;right:2cqw;top:8cqw;z-index:70;font:700 2.6cqw Outfit;color:#fff9;background:#0008;border-radius:9px;padding:.6cqw 1.6cqw;pointer-events:none}
+body.limpio #marca{display:none}
+#ctrl{width:min(100vw,520px);display:flex;align-items:center;gap:6px;padding:0 8px}
+#ctrl button{flex:none;height:40px;min-width:40px;border:0;border-radius:10px;background:#2A1A3C;color:#fff;font:800 15px Outfit;padding:0 10px}
+#ctrl button.prin{background:var(--mag)}
+#barra{flex:1;accent-color:var(--oro)}
+#tiempo{font:700 12px Outfit;color:#ccc;min-width:62px;text-align:right}
+#escenas{width:min(100vw,520px);display:flex;gap:4px;overflow-x:auto;padding:0 8px 6px}
+#escenas button{flex:none;border:0;border-radius:8px;background:#1a1024;color:#ccc;font:700 11px Outfit;padding:6px 8px}
+#escenas button.activa{background:var(--oro);color:#160B24}
+body.limpio #ctrl,body.limpio #escenas{display:none}
+.rayos{position:absolute;border-radius:50%;background:repeating-conic-gradient(#F5B30144 0 10deg,transparent 10deg 20deg);mask:radial-gradient(circle,#000 20%,transparent 65%);-webkit-mask:radial-gradient(circle,#000 20%,transparent 65%)}
+.tab{position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:1.6cqw}
+.fila{display:flex;gap:1.6cqw}
+.t{width:14cqw;height:14cqw;background:url('../assets/palabra-secreta/casilla.webp') center/100% 100%;display:grid;place-items:center;font:900 8cqw 'Archivo Black';color:#F6EFE2;text-shadow:0 .5cqw 0 #0006}
+.t.verde{background-image:url('../assets/palabra-secreta/verde.webp')}
+.t.amarilla{background-image:url('../assets/palabra-secreta/amarilla.webp');color:#3A2600;text-shadow:none}
+.t.gris{background-image:url('../assets/palabra-secreta/gris.webp')}
+.t.escrita{box-shadow:0 0 0 .6cqw #F5B30199}
+.regla{position:absolute;left:8cqw;right:8cqw;display:flex;align-items:center;gap:4cqw;font:800 5.4cqw/1.15 Outfit}
+.regla .t{flex:none}
+.wpp{position:absolute;left:8cqw;right:8cqw;border-radius:4cqw 4cqw 1cqw 4cqw;background:#005C4B;padding:4cqw 4cqw 2.6cqw;font:600 5cqw/1.35 Outfit;color:#E9EDEF;box-shadow:0 2cqw 5cqw #000a}
+.wpp small{display:block;text-align:right;font:500 3.2cqw Outfit;color:#A7C4BC;margin-top:1cqw}
+.wpp b{color:#53BDEB;font-weight:600}
+.wtop{position:absolute;left:0;right:0;height:16cqw;background:#202C33;display:flex;align-items:center;gap:3cqw;padding:0 5cqw;font:800 4.6cqw Outfit;color:#E9EDEF}
+.wtop img{width:10cqw;height:10cqw;border-radius:50%}
+.dias{position:absolute;left:0;right:0;display:flex;justify-content:center;gap:2cqw}
+.dias div{width:10.5cqw;text-align:center;font:800 3.6cqw Outfit;color:#E4D8EB}
+.dias div i{display:block;width:10.5cqw;height:10.5cqw;border-radius:50%;margin-top:1cqw;background:#2A1A3C;border:.4cqw solid #FFFFFF33;font:900 5cqw/10.5cqw Outfit;font-style:normal;color:#fff}
+.dias div i.on{background:#E5197C;border-color:#FFB3D6}
+.tab.chica{gap:.8cqw}.tab.chica .fila{gap:.8cqw}.tab.chica .t{width:7.6cqw;height:7.6cqw;font-size:4.4cqw}
+.chip{display:inline-flex;align-items:center;gap:1.4cqw;background:#000a;border:.4cqw solid #ffffff44;border-radius:99cqw;padding:1.6cqw 3.6cqw;font:800 4.4cqw Outfit;white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="escenario" class="barras">
+  <!-- 0 · Gancho -->
+  <section class="esc" id="e0">
+    <div class="capa" style="inset:0;background:radial-gradient(ellipse at 50% 35%,#3a1a5c 0%,#120618 70%)"></div>
+    <div class="titulo" id="e0a" style="top:10cqw;font-size:7.2cqw;white-space:nowrap">ÚLTIMO INTENTO… 😬</div>
+    <div class="tab capa" id="e0tab" style="top:24cqw"></div>
+    <div class="titulo" id="e0b" style="top:144cqw;font-size:8cqw">¿CUÁL <span class="oro">ES</span>?</div>
+    <div class="titulo oro" id="e0ok" style="top:143cqw;font-size:9cqw">¡YERBA! 🧉</div>
+  </section>
+  <!-- 1 · Presentación -->
+  <section class="esc" id="e1">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 40%,#2e1648,#0b0614 72%)"></div>
+    <img class="capa" id="e1logo" src="../assets/palabra-secreta/logo.webp" style="left:16cqw;top:10cqw;width:68cqw">
+    <img class="capa" id="e1pers" src="../assets/palabra-secreta/personaje.webp" style="left:58cqw;top:72cqw;width:36cqw">
+    <div class="titulo" id="e1a" style="top:84cqw;left:5cqw;right:42cqw;font-size:7cqw;text-align:left">UNA PALABRA<br>DE <span class="oro">5 LETRAS</span></div>
+    <div class="titulo" id="e1b" style="top:112cqw;left:5cqw;right:42cqw;font-size:7cqw;text-align:left"><span class="tur">6 INTENTOS</span><br>PARA SACARLA</div>
+  </section>
+  <!-- 2 · Colores -->
+  <section class="esc" id="e2">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 45%,#2b1745,#0b0614 72%)"></div>
+    <div class="titulo" id="e2a" style="top:12cqw;font-size:8cqw">LOS COLORES<br>TE AYUDAN</div>
+    <div class="regla capa" id="r1" style="top:52cqw"><div class="t verde">R</div><span>Está y en su lugar</span></div>
+    <div class="regla capa" id="r2" style="top:76cqw"><div class="t amarilla">A</div><span>Está, pero en otro lugar</span></div>
+    <div class="regla capa" id="r3" style="top:100cqw"><div class="t gris">P</div><span>No está</span></div>
+  </section>
+  <!-- 3 · Jugando -->
+  <section class="esc" id="e3">
+    <div class="capa" style="inset:0;background:radial-gradient(ellipse at 50% 20%,#3a1a5c 0%,#160B24 60%)"></div>
+    <div class="titulo" id="e3t" style="top:9cqw;font-size:7cqw">ESCRIBÍ Y MIRÁ<br>LOS <span class="oro">COLORES</span></div>
+    <div class="tab capa" id="e3tab" style="top:34cqw"></div>
+  </section>
+  <!-- 4 · ¡En 3! -->
+  <section class="esc" id="e4">
+    <div class="capa" id="e4fondo" style="inset:0;background:radial-gradient(circle at 50% 45%,#1FA866,#06301e 70%)"></div>
+    <div class="rayos capa" id="e4rayos" style="left:50%;top:80cqw;width:160cqw;height:160cqw;margin:-80cqw;background:repeating-conic-gradient(#FFFFFF33 0 9deg,transparent 9deg 18deg)"></div>
+    <img class="capa" id="e4img" src="../assets/palabra-secreta/gano.webp" style="left:20cqw;top:34cqw;width:60cqw">
+    <div class="titulo" id="e4t" style="top:132cqw;font-size:11cqw">¡EN 3! 🔥</div>
+  </section>
+  <!-- 5 · Compartir -->
+  <section class="esc" id="e5">
+    <div class="capa" style="inset:0;background:#0B141A"></div>
+    <div class="wtop capa" id="e5top" style="top:7cqw"><img src="../assets/avatars/avatar-02.webp"><span>Sofi</span></div>
+    <div class="titulo" id="e5a" style="top:30cqw;font-size:7.4cqw">COMPARTILO<br>Y <span class="tur">PICALOS</span> 😏</div>
+    <div class="wpp capa" id="e5msg" style="top:66cqw">🟩 Palabra Secreta: la saqué en 3/6 ✅<br>¿Me ganás? 👉 <b>girayadivina.com</b><small>21:04 ✓✓</small></div>
+    <div class="wpp capa" id="e5resp" style="top:104cqw;left:8cqw;right:30cqw;background:#202C33;border-radius:4cqw 4cqw 4cqw 1cqw">¡Ni loca! Yo en 2 😤<small>21:05</small></div>
+  </section>
+  <!-- 6 · +600 palabras -->
+  <section class="esc" id="e6">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 45%,#3a1250,#0b0614 72%)"></div>
+    <div id="e6lluvia" class="abs" style="inset:0"></div>
+    <div class="titulo" id="e6a" style="top:46cqw;font-size:9cqw">MÁS DE</div>
+    <div class="titulo oro" id="e6num" style="top:58cqw;font-size:30cqw">0</div>
+    <div class="titulo" id="e6b" style="top:92cqw;font-size:9cqw">PALABRAS</div>
+    <div class="titulo" id="e6c" style="top:114cqw;font-size:6cqw"><span class="tur">y no se te repiten</span> 🔁</div>
+  </section>
+  <!-- 7 · 1 vs 1 -->
+  <section class="esc" id="e7">
+    <div class="capa" style="inset:0;background:radial-gradient(ellipse at 50% 35%,#123a48 0%,#0b0614 66%)"></div>
+    <div class="titulo" id="e7a" style="top:10cqw;font-size:8cqw">DESAFIÁ A UN<br><span class="tur">AMIGO</span> 1 VS 1 ⚔️</div>
+    <div class="capa" id="e7v" style="left:4cqw;top:38cqw;width:44cqw;text-align:center"><div class="tab chica" id="e7tv" style="position:relative"></div><div class="titulo" style="position:static;font-size:5.4cqw;margin-top:2cqw;color:#37D6C0">Vos</div></div>
+    <div class="capa" id="e7s" style="left:52cqw;top:38cqw;width:44cqw;text-align:center"><div class="tab chica" id="e7ts" style="position:relative"></div><div class="titulo" style="position:static;font-size:5.4cqw;margin-top:2cqw;color:#FF4FA8">Sofi</div></div>
+    <div class="titulo" id="e7b" style="top:112cqw;font-size:5.6cqw">la misma palabra para los dos</div>
+    <div class="titulo oro" id="e7gan" style="top:136cqw;font-size:8cqw">¡GANASTE EN 3!</div>
+  </section>
+  <!-- 8 · ¡La sacaste! -->
+  <section class="esc" id="e8">
+    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 45%,#5a1a6a,#0b0614 72%)"></div>
+    <div class="rayos capa" id="e8rayos" style="left:50%;top:84cqw;width:150cqw;height:150cqw;margin:-75cqw"></div>
+    <img class="capa" id="e8img" src="../assets/palabra-secreta/gano.webp" style="left:20cqw;top:36cqw;width:60cqw">
+    <div class="titulo oro" id="e8t" style="top:12cqw;font-size:10cqw">¡LA<br>SACASTE!</div>
+    <div class="titulo" id="e8c" style="top:146cqw;font-size:5cqw"><span class="chip" style="background:#1FA866;border-color:#7CF0BE">🟩🟩🟩🟩🟩</span></div>
+  </section>
+  <!-- 9 · Final -->
+  <section class="esc" id="e9">
+    <div class="capa" id="e9fondo" style="inset:-10%;background:radial-gradient(ellipse at 50% 40%,#5a1a6a 0%,#160B24 50%,#000 80%)"></div>
+    <img class="capa" id="e9logo" src="../assets/palabra-secreta/logo.webp" style="left:16cqw;top:12cqw;width:68cqw">
+    <div class="titulo" id="e9en" style="top:76cqw;font-size:5cqw;color:#E4D8EB">GRATIS EN</div>
+    <img class="capa" id="e9gya" src="../assets/logo.webp" style="left:23cqw;top:83cqw;width:54cqw">
+    <div class="titulo" id="e9play" style="top:134cqw;font-size:5.2cqw"><span style="display:inline-block;white-space:nowrap;background:#fff;color:#160B24;border-radius:3cqw;padding:2cqw 5cqw;text-shadow:none">▶ Disponible en Google Play</span></div>
+    <div class="titulo" id="e9web" style="top:150cqw;font-size:7cqw;color:var(--tur)">girayadivina.com</div>
+  </section>
+  <canvas id="lienzo" width="1080" height="1920"></canvas>
+  <div class="viñeta"></div>
+  <div id="negro"></div><div id="flash"></div>
+  <div id="marca"></div>
+</div>
+<div id="ctrl">
+  <button class="prin" id="bPlay">▶</button>
+  <button id="bStop">⏹</button>
+  <button id="bAnt">⏮</button>
+  <button id="bSig">⏭</button>
+  <input type="range" id="barra" min="0" max="1000" value="0">
+  <span id="tiempo">0:00</span>
+  <button id="bSon">🔊</button>
+  <button id="bLimpio" title="Ocultar controles para grabar">⛶</button>
+</div>
+<div id="escenas"></div>
+<audio id="musica" src="reel-cien-musica.mp3" preload="auto"></audio>
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const pr=(t,a,b)=>clamp((t-a)/(b-a));
+const eOut=x=>1-Math.pow(1-x,3),eIn=x=>x*x*x,eIO=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eBack=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2);};
+const lerp=(a,b,x)=>a+(b-a)*x;
+function set(el,o){if(typeof el==="string")el=$(el);if(!el)return;
+  if("o" in o)el.style.opacity=o.o;
+  el.style.transform=`translate(${o.x||0}cqw,${o.y||0}cqw) scale(${o.s==null?1:o.s}) rotate(${o.r||0}deg)`;}
+function golpe(el,t,a,fuera=null){const x=pr(t,a,a+.3);if(t<a||(fuera!=null&&t>fuera+.25)){set(el,{o:0});return;}
+  const sale=fuera!=null?pr(t,fuera,fuera+.25):0;const sh=t-a<.45?Math.sin((t-a)*80)*(1-pr(t,a,a+.45))*1.2:0;
+  set(el,{o:(x<1?x:1)*(1-sale),s:lerp(2.2,1,eOut(x))*(1+sale*.3),x:sh});}
+const pop=(el,t,a,fuera=null)=>{const x=pr(t,a,a+.3);set(el,{o:t<a?0:x*(fuera!=null?1-pr(t,fuera,fuera+.2):1),s:lerp(.3,1,eBack(x))});};
+const escribir=(w,t,a,d)=>w.slice(0,Math.floor(pr(t,a,a+d)*w.length+(t>=a+d?1:0)));
+function rnd(semilla){let s=semilla;return()=>{s=(s*9301+49297)%233280;return s/233280;};}
+const CV=$("lienzo"),X=CV.getContext("2d"),U=10.8;
+/* Colores como el juego: verde = en su lugar, amarilla = está en otro lugar, gris = no está */
+function evaluar(w,sol){const r=Array(5).fill("gris"),sob={};for(let i=0;i<5;i++){if(w[i]===sol[i])r[i]="verde";else sob[sol[i]]=(sob[sol[i]]||0)+1;}
+  for(let i=0;i<5;i++)if(r[i]!=="verde"&&sob[w[i]]){r[i]="amarilla";sob[w[i]]--;}return r;}
+function armarTab(id,filas){const b=$(id);b.innerHTML="";for(let f=0;f<filas;f++){const d=document.createElement("div");d.className="fila";for(let i=0;i<5;i++){const c=document.createElement("div");c.className="t";d.appendChild(c);}b.appendChild(d);}}
+/* filas: [[palabra, tEscribe, tVoltea]] ; antes de tEscribe vacía, entre escribe y voltea solo letras, después colores con giro */
+function pintarTab(id,sol,filas,t){const F=$(id).querySelectorAll(".fila");filas.forEach(([w,te,tv],f)=>{const cs=F[f].querySelectorAll(".t"),col=evaluar(w,sol);
+  const k=t<te?0:Math.min(5,Math.floor(pr(t,te,te+.5)*5)+1);
+  cs.forEach((c,i)=>{const a=tv+i*.08,x=pr(t,a,a+.18),dada=t>=a+.09;c.textContent=i<k?w[i]:"";c.className="t"+(dada?" "+col[i]:(i<k&&t<tv?" escrita":""));c.style.transform=t>=a&&t<a+.18?`scaleY(${Math.abs(1-2*x)})`:"";});});}
+armarTab("e0tab",6);armarTab("e3tab",6);
+armarTab("e7tv",6);armarTab("e7ts",6);
+
+const ESC=[];
+function escena(id,nombre,dur,render){ESC.push({id,nombre,dur,render});}
+
+/* 0 · Gancho: último intento → YERBA */
+const H0=[["PLAYA",-9,-9],["TERMO",-9,-9],["CERDA",-9,-9],["PERLA",-9,-9],["YERBA",1.7,2.3]];
+escena("e0","Gancho",3.2,t=>{
+  set("e0a",{o:1,s:t<.25?lerp(.92,1,eOut(pr(t,0,.25))):1});set("e0tab",{o:1});
+  pintarTab("e0tab","YERBA",H0,t);
+  const f5=$("e0tab").querySelectorAll(".fila")[4];f5.style.transform=t<1.7?`translateX(${Math.sin(t*14)*.5}cqw)`:"";
+  f5.style.filter=t>=2.45&&t<3.2?`drop-shadow(0 0 ${4*(1-pr(t,2.45,3.2))}cqw #2ED18A)`:"";
+  golpe("e0b",t,.5,2.3);golpe("e0ok",t,2.45);
+  $("flash").style.opacity=t>=2.45&&t<2.7?.8*(1-pr(t,2.45,2.7)):0;
+});
+
+/* 1 · Presentación */
+escena("e1","Palabra Secreta",4.0,t=>{
+  const l=pr(t,0,.45);set("e1logo",{o:l,s:lerp(.3,1,eBack(l))*(1+.015*Math.sin(t*3))});
+  const p=pr(t,.6,1.1);set("e1pers",{o:p,x:lerp(30,0,eOut(p)),y:Math.sin(t*2)*.6});
+  golpe("e1a",t,1.0);golpe("e1b",t,2.0);
+  $("flash").style.opacity=t<.15?.6*(1-pr(t,0,.15)):0;
+});
+
+/* 2 · Colores */
+escena("e2","Colores",2.2,t=>{
+  golpe("e2a",t,0);["r1","r2","r3"].forEach((id,i)=>{const a=.35+i*.45,x=pr(t,a,a+.25);set(id,{o:x,x:lerp(-20,0,eOut(x))});});
+});
+
+/* 3 · Jugando: MURGA en 3 */
+const H3=[["CARTA",.3,.85],["PURGA",1.4,1.95],["MURGA",2.5,3.05]];
+escena("e3","Jugando",4.4,t=>{
+  golpe("e3t",t,0);set("e3tab",{o:pr(t,0,.2)});pintarTab("e3tab","MURGA",H3,t);
+  const f=$("e3tab").querySelectorAll(".fila")[2];f.style.filter=t>=3.5?`drop-shadow(0 0 ${3*(1-pr(t,3.5,4.4))}cqw #2ED18A)`:"";
+});
+
+/* 4 · ¡En 3! */
+escena("e4","¡En 3!",1.4,t=>{
+  const b=pr(t,0,.2);set("e4img",{o:1,s:lerp(2.2,1,eOut(b))*(1+.03*Math.sin(t*20))});set("e4rayos",{o:1,r:t*50});golpe("e4t",t,.25);
+  $("flash").style.opacity=t<.2?.8*(1-pr(t,0,.2)):0;
+});
+
+/* 5 · Compartir por WhatsApp (texto real del juego) */
+escena("e5","Compartir",4.4,t=>{
+  set("e5top",{o:pr(t,0,.2)});golpe("e5a",t,.1);
+  const m=pr(t,.8,1.1);set("e5msg",{o:m,y:lerp(6,0,eOut(m)),s:lerp(.9,1,eBack(m))});
+  const r=pr(t,2.3,2.6);set("e5resp",{o:r,y:lerp(6,0,eOut(r)),s:lerp(.9,1,eBack(r))});
+});
+
+/* 6 · Más de 600 palabras (palabra-secreta-datos.js: 622) */
+const LL=["YERBA","MURGA","TERMO","PLAYA","TANGO","ASADO","MATES","PIBES","CHORI","CARTA","FIDEO","GORRA","PENAL","LECHE","HOGAR","VIAJE"];
+(function(){const b=$("e6lluvia"),r=rnd(6);LL.forEach((w,i)=>{const d=document.createElement("div");d.className="capa";d.style.cssText="position:absolute;display:flex;gap:.6cqw;opacity:.16";
+  [...w].forEach(ch=>{const c=document.createElement("div");c.className="t "+["verde","amarilla","gris"][Math.floor(r()*3)];c.style.cssText="width:7cqw;height:7cqw;font-size:4cqw";c.textContent=ch;d.appendChild(c);});
+  d.dataset.x=r()*70;d.dataset.v=18+r()*20;d.dataset.d=r()*1.6;b.appendChild(d);});})();
+escena("e6","+600",4.0,t=>{
+  document.querySelectorAll("#e6lluvia>div").forEach(d=>{const tt=t-d.dataset.d;d.style.left=d.dataset.x+"cqw";d.style.top=(-12+(+d.dataset.v)*Math.max(0,tt)*1.7)+"cqw";d.style.opacity=tt<0?0:.16;});
+  golpe("e6a",t,.1);$("e6num").textContent=Math.round(600*eOut(pr(t,.3,1.6)));set("e6num",{o:pr(t,.2,.4),s:t>=1.6&&t<1.9?1.1:1});
+  golpe("e6b",t,.5);golpe("e6c",t,2.0);
+  $("flash").style.opacity=t>=1.6&&t<1.8?.4*(1-pr(t,1.6,1.8)):0;
+});
+
+/* 7 · 1 vs 1: misma palabra (TANGO), Vos en 3, Sofi en 4 */
+const DV=[["PLATO",.4,.75],["MANGO",.9,1.25],["TANGO",1.4,1.75]],DS=[["CARTA",.5,.85],["TONTO",1.05,1.4],["TALGO",1.6,1.95],["TANGO",2.2,2.55]];
+escena("e7","1 vs 1",4.2,t=>{
+  golpe("e7a",t,0);set("e7v",{o:pr(t,.2,.4)});set("e7s",{o:pr(t,.2,.4)});
+  pintarTab("e7tv","TANGO",DV,t);pintarTab("e7ts","TANGO",DS,t);
+  golpe("e7b",t,.9,2.6);golpe("e7gan",t,2.9);
+  $("flash").style.opacity=t>=2.9&&t<3.1?.45*(1-pr(t,2.9,3.1)):0;
+});
+
+/* 8 · ¡La sacaste! */
+const CONF=Array.from({length:70},(_,i)=>{const r=rnd(100+i);return{x:r()*100,v:30+r()*50,d:r()*1.2,c:["#F5B301","#E5197C","#37D6C0","#7B3FE4","#2ED18A"][i%5],w:1.2+r()*1.6,g:r()*360};});
+escena("e8","Ganaste",2.9,t=>{
+  golpe("e8t",t,0);const k=pr(t,.15,.45);set("e8img",{o:t<.15?0:1,s:lerp(2,1,eIn(k))*(1+.02*Math.sin(t*8))});
+  set("e8rayos",{o:pr(t,.4,.7),r:t*35});pop("e8c",t,1.3);
+  CONF.forEach(c=>{const tt=t-c.d;if(tt<0)return;const y=-10+c.v*tt+12*tt*tt,x=c.x+Math.sin(tt*3+c.g)*4;X.save();X.translate(x*U,y*U);X.rotate(c.g+tt*6);X.fillStyle=c.c;X.fillRect(-c.w*U/2,-c.w*U/4,c.w*U,c.w*U/2);X.restore();});
+  $("flash").style.opacity=t>=.4&&t<.6?.5*(1-pr(t,.4,.6)):0;
+});
+
+/* 9 · Final */
+escena("e9","Final",3.7,t=>{
+  set("e9fondo",{o:pr(t,0,.4),s:1+t*.03});
+  const l=pr(t,0,.5);set("e9logo",{o:l,s:lerp(.3,1,eBack(l))*(1+.02*Math.sin(t*4)),r:Math.sin(t*2)*2});
+  golpe("e9en",t,.7);const g=pr(t,.8,1.2);set("e9gya",{o:t<.8?0:g,s:lerp(.5,1,eBack(g))});
+  golpe("e9play",t,1.4);golpe("e9web",t,1.9);
+  $("flash").style.opacity=t>=.08&&t<.25?.7*(1-pr(t,.08,.25)):0;
+});
+
+/* ---------- Motor ---------- */
+let T=0;const INI=[];let acc=0;ESC.forEach(e=>{INI.push(acc);acc+=e.dur;});const TOTAL=acc;
+let tocando=false,ult=null,sonido=true;
+function cual(t){for(let i=ESC.length-1;i>=0;i--)if(t>=INI[i])return i;return 0;}
+function pintar(){
+  const i=cual(T),e=ESC[i],lt=T-INI[i];
+  document.querySelectorAll("#escenario .esc").forEach(el=>{el.style.display="none";});$(e.id).style.display="block";
+  $("flash").style.opacity=0;X.clearRect(0,0,CV.width,CV.height);
+  e.render(lt);
+  const fin=e.dur-lt;$("negro").style.opacity=i===0?0:Math.max(lt<.08?1-lt/.08:0,fin<.06&&i<ESC.length-1?1-fin/.06:0);
+  $("barra").value=Math.round(T/TOTAL*1000);
+  const mm=s=>Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,"0");
+  $("tiempo").textContent=mm(T)+" / "+mm(TOTAL);
+  $("marca").textContent=`Escena ${i+1} · ${e.nombre} · ${lt.toFixed(1)}s`;
+  document.querySelectorAll("#escenas button").forEach((b,k)=>b.classList.toggle("activa",k===i));
+}
+function syncMusica(){const m=$("musica");m.muted=!sonido;if(tocando){try{if(Math.abs(m.currentTime-T)>.25)m.currentTime=T;}catch(e){}m.play().catch(()=>{});}else m.pause();}
+function loop(now){if(tocando){const dt=ult==null?0:(now-ult)/1000;T=Math.min(TOTAL,T+dt);if(T>=TOTAL){tocando=false;$("bPlay").textContent="▶";$("musica").pause();}}
+  ult=now;pintar();requestAnimationFrame(loop);}
+function play(){if(T>=TOTAL)T=0;try{$("musica").currentTime=T;}catch(e){}tocando=true;$("bPlay").textContent="⏸";syncMusica();}
+function pausa(){tocando=false;$("bPlay").textContent="▶";$("musica").pause();}
+function ir(t){T=clamp(t,0,TOTAL);try{$("musica").currentTime=T;}catch(e){}syncMusica();}
+$("bPlay").onclick=()=>tocando?pausa():play();
+$("bStop").onclick=()=>{pausa();T=0;};
+$("bAnt").onclick=()=>{const i=cual(T);ir(T-INI[i]>1?INI[i]:INI[Math.max(0,i-1)]);};
+$("bSig").onclick=()=>{const i=cual(T);ir(INI[Math.min(ESC.length-1,i+1)]);};
+$("barra").oninput=e=>ir(e.target.value/1000*TOTAL);
+$("bSon").onclick=()=>{sonido=!sonido;$("bSon").textContent=sonido?"🔊":"🔇";syncMusica();};
+$("bLimpio").onclick=()=>{document.body.classList.add("limpio");if(!tocando)play();};
+$("escenario").onclick=()=>{if(document.body.classList.contains("limpio")){document.body.classList.remove("limpio");pausa();}};
+ESC.forEach((e,i)=>{const b=document.createElement("button");b.textContent=(i+1)+" · "+e.nombre;b.onclick=()=>ir(INI[i]);$("escenas").appendChild(b);});
+document.addEventListener("keydown",e=>{if(e.code==="Space"){e.preventDefault();tocando?pausa():play();}if(e.code==="ArrowRight")$("bSig").click();if(e.code==="ArrowLeft")$("bAnt").click();});
+const q=new URLSearchParams(location.search);if(q.get("e"))T=INI[clamp(+q.get("e")-1,0,ESC.length-1)];if(q.get("t"))T=clamp(+q.get("t"),0,TOTAL);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
