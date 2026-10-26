@@ -1617,3 +1617,7 @@ Fecha: 26/10/2026 — Reel de Sopa Fugaz con música propia ("Before the Last Ge
 ```text
 Fecha: 26/10/2026 — REEL de Frases en Giro: promo/reel-frases.html (≈34,4 s, 9:16, mismo motor; música reel-frases-musica.mp3 = "The Midnight Swagger" 0:19.45–0:54.05 (el golpe más fuerte del tema, 0:21.9, cae en ¡ARMADA!)). Gancho: "¿QUÉ DICE? 🤔" con la pista "Partido de potrero" y las palabras desordenadas (frase real: El árbitro cobró un penal fantasma) → en el golpe vuelan a su lugar: ¡ARMADA! ✅. Después: logo + personaje "Ordená la frase… antes del giro 🌀", ¡las palabras giran!, jugando "El termo se quedó sin agua" tocando en orden (con la barra del próximo giro), ¡GIRO!, ojo con las trampas ("La murga cantó bajo la lluvia" con la trampa real "bailó": pierde un corazón), 1 vs 1, frases bien nuestras (pistas reales), ¡Frase armada! con racha y cierre.
 ```
+
+```text
+Fecha: 26/10/2026 — REEL de Memoria en Giro: promo/reel-memoria.html (≈34,4 s, 9:16, mismo motor; música provisoria reel-tutti-musica.mp3). Gancho: "MEMORIZALAS 👀" con 12 cartas a la vista → se dan vuelta y en el golpe "¿DÓNDE ESTÁ LA 🍓?" + "contestá abajo 👇" (para que comenten). Después: logo + personaje "Encontrá los pares… pero el tablero gira 🌀", las cartas cambian de lugar, jugando de a dos (🍓🍓 bien, 🦋🌈 mal, 🦋🦋 bien), ¡GIRÓ!, otra miradita (la fase "recuerdo" del juego: memorizá en 3 s), 1 vs 1, cada nivel más cartas (3, 4, 6 y 8 pares como el juego), ¡Todos los pares! y cierre.
+```
