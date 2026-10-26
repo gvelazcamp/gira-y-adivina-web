@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#160b24"><title>Jugar con la tele · Girá y Adiviná</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#160b24;color:#f6efe2;font:18px system-ui;min-height:100vh;display:grid;place-items:center;padding:24px}main{max-width:420px;width:100%;text-align:center}img{width:88px;height:88px;border-radius:22px}h1{margin:12px 0 4px;color:#f5b301}label{display:block;text-align:left;margin:14px 0 6px;font-weight:700}input{width:100%;font:800 22px system-ui;padding:14px;border-radius:14px;border:2px solid #7b3fe4;background:#0c0616;color:#fff;text-align:center;text-transform:uppercase}button{width:100%;margin-top:16px;border:0;border-radius:14px;padding:16px;font:900 18px system-ui;background:#f5b301;color:#160b24}small{display:block;margin-top:14px;color:#d7c8e5}</style></head>
+<body><main><img src="../icono-192.png" alt="Girá y Adiviná"><h1>Jugá con la tele</h1><p>La tele muestra el juego. Vos respondés desde este celular.</p>
+<form id="f"><label for="n">Tu nombre</label><input id="n" maxlength="14" required autocomplete="nickname" placeholder="¿Cómo te llamás?" style="text-transform:none">
+<label for="c">Código que aparece en la tele</label><input id="c" minlength="4" maxlength="6" required autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Ej.: K7RQ2">
+<button>Entrar</button></form><small>Todos necesitan internet. Dejá la tele abierta durante el juego.</small></main>
+<script>
+try{const v=localStorage.getItem("gya_tele_nombre")||localStorage.getItem("gya_nombre");if(v)document.getElementById("n").value=v;}catch(e){}
+const q=new URLSearchParams(location.search);document.getElementById("c").value=q.get("codigo")||"";
+document.getElementById("f").onsubmit=e=>{e.preventDefault();const c=document.getElementById("c").value.toUpperCase().replace(/[^A-Z0-9]/g,""),n=document.getElementById("n").value.replace(/[<>&"']/g,"").trim().slice(0,14);
+  if(c.length<4||!n)return;try{localStorage.setItem("gya_tele_nombre",n);}catch(e){}location.href="../index.html?telecel="+encodeURIComponent(c)+"&n="+encodeURIComponent(n);};
+</script></body></html>
