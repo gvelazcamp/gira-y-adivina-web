@@ -1577,3 +1577,7 @@ Fecha: 26/10/2026 — Inicio: el botón "¡Jugar ahora!" ahora dice abajo "Girá
 ```text
 Fecha: 26/10/2026 — REEL del Rosco: promo/reel-rosco.html (≈34,4 s, 9:16, mismo motor y misma música que los de Tutti y Puzzle). Gancho: "SI SOS URUGUAYO, ESTA LA SABÉS 🧉" con la B en el rosco y la pista real "Forma uruguaya de llamar a un niño" → se escribe BOTIJA y en el golpe queda verde + ¡BOTIJA!. Después: logo + personaje "Una letra, una pista, una palabra · bien rioplatense", el rosco gira y te toca la C, jugando con pistas reales (CHAMUYO, YAPA, QUINCHO), ¡Pasapalabra!, completá todo el rosco (letras verdes/rojas + reloj), 1 vs 1 con un amigo, más de 500 definiciones (palabras nuevas en cada partida), ¡Rosco perfecto! y cierre. Ojo: no poner "el Pasapalabra rioplatense" (es marca de un programa de TV).
 ```
+
+```text
+Fecha: 26/10/2026 — Reel del Rosco con música propia para adultos ("Velvet and Steel", tango electrónico, Gemini): promo/reel-rosco-musica.mp3 = 0:13.65–0:48.15 con fundido final (Gonzalo pidió desde el 16; arranca 2,35 s antes para que el primer golpe del tema, 0:16.1, caiga justo en ¡BOTIJA!). Los reels de Tutti y Puzzle siguen con reel-tutti-musica.mp3.
+```
