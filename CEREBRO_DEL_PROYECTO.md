@@ -24,7 +24,7 @@ En el proyecto, las entradas son el pedido de Gonzalo, el árbol del repositorio
 
 - Repositorio VIVO (desde el 21/10/2026): https://github.com/gvelazcamp/gira-y-adivina-web → sirve el juego en https://girayadivina.com (archivo `CNAME`). Todo cambio del juego va acá (rama + PR a `main`).
 - Repositorio anterior: https://github.com/gvelazcamp/gira-y-adivina-rioplatense → ahora su `index.html` es el puente de traslado (`migracion/puente.html`) que cifra la partida guardada en github.io y la manda a `girayadivina.com/migrar.html`; el juego viejo quedó como `juego-anterior.html`. No publicar cambios del juego ahí (ver `migracion/README.md`).
-- Play Store: producción versión 16 aprobada (la TWA vieja abre github.io y el puente traslada la partida); versión 17 en prueba interna (TWA con el dominio nuevo). Dato de Gonzalo, 22/10/2026.
+- Play Store (actualizado el 27/10/2026): versión 17 en producción; versión 19 con entrada celular y Android TV disponible para testers internos. La versión 18 exclusiva de TV quedó reemplazada por la 19 combinada.
 - Juego de ruleta y frases con cultura rioplatense, mapas, progreso, cosméticos, colecciones, eventos, torneos, opciones sociales y extensiones.
 - Aplicación estática de HTML, CSS y JavaScript sin framework ni compilación de producción. El núcleo sigue en `index.html`, con estilos y lógica embebidos; las extensiones tienen módulos propios.
 - PWA: `manifest.json`, `sw.js`, iconos y página principal. El manifiesto declara idioma `es-UY`, presentación `standalone`, orientación `portrait` y color `#160B24`.
@@ -1720,4 +1720,8 @@ Fecha: 26/10/2026 — Acceso a Sala TV para cuatro perfiles. El botón "Sala TV 
 
 ```text
 Fecha: 27/10/2026 — Menú de los cuatro perfiles de prueba y envoltorio Android TV. Para Andrés, Romina, Gonzalo y Vale, el inicio oculta la tarjeta Torneos y Eventos ocupa su lugar; los demás perfiles no cambian. tele.js v5 expone gyaTVRemote y gyaTVBack para flechas, Enter y Atrás del mando Android, sin sacar el control desde el celular. sw v449. En el repo gira-y-adivina-tv, el proyecto Android WebView abre index.html?tele=1 en girayadivina.com, usa el mismo applicationId que Play (io.github.gvelazcamp.twa), versión 18, Leanback requerido y la clave de subida comprobada contra el AAB v17. Se compiló y firmó un AAB de TV; Android Lint, bundletool validate y pruebas de navegador pasaron. Pendientes: publicar la web antes de probar la app, prueba en tele física, ficha y prueba interna de Android TV en Play Console, revisión de Google. No se subió todavía el AAB a Play Console.
+```
+
+```text
+Fecha: 27/10/2026 — Pantalla negra con música en navegadores de TV sin HTMLImageElement.decode(). Se reprodujo en Chromium anulando esa función: la Sala TV creaba su código pero el splash permanecía visible porque el script fallaba antes de registrar el límite de 8 s. index.html ahora espera load/error cuando decode no existe y registra el límite antes de procesar imágenes. sw.js pasa a v450. La reproducción volvió a mostrar el menú de TV sin errores y pasó la partida simulada de Tutti Frutti con dos celulares. La prueba real en Apple TV sigue pendiente; un navegador tvOS también puede tener otras limitaciones.
 ```

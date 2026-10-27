@@ -11647,10 +11647,25 @@ $("fBoton").onclick=()=>{
       if(probarperfil){setTimeout(previsualizarPerfilVacio,900);return;}
       tutChequearBienvenida();},espera);
   };
+  /* Algunos navegadores de TV no implementan HTMLImageElement.decode().
+     Esperar load/error en ellos para no dejar el splash encima del juego. */
+  const esperarImagen=im=>{
+    if(typeof im.decode==="function"){
+      try{return im.decode().catch(()=>{});}catch(e){}
+    }
+    if(im.complete)return Promise.resolve();
+    return new Promise(resolve=>{
+      const lista=()=>{im.removeEventListener("load",lista);im.removeEventListener("error",lista);resolve();};
+      im.addEventListener("load",lista);im.addEventListener("error",lista);
+    });
+  };
   const intentarCerrar=()=>{if(imagenLista&&iconosListos)cerrar();};
+  /* Registrar el límite antes de esperar imágenes: también cubre errores del navegador. */
+  setTimeout(cerrar,8000);
+  cap.onclick=()=>{if(imagenLista)cerrar();};
   {
     const im=new Image();
-    im.onload=()=>{im.decode().catch(()=>{}).then(()=>{
+    im.onload=()=>{esperarImagen(im).then(()=>{
       if(yaCerrado)return;
       cap.classList.add("img-lista");tSplashGrande=performance.now();
       imagenLista=true;intentarCerrar();
@@ -11660,11 +11675,8 @@ $("fBoton").onclick=()=>{
   }
   Promise.all(Array.from(document.querySelectorAll(".menu-grid img,.logo-inicio,.deco-mate,.deco-banderas"))
     .filter(icono=>!icono.closest("#bTV"))
-    .map(icono=>icono.decode().catch(()=>{})))
+    .map(esperarImagen))
     .then(()=>{iconosListos=true;intentarCerrar();});
-  /* Si la red falla, no quedarse en la pantalla de carga para siempre. */
-  setTimeout(cerrar,8000);
-  cap.onclick=()=>{if(imagenLista)cerrar();};
 })();
 function pdActualizarTimer(){
   const medianoche=new Date();medianoche.setHours(24,0,0,0);
