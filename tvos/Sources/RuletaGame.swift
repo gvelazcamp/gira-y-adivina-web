@@ -367,7 +367,7 @@ struct RuletaGame {
         case "COMODIN":
             let unrevealed = Set(phrase.filter { $0.isLetter }).subtracting(opened)
             let consonants = unrevealed.filter { !Self.vowels.contains($0) }
-            if let letter = (consonants.isEmpty ? Array(unrevealed) : consonants).randomElement() {
+            if let letter = (consonants.isEmpty ? Array(unrevealed) : Array(consonants)).randomElement() {
                 opened.insert(letter)
                 used.insert(letter)
                 message = "¡COMODÍN! Se reveló la \(letter)."
