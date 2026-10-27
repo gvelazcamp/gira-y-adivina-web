@@ -73,6 +73,11 @@ const server=http.createServer((req,res)=>{
      assert(game.form.x>=game.clue.x-3,"answer belongs to clue column");
      assert(game.wheel.y>=0&&game.wheel.bottom<=height+3,"entire wheel must fit vertically");
      assert(game.form.bottom<=height+3,"answer must remain visible");
+     // Android/Chrome puede enseñar durante unos segundos un aviso NATIVO
+     // en el borde inferior al forzar fullscreen. El campo debe quedar arriba.
+     const franjaAviso=height<480?65:110;
+     assert(game.form.bottom<=height-franjaAviso,
+       "answer must stay clear of Android fullscreen navigation notice");
      assert(!game.inputFocused,"landscape does not pop up the Android keyboard automatically");
    }else{
      assert.equal(game.display,"block","other profiles and portrait keep original layout");
