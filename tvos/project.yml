@@ -18,6 +18,8 @@ targets:
         buildPhase: resources
       - path: Resources/ruleta.json
         buildPhase: resources
+      - path: Resources/Puzzle
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.girayadivina.tv
