@@ -1,13 +1,25 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#160b24"><title>Jugar con la tele · Girá y Adiviná</title>
-<style>*{box-sizing:border-box}body{margin:0;background:#160b24;color:#f6efe2;font:18px system-ui;min-height:100vh;display:grid;place-items:center;padding:24px}main{max-width:420px;width:100%;text-align:center}img{width:88px;height:88px;border-radius:22px}h1{margin:12px 0 4px;color:#f5b301}label{display:block;text-align:left;margin:14px 0 6px;font-weight:700}input{width:100%;font:800 22px system-ui;padding:14px;border-radius:14px;border:2px solid #7b3fe4;background:#0c0616;color:#fff;text-align:center;text-transform:uppercase}button{width:100%;margin-top:16px;border:0;border-radius:14px;padding:16px;font:900 18px system-ui;background:#f5b301;color:#160b24}small{display:block;margin-top:14px;color:#d7c8e5}</style></head>
-<body><main><img src="../icono-192.png" alt="Girá y Adiviná"><h1>Jugá con la tele</h1><p>La tele muestra el juego. Vos respondés desde este celular.</p>
-<form id="f"><label for="n">Tu nombre</label><input id="n" maxlength="14" required autocomplete="nickname" placeholder="¿Cómo te llamás?" style="text-transform:none">
+<style>*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0%,#3a1a5c,#160b24 65%);color:#f6efe2;font:18px system-ui;min-height:100vh;display:grid;place-items:center;padding:24px}main{max-width:440px;width:100%;text-align:center}img{width:88px;height:88px;border-radius:22px}h1{margin:12px 0 4px;color:#f5b301}p{line-height:1.45}section,form{background:#2a1a3c;border:1px solid #f5b30155;border-radius:20px;padding:18px;margin:18px 0}label{display:block;text-align:left;margin:14px 0 6px;font-weight:700}input{width:100%;font:800 22px system-ui;padding:14px;border-radius:14px;border:2px solid #7b3fe4;background:#0c0616;color:#fff;text-align:center;text-transform:uppercase}#n{text-transform:none}button,.tv-link{display:block;width:100%;margin-top:16px;border:0;border-radius:14px;padding:16px;font:900 18px system-ui;background:#f5b301;color:#160b24;text-decoration:none;cursor:pointer}.sec,.tv-link{background:#3a2650;color:#f6efe2;border:1px solid #bfafd177}small{display:block;margin-top:14px;color:#d7c8e5}button:focus-visible,.tv-link:focus-visible,input:focus-visible{outline:3px solid #37d6c0;outline-offset:2px}[hidden]{display:none!important}@media(min-width:900px){main{max-width:620px;font-size:24px}img{width:112px;height:112px}button,.tv-link{font-size:24px;padding:20px}input{font-size:26px}}</style></head>
+<body><main><img src="../icono-192.png" alt="Girá y Adiviná"><h1>Juegos en la tele</h1><p>Creá la sala desde tu celular. La tele muestra el juego y los celulares responden.</p><a class="tv-link" id="tvLink" href="../index.html?tele=1">📺 Esta pantalla es la tele</a>
+<section id="linked" hidden><strong>Tu tele ya está vinculada</strong><p id="linkedInfo"></p><button type="button" id="quickStart">Crear sala en mi tele</button><button type="button" class="sec" id="changeTv">Usar otra tele o cambiar nombre</button></section>
+<form id="f"><p>La primera vez, abrí esta página en la tele y tocá «Esta pantalla es la tele». Después escribí acá el código que aparezca.</p><label for="n">Tu nombre</label><input id="n" maxlength="14" required autocomplete="nickname" placeholder="¿Cómo te llamás?">
 <label for="c">Código que aparece en la tele</label><input id="c" minlength="4" maxlength="6" required autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Ej.: K7RQ2">
-<button>Entrar</button></form><small>Todos necesitan internet. Dejá la tele abierta durante el juego.</small></main>
+<button>Vincular tele y crear sala</button></form>
+<small>La tele debe tener el juego abierto y ambos dispositivos necesitan internet. El enlace anterior con ?tele=1 también sigue funcionando.</small></main>
 <script>
-try{const v=localStorage.getItem("gya_tele_nombre")||localStorage.getItem("gya_nombre");if(v)document.getElementById("n").value=v;}catch(e){}
-const q=new URLSearchParams(location.search);document.getElementById("c").value=q.get("codigo")||"";
-document.getElementById("f").onsubmit=e=>{e.preventDefault();const c=document.getElementById("c").value.toUpperCase().replace(/[^A-Z0-9]/g,""),n=document.getElementById("n").value.replace(/[<>&"']/g,"").trim().slice(0,14);
-  if(c.length<4||!n)return;try{localStorage.setItem("gya_tele_nombre",n);}catch(e){}location.href="../index.html?telecel="+encodeURIComponent(c)+"&n="+encodeURIComponent(n);};
+const q=new URLSearchParams(location.search),nombre=document.getElementById("n"),codigo=document.getElementById("c"),form=document.getElementById("f"),linked=document.getElementById("linked");
+let guardado="";try{nombre.value=localStorage.getItem("gya_tele_nombre")||localStorage.getItem("gya_nombre")||"";guardado=localStorage.getItem("gya_tele_vinculada")||"";}catch(e){}
+if(!/^[A-Z0-9]{4,6}$/.test(guardado))guardado="";
+const indicado=(q.get("codigo")||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
+if(indicado)codigo.value=indicado;
+if(q.get("telered")==="local")document.getElementById("tvLink").href+="&telered=local";
+function entrar(c,n){const destino=new URL("../index.html",location.href);destino.searchParams.set("telecel",c);destino.searchParams.set("n",n);if(q.get("telered")==="local")destino.searchParams.set("telered","local");location.href=destino.href;}
+if(guardado&&!indicado&&!q.has("cambiar")&&nombre.value.trim()){
+  linked.hidden=false;form.hidden=true;codigo.value=guardado;
+  document.getElementById("linkedInfo").textContent="Código "+guardado+" · "+nombre.value.trim();
+}
+document.getElementById("quickStart").onclick=()=>entrar(guardado,nombre.value.trim().slice(0,14));
+document.getElementById("changeTv").onclick=()=>{linked.hidden=true;form.hidden=false;codigo.focus();};
+form.onsubmit=e=>{e.preventDefault();const c=codigo.value.toUpperCase().replace(/[^A-Z0-9]/g,""),n=nombre.value.replace(/[<>&"']/g,"").trim().slice(0,14);if(c.length<4||!n)return;try{localStorage.setItem("gya_tele_nombre",n);}catch(e){}entrar(c,n);};
 </script></body></html>

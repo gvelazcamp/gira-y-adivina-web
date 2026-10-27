@@ -2,16 +2,16 @@
 
 Idea: **la tele muestra el juego en grande y se responde desde el celular.**
 
-**Hecho (26/10/2026, `tele.js` + `tele.css` + `tele/index.html`):** sala nueva con código y menú de juegos (también con el control remoto), **Rosco**, **Ahorcado**, **100 Rioplatenses**, **Tutti Frutti** y **Puzzle**. Entrada: tele `girayadivina.com/index.html?tele=1`; celulares `girayadivina.com/tele`. El botón "Sala TV / Familia" del inicio y la tarjeta "Juegos en la tele" de Extensiones se muestran a Andrés, Romina, Gonzalo y Vale y abren la sala nueva. Para estos cuatro perfiles, el inicio oculta Torneos y Eventos ocupa ese lugar; los demás perfiles mantienen su menú. Tutti Frutti se probó con tele y dos celulares simulados, incluidas tres rondas, apelación y anulación. Puzzle se probó con dos celulares, encastre, progreso y guardado; falta probar en una tele real.
+**Hecho (26–27/10/2026, `tele.js` + `tele.css` + `tele/index.html`):** sala nueva con código y menú de juegos (también con el control remoto), **Rosco**, **Ahorcado**, **100 Rioplatenses**, **Tutti Frutti** y **Puzzle**. La tele puede entrar desde `girayadivina.com` → «Sala TV / Familia» → «Esta pantalla es la tele»; `girayadivina.com/index.html?tele=1` sigue funcionando. Los celulares entran desde el botón «Sala TV / Familia» de la app/web o desde `girayadivina.com/tele`. La tele conserva su código y el celular lo recuerda después de una conexión válida, de modo que las próximas salas se abren con un toque. El botón del inicio es visible para todos; la tarjeta de Extensiones sigue visible solo para Andrés, Romina, Gonzalo y Vale. Para estos cuatro perfiles, el inicio oculta Torneos y Eventos ocupa su lugar; los demás perfiles mantienen Torneos. Tutti Frutti se probó con tele y dos celulares simulados, incluidas tres rondas, apelación y anulación. Puzzle se probó con dos celulares, encastre, progreso y guardado; falta probar en una tele real.
 Estado de la prueba actual de la Ruleta: ver `SALA_TV_PRUEBA.md`.
 
 ## Cómo se entra (igual para todos los juegos)
 
-1. La tele abre el juego en modo tele y muestra un **código de sala**.
-2. Los celulares entran con ese código desde `girayadivina.com/tele`, sin instalar nada. La Ruleta usa su propia entrada en `tv.html` después de elegirla en el menú.
-3. **En la tele se elige a qué jugar** (menú de juegos de tele).
+1. La tele abre `girayadivina.com`, toca «Sala TV / Familia» y «Esta pantalla es la tele». Muestra un **código de sala** que recuerda al recargar. La app Android TV abre esa pantalla directamente.
+2. El primer celular abre la app o `girayadivina.com`, toca «Sala TV / Familia», pone su nombre y el código. Después de conectarse, el código queda guardado en ese navegador/app. La próxima vez toca «Crear sala en mi tele»; la tele debe tener el juego abierto. Otros celulares pueden unirse con el código. La Ruleta usa su propia entrada en `tv.html` después de elegirla en el menú.
+3. El celular con control o el mando de la tele elige a qué jugar.
 
-Se hace una sola vez y sirve para todos los juegos.
+La vinculación se hace una sola vez por celular y por navegador/app de la tele, mientras conserven sus datos locales.
 
 ## Los juegos, tal como los pidió Gonzalo
 
@@ -65,13 +65,13 @@ Ya existe ("Sala TV"). La tele muestra la ruleta y el tablero; cada jugador gira
 2. Tutti Frutti → 100 Rioplatenses → Ahorcado → Rosco → Puzzle (del más fácil al más difícil).
 
 ## Play Store de la tele (Android TV)
-- El proyecto `gira-y-adivina-tv` ya abre la sala nueva desde `girayadivina.com` en WebView, sin depender de Chrome. Incluye entrada Leanback, banner apaisado y mando. El AAB v18 está firmado con la misma clave de subida y usa el mismo identificador que la app de celular. No se ha subido a Play Console.
+- La versión combinada AAB v19 abre la sala nueva en WebView para Android TV e incluye entrada Leanback, banner apaisado y mando; está disponible para testers internos en Play Console. Producción sigue en v17.
 - **Seguridad (verificado 26/10):** mientras Google revisa una versión nueva, **la app publicada sigue funcionando y la gente sigue jugando** (ya pasó con la 16 publicada mientras se revisaba la 17). Además el juego se actualiza desde la web.
-- **Subirla solo por la vía "Android TV"** de la misma app en Play Console, sin tocar la versión de celular publicada. Habilitar el tipo de dispositivo en Configuración avanzada → Tipos de dispositivo; completar banner y capturas de la ficha para TV.
-- Primero probar el APK en una tele real y el AAB en la prueba interna de Android TV. Después enviar a producción para revisión de Google. Ver instrucciones de compilación y prueba en el README del repositorio `gira-y-adivina-tv`.
+- La ficha de TV y el tipo Android TV se configuran en la misma app de Play Console. La versión 19 combina la entrada de celular y la de Android TV; al publicarla en producción se actualizarían ambos dispositivos compatibles.
+- Probar la versión interna 19 en una tele real antes de enviarla a producción para revisión de Google. El estado de aprobación de TV en producción sigue pendiente.
 
 ## Mientras tanto (para jugar ya)
-- **Tele:** abrir el navegador de la tele (en Android/Google TV se puede instalar uno gratis de su Play Store, por ejemplo "TV Bro" o "Puffin TV Browser") y entrar a `girayadivina.com/index.html?tele=1`.
-- **Celulares:** `girayadivina.com/tele` con nombre y código. La Ruleta da otro código y pasa a `tv.html` al elegirla.
+- **Tele:** abrir un navegador compatible y entrar a `girayadivina.com`; tocar «Sala TV / Familia» → «Esta pantalla es la tele». El enlace `index.html?tele=1` sigue disponible.
+- **Celulares:** abrir el botón «Sala TV / Familia» de la app/web o `girayadivina.com/tele`. Escribir nombre y código solo la primera vez; luego «Crear sala en mi tele». La Ruleta da otro código y pasa a `tv.html` al elegirla.
 - Rosco, Ahorcado, 100 Rioplatenses, Tutti Frutti y Puzzle están integrados al menú. Puzzle conserva su partida en el navegador de esa tele; los otros juegos se cortan al cerrar o recargar la tele. **Probarlo antes en casa**: las pruebas en código usaron navegadores simulados y todavía no se probó en una tele real.
-- El botón "Sala TV / Familia" del inicio abre "Juegos en la tele" para Andrés, Romina, Gonzalo y Vale.
+- El botón «Sala TV / Familia» del inicio abre «Juegos en la tele» para todos los usuarios.

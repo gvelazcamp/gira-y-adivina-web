@@ -1317,7 +1317,7 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
   </button>
   <div class="menu-grid">
     <button class="menu-card mc-teal" id="bOnline"><span class="mc-ico"><img src="assets/social/online-icono.webp" alt="" style="width:100%;height:100%;object-fit:contain"></span><span class="mc-txt"><span class="mc-tit">Jugar online</span><span class="mc-sub">Buscá un rival y arrancá ya</span></span><span class="mc-flecha">›</span></button>
-    <button class="menu-card mc-rosa" id="bTV" style="display:none"><span class="mc-ico"><img src="assets/social/tv-familia-icono.webp" alt="" style="width:100%;height:100%;object-fit:contain"></span><span class="mc-txt"><span class="mc-tit">Sala TV / Familia</span><span class="mc-sub">Jugá todos juntos</span></span><span class="mc-flecha">›</span></button>
+    <button class="menu-card mc-rosa" id="bTV"><span class="mc-ico"><img src="assets/social/tv-familia-icono.webp" alt="" style="width:100%;height:100%;object-fit:contain"></span><span class="mc-txt"><span class="mc-tit">Sala TV / Familia</span><span class="mc-sub">Jugá todos juntos</span></span><span class="mc-flecha">›</span></button>
     <button class="menu-card mc-rosa" id="bSocialGrande"><span class="mc-ico"><img src="assets/social/social-icono.webp" alt="" style="width:100%;height:100%;object-fit:contain"></span><span class="mc-txt"><span class="mc-tit">Social</span><span class="mc-sub">Compartí y conectá con amigos</span></span><span class="mc-flecha">›</span></button>
     <button class="menu-card mc-azul" id="bJugarOnline"><span class="mc-ico"><img src="assets/social/amigos-icono.webp" alt="" style="width:100%;height:100%;object-fit:contain"></span><span class="mc-txt"><span class="mc-tit">Jugar con amigos</span><span class="mc-sub">Crear sala o entrar con código</span></span><span class="mc-flecha">›</span></button>
     <button class="menu-card mc-verde" id="bTienda"><span class="mc-ico"><img src="assets/social/tienda-icono.webp" alt="" style="width:100%;height:100%;object-fit:contain"></span><span class="mc-txt"><span class="mc-tit">Tienda</span><span class="mc-sub">Monedas, marcos y más</span></span><span class="mc-flecha">›</span></button>
@@ -7758,7 +7758,7 @@ function actualizarChipPerfil(){
   if($("campoNombre"))$("campoNombre").style.display=perfilExiste()?"none":"";
   const parametros=new URLSearchParams(location.search);
   const grupoSalaTV=puedeVerSalaTV();
-  $("bTV").style.display=grupoSalaTV&&!parametros.has("tv")&&!parametros.has("sala")?"":"none";
+  $("bTV").style.display=!parametros.has("tv")&&!parametros.has("sala")?"":"none";
   $("bTorneos").style.display=grupoSalaTV?"none":"";
   actualizarAccesoPruebas();
 }
@@ -8402,9 +8402,7 @@ function renderTVControl(){
 }
 
 $("bTV").onclick=()=>{
-  if(!puedeVerSalaTV())return;
-  if(!perfilExiste()){abrirPerfil(()=>Extensiones.abrirJuego("tele"));return;}
-  Extensiones.abrirJuego("tele");
+  location.href="tele/";
 };
 $("salaTVMenuCerrar").onclick=()=>$("capaSalaTVMenu").classList.remove("ver");
 $("bSalaTVCrear").onclick=()=>{$("capaSalaTVMenu").classList.remove("ver");crearSalaTV();};
@@ -11816,7 +11814,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="extensiones.js?v=69"></script>
 <script src="sala-tv.js?v=1"></script>
 <link rel="stylesheet" href="tele.css?v=5">
-<script src="tele.js?v=6"></script>
+<script src="tele.js?v=7"></script>
 </body>
 </html>
 

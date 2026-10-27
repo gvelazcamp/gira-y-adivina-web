@@ -53,16 +53,16 @@
   }
   function despierta(){try{if(navigator.wakeLock)navigator.wakeLock.request("screen").catch(()=>{});}catch(e){}}
 
-  /* ---------- Entrada desde Extensiones (solo Gonzalo por ahora) ---------- */
+  /* ---------- Entrada desde Extensiones ---------- */
   function abrir(contenedor){
     contenedor.innerHTML=`<div class="tl-entrada"><button type="button" class="ext-volver" id="tlVolver">⟵ Extensiones</button>
       <h2>📺 Juegos en la tele</h2><p>La tele muestra el juego en grande y se responde desde el celular.</p>
+      <button type="button" class="tl-boton tl-oro" id="tlSoyCelular">📱 Crear sala o entrar desde el celular</button>
       <button type="button" class="tl-boton tl-oro" id="tlSoyTele">📺 Esta pantalla es la tele</button>
-      <div class="tl-caja"><b>📱 Unirme con el celular</b><input id="tlCodigo" maxlength="6" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Código de la tele"><button type="button" class="tl-boton" id="tlUnirme">Unirme</button></div>
-      <small>En la tele se puede abrir desde el navegador: girayadivina.com/index.html?tele=1</small></div>`;
+      <small>En la tele también podés entrar a girayadivina.com y tocar «Sala TV / Familia».</small></div>`;
     contenedor.querySelector("#tlVolver").onclick=()=>{try{Extensiones.abrirLobby();}catch(e){}};
+    contenedor.querySelector("#tlSoyCelular").onclick=()=>{location.href="tele/";};
     contenedor.querySelector("#tlSoyTele").onclick=()=>{location.href="index.html?tele=1";};
-    contenedor.querySelector("#tlUnirme").onclick=()=>{const c=contenedor.querySelector("#tlCodigo").value.toUpperCase().replace(/[^A-Z0-9]/g,"");if(c.length>=4)location.href="index.html?telecel="+c;};
   }
   function salir(){}
   window.Tele={abrir,salir};
@@ -74,7 +74,9 @@
      TELE (anfitrión): tiene el estado y lo manda a los celulares.
      ===================================================================== */
   function iniciarTele(){
-    const cod=Array.from({length:5},()=>CHARS[Math.floor(Math.random()*CHARS.length)]).join("");
+    let cod="";
+    try{const guardado=localStorage.getItem("gya_tele_codigo")||"";if(guardado.length===5&&[...guardado].every(c=>CHARS.includes(c)))cod=guardado;}catch(e){}
+    if(!cod){cod=Array.from({length:5},()=>CHARS[Math.floor(Math.random()*CHARS.length)]).join("");try{localStorage.setItem("gya_tele_codigo",cod);}catch(e){}}
     const T={cod,fase:"menu",jug:[],mando:null,juego:null,g:null,sel:0};
     const raiz=document.createElement("div");raiz.id="teleTV";raiz.className="tl-tv";document.body.appendChild(raiz);
     let timerJuego=null,ultimoTic=0;
@@ -488,9 +490,9 @@
     function entrar(){
       raiz.innerHTML=`<div class="tl-cel-caja"><h2>Conectando con la tele…</h2><p>Código <b>${codCel}</b></p></div>`;
       conectar(codCel,()=>{conectado=true;const h=()=>mandar({t:"hola",n:nombre});h();hola=setInterval(h,4000);
-        setTimeout(()=>{if(!ultimo)raiz.innerHTML=`<div class="tl-cel-caja"><h2>No encuentro la tele 🤔</h2><p>Revisá que el código <b>${codCel}</b> sea el que muestra la tele y que la tele siga abierta.</p><button type="button" class="tl-boton" onclick="location.reload()">Probar de nuevo</button></div>`;},12000);},
+        setTimeout(()=>{if(!ultimo)raiz.innerHTML=`<div class="tl-cel-caja"><h2>No encuentro la tele 🤔</h2><p>Revisá que el código <b>${codCel}</b> sea el que muestra la tele y que la tele siga abierta.</p><button type="button" class="tl-boton" onclick="location.reload()">Probar de nuevo</button><a class="tl-boton tl-chico" href="tele/?cambiar=1">Usar otra tele</a></div>`;},12000);},
         ()=>{raiz.innerHTML=`<div class="tl-cel-caja"><h2>Sin conexión</h2><p>No se pudo conectar (${esc(window.gyaFalloConexion||"sin respuesta")}). Probá con datos del celular.</p><button type="button" class="tl-boton" onclick="location.reload()">Reintentar</button></div>`;},
-        m=>{if(m.t==="estado"&&m.cod===codCel){ultimo=m;visto=Date.now();pintar();}});
+        m=>{if(m.t==="estado"&&m.cod===codCel){ultimo=m;visto=Date.now();try{localStorage.setItem("gya_tele_vinculada",codCel);}catch(e){}pintar();}});
       window.addEventListener("pagehide",()=>{try{mandar({t:"chau"});}catch(e){}});
     }
     const accion=(a,extra={})=>{mandar({t:"accion",a,...extra});try{if(typeof vibrar==="function")vibrar(25);}catch(e){}};
