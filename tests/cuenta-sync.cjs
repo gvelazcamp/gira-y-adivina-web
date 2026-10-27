@@ -11,14 +11,14 @@ const server=http.createServer((req,res)=>{const name=new URL(req.url,'http://lo
 const mock=(seed,profile,extra={})=>({seed,profile,...extra});
 async function device(browser,base,options){
  const context=await browser.newContext({serviceWorkers:'block'}),page=await context.newPage();
- await page.addInitScript(({seed,profile,raceData})=>{
+ await page.addInitScript(({seed,profile,raceData,failUpdate})=>{
    if(profile&&!localStorage.getItem('gya_nombre')){localStorage.setItem('gya_nombre',profile);localStorage.setItem('gya_avatar','avatar-01');localStorage.setItem('gya_pais','uruguay');localStorage.setItem('larueda_mundo','["durazno"]');}
-   window.__cloud=structuredClone(seed);let primeraLectura=true;
+   window.__cloud=structuredClone(seed);let primeraLectura=true;window.__failUpdate=!!failUpdate;
    window.fetch=async()=>({ok:true,json:async()=>({external:{google:true}})});
    window.__client={auth:{getUser:async()=>({data:{user:{id:'same-google-user',email:'jugador@example.com'}}}),signInWithOAuth:async()=>({error:null}),signOut:async()=>({error:null})},from:()=>{
      let op='',payload=null,filters=[];
      const q={select(){return this;},eq(k,v){filters.push([k,v]);return this;},limit(){return Promise.resolve({data:[],error:null});},insert(v){op='insert';payload=v;return this;},update(v){op='update';payload=v;return this;},maybeSingle(){
-       if(op==='update'){if(window.__cloud&&filters.every(([k,v])=>window.__cloud[k]===v)){window.__cloud={...window.__cloud,...payload};return Promise.resolve({data:{revision:window.__cloud.revision},error:null});}return Promise.resolve({data:null,error:null});}
+       if(op==='update'){if(window.__failUpdate&&window.__cloud){window.__cloud.revision++;return Promise.resolve({data:null,error:null});}if(window.__cloud&&filters.every(([k,v])=>window.__cloud[k]===v)){window.__cloud={...window.__cloud,...payload};return Promise.resolve({data:{revision:window.__cloud.revision},error:null});}return Promise.resolve({data:null,error:null});}
        if(raceData&&primeraLectura){primeraLectura=false;return Promise.resolve({data:null,error:null});}
        return Promise.resolve({data:window.__cloud?{...window.__cloud}:null,error:null});
      },single(){if(op==='insert'&&raceData){window.__cloud=structuredClone(raceData);return Promise.resolve({data:null,error:{code:'23505',message:'duplicate key value violates unique constraint "gya_cuentas_pkey"'}});}
@@ -44,12 +44,16 @@ async function device(browser,base,options){
    await b.page.waitForFunction(()=>localStorage.getItem('gya_nombre')==='Meg'&&localStorage.getItem('gya_logro_prueba')==='ganado');
    assert.equal(await b.page.evaluate(()=>localStorage.getItem('gya_cuenta_usuario')),'same-google-user');
    const c=await device(browser,base,mock(cloud,'Meg 2'));
+   await c.page.waitForTimeout(400);
+   assert(await c.page.locator('#cuentaCapa').isHidden(),'conflicts must not interrupt a game');
+   await c.page.locator('#bCuenta').click();
    await c.page.locator('#cuentaCapa:not([hidden])').waitFor();
    assert.match(await c.page.locator('#cuentaTexto').textContent(),/Meg 2/);
    assert.match(await c.page.locator('#cuentaTexto').textContent(),/Meg/);
    assert.equal(await c.page.evaluate(()=>localStorage.getItem('gya_nombre')),'Meg 2','no automatic merge by similar name');
    await c.page.locator('#cuentaOpciones button').filter({hasText:'Decidir después'}).click();
    await c.page.waitForTimeout(3000);assert(await c.page.locator('#cuentaCapa').isHidden(),'deferring should not reopen the choice automatically');
+   await c.page.evaluate(()=>document.getElementById('capaMas').classList.add('ver'));
    await c.page.locator('#bCuenta').click();await c.page.locator('#cuentaCapa:not([hidden])').waitFor();
    await c.page.locator('#cuentaOpciones button').filter({hasText:'Continuar la partida de mi cuenta'}).click();
    await c.page.waitForFunction(()=>localStorage.getItem('gya_nombre')==='Meg');
@@ -77,11 +81,27 @@ async function device(browser,base,options){
    const partidaAjena={usuario_id:'same-google-user',revision:1,estado_juego:{
      version:1,localStorage:{gya_nombre:'Otra',gya_avatar:'avatar-01',gya_pais:'uruguay',larueda_mundo:'["durazno"]'}}};
    const f=await device(browser,base,mock(null,'Local',{raceData:partidaAjena}));
+   await f.page.waitForTimeout(400);
+   assert(await f.page.locator('#cuentaCapa').isHidden(),'insert race must never open a popup');
+   await f.page.locator('#bCuenta').click();
    await f.page.locator('#cuentaCapa:not([hidden])').waitFor();
-   assert.match(await f.page.locator('#cuentaTitulo').textContent(),/Encontramos dos partidas/);
+   assert.match(await f.page.locator('#cuentaTitulo').textContent(),/Elegí tu partida/);
    assert.equal(await f.page.evaluate(()=>localStorage.getItem('gya_nombre')),'Local','never replace local progress in a race');
    assert.equal(await f.page.evaluate(()=>window.__cloud.estado_juego.localStorage.gya_nombre),'Otra','never overwrite cloud progress in a race');
-   await Promise.all([a.context.close(),b.context.close(),c.context.close(),d.close(),e.context.close(),f.context.close()]);
+   // El error reportado por Gonzalo: carrera entre revisiones durante UPDATE.
+   // Se reintenta y, si la otra sesión sigue ganando, NO se abre ningún aviso.
+   const g=await device(browser,base,mock(null,'SinPopup',{failUpdate:true}));
+   await g.page.waitForFunction(()=>localStorage.getItem('gya_cuenta_usuario')==='same-google-user');
+   await g.page.evaluate(async()=>{
+     localStorage.setItem('gya_puntos_prueba','1234');
+     await GyaCuenta.revisar();
+   });
+   assert(await g.page.locator('#cuentaCapa').isHidden(),'sync failure must NOT display No se pudo guardar');
+   assert.equal(await g.page.evaluate(()=>localStorage.getItem('gya_puntos_prueba')),'1234','sync failures keep local game progress');
+   assert.notEqual(await g.page.evaluate(()=>window.__cloud.estado_juego.localStorage.gya_puntos_prueba),'1234','sync failure never overwrites remote');
+   await g.page.locator('#bCuenta').click();
+   assert.match(await g.page.locator('#cuentaTexto').textContent(),/La sincronización con Google está pendiente/);
+   await Promise.all([a.context.close(),b.context.close(),c.context.close(),d.close(),e.context.close(),f.context.close(),g.context.close()]);
    console.log('Cuenta y progreso entre dispositivos: OK');
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

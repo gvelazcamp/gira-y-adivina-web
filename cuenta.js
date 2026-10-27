@@ -4,6 +4,7 @@ const Cuenta=(()=>{
   const TABLA="gya_cuentas",ID="gya_cuenta_usuario",REV="gya_cuenta_revision",FIRMA="gya_cuenta_firma";
   const EXCLUIR=new Set(["gya_origen_app","gya_bienvenida_vista","gya_social_ocultos"]);
   let usuario=null,revision=0,firma="",ocupado=false,panelAbierto=false,pospuesto=false,habilitado=false,btnAjustes=null,inicioPendiente=null,temporizadorActivo=false;
+  let pendienteConflicto=null,errorSync=null,reintentarEn=0,fallosSeguidos=0,ultimoIntento=0;
   const cliente=()=>typeof obtenerSupa==="function"?obtenerSupa():null;
   const puedeGuardar=k=>!EXCLUIR.has(k)&&!k.startsWith("gya_cuenta_")&&!k.startsWith("gya_tele_")&&!k.startsWith("gya_admin_")&&!k.startsWith("gya_backup_");
   function partidaLocal(){
@@ -22,7 +23,7 @@ const Cuenta=(()=>{
   }
   const tienePerfil=p=>!!(p?.localStorage?.gya_nombre&&p?.localStorage?.gya_avatar&&["uruguay","argentina"].includes(p.localStorage.gya_pais));
   const nombre=p=>p?.localStorage?.gya_nombre||"Sin perfil";
-  function marcar(p,r,publicar=true){const primera=localStorage.getItem(ID)!==usuario.id;revision=r;firma=huella(p);localStorage.setItem(ID,usuario.id);localStorage.setItem(REV,String(r));localStorage.setItem(FIRMA,firma);pintar();if(primera&&publicar){if(typeof empujarUsuario==="function")empujarUsuario();if(typeof empujarRanking==="function")empujarRanking();}}
+  function marcar(p,r,publicar=true){const primera=localStorage.getItem(ID)!==usuario.id;revision=r;firma=huella(p);localStorage.setItem(ID,usuario.id);localStorage.setItem(REV,String(r));localStorage.setItem(FIRMA,firma);pendienteConflicto=null;errorSync=null;pospuesto=false;fallosSeguidos=0;reintentarEn=0;pintar();if(primera&&publicar){if(typeof empujarUsuario==="function")empujarUsuario();if(typeof empujarRanking==="function")empujarRanking();}}
   function pintar(){
     if(btnAjustes){
       const etiqueta=btnAjustes.querySelector(".btn-txt");
@@ -45,11 +46,15 @@ const Cuenta=(()=>{
     capa.hidden=false;panelAbierto=true;
   }
   function abrir(){
-    if(usuario&&pospuesto){pospuesto=false;revisar();return;}
-    if(usuario){mostrar("Partida vinculada",`Tu progreso se guarda con ${usuario.email||"tu cuenta de Google"}. En otro dispositivo elegí esta misma cuenta.`,[
-      {texto:"Seguir jugando",principal:true,accion:cerrar},
-      {texto:"Cerrar sesión en este dispositivo",accion:salir}
-    ]);return;}
+    if(usuario&&pendienteConflicto){conflicto(pendienteConflicto.local,pendienteConflicto.nube,true);return;}
+    if(usuario){
+      mostrar("Partida vinculada",errorSync
+        ?"Tu avance sigue en este dispositivo. La sincronización con Google está pendiente; podés seguir jugando normalmente."
+        :`Tu progreso se guarda con ${usuario.email||"tu cuenta de Google"}. En otro dispositivo elegí esta misma cuenta.`,[
+        {texto:"Seguir jugando",principal:true,accion:cerrar},
+        ...(errorSync?[{texto:"Revisar sincronización",accion:()=>{cerrar();pospuesto=false;reintentarEn=0;revisar();}}]:[]),
+        {texto:"Cerrar sesión en este dispositivo",accion:salir}
+      ]);return;}
     mostrar("Guardar mi progreso","Continuá tu partida en la app y en girayadivina.com con la misma cuenta de Google. Es opcional: podés seguir jugando sin vincularla.",[
       {texto:"Continuar con Google",principal:true,accion:entrar},
       {texto:"Ahora no",accion:cerrar}
@@ -107,32 +112,55 @@ const Cuenta=(()=>{
       location.reload();
     }catch(e){Object.entries(antes.localStorage).forEach(([k,v])=>localStorage.setItem(k,v));throw e;}
   }
-  function conflicto(local,nube){
-    ocupado=true;
-    mostrar("Encontramos dos partidas",`En este dispositivo: ${nombre(local)}. En tu cuenta: ${nombre(nube.estado_juego)}. Elegí cuál querés continuar; guardamos una copia local de la otra. No las unimos por nombre.`,[
-      {texto:"Continuar la partida de mi cuenta",principal:true,accion:()=>{try{bajar(nube.estado_juego,nube.revision);}catch(e){fallo(e);}}},
-      {texto:"Guardar la partida de este dispositivo",accion:async()=>{
-        try{respaldo("nube",nube.estado_juego);const ok=await subir(local,nube.revision);if(!ok){cerrar();ocupado=false;await revisar();return;}ocupado=false;cerrar();}
-        catch(e){fallo(e);}
+  function conflicto(local,nube,desdeAjustes=false){
+    // No interrumpir ninguna partida: ofrecer una elección únicamente
+    // cuando el usuario entra por el engranaje.
+    pendienteConflicto={local,nube};ocupado=false;pospuesto=true;
+    if(!desdeAjustes)return;
+    mostrar("Elegí tu partida",`En este dispositivo: ${nombre(partidaLocal())}. En tu cuenta: ${nombre(nube.estado_juego)}. Ambas partidas están conservadas; elegí cuál querés seguir usando.`,[
+      {texto:"Continuar la partida de mi cuenta",principal:true,accion:async()=>{
+        try{
+          const actual=await leer();
+          if(!actual)throw Error("No se encontró la partida de tu cuenta.");
+          bajar(actual.estado_juego,actual.revision);
+        }catch(e){fallo(e);cerrar();}
       }},
-      {texto:"Decidir después",accion:()=>{cerrar();ocupado=false;pospuesto=true;}}
+      {texto:"Guardar la partida de este dispositivo",accion:async()=>{
+        try{
+          ocupado=true;
+          // Tomar el progreso ACTUAL al confirmar, no una copia vieja.
+          const localActual=partidaLocal(),remotaActual=await leer();
+          if(remotaActual)respaldo("nube",remotaActual.estado_juego);
+          const ok=await subir(localActual,remotaActual?.revision||0);
+          if(!ok){ocupado=false;pendienteConflicto=null;pospuesto=false;await revisar();}
+          ocupado=false;cerrar();
+        }catch(e){fallo(e);cerrar();}
+      }},
+      {texto:"Decidir después",accion:cerrar}
     ]);
   }
-  function fallo(e){ocupado=false;pospuesto=true;mostrar("No se pudo guardar","Tu partida sigue en este dispositivo. Revisá la conexión y probá otra vez. "+String(e?.message||""),[{texto:"Reintentar",principal:true,accion:()=>{cerrar();pospuesto=false;revisar();}},{texto:"Más tarde",accion:cerrar}]);}
+  function fallo(e){
+    // Un problema de red o una carrera entre dispositivos NUNCA debe
+    // mostrar un popup sobre los juegos. La copia local queda intacta.
+    ocupado=false;errorSync=String(e?.message||"Sincronización pendiente").slice(0,200);
+    fallosSeguidos=Math.min(5,fallosSeguidos+1);
+    reintentarEn=Date.now()+Math.min(300000,15000*2**(fallosSeguidos-1));
+    try{console.warn("[GyaCuenta] Sincronización diferida:",errorSync);}catch(_){}
+  }
   async function revisar(){
-    if(!usuario||ocupado)return;
-    ocupado=true;
+    if(!usuario||ocupado||pendienteConflicto)return;
+    ocupado=true;ultimoIntento=Date.now();
     try{
       // Reconciliación optimista. Si otro dispositivo creó o actualizó
       // la fila entre SELECT e INSERT/UPDATE, leer la nueva revisión una vez.
       // Nunca usar upsert: pisaría silenciosamente la partida remota.
-      for(let intento=0;intento<2;intento++){
+      for(let intento=0;intento<3;intento++){
         const nube=await leer(),local=partidaLocal(),fLocal=huella(local);
         if(!nube){
           if(tienePerfil(local)){
             const creada=await subir(local,0);
             if(!creada){
-              if(intento===0)continue;
+              if(intento<2)continue;
               throw Error("La cuenta ya tiene una partida en la nube, pero no se pudo leer. Comprobá tu sesión y probá otra vez.");
             }
           }
@@ -140,12 +168,15 @@ const Cuenta=(()=>{
         }
         const fNube=huella(nube.estado_juego),vinculada=localStorage.getItem(ID)===usuario.id,base=vinculada?localStorage.getItem(FIRMA)||"":"";
         if(fLocal===fNube){marcar(local,nube.revision);ocupado=false;return;}
-        if(!tienePerfil(local)||vinculada&&fLocal===base){bajar(nube.estado_juego,nube.revision);return;}
+        if(!tienePerfil(local)){bajar(nube.estado_juego,nube.revision);return;}
+        if(vinculada&&fLocal===base){conflicto(local,nube);return;}
         if(vinculada&&fNube===base){
           const guardada=await subir(local,nube.revision);
           if(!guardada){
-            if(intento===0)continue;
-            throw Error("La partida cambió en otro dispositivo. Volvé a intentar para elegir cuál conservar.");
+            if(intento<2)continue;
+            // Una nueva revisión ganó esta carrera. Reintentar después,
+            // sin popup ni sobrescritura de ninguna de las dos copias.
+            fallo(Error("La revisión remota cambió durante el guardado."));return;
           }
           ocupado=false;return;
         }
@@ -154,7 +185,7 @@ const Cuenta=(()=>{
     }catch(e){fallo(e);}
   }
   async function tic(){
-    if(!usuario||ocupado||panelAbierto||pospuesto||!navigator.onLine)return;
+    if(!usuario||ocupado||panelAbierto||pospuesto||pendienteConflicto||!navigator.onLine||Date.now()<reintentarEn||Date.now()-ultimoIntento<8000)return;
     const actual=partidaLocal();if(!tienePerfil(actual)||huella(actual)===firma)return;
     await revisar();
   }
