@@ -12,7 +12,11 @@ const Cuenta=(()=>{
     return{version:1,localStorage:datos};
   }
   function huella(p){
-    const t=JSON.stringify(p&&p.localStorage||{});let a=2166136261,b=0x9e3779b9;
+    // jsonb puede devolver las claves en otro orden al del localStorage.
+    // Ordenarlas mantiene la firma anterior y evita falsos conflictos.
+    const datos=p?.localStorage||{};
+    const ordenado=Object.fromEntries(Object.keys(datos).sort().map(k=>[k,datos[k]]));
+    const t=JSON.stringify(ordenado);let a=2166136261,b=0x9e3779b9;
     for(let i=0;i<t.length;i++){const c=t.charCodeAt(i);a=Math.imul(a^c,16777619);b=Math.imul(b+c,2246822519);}
     return t.length.toString(36)+":"+(a>>>0).toString(36)+":"+(b>>>0).toString(36);
   }
