@@ -11,7 +11,6 @@ const server=http.createServer((req,res)=>{
   res.setHeader("Content-Type",({".html":"text/html",".js":"text/javascript",".css":"text/css",".png":"image/png",".webp":"image/webp",".svg":"image/svg+xml"})[path.extname(file)]||"application/octet-stream");
   fs.createReadStream(file).pipe(res);
 });
-const bounds=el=>{const r=el.getBoundingClientRect();return{x:r.x,y:r.y,right:r.right,bottom:r.bottom,width:r.width,height:r.height};};
 (async()=>{
  await new Promise(resolve=>server.listen(0,"127.0.0.1",resolve));
  const base="http://127.0.0.1:"+server.address().port;
@@ -36,6 +35,7 @@ const bounds=el=>{const r=el.getBoundingClientRect();return{x:r.x,y:r.y,right:r.
    await page.waitForFunction(()=>!!window.Extensiones&&!!window.RoscoRioplatense);
    const isLandscape=width>height&&name==="Gonzalo";
    const welcome=await page.evaluate(()=>{
+     const bounds=el=>{const r=el.getBoundingClientRect();return{x:r.x,y:r.y,right:r.right,bottom:r.bottom,width:r.width,height:r.height};};
      document.querySelector("#splash")?.remove();
      Fichas.usar=()=>true;
      Extensiones.abrirJuego("rosco-rioplatense");
@@ -57,6 +57,7 @@ const bounds=el=>{const r=el.getBoundingClientRect();return{x:r.x,y:r.y,right:r.
    });
    await page.waitForFunction(()=>!document.querySelector("#rrJuego").hidden);
    const game=await page.evaluate(()=>{
+     const bounds=el=>{const r=el.getBoundingClientRect();return{x:r.x,y:r.y,right:r.right,bottom:r.bottom,width:r.width,height:r.height};};
      const q=id=>document.querySelector(id);
      return {
        display:getComputedStyle(q("#rrJuego")).display,
