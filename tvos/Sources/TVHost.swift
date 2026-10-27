@@ -9,7 +9,7 @@ struct TVPlayer: Identifiable {
 
 @MainActor
 final class TVHost: ObservableObject {
-    enum Screen: Equatable { case home, menu, cien, ahorcado, rosco }
+    enum Screen: Equatable { case home, menu, cien, ahorcado, rosco, tutti }
 
     @Published private(set) var screen: Screen = .home
     @Published private(set) var code = ""
@@ -19,6 +19,7 @@ final class TVHost: ObservableObject {
     @Published private(set) var cien: CienGame?
     @Published private(set) var ahorcado: AhorcadoGame?
     @Published private(set) var rosco: RoscoGame?
+    @Published private(set) var tutti: TuttiGame?
     @Published private(set) var errorMessage = ""
 
     private let brokerURLs = [
@@ -32,6 +33,7 @@ final class TVHost: ObservableObject {
     private var heartbeat: Task<Void, Never>?
     private var nextRoundTask: Task<Void, Never>?
     private var spinTask: Task<Void, Never>?
+    private var tuttiTick: Task<Void, Never>?
     private var sequence = 0
     private var recentMessages = [String: Date]()
 
@@ -70,7 +72,7 @@ final class TVHost: ObservableObject {
 
     func back() {
         switch screen {
-        case .cien, .ahorcado, .rosco: showMenu()
+        case .cien, .ahorcado, .rosco, .tutti: showMenu()
         case .menu: stop()
         case .home: break
         }
@@ -80,6 +82,7 @@ final class TVHost: ObservableObject {
         heartbeat?.cancel(); heartbeat = nil
         nextRoundTask?.cancel(); nextRoundTask = nil
         spinTask?.cancel(); spinTask = nil
+        tuttiTick?.cancel(); tuttiTick = nil
         links.forEach { $0.close() }; links.removeAll()
         connectedBrokers = 0
         players.removeAll()
@@ -87,15 +90,18 @@ final class TVHost: ObservableObject {
         cien = nil
         ahorcado = nil
         rosco = nil
+        tutti = nil
         screen = .home
     }
 
     func showMenu() {
         nextRoundTask?.cancel(); nextRoundTask = nil
         spinTask?.cancel(); spinTask = nil
+        tuttiTick?.cancel(); tuttiTick = nil
         cien = nil
         ahorcado = nil
         rosco = nil
+        tutti = nil
         screen = .menu
         broadcast()
     }
@@ -126,6 +132,36 @@ final class TVHost: ObservableObject {
         screen = .rosco
         errorMessage = ""
         broadcast()
+    }
+
+
+    func startTutti() {
+        guard screen == .menu else { return }
+        guard players.count >= 2 else {
+            errorMessage = "Tutti Frutti necesita al menos 2 celulares"
+            return
+        }
+        guard let game = TuttiGame(players: players) else {
+            errorMessage = "No se pudieron cargar los datos de Tutti Frutti"
+            return
+        }
+        tutti = game
+        screen = .tutti
+        errorMessage = ""
+        broadcast()
+        tuttiTick?.cancel()
+        tuttiTick = Task { [weak self] in
+            var ticks = 0
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                guard !Task.isCancelled, let self, self.screen == .tutti,
+                      var game = self.tutti else { return }
+                let changedStage = game.tick(0.5)
+                self.tutti = game
+                ticks += 1
+                if changedStage || ticks % 2 == 0 { self.broadcast() }
+            }
+        }
     }
 
     func passRosco() {
@@ -180,10 +216,17 @@ final class TVHost: ObservableObject {
             broadcast()
         case "tomar":
             guard players.contains(where: { $0.pid == pid }) else { return }
+            if screen == .tutti, let game = tutti,
+               !game.players.contains(where: { $0.pid == pid }) { return }
             controllerPID = pid
             broadcast()
         case "accion":
-            guard pid == controllerPID, players.contains(where: { $0.pid == pid }) else { return }
+            guard players.contains(where: { $0.pid == pid }) else { return }
+            let action = object["a"] as? String ?? ""
+            let participatingTutti = screen == .tutti &&
+                (tutti?.players.contains(where: { $0.pid == pid }) ?? false) &&
+                !["menu", "otra", "siguiente"].contains(action)
+            guard pid == controllerPID || participatingTutti else { return }
             handleAction(object)
         default: break
         }
@@ -195,9 +238,18 @@ final class TVHost: ObservableObject {
         if action == "elegir", object["juego"] as? String == "cien" { startCien(); return }
         if action == "elegir", object["juego"] as? String == "ahorcado" { startAhorcado(); return }
         if action == "elegir", object["juego"] as? String == "rosco" { startRosco(); return }
+        if action == "elegir", object["juego"] as? String == "tutti" { startTutti(); return }
         if action == "otra", screen == .cien { showMenu(); startCien(); return }
         if action == "otra", screen == .ahorcado { showMenu(); startAhorcado(); return }
         if action == "otra", screen == .rosco { showMenu(); startRosco(); return }
+        if action == "otra", screen == .tutti, tutti?.stage == .finished { showMenu(); startTutti(); return }
+        if screen == .tutti, var game = tutti {
+            if game.act(object, controllerPID: controllerPID) {
+                tutti = game
+                broadcast()
+            }
+            return
+        }
         if action == "pasar", screen == .rosco {
             passRosco()
             return
@@ -249,7 +301,7 @@ final class TVHost: ObservableObject {
             ["id": "rosco", "nombre": "El Rosco", "ok": true],
             ["id": "ahorcado", "nombre": "Ahorcado", "ok": true],
             ["id": "ruleta", "nombre": "La Ruleta", "ok": false],
-            ["id": "tutti", "nombre": "Tutti Frutti", "ok": false],
+            ["id": "tutti", "nombre": "Tutti Frutti", "ok": true],
             ["id": "puzzle", "nombre": "Puzzle", "ok": false]
         ]
         let cell: [String: Any]
@@ -257,12 +309,13 @@ final class TVHost: ObservableObject {
         case .cien: cell = cien?.phoneState ?? ["pantalla": "menu", "juegos": games]
         case .ahorcado: cell = ahorcado?.phoneState ?? ["pantalla": "menu", "juegos": games]
         case .rosco: cell = rosco?.phoneState ?? ["pantalla": "menu", "juegos": games]
+        case .tutti: cell = tutti?.phoneState ?? ["pantalla": "menu", "juegos": games]
         case .home, .menu: cell = ["pantalla": "menu", "juegos": games]
         }
         let message: [String: Any] = [
             "t": "estado", "pid": String(tvPID), "s": sequence + 1, "cod": code,
             "fase": screen == .menu ? "menu" : "juego",
-            "juego": screen == .cien ? "cien" as Any : (screen == .ahorcado ? "ahorcado" as Any : (screen == .rosco ? "rosco" as Any : NSNull())),
+            "juego": screen == .cien ? "cien" as Any : (screen == .ahorcado ? "ahorcado" as Any : (screen == .rosco ? "rosco" as Any : (screen == .tutti ? "tutti" as Any : NSNull()))),
             "jug": players.map { ["pid": $0.pid, "n": $0.name] },
             "mando": controllerPID.map { $0 as Any } ?? NSNull(), "cel": cell
         ]

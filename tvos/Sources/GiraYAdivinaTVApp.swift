@@ -38,6 +38,8 @@ private struct TVRoot: View {
                 if let game = host.ahorcado { AhorcadoView(host: host, game: game) }
             case .rosco:
                 if let game = host.rosco { RoscoView(host: host, game: game) }
+            case .tutti:
+                if let game = host.tutti { TuttiView(host: host, game: game) }
             }
         }
         .foregroundColor(Theme.cream)
@@ -117,7 +119,9 @@ private struct TVRoot: View {
                         .font(.system(size: 32, weight: .bold))
                     Button("🔤  El Rosco") { host.startRosco() }
                         .font(.system(size: 32, weight: .bold))
-                    Text("Ruleta · Tutti Frutti · Puzzle: en preparación para tvOS")
+                    Button("🍓  Tutti Frutti") { host.startTutti() }
+                        .font(.system(size: 32, weight: .bold))
+                    Text("Ruleta · Puzzle: en preparación para tvOS")
                         .font(.system(size: 23))
                         .foregroundColor(Theme.aqua)
                     if !host.errorMessage.isEmpty {
