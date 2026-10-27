@@ -1,0 +1,277 @@
+/*
+ * Ruleta principal — prueba 16:9 solo para el perfil Gonzalo.
+ * Conserva las imágenes, fuentes, marcos, personajes, colores y lógica del
+ * juego móvil; solo redistribuye los elementos con el teléfono horizontal.
+ * La visualización vertical de cualquier perfil queda intacta.
+ */
+@media (orientation:landscape) and (min-width:700px) {
+  body.gonzalo-admin.modo-horizontal {
+    padding: max(4px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right))
+             max(5px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+  }
+  body.gonzalo-admin.modo-horizontal #juego[style*="block"] {
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.02fr);
+    grid-auto-rows:min-content;
+    gap:3px clamp(8px,1.8vw,24px);
+    align-items:start;
+    align-content:start;
+    max-width:1400px;
+    width:100%;
+    min-width:0;
+    margin:0 auto;
+    height:auto;
+  }
+  body.gonzalo-admin.modo-horizontal #juego > .confirm-poder {
+    grid-column:1/-1;
+  }
+  body.gonzalo-admin.modo-horizontal #juego > :is(#jgHud,.serie,#bHorizontalJuego,#horizontalAyuda,.marcador-wrap,.marco-selector,.tablero) {
+    grid-column:1;
+    min-width:0;
+    width:100%;
+    margin:0;
+  }
+  body.gonzalo-admin.modo-horizontal #juego > #bHorizontalJuego {
+    justify-self:center;
+    width:max-content;
+    max-width:100%;
+    padding:3px 10px;
+    margin:0;
+    min-height:25px;
+    font-size:clamp(10px,1.6vh,13px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego > #horizontalAyuda {
+    display:none;
+  }
+  body.gonzalo-admin.modo-horizontal #juego > #jgHud {
+    gap:4px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  body.gonzalo-admin.modo-horizontal #juego #jgHud > div {
+    padding:3px 8px;
+    font-size:clamp(10px,1.6vh,13px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego > .serie {
+    font-size:clamp(10px,1.7vh,14px);
+    min-height:0;
+    line-height:1.16;
+  }
+  body.gonzalo-admin.modo-horizontal #juego > .marcador-wrap .marcador {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:6px;
+    margin:0;
+    min-width:0;
+  }
+  body.gonzalo-admin.modo-horizontal #juego .jug {
+    padding:clamp(4px,1.15vh,9px) clamp(6px,1.2vw,15px);
+    border-radius:11px;
+    min-width:0;
+  }
+  body.gonzalo-admin.modo-horizontal #juego .jug .nom {
+    font-size:clamp(10px,1.7vh,16px);
+    gap:4px;
+  }
+  body.gonzalo-admin.modo-horizontal #juego .jug .cifras {
+    margin-top:1px;
+    gap:10px;
+    font-size:clamp(9px,1.4vh,13px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego .jug .cifras b {
+    font-size:clamp(12px,2vh,19px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego .jug .av {
+    height:clamp(18px,3.6vh,24px);
+    width:clamp(18px,3.6vh,24px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego > .marco-selector {
+    padding:2px 9px;
+    max-width:100%;
+    min-height:22px;
+  }
+  body.gonzalo-admin.modo-horizontal #juego > .marco-selector button {
+    width:21px;
+    height:21px;
+    font-size:14px;
+  }
+  body.gonzalo-admin.modo-horizontal #juego > .tablero {
+    grid-column:1;
+    width:100%;
+    min-width:0;
+    min-height:clamp(92px,29dvh,235px);
+    max-height:clamp(125px,48dvh,490px);
+    overflow:auto;
+    overscroll-behavior:contain;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:clamp(6px,1.8vh,15px);
+    margin:0;
+  }
+  body.gonzalo-admin.modo-horizontal #juego > .tablero.con-marco {
+    padding:clamp(18px,4.6vh,40px) 8% clamp(6px,1.5vh,18px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego .categoria {
+    margin:0 0 4px;
+    font-size:clamp(10px,1.6vh,15px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego .frase {
+    flex-wrap:wrap;
+    gap:5px;
+    row-gap:5px;
+    width:100%;
+    align-items:center;
+  }
+  body.gonzalo-admin.modo-horizontal #juego .palabra {
+    gap:2px;
+    flex-shrink:0;
+  }
+  body.gonzalo-admin.modo-horizontal #juego .ficha,
+  body.gonzalo-admin.modo-horizontal #juego .tablero.con-marco .ficha {
+    width:var(--ficha-w,clamp(15px,2.3vw,33px));
+    height:var(--ficha-h,clamp(21px,3.4vw,43px));
+    font-size:var(--ficha-fs,clamp(10px,1.9vw,22px));
+    border-radius:4px;
+  }
+  /* Columna de acciones: botones y teclado a la vista, sin salirse. */
+  body.gonzalo-admin.modo-horizontal #juego > .zona {
+    grid-column:2;
+    grid-row:1 / span 20;
+    min-width:0;
+    width:100%;
+    height:auto;
+    margin:0;
+    padding:0 2px 3px;
+    overflow-y:auto;
+    overflow-x:hidden;
+    overscroll-behavior:contain;
+    max-height:calc(100dvh - 16px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego .zona .panel {
+    display:flex;
+    flex-direction:column;
+    gap:clamp(3px,.8vh,7px);
+    min-width:0;
+  }
+  body.gonzalo-admin.modo-horizontal #juego .aviso {
+    min-height:0;
+    padding:clamp(4px,1vh,10px) 9px;
+    font-size:clamp(11px,1.8vh,16px);
+    line-height:1.24;
+  }
+  body.gonzalo-admin.modo-horizontal #juego .reloj {
+    height:17px;
+  }
+  body.gonzalo-admin.modo-horizontal #juego .reloj span {
+    line-height:17px;
+    font-size:11px;
+  }
+  body.gonzalo-admin.modo-horizontal #juego .acciones,
+  body.gonzalo-admin.modo-horizontal #juego .acciones.con-pista {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:5px;
+  }
+  body.gonzalo-admin.modo-horizontal #juego .acciones button {
+    min-height:clamp(30px,6dvh,45px);
+    padding:5px 3px;
+    font-size:clamp(10px,1.6vh,14px);
+    border-radius:9px;
+  }
+  body.gonzalo-admin.modo-horizontal #juego .poderes {
+    display:grid;
+    grid-template-columns:repeat(6,minmax(0,1fr));
+    gap:3px;
+    margin:1px 0;
+  }
+  body.gonzalo-admin.modo-horizontal #juego .poder-btn {
+    min-height:clamp(34px,7vh,55px);
+    padding:2px;
+    border-radius:8px;
+  }
+  body.gonzalo-admin.modo-horizontal #juego .poder-btn img {
+    width:clamp(15px,3.8vh,24px);
+    height:clamp(15px,3.8vh,24px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego .poder-btn :is(.poder-nombre,.poder-precio) {
+    font-size:clamp(8px,1.35vh,11px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego .teclado {
+    display:grid;
+    grid-template-columns:repeat(9,minmax(0,1fr));
+    gap:clamp(2px,.5vh,5px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego .teclado button {
+    aspect-ratio:auto;
+    min-height:clamp(27px,6.4vh,43px);
+    height:auto;
+    font-size:clamp(11px,2.6vh,20px);
+    border-radius:7px;
+  }
+  body.gonzalo-admin.modo-horizontal #juego .reacciones {
+    margin:0;
+    gap:5px;
+  }
+  body.gonzalo-admin.modo-horizontal #juego .reacciones button {
+    width:clamp(24px,5vh,36px);
+    height:clamp(24px,5vh,36px);
+    font-size:clamp(14px,2.3vh,22px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego .juego-abandonar {
+    min-height:22px;
+    margin:2px auto 0;
+    padding:2px 12px;
+    font-size:clamp(9px,1.25vh,12px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego #tossInfo {
+    padding:5px;
+    font-size:clamp(10px,1.6vh,13px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego #tossInfo b {
+    margin:0;
+    font-size:clamp(12px,2.2vh,18px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego #tossInfo span {
+    font-size:clamp(10px,1.7vh,15px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego #tossBuzz button {
+    padding:6px;
+    font-size:clamp(11px,1.8vh,15px);
+  }
+  body.gonzalo-admin.modo-horizontal #juego #bonusInfo {
+    padding:5px 8px;
+  }
+  /* Animación original de la Ruleta: círculo completo en la pantalla 16:9. */
+  body.gonzalo-admin.modo-horizontal #capaRueda {
+    align-content:center;
+    gap:8px;
+    padding:8px 14px;
+  }
+  body.gonzalo-admin.modo-horizontal #capaRueda .ruedabox {
+    width:min(60dvh,42vw,530px);
+    max-width:100%;
+  }
+  body.gonzalo-admin.modo-horizontal #capaRueda #salioGiro {
+    font-size:clamp(18px,3.5vh,32px);
+    min-height:1em;
+  }
+  body.gonzalo-admin.modo-horizontal #capaResuelto {
+    padding:12px;
+    gap:10px;
+  }
+  body.gonzalo-admin.modo-horizontal #capaResuelto .frase {
+    max-height:40dvh;
+    overflow-y:auto;
+    justify-content:center;
+  }
+}
+/* Pantallas de poca altura: proteger tanto el tablero como el teclado. */
+@media (orientation:landscape) and (min-width:700px) and (max-height:450px) {
+  body.gonzalo-admin.modo-horizontal #juego[style*="block"] {gap:2px 8px}
+  body.gonzalo-admin.modo-horizontal #juego > #bHorizontalJuego {display:none}
+  body.gonzalo-admin.modo-horizontal #juego > .marco-selector {padding:1px 6px}
+  body.gonzalo-admin.modo-horizontal #juego > .tablero {max-height:43dvh;min-height:0}
+  body.gonzalo-admin.modo-horizontal #juego .zona .panel {gap:3px}
+  body.gonzalo-admin.modo-horizontal #juego .acciones button {min-height:28px}
+}
