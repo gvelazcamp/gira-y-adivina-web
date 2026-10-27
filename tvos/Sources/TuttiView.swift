@@ -76,7 +76,6 @@ struct TuttiView: View {
                     Text("\(Int(ceil(game.remaining)))")
                         .font(.system(size: 230, weight: .black, design: .monospaced))
                         .foregroundColor(game.remaining <= 10 ? .red : TuttiPalette.aqua)
-                        .contentTransition(.numericText())
                     Text("SEGUNDOS").font(.system(size: 29, weight: .bold))
                 }
             }
