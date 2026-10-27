@@ -808,3 +808,31 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 
 .mg-panel .tf-anular-btn{display:block;width:fit-content;min-height:0;margin:10px auto 4px;padding:5px 14px;border-radius:99px;border:0;background:#C2334D;color:#fff;font:inherit;font-size:.72rem;font-weight:900;box-shadow:0 2px 0 #7D2348;cursor:pointer}.tf-anular .pf-caja{max-height:88vh;display:flex;flex-direction:column}.tf-anular-lista{overflow:auto;max-height:55vh;margin:8px auto}.tf-anular-lista .tf-rev-fila span{white-space:nowrap;font-size:.8rem}.tf-anular-lista .tf-anulada-fila b{text-decoration:line-through;text-decoration-color:#FF6B81}
 .tf .qs-tope>#tfReloj{position:absolute;left:50%;transform:translateX(-50%)}
+
+/* Modo horizontal de TODAS las extensiones: solo perfil Gonzalo y solo
+   durante un juego. No altera el menú ni el diseño de otros jugadores.
+   Necesita que Android/Play Store permita girar la Activity real. */
+.ext-horizontal-btn{border:1px solid #37D6C099;border-radius:12px;background:#19465C;color:#F6EFE2;font:800 .68rem Outfit,system-ui,sans-serif;padding:8px 10px;white-space:nowrap;min-height:40px}
+.ext-horizontal-btn[hidden]{display:none!important}
+.ext-horizontal-btn[aria-pressed="true"]{background:#0B5650;color:#D8FFF4}
+@media (orientation:landscape){
+ body.gonzalo-admin.ext-horizontal .ext-shell{
+   padding:max(6px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));
+   overflow-x:hidden;
+ }
+ body.gonzalo-admin.ext-horizontal .ext-wrap{width:100%;max-width:min(98vw,1400px)}
+ body.gonzalo-admin.ext-horizontal .ext-header{min-height:38px;margin-bottom:6px;gap:8px}
+ body.gonzalo-admin.ext-horizontal .ext-header strong{font-size:clamp(.78rem,1.8vw,1rem)}
+ body.gonzalo-admin.ext-horizontal .ext-atras,
+ body.gonzalo-admin.ext-horizontal .ext-cerrar{width:36px;height:36px;flex-basis:36px}
+ body.gonzalo-admin.ext-horizontal #extContenido{width:100%;min-width:0}
+ body.gonzalo-admin.ext-horizontal #extContenido > :is(.sf-game,.rr,.mg,.fg,.rr-game,.ah,.cr,.sl,.tf,.imp,.mim,.kar,.qs,.qns,.bb,.crr,.mt,.pz){
+   max-width:min(100%,1120px);margin-inline:auto;
+ }
+ body.gonzalo-admin.ext-horizontal #extContenido :is(.sf-panel,.mg-panel,.fg-panel){max-width:min(100%,1080px);margin-inline:auto}
+ body.gonzalo-admin.ext-horizontal .sf-grid{max-width:min(68vh,650px);margin-inline:auto}
+ body.gonzalo-admin.ext-horizontal .sf-hud{max-width:min(100%,860px);margin-inline:auto}
+ body.gonzalo-admin.ext-horizontal .sf-acciones{max-width:min(100%,860px);margin-inline:auto}
+ body.gonzalo-admin.ext-horizontal .ext-lista{grid-template-columns:repeat(4,minmax(0,1fr))}
+ body.gonzalo-admin.ext-horizontal :is(.pf-bienv-caja,.pf-caja){max-height:92dvh;overflow:auto}
+}
