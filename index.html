@@ -1278,6 +1278,45 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
   .reacciones{gap:5px}
   .reacciones button{width:34px;height:34px;font-size:1.05rem}
 }
+/* Prueba de Gonzalo: el menú sigue como siempre; solo la partida usa el ancho al girar el celular. */
+#bHorizontalJuego{display:none;margin:0 auto 8px;padding:7px 12px;border:1px solid #37D6C088;
+ border-radius:99px;background:#0B3B52;color:var(--crema);font-size:.78rem;font-weight:800}
+body.gonzalo-admin #bHorizontalJuego{display:block}
+#horizontalAyuda{display:none;text-align:center;color:var(--agua);font-size:.78rem;margin:0 0 8px}
+body.gonzalo-admin.modo-horizontal #horizontalAyuda{display:block}
+@media(orientation:landscape) and (max-height:600px){
+ body.gonzalo-admin.modo-horizontal #horizontalAyuda{display:none}
+ body.gonzalo-admin.modo-horizontal #juego[style*="block"]{display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);align-content:start;gap:4px 12px;
+  max-width:none;width:100%}
+ body.gonzalo-admin.modo-horizontal #juego>#jgHud,
+ body.gonzalo-admin.modo-horizontal #juego>.serie,
+ body.gonzalo-admin.modo-horizontal #juego>#bHorizontalJuego,
+ body.gonzalo-admin.modo-horizontal #juego>.marcador-wrap,
+ body.gonzalo-admin.modo-horizontal #juego>.marco-selector,
+ body.gonzalo-admin.modo-horizontal #juego>.tablero{grid-column:1;min-width:0;margin-bottom:0}
+ body.gonzalo-admin.modo-horizontal #juego>.zona{grid-column:2;grid-row:1 / span 12;min-width:0;margin:0}
+ body.gonzalo-admin.modo-horizontal #juego .panel{gap:4px}
+ body.gonzalo-admin.modo-horizontal #juego .jug{padding:4px 8px}
+ body.gonzalo-admin.modo-horizontal #juego .jug .nom{font-size:.75rem}
+ body.gonzalo-admin.modo-horizontal #juego .jug .cifras{font-size:.65rem;margin-top:1px}
+ body.gonzalo-admin.modo-horizontal #juego .jug .cifras b{font-size:.9rem}
+ body.gonzalo-admin.modo-horizontal #juego .tablero{display:flex;flex-direction:column;justify-content:center;
+  padding:8px;min-height:44dvh;max-height:53dvh;overflow:auto}
+ body.gonzalo-admin.modo-horizontal #juego .tablero.con-marco{padding:22px 8% 10px}
+ body.gonzalo-admin.modo-horizontal #juego .categoria{margin-bottom:4px}
+ body.gonzalo-admin.modo-horizontal #juego .frase{gap:5px;row-gap:4px}
+ body.gonzalo-admin.modo-horizontal #juego .palabra{gap:2px}
+ body.gonzalo-admin.modo-horizontal #juego .ficha{width:var(--ficha-w,clamp(16px,2.5vw,28px));
+  height:var(--ficha-h,clamp(22px,3.3vw,38px));font-size:var(--ficha-fs,clamp(.7rem,1.7vw,1.1rem))}
+ body.gonzalo-admin.modo-horizontal #juego .aviso{min-height:0;padding:5px 8px;font-size:.76rem}
+ body.gonzalo-admin.modo-horizontal #juego .acciones button{padding:6px 3px;font-size:.72rem}
+ body.gonzalo-admin.modo-horizontal #juego .teclado{grid-template-columns:repeat(9,minmax(0,1fr));gap:2px}
+ body.gonzalo-admin.modo-horizontal #juego .teclado button{aspect-ratio:auto;height:clamp(25px,7dvh,36px);font-size:.82rem}
+ body.gonzalo-admin.modo-horizontal #juego .reacciones{margin:0}
+ body.gonzalo-admin.modo-horizontal #capaRueda .ruedabox{width:min(65dvh,55vw)}
+ body.gonzalo-admin.modo-horizontal #capaRueda{gap:8px;padding:6px}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -2207,6 +2246,8 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
     <div id="jgTorneo" style="display:none">🏆 Torneo · Racha 0</div>
   </div>
   <div class="serie" id="serie"></div>
+  <button id="bHorizontalJuego" type="button" aria-pressed="false">📺 Probar en horizontal</button>
+  <p id="horizontalAyuda">Desbloqueá la rotación y girá el celular para verlo ancho en la tele.</p>
   <div class="marcador-wrap">
     <button type="button" class="marcador-flecha prev" id="marcadorPrev" aria-label="Ver jugador anterior">‹</button>
     <div class="marcador" id="marcador">
@@ -5135,7 +5176,31 @@ function puedeVerSalaTV(){
   const nombre=String(perfil&&perfil.nombre||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
   return ["andres","romina","gonzalo","vale"].includes(nombre);
 }
-function actualizarModoAdminGonzalo(){try{document.body.classList.toggle("gonzalo-admin",esGonzalo());}catch(e){}}
+function actualizarModoAdminGonzalo(){try{document.body.classList.toggle("gonzalo-admin",esGonzalo());if(!esGonzalo()&&document.body.classList.contains("modo-horizontal"))desactivarHorizontalJuego();}catch(e){}}
+let horizontalFullscreenPropio=false;
+function desactivarHorizontalJuego(){
+  document.body.classList.remove("modo-horizontal");
+  const boton=$("bHorizontalJuego");if(boton){boton.textContent="📺 Probar en horizontal";boton.setAttribute("aria-pressed","false");}
+  try{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(e){}
+  if(horizontalFullscreenPropio&&document.fullscreenElement){document.exitFullscreen().catch(()=>{});}
+  horizontalFullscreenPropio=false;
+}
+async function activarHorizontalJuego(){
+  if(!esGonzalo())return;
+  if(document.body.classList.contains("modo-horizontal")){desactivarHorizontalJuego();return;}
+  document.body.classList.add("modo-horizontal");
+  const boton=$("bHorizontalJuego");boton.textContent="📺 Salir del modo horizontal";boton.setAttribute("aria-pressed","true");
+  /* Android puede permitir fijar horizontal en pantalla completa; iOS requiere girar el equipo a mano. */
+  try{
+    if(!document.fullscreenElement&&document.documentElement.requestFullscreen){
+      await document.documentElement.requestFullscreen();horizontalFullscreenPropio=true;
+    }
+    if(screen.orientation&&screen.orientation.lock)await screen.orientation.lock("landscape");
+  }catch(e){/* El diseño horizontal sigue listo para cuando el celular pueda girar. */}
+}
+$("bHorizontalJuego").onclick=activarHorizontalJuego;
+new MutationObserver(()=>{if($("juego").style.display==="none"&&document.body.classList.contains("modo-horizontal"))desactivarHorizontalJuego();})
+  .observe($("juego"),{attributes:true,attributeFilter:["style"]});
 const TIENDA_REMOVIDOS_PUBLICADOS=new Set([
   /* Cuando Gonzalo decide sacar algo definitivamente, se agrega acá y se sube a Git.
      Formato: "tipo:id", por ejemplo "avatar:avatar-34" o "rueda:rueda-candy". */
