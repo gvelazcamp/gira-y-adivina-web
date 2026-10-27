@@ -85,7 +85,13 @@ const Cuenta=(()=>{
     let r;
     if(esperada){r=await cliente().from(TABLA).update({estado_juego:p,revision:esperada+1,actualizado_en:new Date().toISOString()}).eq("usuario_id",usuario.id).eq("revision",esperada).select("revision").maybeSingle();}
     else r=await cliente().from(TABLA).insert({usuario_id:usuario.id,estado_juego:p,revision:1}).select("revision").single();
-    if(r.error)throw r.error;
+    // Dos dispositivos pueden ver la tabla vacía a la vez e intentar crear
+    // la misma fila. Si otro ganó la carrera, NO sobrescribir su partida:
+    // volver a leer y reconciliar como dos partidas existentes.
+    if(r.error){
+      if(!esperada&&String(r.error.code)==="23505")return false;
+      throw r.error;
+    }
     if(!r.data)return false;
     marcar(p,Number(r.data.revision));return true;
   }
@@ -116,13 +122,34 @@ const Cuenta=(()=>{
     if(!usuario||ocupado)return;
     ocupado=true;
     try{
-      const nube=await leer(),local=partidaLocal(),fLocal=huella(local);
-      if(!nube){if(tienePerfil(local)){if(!await subir(local,0))throw Error("La partida cambió. Volvé a intentar.");}ocupado=false;return;}
-      const fNube=huella(nube.estado_juego),vinculada=localStorage.getItem(ID)===usuario.id,base=vinculada?localStorage.getItem(FIRMA)||"":"";
-      if(fLocal===fNube){marcar(local,nube.revision);ocupado=false;return;}
-      if(!tienePerfil(local)||vinculada&&fLocal===base){bajar(nube.estado_juego,nube.revision);return;}
-      if(vinculada&&fNube===base){if(!await subir(local,nube.revision))throw Error("La partida cambió. Volvé a intentar.");ocupado=false;return;}
-      ocupado=false;conflicto(local,nube);
+      // Reconciliación optimista. Si otro dispositivo creó o actualizó
+      // la fila entre SELECT e INSERT/UPDATE, leer la nueva revisión una vez.
+      // Nunca usar upsert: pisaría silenciosamente la partida remota.
+      for(let intento=0;intento<2;intento++){
+        const nube=await leer(),local=partidaLocal(),fLocal=huella(local);
+        if(!nube){
+          if(tienePerfil(local)){
+            const creada=await subir(local,0);
+            if(!creada){
+              if(intento===0)continue;
+              throw Error("La cuenta ya tiene una partida en la nube, pero no se pudo leer. Comprobá tu sesión y probá otra vez.");
+            }
+          }
+          ocupado=false;return;
+        }
+        const fNube=huella(nube.estado_juego),vinculada=localStorage.getItem(ID)===usuario.id,base=vinculada?localStorage.getItem(FIRMA)||"":"";
+        if(fLocal===fNube){marcar(local,nube.revision);ocupado=false;return;}
+        if(!tienePerfil(local)||vinculada&&fLocal===base){bajar(nube.estado_juego,nube.revision);return;}
+        if(vinculada&&fNube===base){
+          const guardada=await subir(local,nube.revision);
+          if(!guardada){
+            if(intento===0)continue;
+            throw Error("La partida cambió en otro dispositivo. Volvé a intentar para elegir cuál conservar.");
+          }
+          ocupado=false;return;
+        }
+        ocupado=false;conflicto(local,nube);return;
+      }
     }catch(e){fallo(e);}
   }
   async function tic(){
