@@ -309,8 +309,7 @@ struct RuletaGame {
         let pool = all.isEmpty ? bank : all
         let chosen = pool.randomElement() ?? bank[0]
         seen.insert(chosen.t)
-        phrase = chosen.t.folding(options: [.diacriticInsensitive, .caseInsensitive],
-                                    locale: Locale(identifier: "es_UY")).uppercased()
+        phrase = Self.foldKeepingEnye(chosen.t)
         category = chosen.c
         opened.removeAll()
         used.removeAll()
@@ -436,11 +435,16 @@ struct RuletaGame {
     private func fullyOpened() -> Bool {
         Set(phrase.filter { $0.isLetter }).isSubset(of: opened)
     }
+    private static func foldKeepingEnye(_ text: String) -> String {
+        // Preserve Spanish Ñ while ignoring other accents (año ≠ ano).
+        let safe = text.uppercased().replacingOccurrences(of: "Ñ", with: "\u{E000}")
+        return safe.folding(options: [.diacriticInsensitive, .caseInsensitive],
+                            locale: Locale(identifier: "es_UY"))
+            .replacingOccurrences(of: "\u{E000}", with: "Ñ")
+    }
+
     private static func normalize(_ text: String) -> String {
-        // Same accent-insensitive comparison used by the web game; spaces and punctuation
-        // do not confer an advantage to longer/shorter answers.
-        text.folding(options: [.diacriticInsensitive, .caseInsensitive],
-                     locale: Locale(identifier: "es_UY")).uppercased()
-            .filter { $0.isLetter || $0.isNumber }
+        // Ignore accents, spaces and punctuation but preserve the letter Ñ.
+        String(foldKeepingEnye(text).filter { $0.isLetter || $0.isNumber })
     }
 }
