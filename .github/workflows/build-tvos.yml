@@ -11,6 +11,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install XcodeGen
         run: brew install xcodegen
+      - name: Prepare original Puzzle artwork for tvOS
+        run: bash scripts/prepare-puzzle-images.sh
+        working-directory: tvos
       - name: Generate Xcode project
         run: xcodegen generate
         working-directory: tvos
