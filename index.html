@@ -94,6 +94,7 @@ document.documentElement.classList.add("cargando");setTimeout(()=>document.docum
 <link rel="preload" as="style" href="extensiones.css?v=128" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="extensiones.css?v=128"></noscript>
 <link rel="stylesheet" href="rosco-horizontal.css?v=2">
+<link rel="stylesheet" href="ruleta-horizontal.css?v=1">
 <link rel="stylesheet" href="cuenta.css?v=1">
 <!-- mqtt.js guardado en el propio juego (lib/): si unpkg anda mal, las salas igual conectan. Si el archivo local fallara, se prueba unpkg. -->
 <script src="lib/mqtt.min.js?v=5.10.1" defer onerror="(function(){var s=document.createElement('script');s.src='https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js';document.head.appendChild(s);})()"></script>
@@ -5178,7 +5179,26 @@ function puedeVerSalaTV(){
   const nombre=String(perfil&&perfil.nombre||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
   return ["andres","romina","gonzalo","vale"].includes(nombre);
 }
-function actualizarModoAdminGonzalo(){try{document.body.classList.toggle("gonzalo-admin",esGonzalo());if(!esGonzalo()&&document.body.classList.contains("modo-horizontal"))desactivarHorizontalJuego();}catch(e){}}
+function actualizarModoAdminGonzalo(){try{document.body.classList.toggle("gonzalo-admin",esGonzalo());if(!esGonzalo()&&document.body.classList.contains("modo-horizontal"))desactivarHorizontalJuego();sincronizarHorizontalRuletaPorGiro();}catch(e){}}
+function sincronizarHorizontalRuletaPorGiro(){
+  // Solo en la Ruleta principal de Gonzalo, cuando la pantalla ya giró.
+  // No invoca fullscreen ni orientation.lock: Android no muestra el aviso
+  // "Para salir de pantalla completa..." sobre los controles.
+  const activo=esGonzalo()&&$("juego")?.style.display==="block";
+  const apaisado=matchMedia("(orientation: landscape)").matches;
+  if(activo&&apaisado)document.body.classList.add("modo-horizontal");
+  else if(!horizontalFullscreenPropio)document.body.classList.remove("modo-horizontal");
+  const boton=$("bHorizontalJuego");
+  if(boton){
+    const si=document.body.classList.contains("modo-horizontal");
+    boton.textContent=si?"📺 Salir del modo horizontal":"📺 Probar en horizontal";
+    boton.setAttribute("aria-pressed",String(si));
+  }
+}
+const escucharGiroRuleta=matchMedia("(orientation: landscape)");
+if(escucharGiroRuleta.addEventListener)escucharGiroRuleta.addEventListener("change",sincronizarHorizontalRuletaPorGiro);
+else if(escucharGiroRuleta.addListener)escucharGiroRuleta.addListener(sincronizarHorizontalRuletaPorGiro);
+window.addEventListener("orientationchange",sincronizarHorizontalRuletaPorGiro);
 let horizontalFullscreenPropio=false;
 function desactivarHorizontalJuego(){
   document.body.classList.remove("modo-horizontal");
@@ -5192,7 +5212,9 @@ async function activarHorizontalJuego(){
   if(document.body.classList.contains("modo-horizontal")){desactivarHorizontalJuego();return;}
   document.body.classList.add("modo-horizontal");
   const boton=$("bHorizontalJuego");boton.textContent="📺 Salir del modo horizontal";boton.setAttribute("aria-pressed","true");
-  /* Android puede permitir fijar horizontal en pantalla completa; iOS requiere girar el equipo a mano. */
+  /* Si ya giró, no pedir fullscreen: el aviso del sistema tapa botones.
+     Desde vertical, mantener el modo forzado opcional del botón. */
+  if(matchMedia("(orientation: landscape)").matches)return;
   try{
     if(!document.fullscreenElement&&document.documentElement.requestFullscreen){
       await document.documentElement.requestFullscreen();horizontalFullscreenPropio=true;
@@ -5201,8 +5223,10 @@ async function activarHorizontalJuego(){
   }catch(e){/* El diseño horizontal sigue listo para cuando el celular pueda girar. */}
 }
 $("bHorizontalJuego").onclick=activarHorizontalJuego;
-new MutationObserver(()=>{if($("juego").style.display==="none"&&document.body.classList.contains("modo-horizontal"))desactivarHorizontalJuego();})
-  .observe($("juego"),{attributes:true,attributeFilter:["style"]});
+new MutationObserver(()=>{
+  if($("juego").style.display==="none"&&document.body.classList.contains("modo-horizontal"))desactivarHorizontalJuego();
+  sincronizarHorizontalRuletaPorGiro();
+}).observe($("juego"),{attributes:true,attributeFilter:["style"]});
 const TIENDA_REMOVIDOS_PUBLICADOS=new Set([
   /* Cuando Gonzalo decide sacar algo definitivamente, se agrega acá y se sube a Git.
      Formato: "tipo:id", por ejemplo "avatar:avatar-34" o "rueda:rueda-candy". */
