@@ -1,0 +1,4183 @@
+{
+  "ROSCO_DATOS": [
+    {
+      "letra": "A",
+      "palabra": "ASADO",
+      "definicion": "Carne cocinada a las brasas para compartir en la mesa.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ALFAJOR",
+      "definicion": "Dulce de dos tapas unidas por un relleno, muchas veces de dulce de leche.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ALPARGATA",
+      "definicion": "Calzado de lona con suela de cuerda, clásico del campo.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BOMBILLA",
+      "definicion": "Tubito con filtro que llevás a la boca para tomar mate.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BIZCOCHO",
+      "definicion": "En Uruguay, masa dulce o salada que comprás en la panadería para el mate.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BOTIJA",
+      "definicion": "Forma uruguaya de llamar a un niño.",
+      "categoria": "lunfardo",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CHIVITO",
+      "definicion": "Sándwich uruguayo con carne vacuna, jamón, huevo y otros ingredientes.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CANDOMBE",
+      "definicion": "Ritmo de raíces africanas que suena con chico, repique y piano.",
+      "categoria": "carnaval",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CHAMUYO",
+      "definicion": "Charla hábil que busca convencer o conquistar a alguien.",
+      "categoria": "lunfardo",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DULCE DE LECHE",
+      "definicion": "Crema marrón que se prepara cocinando leche con azúcar.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DURAZNO",
+      "definicion": "Fruta de carozo y piel aterciopelada que comparte nombre con un departamento uruguayo.",
+      "categoria": "ciudades",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DOMA",
+      "definicion": "Trabajo de amansar y entrenar a un caballo.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "EMPANADA",
+      "definicion": "Masa doblada y cerrada que esconde un relleno dulce o salado.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ESTANCIA",
+      "definicion": "Establecimiento rural grande donde se cría ganado.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ENVIDO",
+      "definicion": "Canto del truco que apuesta a los puntos de las cartas de la mano.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FUTBOL",
+      "definicion": "Deporte de once contra once en el que se busca meter la pelota en el arco.",
+      "categoria": "futbol",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FAROL",
+      "definicion": "Lámpara que alumbra una calle o una entrada desde cierta altura.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FAINA",
+      "definicion": "Preparación de harina de garbanzo que suele acompañar a la pizza.",
+      "categoria": "comida",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GUITARRA",
+      "definicion": "Instrumento de seis cuerdas que se toca rasgueando o punteando.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GAUCHO",
+      "definicion": "Hombre de campo rioplatense asociado al caballo, el poncho y las destrezas rurales.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GURI",
+      "definicion": "Otra forma del litoral de decir niño o muchacho.",
+      "categoria": "lunfardo",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HELADO",
+      "definicion": "Postre muy frío que podés pedir en cucurucho.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HINCHADA",
+      "definicion": "Conjunto de seguidores que alientan a un equipo.",
+      "categoria": "futbol",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HORNERO",
+      "definicion": "Pájaro conocido por construir su nido de barro como una casita cerrada.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "ISLA",
+      "definicion": "Porción de tierra rodeada de agua por todas partes.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "INVIERNO",
+      "definicion": "Estación más fría del año, ideal para sacar la bufanda.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "INTENDENCIA",
+      "definicion": "Institución que administra un departamento uruguayo.",
+      "categoria": "ciudades",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JAMON",
+      "definicion": "Fiambre de cerdo que suele ir con queso en un sándwich.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JUGADA",
+      "definicion": "Acción o combinación de movimientos de un equipo durante un partido.",
+      "categoria": "futbol",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JINETE",
+      "definicion": "Persona que monta a caballo.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "K",
+      "palabra": "KIOSCO",
+      "definicion": "Pequeño comercio de barrio donde comprás golosinas y revistas.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": [
+        "QUIOSCO"
+      ]
+    },
+    {
+      "letra": "K",
+      "palabra": "KILO",
+      "definicion": "Forma abreviada de pedir mil gramos en el almacén.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": [
+        "QUILO",
+        "KILOGRAMO"
+      ]
+    },
+    {
+      "letra": "K",
+      "palabra": "KILOMETRO",
+      "definicion": "Unidad de distancia que equivale a mil metros.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": [
+        "QUILOMETRO"
+      ]
+    },
+    {
+      "letra": "L",
+      "palabra": "LECHE",
+      "definicion": "Líquido blanco de origen animal que puede acompañar al café.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LLAMADAS",
+      "definicion": "Desfile de comparsas por las calles de Montevideo al ritmo de los tambores.",
+      "categoria": "carnaval",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LUNFARDO",
+      "definicion": "Vocabulario popular rioplatense con palabras como laburo y morfi.",
+      "categoria": "lunfardo",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MATE",
+      "definicion": "Infusión que compartimos en una calabaza con yerba y bombilla.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MURGA",
+      "definicion": "Conjunto carnavalero que canta en coro con bombo, platillo y redoblante.",
+      "categoria": "carnaval",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MILONGA",
+      "definicion": "Género rioplatense de música y baile; también una reunión para bailar tango.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NARANJA",
+      "definicion": "Cítrico redondo cuyo nombre también designa un color.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NACIONAL",
+      "definicion": "Club uruguayo tricolor, clásico rival de Peñarol.",
+      "categoria": "futbol",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NOSTALGIA",
+      "definicion": "Sentimiento de extrañar con cariño un tiempo o lugar del pasado.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OLLA",
+      "definicion": "Recipiente profundo que ponés al fuego para cocinar un guiso.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OMBU",
+      "definicion": "Árbol de gran copa y tronco grueso, asociado al paisaje de la pampa.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "ORILLA",
+      "definicion": "Borde de un río o de una laguna.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PARRILLA",
+      "definicion": "Rejilla sobre las brasas donde apoyás la carne para cocinarla.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PAYADOR",
+      "definicion": "Cantor que improvisa versos, muchas veces acompañado de guitarra.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PULPERIA",
+      "definicion": "Antiguo comercio rural que también servía como lugar de reunión.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Q",
+      "palabra": "QUESO",
+      "definicion": "Alimento hecho con leche cuajada, común en la pizza.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "Q",
+      "palabra": "QUINCHO",
+      "definicion": "Espacio techado de una casa destinado a reuniones y asados.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Q",
+      "palabra": "QUERENCIA",
+      "definicion": "Lugar al que uno siente que pertenece y desea volver.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "RAMBLA",
+      "definicion": "Paseo junto a la costa donde los montevideanos caminan y toman mate.",
+      "categoria": "ciudades",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "ROCHA",
+      "definicion": "Departamento uruguayo donde están La Paloma y Cabo Polonio.",
+      "categoria": "ciudades",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "REPIQUE",
+      "definicion": "Tambor del candombe que improvisa y dialoga con el chico y el piano.",
+      "categoria": "carnaval",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SOL",
+      "definicion": "Estrella que ilumina el día y aparece en las banderas de Uruguay y Argentina.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SALTO",
+      "definicion": "Ciudad uruguaya del litoral cuyo entorno es conocido por las termas.",
+      "categoria": "ciudades",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SOBREMESA",
+      "definicion": "Rato de charla que sigue a la comida sin levantarse de la mesa.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TERMO",
+      "definicion": "Recipiente que conserva caliente el agua para el mate.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TANGO",
+      "definicion": "Baile rioplatense de pareja abrazada, acompañado a menudo por bandoneón.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TABLADO",
+      "definicion": "Escenario donde actúan los conjuntos durante el Carnaval uruguayo.",
+      "categoria": "carnaval",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "URUGUAY",
+      "definicion": "País cuya capital es Montevideo.",
+      "categoria": "ciudades",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "UVA",
+      "definicion": "Fruta que crece en racimos y se usa para hacer vino.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "UTENSILIO",
+      "definicion": "Objeto de uso práctico, como un cucharón o un colador en la cocina.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VEREDA",
+      "definicion": "Parte de la calle reservada para caminar junto a las casas.",
+      "categoria": "ciudades",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VENDIMIA",
+      "definicion": "Cosecha de la uva destinada, entre otros usos, a elaborar vino.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VOLEA",
+      "definicion": "Golpe a la pelota antes de que toque el suelo.",
+      "categoria": "futbol",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YERBA",
+      "definicion": "Hojas secas y molidas con las que preparás el mate.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YAPA",
+      "definicion": "Pequeño extra que el vendedor te da de regalo con la compra.",
+      "categoria": "lunfardo",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YUYO",
+      "definicion": "Nombre popular para una hierba que crece silvestre.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZAPALLO",
+      "definicion": "Hortaliza de pulpa anaranjada que usás para puré o sopa.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZAGUAN",
+      "definicion": "Espacio de entrada de una casa, entre la puerta de calle y el interior.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZAFRA",
+      "definicion": "Época del año en que se concentra una cosecha o actividad productiva.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ASADOR",
+      "definicion": "Persona encargada de cocinar la carne sobre las brasas.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BOLICHE",
+      "definicion": "Local nocturno donde la gente se junta a tomar algo o bailar.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CORSO",
+      "definicion": "Desfile de carnaval por una calle principal, con carrozas y comparsas.",
+      "categoria": "carnaval",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DESFILE",
+      "definicion": "Paso ordenado de comparsas o murgas por la calle durante el carnaval.",
+      "categoria": "carnaval",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ESQUINA",
+      "definicion": "Lugar de la cuadra donde se juntan los vecinos a charlar.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FOGON",
+      "definicion": "Fuego armado al aire libre para cocinar o para juntarse a charlar.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GALPON",
+      "definicion": "Construcción grande de campo usada para guardar herramientas o animales.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HUMITA",
+      "definicion": "Pasta de choclo rallado envuelta en la chala, dulce o salada.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "INTERIOR",
+      "definicion": "Todo el territorio de un país por fuera de su capital.",
+      "categoria": "ciudades",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JURADO",
+      "definicion": "Grupo de personas que califica a las comparsas durante el carnaval.",
+      "categoria": "carnaval",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LABURO",
+      "definicion": "Forma lunfarda de decir trabajo.",
+      "categoria": "lunfardo",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MORFI",
+      "definicion": "Forma lunfarda de decir comida.",
+      "categoria": "lunfardo",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NAVIDAD",
+      "definicion": "Fiesta de fin de año que en el Río de la Plata se festeja con calor y fuegos artificiales.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "ORQUESTA",
+      "definicion": "Conjunto de músicos que toca en un baile o una murga.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "POTRERO",
+      "definicion": "Campito de tierra donde los chicos juegan al fútbol improvisado.",
+      "categoria": "futbol",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Q",
+      "palabra": "QUILOMBO",
+      "definicion": "Forma coloquial de decir lío o desorden.",
+      "categoria": "lunfardo",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "REMERA",
+      "definicion": "Prenda de manga corta que te ponés en verano.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SANGUCHE",
+      "definicion": "Forma rioplatense de decir sándwich.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TRIBUNA",
+      "definicion": "Sector de la cancha donde se ubican los hinchas para alentar.",
+      "categoria": "futbol",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VERDULERIA",
+      "definicion": "Comercio de barrio donde se compran frutas y verduras.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZURDO",
+      "definicion": "Jugador que patea mejor con la pierna izquierda.",
+      "categoria": "futbol",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "K",
+      "palabra": "KAYAK",
+      "definicion": "Bote angosto que se rema con pala doble, ideal para recorrer lagunas y arroyos.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "UTILES",
+      "definicion": "Lápices, cuadernos y gomas que se compran antes de que empiecen las clases.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YARARA",
+      "definicion": "Víbora venenosa del litoral con manchas en el lomo.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FILETEADO",
+      "definicion": "Arte decorativo porteño de líneas, flores y letras en colores vivos.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TAMBERO",
+      "definicion": "Persona que trabaja en el tambo ordeñando las vacas.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ACUARELA",
+      "definicion": "Pintura que se diluye en agua y deja colores suaves y transparentes.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ANTEOJOS",
+      "definicion": "Par de lentes con armazón que se apoya en la nariz para ver mejor.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ASTRONAUTA",
+      "definicion": "Persona entrenada para viajar al espacio.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ACERTIJO",
+      "definicion": "Adivinanza o enigma que hay que resolver pensando.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ARCHIVO",
+      "definicion": "Lugar o carpeta donde se guardan documentos ordenados.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ACUARIO",
+      "definicion": "Gran pecera o lugar donde se exhiben peces y animales marinos.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BRUJULA",
+      "definicion": "Instrumento con una aguja imantada que siempre señala el norte.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BIBLIOTECA",
+      "definicion": "Lugar con muchos libros para leer o pedir prestados.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BALANZA",
+      "definicion": "Instrumento que sirve para pesar.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BANQUETE",
+      "definicion": "Comida abundante y elegante para muchos invitados.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BUZON",
+      "definicion": "Caja con ranura donde se dejan las cartas.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CATEDRAL",
+      "definicion": "Iglesia principal de una ciudad, sede del obispo.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CALENDARIO",
+      "definicion": "Registro de los días, semanas y meses del año.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CICLON",
+      "definicion": "Viento muy fuerte que gira en forma de remolino.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CONSTELACION",
+      "definicion": "Grupo de estrellas que forman una figura en el cielo, como la Cruz del Sur.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CAMALEON",
+      "definicion": "Reptil que cambia de color para camuflarse.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CEREBRO",
+      "definicion": "Órgano dentro del cráneo que controla todo el cuerpo.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DIAGNOSTICO",
+      "definicion": "Lo que determina el médico después de examinar al paciente.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DICCIONARIO",
+      "definicion": "Libro que explica el significado de las palabras en orden alfabético.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DESIERTO",
+      "definicion": "Región muy seca, con poca lluvia y casi sin plantas, como el Sahara.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DELFIN",
+      "definicion": "Mamífero marino muy inteligente que salta junto a los barcos.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DIAMANTE",
+      "definicion": "Piedra preciosa, la más dura que existe.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ECLIPSE",
+      "definicion": "Cuando la Luna tapa al Sol, o la sombra de la Tierra cubre la Luna.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ESCULTURA",
+      "definicion": "Obra de arte tallada en piedra, madera o metal.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ENCICLOPEDIA",
+      "definicion": "Obra con información ordenada sobre muchísimos temas.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ESTETOSCOPIO",
+      "definicion": "Aparato que usa el médico para escuchar el corazón y los pulmones.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "EQUIPAJE",
+      "definicion": "Valijas y bolsos que llevás cuando viajás.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FOSIL",
+      "definicion": "Resto de un ser vivo muy antiguo que quedó convertido en piedra.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FABULA",
+      "definicion": "Relato breve con animales que deja una enseñanza o moraleja.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FRONTERA",
+      "definicion": "Línea que separa un país de otro.",
+      "categoria": "ciudades",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FESTIVAL",
+      "definicion": "Celebración con música, cine o teatro que dura varios días.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GLACIAR",
+      "definicion": "Enorme masa de hielo que baja lentamente por la montaña.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GEOGRAFIA",
+      "definicion": "Materia que estudia la superficie de la Tierra, sus países y paisajes.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GALAXIA",
+      "definicion": "Enorme conjunto de estrellas; la nuestra es la Vía Láctea.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GRANIZO",
+      "definicion": "Lluvia de bolitas de hielo que puede abollar los autos.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HURACAN",
+      "definicion": "Tormenta violenta con vientos que giran a gran velocidad.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HISTORIA",
+      "definicion": "Materia que estudia el pasado de la humanidad.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HERENCIA",
+      "definicion": "Bienes que alguien recibe cuando muere un familiar.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HOROSCOPO",
+      "definicion": "Predicción de lo que te va a pasar según tu signo.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HIBERNAR",
+      "definicion": "Pasar el invierno dormido, como hacen los osos.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "INVENTO",
+      "definicion": "Creación nueva que antes no existía, como la rueda o el teléfono.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "IMPRENTA",
+      "definicion": "Máquina que permitió copiar libros en grandes cantidades.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "INSECTO",
+      "definicion": "Animal pequeño de seis patas, como la mosca o la hormiga.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "IMPUESTO",
+      "definicion": "Dinero que se paga obligatoriamente al Estado.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JEROGLIFICO",
+      "definicion": "Escritura con dibujos que usaban los antiguos egipcios.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JUBILACION",
+      "definicion": "Retiro del trabajo por la edad, con un cobro mensual.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JURAMENTO",
+      "definicion": "Promesa solemne, como la que se hace a la bandera.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JAULA",
+      "definicion": "Caja con barrotes donde se tiene a un pájaro.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "K",
+      "palabra": "KIMONO",
+      "definicion": "Vestido largo tradicional de Japón, con mangas anchas.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "K",
+      "palabra": "KARATE",
+      "definicion": "Arte marcial japonés de golpes y patadas, con cinturones de colores.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LABERINTO",
+      "definicion": "Lugar con muchos caminos entrecruzados donde es fácil perderse.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LEYENDA",
+      "definicion": "Relato tradicional que mezcla hechos reales con fantasía.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LUPA",
+      "definicion": "Lente que agranda lo que mirás a través de ella.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LINTERNA",
+      "definicion": "Lámpara de mano que funciona a pilas.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LOTERIA",
+      "definicion": "Juego de azar en el que comprás un número para un sorteo.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MURCIELAGO",
+      "definicion": "Único mamífero que vuela; duerme colgado cabeza abajo.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MICROSCOPIO",
+      "definicion": "Instrumento para ver cosas diminutas, como las bacterias.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MUSEO",
+      "definicion": "Lugar donde se exponen obras de arte u objetos históricos.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MELODIA",
+      "definicion": "Sucesión de notas musicales agradables al oído.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MANUSCRITO",
+      "definicion": "Texto escrito a mano.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NAUFRAGO",
+      "definicion": "Persona que sobrevive al hundimiento de un barco.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NEBLINA",
+      "definicion": "Niebla baja que dificulta ver la ruta.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NOVELA",
+      "definicion": "Obra literaria larga que cuenta una historia inventada.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NOTICIERO",
+      "definicion": "Programa que cuenta lo que pasó en el día.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "ORQUIDEA",
+      "definicion": "Flor exótica y elegante, muy apreciada.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OBSERVATORIO",
+      "definicion": "Edificio con telescopios para estudiar el cielo.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OLIMPIADAS",
+      "definicion": "Competencia deportiva mundial que se hace cada cuatro años.",
+      "categoria": "futbol",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OXIGENO",
+      "definicion": "Gas del aire que necesitamos para respirar.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OASIS",
+      "definicion": "Lugar con agua y palmeras en medio del desierto.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PARACAIDAS",
+      "definicion": "Tela que se abre para bajar despacio después de saltar de un avión.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PIRAMIDE",
+      "definicion": "Construcción enorme de base cuadrada, famosa en Egipto.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PASAPORTE",
+      "definicion": "Documento que necesitás para viajar a otros países.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PRONOSTICO",
+      "definicion": "Anuncio de cómo va a estar el tiempo en los próximos días.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": [
+        "PRONOSTICO DEL TIEMPO",
+        "PRONOSTICO DE TIEMPO",
+        "PRONOSTICO DEL CLIMA"
+      ]
+    },
+    {
+      "letra": "P",
+      "palabra": "PIANO",
+      "definicion": "Instrumento de teclas blancas y negras.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "Q",
+      "palabra": "QUIROFANO",
+      "definicion": "Sala del hospital donde se hacen las operaciones.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Q",
+      "palabra": "QUIMICA",
+      "definicion": "Ciencia que estudia las sustancias y cómo se transforman.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "RECETA",
+      "definicion": "Indicación del médico con los remedios; también las instrucciones para cocinar un plato.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "RELAMPAGO",
+      "definicion": "Destello de luz en el cielo durante una tormenta.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "RESTAURANTE",
+      "definicion": "Lugar donde comés pagando, con mozos y carta.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "REFRAN",
+      "definicion": "Dicho popular con una enseñanza, como «más vale tarde que nunca».",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SATELITE",
+      "definicion": "Cuerpo que gira alrededor de un planeta; la Luna es el de la Tierra.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SINFONIA",
+      "definicion": "Obra musical larga compuesta para orquesta.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SUBMARINO",
+      "definicion": "Barco que navega por debajo del agua.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SEQUIA",
+      "definicion": "Largo tiempo sin lluvias que seca los campos.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SALVAVIDAS",
+      "definicion": "Aro o chaleco que te mantiene a flote en el agua.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TELESCOPIO",
+      "definicion": "Instrumento para observar las estrellas y los planetas.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TERREMOTO",
+      "definicion": "Movimiento fuerte y repentino de la tierra.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TESORO",
+      "definicion": "Riquezas escondidas, como el cofre de los piratas.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TRUENO",
+      "definicion": "Ruido fuerte que se escucha después del relámpago.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TRADUCTOR",
+      "definicion": "Persona que pasa un texto de un idioma a otro.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "UNIVERSO",
+      "definicion": "Todo lo que existe: galaxias, estrellas y planetas.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "UMBRAL",
+      "definicion": "Parte de abajo de la puerta, el escalón de la entrada.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "UNIFORME",
+      "definicion": "Ropa igual para todos en una escuela, un equipo o un trabajo.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "URNA",
+      "definicion": "Caja donde se ponen los votos en las elecciones.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VACUNA",
+      "definicion": "Inyección que protege de una enfermedad.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VOLCAN",
+      "definicion": "Montaña que puede expulsar lava y ceniza.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VIOLIN",
+      "definicion": "Instrumento de cuerdas que se toca con arco apoyado en el hombro.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VITRINA",
+      "definicion": "Mueble con puertas de vidrio donde se exhiben objetos.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YACIMIENTO",
+      "definicion": "Lugar bajo tierra donde hay minerales, petróleo o restos antiguos.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YATE",
+      "definicion": "Barco de lujo para pasear.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YOGA",
+      "definicion": "Disciplina de posturas y respiración para relajar cuerpo y mente.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZOCALO",
+      "definicion": "Franja que recubre la parte baja de la pared, junto al piso.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZODIACO",
+      "definicion": "Los doce signos, como Aries, Leo o Piscis.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZOOLOGICO",
+      "definicion": "Lugar donde podés ver animales de todo el mundo.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZAPATERIA",
+      "definicion": "Comercio donde se venden zapatos.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ABANICO",
+      "definicion": "Objeto que movés con la mano para darte aire en el calor.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ANCLA",
+      "definicion": "Pieza pesada de hierro que se tira al agua para que el barco no se mueva.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ARCOIRIS",
+      "definicion": "Arco de colores que aparece en el cielo cuando sale el sol después de llover.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ATLETISMO",
+      "definicion": "Deporte que reúne carreras, saltos y lanzamientos.",
+      "categoria": "deporte",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ARRABAL",
+      "definicion": "Barrio de las afueras de la ciudad, muy nombrado en los tangos.",
+      "categoria": "lunfardo",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ACHURAS",
+      "definicion": "Chinchulines, mollejas y riñones que van a la parrilla.",
+      "categoria": "comida",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "AFILADOR",
+      "definicion": "Oficio del que pasaba en bicicleta tocando una flautita para dejar filosos los cuchillos.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ATAJO",
+      "definicion": "Camino más corto para llegar antes.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ACEITUNA",
+      "definicion": "Fruto chiquito, verde o negro, que va arriba de la pizza.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "AGUJA",
+      "definicion": "Pieza fina de metal con un ojo para pasar el hilo y coser.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ALCANCIA",
+      "definicion": "Chanchito donde ahorrás monedas.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ANTENA",
+      "definicion": "Varilla en el techo para captar señales.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "AZOTEA",
+      "definicion": "Techo plano de la casa donde se tiende la ropa.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ANZUELO",
+      "definicion": "Gancho de la caña de pescar donde se pone la carnada.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "AJO",
+      "definicion": "Diente blanco de olor fuerte que se usa para cocinar.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "A",
+      "palabra": "ANDAMIO",
+      "definicion": "Estructura para trabajar en la fachada de un edificio.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BIGOTE",
+      "definicion": "Pelos que crecen arriba del labio.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BOTELLA",
+      "definicion": "Recipiente de vidrio o plástico con cuello angosto para líquidos.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BURBUJA",
+      "definicion": "Pompa de jabón que flota y explota al tocarla.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BOLETERIA",
+      "definicion": "Ventanilla donde comprás la entrada o el pasaje.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BARBIJO",
+      "definicion": "Tapabocas que se usó muchísimo en la pandemia.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BOCHAS",
+      "definicion": "Juego de bolas pesadas que se arriman lo más posible al bochín.",
+      "categoria": "deporte",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BAQUEANO",
+      "definicion": "Persona que conoce los caminos del campo como la palma de su mano.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BOLEADORAS",
+      "definicion": "Arma gaucha de tres bolas unidas con tientos para cazar animales.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BALDOSA",
+      "definicion": "Pieza que cubre el piso o la vereda.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BALCON",
+      "definicion": "Saliente con baranda en la fachada de un edificio.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BABERO",
+      "definicion": "Pechera que se le pone al bebé para comer.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BAÑERA",
+      "definicion": "Donde te bañás sumergido en agua.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BOTON",
+      "definicion": "Se abrocha en el ojal de la camisa.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "B",
+      "palabra": "BUFON",
+      "definicion": "Personaje que divertía a los reyes en la corte.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CANGREJO",
+      "definicion": "Animal de caparazón que camina de costado.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CHUPETE",
+      "definicion": "Lo que se le da al bebé para que chupe y se calme.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CUADERNO",
+      "definicion": "Hojas encuadernadas para escribir en la escuela.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CHIRIPA",
+      "definicion": "Acierto que sale de pura suerte.",
+      "categoria": "lunfardo",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CIRCO",
+      "definicion": "Espectáculo bajo una carpa con payasos y acróbatas.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CONTRASEÑA",
+      "definicion": "Clave secreta para entrar a una cuenta.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "COMETA",
+      "definicion": "Astro con cola luminosa que cruza el cielo cada tantos años.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CACHIVACHE",
+      "definicion": "Cosa vieja e inútil que se guarda por las dudas.",
+      "categoria": "lunfardo",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CRUCIGRAMA",
+      "definicion": "Pasatiempo de palabras que se cruzan en una grilla.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CASCO",
+      "definicion": "Protege la cabeza cuando andás en moto.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CEBOLLA",
+      "definicion": "Te hace llorar cuando la cortás.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CEREZA",
+      "definicion": "Fruta roja chiquita con carozo, que viene de a pares.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CHIMENEA",
+      "definicion": "Por donde sale el humo de la estufa a leña.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "COLIBRI",
+      "definicion": "Pájaro diminuto que bate las alas rapidísimo.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CORAZON",
+      "definicion": "Órgano que late en el pecho.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CANDADO",
+      "definicion": "Cerradura que se cuelga para trancar una reja.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "C",
+      "palabra": "CANTIMPLORA",
+      "definicion": "Botella para llevar agua de excursión.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DADO",
+      "definicion": "Cubito con puntos del uno al seis para juegos de mesa.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DINOSAURIO",
+      "definicion": "Reptil gigante que vivió hace millones de años.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DOMINGO",
+      "definicion": "Día del asado familiar y del fútbol, después del sábado.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DUENDE",
+      "definicion": "Personaje pequeño y travieso de los cuentos.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DROMEDARIO",
+      "definicion": "Animal del desierto con una sola joroba.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DESAYUNO",
+      "definicion": "Primera comida del día.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DEPARTAMENTO",
+      "definicion": "Cada una de las 19 divisiones del territorio uruguayo.",
+      "categoria": "ciudades",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DIQUE",
+      "definicion": "Muro que frena el agua de un río o del mar.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DEDAL",
+      "definicion": "Capuchón que protege el dedo al coser.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DESBANDE",
+      "definicion": "Desorden cuando todos salen corriendo para cualquier lado.",
+      "categoria": "lunfardo",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DIENTE",
+      "definicion": "Lo usás para morder.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DESODORANTE",
+      "definicion": "Producto que te ponés en las axilas.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "D",
+      "palabra": "DOCENA",
+      "definicion": "Doce unidades, como de huevos o de bizcochos.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ESCALERA",
+      "definicion": "Escalones para subir o bajar.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ESTRELLA",
+      "definicion": "Punto que brilla en el cielo de noche.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ESPANTAPAJAROS",
+      "definicion": "Muñeco que se pone en la chacra para asustar a los pájaros.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ESCARABAJO",
+      "definicion": "Insecto de caparazón duro y brillante.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "EMBAJADA",
+      "definicion": "Oficina que representa a un país en el extranjero.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "EMBUDO",
+      "definicion": "Utensilio con forma de cono para pasar líquidos a una botella.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ESTRIBO",
+      "definicion": "Apoyo donde el jinete pone el pie al montar.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ESPUELA",
+      "definicion": "Rueda de metal que el jinete lleva en el talón.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ENCHUFE",
+      "definicion": "Donde conectás los aparatos a la corriente.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ESPONJA",
+      "definicion": "La usás para lavar los platos.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "EDIFICIO",
+      "definicion": "Construcción de muchos pisos.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ESCRIBANO",
+      "definicion": "Profesional que da fe de los contratos y las compraventas.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ESCARAPELA",
+      "definicion": "Distintivo redondo con los colores patrios.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ESTRIBILLO",
+      "definicion": "Parte de la canción que se repite.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "E",
+      "palabra": "ENJAMBRE",
+      "definicion": "Gran grupo de abejas volando juntas.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FANTASMA",
+      "definicion": "Espíritu que asusta en las historias de terror.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FOTOGRAFIA",
+      "definicion": "Imagen que sacás con una cámara o el celular.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FERRETERIA",
+      "definicion": "Comercio de clavos, tornillos y herramientas.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FRAZADA",
+      "definicion": "Manta gruesa para abrigarse en la cama.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FAJINA",
+      "definicion": "Limpieza a fondo de la casa o del cuartel.",
+      "categoria": "lunfardo",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FIRULETE",
+      "definicion": "Adorno exagerado; también un paso lucido en el tango.",
+      "categoria": "lunfardo",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FLETE",
+      "definicion": "Transporte de cosas pagando, como en una mudanza.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FUENTE",
+      "definicion": "Plato grande para servir; también el chorro de agua de la plaza.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FRIGORIFICO",
+      "definicion": "Planta industrial donde se procesa la carne vacuna.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FLECHA",
+      "definicion": "Se dispara con un arco.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "F",
+      "palabra": "FORTALEZA",
+      "definicion": "Construcción militar con murallas, como la del Cerro.",
+      "categoria": "ciudades",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GIRASOL",
+      "definicion": "Flor amarilla grande que mira al sol.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GLOBO",
+      "definicion": "Bolsa de goma que se infla en los cumpleaños.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GRILLO",
+      "definicion": "Insecto que canta de noche frotando las patas.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GUANTE",
+      "definicion": "Prenda que abriga la mano.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GOTA",
+      "definicion": "Pequeña porción de agua que cae al llover.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GRANJA",
+      "definicion": "Lugar con vacas, gallinas y cerdos.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GOMERIA",
+      "definicion": "Taller donde arreglan las ruedas pinchadas.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GIMNASIA",
+      "definicion": "Ejercicios para el cuerpo; también una materia de la escuela.",
+      "categoria": "deporte",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GRAMILLA",
+      "definicion": "Pasto corto de las canchas y los jardines.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GARUA",
+      "definicion": "Lluvia muy finita que casi no se ve.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "G",
+      "palabra": "GURISADA",
+      "definicion": "Grupo de niños, en el habla uruguaya.",
+      "categoria": "lunfardo",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HUEVO",
+      "definicion": "Lo pone la gallina.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HADA",
+      "definicion": "Personaje mágico con alas y varita.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HARINA",
+      "definicion": "Polvo blanco de trigo para hacer pan.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HUERTA",
+      "definicion": "Terreno donde se cultivan verduras.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HERRADURA",
+      "definicion": "Hierro en forma de U que se clava en el casco del caballo.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HIPODROMO",
+      "definicion": "Lugar de carreras de caballos, como el de Maroñas.",
+      "categoria": "ciudades",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HOJALDRE",
+      "definicion": "Masa de muchas capas finas y crocantes.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HECHIZO",
+      "definicion": "Encantamiento de una bruja.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HUMEDAD",
+      "definicion": "Agua en el aire que hace sentir más el calor o el frío.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HEMISFERIO",
+      "definicion": "Cada mitad de la Tierra dividida por el ecuador.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HILO",
+      "definicion": "Hebra fina para coser.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HOCICO",
+      "definicion": "Nariz y boca de un animal.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HELECHO",
+      "definicion": "Planta de hojas largas que no da flores.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HERRERO",
+      "definicion": "Oficio de trabajar el hierro a golpes.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HORNO",
+      "definicion": "Donde se cocina la torta.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "H",
+      "palabra": "HUELLA",
+      "definicion": "Marca que deja el pie en la arena.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "IGLU",
+      "definicion": "Casa de hielo de los esquimales.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "IMAN",
+      "definicion": "Objeto que atrae el metal y se pega en la heladera.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "IGUANA",
+      "definicion": "Reptil verde con cresta en la espalda.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "INVITACION",
+      "definicion": "Tarjeta o mensaje para que vayas a una fiesta.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "IDIOMA",
+      "definicion": "Lengua que habla un pueblo, como el español o el inglés.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "INCENDIO",
+      "definicion": "Fuego grande que hay que apagar.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "INDIGESTION",
+      "definicion": "Malestar de panza por comer de más.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "ILUSIONISTA",
+      "definicion": "Mago que hace trucos que engañan a la vista.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "INQUILINO",
+      "definicion": "Persona que alquila una casa.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "INSOMNIO",
+      "definicion": "No poder dormir de noche.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "IMPERMEABLE",
+      "definicion": "Abrigo que no deja pasar la lluvia.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "INFUSION",
+      "definicion": "Bebida de hierbas en agua caliente, como la manzanilla.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "INSIGNIA",
+      "definicion": "Distintivo o escudo que se lleva en el uniforme.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "ISTMO",
+      "definicion": "Franja angosta de tierra que une dos continentes.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "INVERNADERO",
+      "definicion": "Construcción de vidrio para cultivar plantas protegidas del frío.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "I",
+      "palabra": "INFLADOR",
+      "definicion": "Bombín para llenar de aire la pelota o la rueda.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JABON",
+      "definicion": "Lo usás con agua para lavarte las manos.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JARDIN",
+      "definicion": "Lugar de la casa con plantas y flores.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JUGUETE",
+      "definicion": "Objeto para jugar.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JARRA",
+      "definicion": "Recipiente con asa para servir agua o jugo.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JAZMIN",
+      "definicion": "Flor blanca de perfume intenso en verano.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JABALI",
+      "definicion": "Cerdo salvaje con colmillos.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JALEA",
+      "definicion": "Dulce transparente de fruta.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JOROBA",
+      "definicion": "Bulto en la espalda del camello.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JAGUAR",
+      "definicion": "Felino americano de manchas negras.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JERGA",
+      "definicion": "Forma de hablar propia de un grupo.",
+      "categoria": "lunfardo",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JACARANDA",
+      "definicion": "Árbol de flores violetas que llena de color las calles en primavera.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JUGO",
+      "definicion": "Bebida exprimida de la fruta.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JINETEADA",
+      "definicion": "Fiesta criolla en la que el jinete aguanta arriba del potro.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "J",
+      "palabra": "JERINGA",
+      "definicion": "Instrumento con aguja para inyectar.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "K",
+      "palabra": "KETCHUP",
+      "definicion": "Salsa de tomate dulce para las papas fritas.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "K",
+      "palabra": "KIWI",
+      "definicion": "Fruta peluda por fuera y verde por dentro.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "K",
+      "palabra": "KEPI",
+      "definicion": "Gorra militar con visera.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "K",
+      "palabra": "KEFIR",
+      "definicion": "Bebida de leche fermentada con gránulos.",
+      "categoria": "comida",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "K",
+      "palabra": "KAKI",
+      "definicion": "Fruta anaranjada también llamada caqui.",
+      "categoria": "comida",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "K",
+      "palabra": "KARTING",
+      "definicion": "Carrera de autitos chicos en un circuito.",
+      "categoria": "deporte",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "K",
+      "palabra": "KITESURF",
+      "definicion": "Deporte de tabla tirado por un barrilete grande.",
+      "categoria": "deporte",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LAGARTIJA",
+      "definicion": "Reptil chico que toma sol en las paredes.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LAPICERA",
+      "definicion": "Sirve para escribir con tinta; en otros lados, bolígrafo.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LECHUZA",
+      "definicion": "Ave nocturna que vive en los campos.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LIMON",
+      "definicion": "Fruta amarilla y ácida.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LLAVE",
+      "definicion": "Abre la puerta de tu casa.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LUNES",
+      "definicion": "Primer día de la semana laboral.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LUCIERNAGA",
+      "definicion": "Bicho que brilla en las noches de verano.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LOCOMOTORA",
+      "definicion": "Parte del tren que tira de los vagones.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LIBRETA",
+      "definicion": "Cuaderno chico; en la escuela, el boletín de calificaciones.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LOMITO",
+      "definicion": "Sándwich de carne vacuna tierna.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LIEBRE",
+      "definicion": "Parecida al conejo, pero más grande y rápida.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LAZO",
+      "definicion": "Soga del gaucho para enlazar animales.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LAPACHO",
+      "definicion": "Árbol de flores rosadas o amarillas.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LADRILLO",
+      "definicion": "Bloque para levantar paredes.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LAVANDA",
+      "definicion": "Planta de flores violetas y perfume suave.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LENTEJA",
+      "definicion": "Legumbre chiquita que va en el guiso.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "L",
+      "palabra": "LAMPARA",
+      "definicion": "Da luz en la mesa de luz.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MANZANA",
+      "definicion": "Fruta roja o verde que se muerde con cáscara.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MEDUSA",
+      "definicion": "Animal gelatinoso del mar que te puede quemar.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MAPA",
+      "definicion": "Dibujo de un territorio con sus ciudades.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MANDARINA",
+      "definicion": "Fruta cítrica de invierno, fácil de pelar.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MASCOTA",
+      "definicion": "Animal que vive con vos en casa.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MOLINO",
+      "definicion": "Construcción con aspas que mueve el viento.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MEDALLA",
+      "definicion": "Premio que se cuelga al cuello.",
+      "categoria": "deporte",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MANTECA",
+      "definicion": "Grasa de la leche que se unta en el pan.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MANGRULLO",
+      "definicion": "Torre rústica de vigilancia en las estancias.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MALEVO",
+      "definicion": "Personaje pendenciero del tango y del arrabal.",
+      "categoria": "lunfardo",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MATUNGO",
+      "definicion": "Caballo viejo y flaco.",
+      "categoria": "lunfardo",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MANGUERA",
+      "definicion": "Tubo largo para regar el jardín.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MAGNOLIA",
+      "definicion": "Árbol de grandes flores blancas perfumadas.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MALABARISTA",
+      "definicion": "Artista que tira y atrapa varias pelotas a la vez.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "M",
+      "palabra": "MOLLEJA",
+      "definicion": "Achura tierna muy pedida en la parrilla.",
+      "categoria": "comida",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NUBE",
+      "definicion": "Masa blanca o gris que flota en el cielo.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NIDO",
+      "definicion": "Casa de los pájaros, hecha de ramitas.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NARIZ",
+      "definicion": "Por donde respirás y olés.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NIEVE",
+      "definicion": "Copos blancos que caen cuando hace mucho frío.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NUEZ",
+      "definicion": "Fruto seco de cáscara dura.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NIÑERA",
+      "definicion": "Persona que cuida niños.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NEUMATICO",
+      "definicion": "Rueda de goma de los autos.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NAFTA",
+      "definicion": "Combustible que le cargás al auto.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NAVAJA",
+      "definicion": "Cuchillo que se pliega.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NUDO",
+      "definicion": "Lazo apretado en una cuerda o en los cordones.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NAIPE",
+      "definicion": "Cada carta de la baraja.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NENUFAR",
+      "definicion": "Planta acuática de hojas redondas que flotan.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "N",
+      "palabra": "NAVEGANTE",
+      "definicion": "Persona que viaja por mar.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OSO",
+      "definicion": "Animal grande y peludo que hiberna.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OVEJA",
+      "definicion": "Animal de lana que se cría en la estancia.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OREJA",
+      "definicion": "Por donde escuchás.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OCEANO",
+      "definicion": "Enorme masa de agua salada, como el Atlántico.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "ORUGA",
+      "definicion": "Gusano que se convierte en mariposa.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OTOÑO",
+      "definicion": "Estación en que caen las hojas.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OJOTA",
+      "definicion": "Calzado de playa con una tira entre los dedos.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OVILLO",
+      "definicion": "Bola de lana enrollada.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OPERA",
+      "definicion": "Obra de teatro cantada.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "ORNITORRINCO",
+      "definicion": "Mamífero australiano con pico de pato.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OREGANO",
+      "definicion": "Hierba seca que se le pone a la pizza.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OCARINA",
+      "definicion": "Pequeño instrumento de viento hecho de barro.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OMBLIGO",
+      "definicion": "Marca que tenés en el centro de la panza.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OLIVO",
+      "definicion": "Árbol que da aceitunas.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "O",
+      "palabra": "OVNI",
+      "definicion": "Nave extraterrestre no identificada.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PIRATA",
+      "definicion": "Ladrón del mar con parche en el ojo.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PUENTE",
+      "definicion": "Construcción para cruzar un río.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PANADERIA",
+      "definicion": "Comercio donde comprás el pan de cada día.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "POCHOCLO",
+      "definicion": "Maíz que explota y se come en el cine.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PILETA",
+      "definicion": "En el Río de la Plata, la piscina.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PIZARRON",
+      "definicion": "Tablero verde o negro donde escribe la maestra.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PEON",
+      "definicion": "Trabajador de campo de la estancia.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PUPITRE",
+      "definicion": "Mesa escolar con asiento.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PANTUFLA",
+      "definicion": "Calzado cómodo para andar en casa.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PICAPORTE",
+      "definicion": "Manija para abrir la puerta.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PELUCA",
+      "definicion": "Pelo postizo.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "P",
+      "palabra": "PERCHA",
+      "definicion": "Sirve para colgar la ropa en el ropero.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "Q",
+      "palabra": "QUENA",
+      "definicion": "Flauta andina de caña.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Q",
+      "palabra": "QUIRQUINCHO",
+      "definicion": "Armadillo del campo, pariente de la mulita.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Q",
+      "palabra": "QUILLA",
+      "definicion": "Pieza de abajo del barco, de proa a popa.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Q",
+      "palabra": "QUIJOTE",
+      "definicion": "Caballero de la triste figura, creado por Cervantes.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Q",
+      "palabra": "QUINCEAÑERA",
+      "definicion": "Chica que festeja sus quince años.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Q",
+      "palabra": "QUINOA",
+      "definicion": "Semilla andina que se cocina como el arroz.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Q",
+      "palabra": "QUITAMANCHAS",
+      "definicion": "Producto para sacar las manchas de la ropa.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Q",
+      "palabra": "QUESERIA",
+      "definicion": "Comercio donde se venden quesos.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Q",
+      "palabra": "QUETZAL",
+      "definicion": "Ave de plumas verdes, símbolo de Guatemala.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "RANA",
+      "definicion": "Animal verde que salta y croa.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "RATON",
+      "definicion": "Roedor chiquito al que persigue el gato.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "REGALO",
+      "definicion": "Lo que te dan en tu cumpleaños.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "ROBOT",
+      "definicion": "Máquina que hace tareas sola.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "RAQUETA",
+      "definicion": "Sirve para pegarle a la pelota en el tenis.",
+      "categoria": "deporte",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "RODILLA",
+      "definicion": "Articulación de la pierna.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "REMOLACHA",
+      "definicion": "Verdura de color violeta oscuro.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "RASTRILLO",
+      "definicion": "Herramienta para juntar hojas secas.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "RIÑONERA",
+      "definicion": "Bolsito que se lleva en la cintura.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "ROMPECABEZAS",
+      "definicion": "Juego de piezas que se encastran para armar una imagen.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "RESERO",
+      "definicion": "Gaucho que arreaba ganado por los caminos.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "REMOLINO",
+      "definicion": "Agua o viento que gira en espiral.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "RASCACIELOS",
+      "definicion": "Edificio altísimo.",
+      "categoria": "ciudades",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "REGLA",
+      "definicion": "Sirve para medir y trazar líneas rectas.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "R",
+      "palabra": "ROCIO",
+      "definicion": "Gotitas de agua sobre el pasto a la mañana temprano.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SANDIA",
+      "definicion": "Fruta grande, verde por fuera y roja por dentro.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SIRENA",
+      "definicion": "Mitad mujer, mitad pez.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SERPIENTE",
+      "definicion": "Reptil sin patas que se arrastra.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SACAPUNTAS",
+      "definicion": "Sirve para afilar el lápiz.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SUPERHEROE",
+      "definicion": "Personaje con poderes que salva al mundo.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SABANA",
+      "definicion": "Tela que cubre el colchón.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SERENATA",
+      "definicion": "Canción que se canta bajo la ventana de alguien.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SUEGRA",
+      "definicion": "Madre de tu pareja.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SALAME",
+      "definicion": "Embutido que no falta en la picada.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SAPUCAI",
+      "definicion": "Grito largo de alegría en el litoral.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SALERO",
+      "definicion": "Recipiente para la sal.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SERRUCHO",
+      "definicion": "Herramienta para cortar madera.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SUBTE",
+      "definicion": "Tren que va por debajo de la ciudad de Buenos Aires.",
+      "categoria": "ciudades",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "S",
+      "palabra": "SEMILLA",
+      "definicion": "De ella nace una planta.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TIGRE",
+      "definicion": "Felino rayado de Asia.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TELARAÑA",
+      "definicion": "Red que teje la araña.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TOMATE",
+      "definicion": "Fruto rojo de la ensalada.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TECLADO",
+      "definicion": "Teclas de la computadora.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TOALLA",
+      "definicion": "Te secás con ella después de bañarte.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TORNADO",
+      "definicion": "Viento que gira en forma de embudo.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TRIGO",
+      "definicion": "Cereal con el que se hace la harina.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TRAMPOLIN",
+      "definicion": "Tabla elástica para tirarse a la piscina.",
+      "categoria": "deporte",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TROMPETA",
+      "definicion": "Instrumento de bronce con tres pistones.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TERO",
+      "definicion": "Ave de campo que grita fuerte y defiende su nido.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TALABARTERO",
+      "definicion": "Artesano del cuero que hace monturas y riendas.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TALLARIN",
+      "definicion": "Fideo largo y plano.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "T",
+      "palabra": "TRAPECIO",
+      "definicion": "Barra colgante de los acróbatas del circo.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "UNICORNIO",
+      "definicion": "Caballo mágico con un cuerno.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "UÑA",
+      "definicion": "Lo que te cortás en la punta de los dedos.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "UNIVERSIDAD",
+      "definicion": "Donde se estudia una carrera después del liceo.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "UKELELE",
+      "definicion": "Guitarra pequeña de cuatro cuerdas, de Hawái.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "URRACA",
+      "definicion": "Pájaro que se lleva cosas brillantes.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "URGENCIA",
+      "definicion": "Sector del hospital para los casos graves.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "UNTAR",
+      "definicion": "Pasar manteca por la tostada.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "UBRE",
+      "definicion": "Parte de la vaca de donde sale la leche.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "UTOPIA",
+      "definicion": "Sueño de un mundo perfecto que parece imposible.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "U",
+      "palabra": "USINA",
+      "definicion": "Planta que produce electricidad.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VACA",
+      "definicion": "Animal que da leche.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VELA",
+      "definicion": "La prendés en la torta de cumpleaños.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VENTANA",
+      "definicion": "Abertura de la pared con vidrio para que entre luz.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VIENTO",
+      "definicion": "Aire en movimiento.",
+      "categoria": "naturaleza",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VAMPIRO",
+      "definicion": "Personaje que chupa sangre y duerme en un ataúd.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VOLANTE",
+      "definicion": "Lo que gira el conductor para manejar.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VALIJA",
+      "definicion": "Donde llevás la ropa cuando viajás.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VINCHA",
+      "definicion": "Accesorio para sujetar el pelo.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VIDRIERA",
+      "definicion": "Ventana de un comercio donde se muestran los productos.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VAPOR",
+      "definicion": "Lo que sale de la olla cuando hierve el agua.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VIÑEDO",
+      "definicion": "Plantación de uvas para hacer vino.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VOLQUETA",
+      "definicion": "Contenedor grande para escombros.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VICTROLA",
+      "definicion": "Tocadiscos antiguo de manivela.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "V",
+      "palabra": "VESTIDO",
+      "definicion": "Prenda de una sola pieza que se usa en las fiestas.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YOGUR",
+      "definicion": "Lácteo espeso que se come con cereales.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YEMA",
+      "definicion": "Parte amarilla del huevo.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YESO",
+      "definicion": "Lo que te ponen cuando te quebrás un hueso.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YOYO",
+      "definicion": "Juguete que sube y baja por un hilo.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YERNO",
+      "definicion": "Esposo de tu hija.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YUNQUE",
+      "definicion": "Bloque de hierro donde golpea el herrero.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YUGO",
+      "definicion": "Madera que une a los bueyes para tirar del arado.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YATAY",
+      "definicion": "Palmera típica de Paysandú y Entre Ríos.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YAGUARETE",
+      "definicion": "El jaguar, en guaraní.",
+      "categoria": "naturaleza",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Y",
+      "palabra": "YUNTA",
+      "definicion": "Par de bueyes que trabajan juntos.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZANAHORIA",
+      "definicion": "Verdura naranja que comen los conejos.",
+      "categoria": "comida",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZAPATILLA",
+      "definicion": "Calzado deportivo.",
+      "categoria": "costumbres",
+      "nivel": 1,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZARZAMORA",
+      "definicion": "Fruta negra de un arbusto con espinas.",
+      "categoria": "comida",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZUMBIDO",
+      "definicion": "Ruido del mosquito o de la abeja.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZANCOS",
+      "definicion": "Palos largos para caminar bien alto.",
+      "categoria": "costumbres",
+      "nivel": 2,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZAMBA",
+      "definicion": "Danza folclórica que se baila con pañuelo.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZOQUETE",
+      "definicion": "Media corta que llega al tobillo.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZAMPOÑA",
+      "definicion": "Flauta andina de varias cañas.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZAFARRANCHO",
+      "definicion": "Desorden o lío grande.",
+      "categoria": "lunfardo",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZURCIR",
+      "definicion": "Arreglar un agujero de la media cosiéndolo.",
+      "categoria": "costumbres",
+      "nivel": 3,
+      "alternativas": []
+    },
+    {
+      "letra": "Z",
+      "palabra": "ZORRINO",
+      "definicion": "Animal que larga un olor feo para defenderse.",
+      "categoria": "naturaleza",
+      "nivel": 2,
+      "alternativas": []
+    }
+  ]
+}

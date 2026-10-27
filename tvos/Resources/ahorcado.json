@@ -1,0 +1,950 @@
+{
+  "AHORCADO_CATEGORIAS": [
+    {
+      "id": "comida",
+      "nombre": "Comida",
+      "emoji": "🍖",
+      "color": "#E5197C"
+    },
+    {
+      "id": "carnaval",
+      "nombre": "Carnaval",
+      "emoji": "🥁",
+      "color": "#7c4dff"
+    },
+    {
+      "id": "futbol",
+      "nombre": "Fútbol",
+      "emoji": "⚽",
+      "color": "#2fbf71"
+    },
+    {
+      "id": "costumbres",
+      "nombre": "Costumbres",
+      "emoji": "🧉",
+      "color": "#e8851f"
+    },
+    {
+      "id": "lunfardo",
+      "nombre": "Lunfardo",
+      "emoji": "💬",
+      "color": "#2b8cd6"
+    },
+    {
+      "id": "ciudades",
+      "nombre": "Ciudades",
+      "emoji": "🏙️",
+      "color": "#c9a100"
+    }
+  ],
+  "AHORCADO_DATOS": [
+    {
+      "categoria": "comida",
+      "palabra": "CHAJA"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "MATAMBRE"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "SORRENTINOS"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "GRASITAS"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "PASTAFROLA"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "GRAPAMIEL"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "TORREJA"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "MAZAMORRA"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "CHURRASCO"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "CAPELETTIS"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "GRAMILLERO"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "ESCOBERO"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "ESTANDARTE"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "MURGUERO"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "PASACALLE"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "MASCARADA"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "CUPLETISTA"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "COMPARSERO"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "CARROZA"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "CUERDA"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "ZAGUERO"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "DESCENSO"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "CHILENA"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "MARACANAZO"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "GOLAZO"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "ALARGUE"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "ENGANCHE"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "OFSAI"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "PATADON"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "CRACK"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "TERTULIA"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "PAYADA"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "MILONGUERO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "FOGONERO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "TRASNOCHADA"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "ENTREVERO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "TROVADOR"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "GUITARREADA"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "TERTULIANO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "QUINCHERO"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "MANYAR"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "YIRAR"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "PIOLA"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "VIOLA"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "CHAMUYERO"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "MISHIADURA"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "MACANUDO"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "MORFAR"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "TRUCHO"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "CHANTA"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "TREINTAYTRES"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "TARARIRAS"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "YOUNG"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "GUICHON"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "SARANDI"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "LASCANO"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "CHAPICUY"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "VERGARA"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "CEBOLLATI"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "ACEGUA"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "CHINCHULINES"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "MORCILLAS"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "PROVOLONE"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "FUGAZZETA"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "CHIVITERIA"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "ALFAJORES"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "MANTECOL"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "ARROLLADO"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "VITELTONE"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "ESCABECHE"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "CHORIPANES"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "TORTELETIS"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "MERENGUES"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "CAPRESE"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "LECHONCITO"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "MONDONGUITO"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "CROQUETAS"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "EMPANADITAS"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "PIZZETAS"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "MILANESAS"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "CHORIZOS"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "BONDIOLA"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "PAMPLONAS"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "MATAMBRITOS"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "TORTAFRITAS"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "CHAJAS"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "MAICENITAS"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "POSTRECITO"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "NAPOLITANA"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "BUSECAS"
+    },
+    {
+      "categoria": "comida",
+      "palabra": "ENSAIMADA"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "TAMBORILERO"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "PARODISTA"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "HUMORISTA"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "ESCENOGRAFIA"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "SALPICONES"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "CUPLES"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "BATUCADA"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "COMPARSERA"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "SERPENTINAS"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "ANTIFACES"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "DISFRACES"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "ENSAYOS"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "CONCURSO"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "CARROZAS"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "SAMBISTA"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "PORTABANDERA"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "BAILARINA"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "LENTEJUELA"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "TAMBORILEROS"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "DESFILANTE"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "CARNAVALERO"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "MURGUISTAS"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "VESTUARISTA"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "LETRISTA"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "ARREGLADOR"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "TABLADITO"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "MASCARONES"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "CARETAS"
+    },
+    {
+      "categoria": "carnaval",
+      "palabra": "ZANCUDO"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "CHILENITA"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "RABONA"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "SOMBRERITO"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "GAMBETEADOR"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "PALOMITA"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "PENALES"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "TIROLIBRE"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "BARRERA"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "AMONESTADO"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "ASCENSO"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "LIGUILLA"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "CLAUSURA"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "APERTURA"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "INTERMEDIO"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "BANDERAZO"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "CONTRAGOLPE"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "CONTRAATAQUE"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "MARCADOR"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "UTILERO"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "CANTERA"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "JUVENILES"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "GOLEADA"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "EMPATE"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "REMONTADA"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "DESEMPATE"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "LATERALES"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "PELOTAZO"
+    },
+    {
+      "categoria": "futbol",
+      "palabra": "VOLEAZO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "CHUSMERIO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "CHISMOSO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "CAFECITO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "PICADITO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "VERMUT"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "MATINEE"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "CARNEADA"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "SALAMERO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "CHACAREO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "VEREDITA"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "TOMATICO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "BARRIADA"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "FOGONEO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "DOMINGUERO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "MATEAR"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "CEBADORA"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "RONDERO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "FIAMBRERA"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "QUINIELERO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "BOCHAZO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "TRUCOSO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "ENVIDOS"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "RETRUCOS"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "ALJIBES"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "PORTONCITO"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "BALCONEAR"
+    },
+    {
+      "categoria": "costumbres",
+      "palabra": "AZOTEITA"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "LABURANTE"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "MATUFIA"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "CHANCHULLO"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "BULIN"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "CATRERA"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "MANGUEAR"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "AFANAR"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "CHORREAR"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "ESCRACHAR"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "PEBETA"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "CHANTAPUFI"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "MERSADA"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "TILINGO"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "TRUCHADA"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "CHIRUSA"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "GILADA"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "CHAMUYAR"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "ENGRUPIR"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "ESPIANTAR"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "LASTRAR"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "BAGAYERO"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "CHIMENTERO"
+    },
+    {
+      "categoria": "lunfardo",
+      "palabra": "GUARANGO"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "CONSTITUCION"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "QUEBRACHO"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "BALTASARBRUM"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "NICOPEREZ"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "MIGUES"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "SOCA"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "TOLEDO"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "PROGRESO"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "LIBERTAD"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "PALMITAS"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "ANSINA"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "TUPAMBAE"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "CERROCHATO"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "CASUPA"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "REBOLEDO"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "CARDAL"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "SANRAMON"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "SANBAUTISTA"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "FRAILEMUERTO"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "VICHADERO"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "RIOBRANCO"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "TRANQUERAS"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "VALENTINES"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "POLANCO"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "CHAMIZO"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "VELAZQUEZ"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "GARZON"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "PIRARAJA"
+    },
+    {
+      "categoria": "ciudades",
+      "palabra": "MARISCALA"
+    }
+  ]
+}

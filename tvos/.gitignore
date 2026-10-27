@@ -1,0 +1,6 @@
+GiraYAdivinaTV.xcodeproj/
+build/
+*.ipa
+*.xcarchive/
+*.mobileprovision
+*.p12

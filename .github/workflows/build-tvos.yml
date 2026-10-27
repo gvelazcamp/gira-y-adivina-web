@@ -1,0 +1,32 @@
+name: Build tvOS prototype
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: xcodegen generate
+        working-directory: tvos
+      - name: Build for Apple TV Simulator
+        run: xcodebuild -project GiraYAdivinaTV.xcodeproj -scheme GiraYAdivinaTV -configuration Release -sdk appletvsimulator -destination 'generic/platform=tvOS Simulator' CODE_SIGNING_ALLOWED=NO -derivedDataPath build build
+        working-directory: tvos
+      - name: Build for Apple TV device without signing
+        run: xcodebuild -project GiraYAdivinaTV.xcodeproj -scheme GiraYAdivinaTV -configuration Release -sdk appletvos -destination 'generic/platform=tvOS' CODE_SIGNING_ALLOWED=NO -derivedDataPath build build
+        working-directory: tvos
+      - name: Package unsigned device build
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-appletvos/GiraYAdivinaTV.app Payload/
+          zip -qr GiraYAdivinaTV-unsigned.ipa Payload
+        working-directory: tvos
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GiraYAdivinaTV-unsigned
+          path: tvos/GiraYAdivinaTV-unsigned.ipa

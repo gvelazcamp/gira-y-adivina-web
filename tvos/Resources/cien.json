@@ -1,0 +1,4202 @@
+{
+  "CIEN_CATEGORIAS": [
+    {
+      "id": "comida",
+      "nombre": "Comida",
+      "corto": "Comida",
+      "icono": "🍖",
+      "color": "#BE2865"
+    },
+    {
+      "id": "carnaval",
+      "nombre": "Carnaval",
+      "corto": "Carnaval",
+      "icono": "🥁",
+      "color": "#7044BD"
+    },
+    {
+      "id": "futbol",
+      "nombre": "Fútbol",
+      "corto": "Fútbol",
+      "icono": "⚽",
+      "color": "#087F70"
+    },
+    {
+      "id": "costumbres",
+      "nombre": "Costumbres",
+      "corto": "Hábitos",
+      "icono": "🧉",
+      "color": "#AF5B20"
+    },
+    {
+      "id": "lunfardo",
+      "nombre": "Lunfardo",
+      "corto": "Lunfardo",
+      "icono": "💬",
+      "color": "#2859AC"
+    },
+    {
+      "id": "ciudades",
+      "nombre": "Ciudades",
+      "corto": "Ciudades",
+      "icono": "🏙️",
+      "color": "#997218"
+    },
+    {
+      "id": "playa",
+      "nombre": "Playa",
+      "corto": "Playa",
+      "icono": "🏖️",
+      "color": "#087F96"
+    },
+    {
+      "id": "musica",
+      "nombre": "Música",
+      "corto": "Música",
+      "icono": "🎸",
+      "color": "#AE356E"
+    },
+    {
+      "id": "viajes",
+      "nombre": "Viajes",
+      "corto": "Viajes",
+      "icono": "🧳",
+      "color": "#5152AC"
+    },
+    {
+      "id": "casa",
+      "nombre": "Casa",
+      "corto": "Casa",
+      "icono": "🏠",
+      "color": "#A54735"
+    },
+    {
+      "id": "animales",
+      "nombre": "Animales",
+      "corto": "Animales",
+      "icono": "🐾",
+      "color": "#337844"
+    },
+    {
+      "id": "escuela",
+      "nombre": "Escuela",
+      "corto": "Escuela",
+      "icono": "🎒",
+      "color": "#815096"
+    }
+  ],
+  "CIEN_PREGUNTAS": [
+    {
+      "id": "asado",
+      "categoria": "comida",
+      "pregunta": "Algo que ponés en la mesa cuando hay asado",
+      "respuestas": [
+        {
+          "texto": "Pan",
+          "puntos": 30,
+          "alias": [
+            "pancito",
+            "panes"
+          ]
+        },
+        {
+          "texto": "Ensalada",
+          "puntos": 24,
+          "alias": [
+            "ensaladas"
+          ]
+        },
+        {
+          "texto": "Chorizo",
+          "puntos": 18,
+          "alias": [
+            "chori",
+            "chorizos"
+          ]
+        },
+        {
+          "texto": "Vino",
+          "puntos": 12,
+          "alias": [
+            "vinos"
+          ]
+        },
+        {
+          "texto": "Chimichurri",
+          "puntos": 9,
+          "alias": [
+            "chimi"
+          ]
+        },
+        {
+          "texto": "Sal",
+          "puntos": 7,
+          "alias": [
+            "salero"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "panaderia",
+      "categoria": "comida",
+      "pregunta": "Algo que comprás en una panadería",
+      "respuestas": [
+        {
+          "texto": "Pan",
+          "puntos": 32,
+          "alias": [
+            "panes",
+            "pancito"
+          ]
+        },
+        {
+          "texto": "Bizcochos",
+          "puntos": 23,
+          "alias": [
+            "bizcocho",
+            "factura",
+            "facturas"
+          ]
+        },
+        {
+          "texto": "Medialunas",
+          "puntos": 17,
+          "alias": [
+            "medialuna"
+          ]
+        },
+        {
+          "texto": "Tortas",
+          "puntos": 12,
+          "alias": [
+            "torta"
+          ]
+        },
+        {
+          "texto": "Galletas",
+          "puntos": 9,
+          "alias": [
+            "galleta",
+            "galletitas",
+            "galletita"
+          ]
+        },
+        {
+          "texto": "Alfajores",
+          "puntos": 7,
+          "alias": [
+            "alfajor"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "merienda",
+      "categoria": "comida",
+      "pregunta": "Algo dulce para acompañar la merienda",
+      "respuestas": [
+        {
+          "texto": "Alfajor",
+          "puntos": 30,
+          "alias": [
+            "alfajores"
+          ]
+        },
+        {
+          "texto": "Galletitas",
+          "puntos": 24,
+          "alias": [
+            "galletita",
+            "galletas",
+            "galleta"
+          ]
+        },
+        {
+          "texto": "Torta",
+          "puntos": 18,
+          "alias": [
+            "tortas",
+            "bizcochuelo"
+          ]
+        },
+        {
+          "texto": "Medialuna",
+          "puntos": 12,
+          "alias": [
+            "medialunas"
+          ]
+        },
+        {
+          "texto": "Chocolate",
+          "puntos": 9,
+          "alias": [
+            "chocolates"
+          ]
+        },
+        {
+          "texto": "Churros",
+          "puntos": 7,
+          "alias": [
+            "churro"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "desfile",
+      "categoria": "carnaval",
+      "pregunta": "Algo que ves en un desfile de Carnaval",
+      "respuestas": [
+        {
+          "texto": "Disfraces",
+          "puntos": 30,
+          "alias": [
+            "disfraz"
+          ]
+        },
+        {
+          "texto": "Tambores",
+          "puntos": 24,
+          "alias": [
+            "tambor",
+            "tamboril",
+            "tamboriles"
+          ]
+        },
+        {
+          "texto": "Bailarines",
+          "puntos": 18,
+          "alias": [
+            "bailarin",
+            "bailarina",
+            "bailarinas"
+          ]
+        },
+        {
+          "texto": "Carrozas",
+          "puntos": 12,
+          "alias": [
+            "carroza"
+          ]
+        },
+        {
+          "texto": "Plumas",
+          "puntos": 9,
+          "alias": [
+            "pluma"
+          ]
+        },
+        {
+          "texto": "Banderas",
+          "puntos": 7,
+          "alias": [
+            "bandera"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "disfraz",
+      "categoria": "carnaval",
+      "pregunta": "Algo que usás para disfrazarte",
+      "respuestas": [
+        {
+          "texto": "Máscara",
+          "puntos": 32,
+          "alias": [
+            "mascaras",
+            "careta",
+            "caretas"
+          ]
+        },
+        {
+          "texto": "Peluca",
+          "puntos": 23,
+          "alias": [
+            "pelucas"
+          ]
+        },
+        {
+          "texto": "Sombrero",
+          "puntos": 17,
+          "alias": [
+            "sombreros"
+          ]
+        },
+        {
+          "texto": "Maquillaje",
+          "puntos": 12,
+          "alias": [
+            "pintura facial",
+            "pintura"
+          ]
+        },
+        {
+          "texto": "Capa",
+          "puntos": 9,
+          "alias": [
+            "capas"
+          ]
+        },
+        {
+          "texto": "Antifaz",
+          "puntos": 7,
+          "alias": [
+            "antifaces"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tablado",
+      "categoria": "carnaval",
+      "pregunta": "Algo que encontrás en un tablado",
+      "respuestas": [
+        {
+          "texto": "Murga",
+          "puntos": 30,
+          "alias": [
+            "murgas"
+          ]
+        },
+        {
+          "texto": "Escenario",
+          "puntos": 24,
+          "alias": [
+            "escenarios"
+          ]
+        },
+        {
+          "texto": "Público",
+          "puntos": 18,
+          "alias": [
+            "gente",
+            "espectadores"
+          ]
+        },
+        {
+          "texto": "Micrófonos",
+          "puntos": 12,
+          "alias": [
+            "microfono"
+          ]
+        },
+        {
+          "texto": "Luces",
+          "puntos": 9,
+          "alias": [
+            "luz",
+            "iluminacion"
+          ]
+        },
+        {
+          "texto": "Sillas",
+          "puntos": 7,
+          "alias": [
+            "silla",
+            "asientos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cancha",
+      "categoria": "futbol",
+      "pregunta": "Algo que llevás a la cancha para alentar",
+      "respuestas": [
+        {
+          "texto": "Camiseta",
+          "puntos": 32,
+          "alias": [
+            "camisetas",
+            "remera"
+          ]
+        },
+        {
+          "texto": "Bandera",
+          "puntos": 23,
+          "alias": [
+            "banderas"
+          ]
+        },
+        {
+          "texto": "Bufanda",
+          "puntos": 17,
+          "alias": [
+            "bufandas"
+          ]
+        },
+        {
+          "texto": "Gorro",
+          "puntos": 12,
+          "alias": [
+            "gorra",
+            "gorros",
+            "gorras"
+          ]
+        },
+        {
+          "texto": "Tambor",
+          "puntos": 9,
+          "alias": [
+            "bombo",
+            "tambores"
+          ]
+        },
+        {
+          "texto": "Papel picado",
+          "puntos": 7,
+          "alias": [
+            "papelitos",
+            "confeti"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "partido",
+      "categoria": "futbol",
+      "pregunta": "Algo que puede cobrar el árbitro",
+      "respuestas": [
+        {
+          "texto": "Falta",
+          "puntos": 30,
+          "alias": [
+            "faltas"
+          ]
+        },
+        {
+          "texto": "Penal",
+          "puntos": 24,
+          "alias": [
+            "penales",
+            "penalty"
+          ]
+        },
+        {
+          "texto": "Fuera de juego",
+          "puntos": 18,
+          "alias": [
+            "offside",
+            "orsai",
+            "posicion adelantada"
+          ]
+        },
+        {
+          "texto": "Mano",
+          "puntos": 12,
+          "alias": [
+            "manos"
+          ]
+        },
+        {
+          "texto": "Tiro de esquina",
+          "puntos": 9,
+          "alias": [
+            "corner",
+            "saque de esquina"
+          ]
+        },
+        {
+          "texto": "Saque de banda",
+          "puntos": 7,
+          "alias": [
+            "lateral",
+            "saque lateral"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "equipo",
+      "categoria": "futbol",
+      "pregunta": "Un club de fútbol del Río de la Plata",
+      "respuestas": [
+        {
+          "texto": "Boca",
+          "puntos": 30,
+          "alias": [
+            "boca juniors"
+          ]
+        },
+        {
+          "texto": "River",
+          "puntos": 24,
+          "alias": [
+            "river plate"
+          ]
+        },
+        {
+          "texto": "Peñarol",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Nacional",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Racing",
+          "puntos": 9,
+          "alias": [
+            "racing club"
+          ]
+        },
+        {
+          "texto": "Independiente",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "mate",
+      "categoria": "costumbres",
+      "pregunta": "Algo que necesitás para preparar mate",
+      "respuestas": [
+        {
+          "texto": "Yerba",
+          "puntos": 32,
+          "alias": [
+            "yerba mate"
+          ]
+        },
+        {
+          "texto": "Agua",
+          "puntos": 23,
+          "alias": [
+            "agua caliente"
+          ]
+        },
+        {
+          "texto": "Bombilla",
+          "puntos": 17,
+          "alias": [
+            "bombillas"
+          ]
+        },
+        {
+          "texto": "Mate",
+          "puntos": 12,
+          "alias": [
+            "calabaza"
+          ]
+        },
+        {
+          "texto": "Termo",
+          "puntos": 9,
+          "alias": [
+            "termos"
+          ]
+        },
+        {
+          "texto": "Caldera",
+          "puntos": 7,
+          "alias": [
+            "pava",
+            "pava electrica",
+            "hervidor"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "domingo",
+      "categoria": "costumbres",
+      "pregunta": "Un plan para un domingo en familia",
+      "respuestas": [
+        {
+          "texto": "Asado",
+          "puntos": 30,
+          "alias": [
+            "hacer asado",
+            "comer asado"
+          ]
+        },
+        {
+          "texto": "Paseo",
+          "puntos": 24,
+          "alias": [
+            "pasear",
+            "caminar",
+            "salir a pasear"
+          ]
+        },
+        {
+          "texto": "Almuerzo",
+          "puntos": 18,
+          "alias": [
+            "almorzar",
+            "comer juntos"
+          ]
+        },
+        {
+          "texto": "Película",
+          "puntos": 12,
+          "alias": [
+            "peliculas",
+            "cine",
+            "ver una pelicula"
+          ]
+        },
+        {
+          "texto": "Fútbol",
+          "puntos": 9,
+          "alias": [
+            "ver futbol",
+            "jugar al futbol"
+          ]
+        },
+        {
+          "texto": "Juegos de mesa",
+          "puntos": 7,
+          "alias": [
+            "juego de mesa",
+            "cartas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lluvia",
+      "categoria": "costumbres",
+      "pregunta": "Algo que hacés en casa un día de lluvia",
+      "respuestas": [
+        {
+          "texto": "Mirar una película",
+          "puntos": 30,
+          "alias": [
+            "ver una pelicula",
+            "pelicula",
+            "peliculas",
+            "ver television",
+            "mirar tele",
+            "television"
+          ]
+        },
+        {
+          "texto": "Dormir",
+          "puntos": 24,
+          "alias": [
+            "siesta",
+            "dormir la siesta"
+          ]
+        },
+        {
+          "texto": "Tomar mate",
+          "puntos": 18,
+          "alias": [
+            "mate",
+            "matear"
+          ]
+        },
+        {
+          "texto": "Leer",
+          "puntos": 12,
+          "alias": [
+            "leer un libro",
+            "lectura"
+          ]
+        },
+        {
+          "texto": "Cocinar",
+          "puntos": 9,
+          "alias": [
+            "cocina"
+          ]
+        },
+        {
+          "texto": "Jugar",
+          "puntos": 7,
+          "alias": [
+            "videojuegos",
+            "juegos de mesa"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dinero",
+      "categoria": "lunfardo",
+      "pregunta": "Una forma popular de decir dinero",
+      "respuestas": [
+        {
+          "texto": "Plata",
+          "puntos": 32,
+          "alias": []
+        },
+        {
+          "texto": "Guita",
+          "puntos": 23,
+          "alias": []
+        },
+        {
+          "texto": "Mangos",
+          "puntos": 17,
+          "alias": [
+            "mango"
+          ]
+        },
+        {
+          "texto": "Billetes",
+          "puntos": 12,
+          "alias": [
+            "billete"
+          ]
+        },
+        {
+          "texto": "Lucas",
+          "puntos": 9,
+          "alias": [
+            "luca"
+          ]
+        },
+        {
+          "texto": "Pesos",
+          "puntos": 7,
+          "alias": [
+            "peso"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trabajo",
+      "categoria": "lunfardo",
+      "pregunta": "Una palabra informal que podés escuchar hablando del trabajo",
+      "respuestas": [
+        {
+          "texto": "Laburo",
+          "puntos": 30,
+          "alias": [
+            "laburar"
+          ]
+        },
+        {
+          "texto": "Guita",
+          "puntos": 24,
+          "alias": []
+        },
+        {
+          "texto": "Jefe",
+          "puntos": 18,
+          "alias": [
+            "jefa"
+          ]
+        },
+        {
+          "texto": "Changa",
+          "puntos": 12,
+          "alias": [
+            "changas"
+          ]
+        },
+        {
+          "texto": "Bondi",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Fiaca",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "charla",
+      "categoria": "lunfardo",
+      "pregunta": "Una palabra bien rioplatense en una charla entre amigos",
+      "respuestas": [
+        {
+          "texto": "Che",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Bo",
+          "puntos": 24,
+          "alias": []
+        },
+        {
+          "texto": "Dale",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Ta",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Bárbaro",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Copado",
+          "puntos": 7,
+          "alias": [
+            "copada"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "uruguay",
+      "categoria": "ciudades",
+      "pregunta": "Una ciudad uruguaya que podrías visitar",
+      "respuestas": [
+        {
+          "texto": "Montevideo",
+          "puntos": 32,
+          "alias": []
+        },
+        {
+          "texto": "Colonia",
+          "puntos": 23,
+          "alias": [
+            "colonia del sacramento"
+          ]
+        },
+        {
+          "texto": "Punta del Este",
+          "puntos": 17,
+          "alias": [
+            "punta"
+          ]
+        },
+        {
+          "texto": "Salto",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Piriápolis",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Maldonado",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "argentina",
+      "categoria": "ciudades",
+      "pregunta": "Una ciudad argentina conocida para ir de paseo",
+      "respuestas": [
+        {
+          "texto": "Buenos Aires",
+          "puntos": 30,
+          "alias": [
+            "capital federal",
+            "caba"
+          ]
+        },
+        {
+          "texto": "Córdoba",
+          "puntos": 24,
+          "alias": []
+        },
+        {
+          "texto": "Rosario",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Mendoza",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Bariloche",
+          "puntos": 9,
+          "alias": [
+            "san carlos de bariloche"
+          ]
+        },
+        {
+          "texto": "Mar del Plata",
+          "puntos": 7,
+          "alias": [
+            "mardel"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plaza",
+      "categoria": "ciudades",
+      "pregunta": "Algo que encontrás en una plaza",
+      "respuestas": [
+        {
+          "texto": "Bancos",
+          "puntos": 32,
+          "alias": [
+            "banco",
+            "banquitos"
+          ]
+        },
+        {
+          "texto": "Árboles",
+          "puntos": 23,
+          "alias": [
+            "arbol"
+          ]
+        },
+        {
+          "texto": "Juegos",
+          "puntos": 17,
+          "alias": [
+            "hamaca",
+            "hamacas",
+            "tobogan",
+            "juegos infantiles"
+          ]
+        },
+        {
+          "texto": "Fuente",
+          "puntos": 12,
+          "alias": [
+            "fuentes"
+          ]
+        },
+        {
+          "texto": "Monumento",
+          "puntos": 9,
+          "alias": [
+            "monumentos",
+            "estatua"
+          ]
+        },
+        {
+          "texto": "Palomas",
+          "puntos": 7,
+          "alias": [
+            "paloma"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bolsoplaya",
+      "categoria": "playa",
+      "pregunta": "Algo que guardás en el bolso para ir a la playa",
+      "respuestas": [
+        {
+          "texto": "Toalla",
+          "puntos": 30,
+          "alias": [
+            "toallas",
+            "toallon"
+          ]
+        },
+        {
+          "texto": "Protector solar",
+          "puntos": 24,
+          "alias": [
+            "protector",
+            "bloqueador",
+            "bloqueador solar"
+          ]
+        },
+        {
+          "texto": "Malla",
+          "puntos": 18,
+          "alias": [
+            "traje de bano",
+            "bikini",
+            "short de bano"
+          ]
+        },
+        {
+          "texto": "Agua",
+          "puntos": 12,
+          "alias": [
+            "botella de agua"
+          ]
+        },
+        {
+          "texto": "Lentes de sol",
+          "puntos": 9,
+          "alias": [
+            "lentes",
+            "anteojos",
+            "anteojos de sol"
+          ]
+        },
+        {
+          "texto": "Libro",
+          "puntos": 7,
+          "alias": [
+            "libros"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "arena",
+      "categoria": "playa",
+      "pregunta": "Algo que hacés en la arena",
+      "respuestas": [
+        {
+          "texto": "Tomar sol",
+          "puntos": 32,
+          "alias": [
+            "broncearse",
+            "tomar el sol"
+          ]
+        },
+        {
+          "texto": "Castillos",
+          "puntos": 23,
+          "alias": [
+            "castillo",
+            "hacer castillos",
+            "castillos de arena"
+          ]
+        },
+        {
+          "texto": "Jugar a la pelota",
+          "puntos": 17,
+          "alias": [
+            "pelota",
+            "futbol",
+            "jugar al futbol"
+          ]
+        },
+        {
+          "texto": "Caminar",
+          "puntos": 12,
+          "alias": [
+            "pasear"
+          ]
+        },
+        {
+          "texto": "Dormir",
+          "puntos": 9,
+          "alias": [
+            "siesta"
+          ]
+        },
+        {
+          "texto": "Tejo",
+          "puntos": 7,
+          "alias": [
+            "jugar al tejo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "costaplaya",
+      "categoria": "playa",
+      "pregunta": "Algo que ves mirando hacia el mar",
+      "respuestas": [
+        {
+          "texto": "Olas",
+          "puntos": 30,
+          "alias": [
+            "ola"
+          ]
+        },
+        {
+          "texto": "Barcos",
+          "puntos": 24,
+          "alias": [
+            "barco",
+            "velero",
+            "veleros"
+          ]
+        },
+        {
+          "texto": "Gaviotas",
+          "puntos": 18,
+          "alias": [
+            "gaviota"
+          ]
+        },
+        {
+          "texto": "Bañistas",
+          "puntos": 12,
+          "alias": [
+            "gente",
+            "personas",
+            "nadadores"
+          ]
+        },
+        {
+          "texto": "Surfistas",
+          "puntos": 9,
+          "alias": [
+            "surfista",
+            "surf"
+          ]
+        },
+        {
+          "texto": "Horizonte",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "instrumentos",
+      "categoria": "musica",
+      "pregunta": "Un instrumento para armar una banda",
+      "respuestas": [
+        {
+          "texto": "Guitarra",
+          "puntos": 32,
+          "alias": [
+            "guitarras",
+            "guitarra electrica"
+          ]
+        },
+        {
+          "texto": "Batería",
+          "puntos": 23,
+          "alias": [
+            "bateria acustica"
+          ]
+        },
+        {
+          "texto": "Bajo",
+          "puntos": 17,
+          "alias": [
+            "bajo electrico"
+          ]
+        },
+        {
+          "texto": "Teclado",
+          "puntos": 12,
+          "alias": [
+            "teclados",
+            "piano"
+          ]
+        },
+        {
+          "texto": "Saxofón",
+          "puntos": 9,
+          "alias": [
+            "saxo"
+          ]
+        },
+        {
+          "texto": "Trompeta",
+          "puntos": 7,
+          "alias": [
+            "trompetas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fiesta",
+      "categoria": "musica",
+      "pregunta": "Un ritmo que puede sonar en una fiesta rioplatense",
+      "respuestas": [
+        {
+          "texto": "Cumbia",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Cuarteto",
+          "puntos": 24,
+          "alias": []
+        },
+        {
+          "texto": "Reguetón",
+          "puntos": 18,
+          "alias": [
+            "reggaeton"
+          ]
+        },
+        {
+          "texto": "Rock",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Salsa",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Merengue",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "recital",
+      "categoria": "musica",
+      "pregunta": "Algo que ves en un recital",
+      "respuestas": [
+        {
+          "texto": "Escenario",
+          "puntos": 32,
+          "alias": []
+        },
+        {
+          "texto": "Luces",
+          "puntos": 23,
+          "alias": [
+            "luz",
+            "iluminacion"
+          ]
+        },
+        {
+          "texto": "Público",
+          "puntos": 17,
+          "alias": [
+            "gente",
+            "espectadores"
+          ]
+        },
+        {
+          "texto": "Cantante",
+          "puntos": 12,
+          "alias": [
+            "cantantes"
+          ]
+        },
+        {
+          "texto": "Parlantes",
+          "puntos": 9,
+          "alias": [
+            "parlante",
+            "altavoces"
+          ]
+        },
+        {
+          "texto": "Pantallas",
+          "puntos": 7,
+          "alias": [
+            "pantalla"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "valija",
+      "categoria": "viajes",
+      "pregunta": "Algo que metés en la valija",
+      "respuestas": [
+        {
+          "texto": "Ropa",
+          "puntos": 30,
+          "alias": [
+            "remeras",
+            "pantalones"
+          ]
+        },
+        {
+          "texto": "Calzado",
+          "puntos": 24,
+          "alias": [
+            "zapatos",
+            "zapatillas"
+          ]
+        },
+        {
+          "texto": "Cepillo de dientes",
+          "puntos": 18,
+          "alias": [
+            "cepillo"
+          ]
+        },
+        {
+          "texto": "Cargador",
+          "puntos": 12,
+          "alias": [
+            "cargador de celular"
+          ]
+        },
+        {
+          "texto": "Documentos",
+          "puntos": 9,
+          "alias": [
+            "documento",
+            "pasaporte",
+            "cedula",
+            "dni"
+          ]
+        },
+        {
+          "texto": "Perfume",
+          "puntos": 7,
+          "alias": [
+            "perfumes"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transporte",
+      "categoria": "viajes",
+      "pregunta": "Un transporte que podés usar para viajar",
+      "respuestas": [
+        {
+          "texto": "Auto",
+          "puntos": 32,
+          "alias": [
+            "coche",
+            "automovil"
+          ]
+        },
+        {
+          "texto": "Ómnibus",
+          "puntos": 23,
+          "alias": [
+            "omnibus",
+            "colectivo",
+            "bus",
+            "micro"
+          ]
+        },
+        {
+          "texto": "Avión",
+          "puntos": 17,
+          "alias": [
+            "aviones"
+          ]
+        },
+        {
+          "texto": "Tren",
+          "puntos": 12,
+          "alias": [
+            "trenes"
+          ]
+        },
+        {
+          "texto": "Barco",
+          "puntos": 9,
+          "alias": [
+            "ferry",
+            "buque"
+          ]
+        },
+        {
+          "texto": "Moto",
+          "puntos": 7,
+          "alias": [
+            "motocicleta"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rutaparada",
+      "categoria": "viajes",
+      "pregunta": "Un motivo para parar durante un viaje en ruta",
+      "respuestas": [
+        {
+          "texto": "Ir al baño",
+          "puntos": 30,
+          "alias": [
+            "bano",
+            "banio"
+          ]
+        },
+        {
+          "texto": "Cargar combustible",
+          "puntos": 24,
+          "alias": [
+            "nafta",
+            "combustible",
+            "cargar nafta",
+            "gasolina"
+          ]
+        },
+        {
+          "texto": "Comer",
+          "puntos": 18,
+          "alias": [
+            "almorzar",
+            "merendar"
+          ]
+        },
+        {
+          "texto": "Descansar",
+          "puntos": 12,
+          "alias": [
+            "descanso",
+            "dormir"
+          ]
+        },
+        {
+          "texto": "Comprar agua",
+          "puntos": 9,
+          "alias": [
+            "agua",
+            "bebida",
+            "bebidas"
+          ]
+        },
+        {
+          "texto": "Sacar fotos",
+          "puntos": 7,
+          "alias": [
+            "fotos",
+            "fotografiar"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cocina",
+      "categoria": "casa",
+      "pregunta": "Algo que encontrás en una cocina",
+      "respuestas": [
+        {
+          "texto": "Heladera",
+          "puntos": 32,
+          "alias": [
+            "refrigerador"
+          ]
+        },
+        {
+          "texto": "Cocina",
+          "puntos": 23,
+          "alias": [
+            "horno",
+            "estufa"
+          ]
+        },
+        {
+          "texto": "Olla",
+          "puntos": 17,
+          "alias": [
+            "ollas"
+          ]
+        },
+        {
+          "texto": "Platos",
+          "puntos": 12,
+          "alias": [
+            "plato"
+          ]
+        },
+        {
+          "texto": "Cubiertos",
+          "puntos": 9,
+          "alias": [
+            "tenedor",
+            "cuchillo",
+            "cuchara"
+          ]
+        },
+        {
+          "texto": "Microondas",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "perdido",
+      "categoria": "casa",
+      "pregunta": "Algo que buscás por toda la casa",
+      "respuestas": [
+        {
+          "texto": "Llaves",
+          "puntos": 30,
+          "alias": [
+            "llave"
+          ]
+        },
+        {
+          "texto": "Celular",
+          "puntos": 24,
+          "alias": [
+            "telefono",
+            "movil"
+          ]
+        },
+        {
+          "texto": "Control remoto",
+          "puntos": 18,
+          "alias": [
+            "control",
+            "mando"
+          ]
+        },
+        {
+          "texto": "Lentes",
+          "puntos": 12,
+          "alias": [
+            "anteojos",
+            "gafas"
+          ]
+        },
+        {
+          "texto": "Billetera",
+          "puntos": 9,
+          "alias": [
+            "cartera",
+            "monedero"
+          ]
+        },
+        {
+          "texto": "Medias",
+          "puntos": 7,
+          "alias": [
+            "media",
+            "calcetines"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "limpieza",
+      "categoria": "casa",
+      "pregunta": "Algo que usás para limpiar la casa",
+      "respuestas": [
+        {
+          "texto": "Escoba",
+          "puntos": 32,
+          "alias": [
+            "escobas"
+          ]
+        },
+        {
+          "texto": "Trapo",
+          "puntos": 23,
+          "alias": [
+            "trapos",
+            "pano"
+          ]
+        },
+        {
+          "texto": "Detergente",
+          "puntos": 17,
+          "alias": [
+            "jabon"
+          ]
+        },
+        {
+          "texto": "Balde",
+          "puntos": 12,
+          "alias": [
+            "cubo"
+          ]
+        },
+        {
+          "texto": "Aspiradora",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Lampazo",
+          "puntos": 7,
+          "alias": [
+            "mopa",
+            "fregona"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mascotas",
+      "categoria": "animales",
+      "pregunta": "Una mascota que alguien puede tener en casa",
+      "respuestas": [
+        {
+          "texto": "Perro",
+          "puntos": 32,
+          "alias": [
+            "perros",
+            "perrito"
+          ]
+        },
+        {
+          "texto": "Gato",
+          "puntos": 23,
+          "alias": [
+            "gatos",
+            "gatito"
+          ]
+        },
+        {
+          "texto": "Pez",
+          "puntos": 17,
+          "alias": [
+            "peces",
+            "pecera"
+          ]
+        },
+        {
+          "texto": "Hámster",
+          "puntos": 12,
+          "alias": [
+            "hamsters"
+          ]
+        },
+        {
+          "texto": "Conejo",
+          "puntos": 9,
+          "alias": [
+            "conejos"
+          ]
+        },
+        {
+          "texto": "Tortuga",
+          "puntos": 7,
+          "alias": [
+            "tortugas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "campo",
+      "categoria": "animales",
+      "pregunta": "Un animal que podés ver en el campo rioplatense",
+      "respuestas": [
+        {
+          "texto": "Vaca",
+          "puntos": 30,
+          "alias": [
+            "vacas",
+            "ternero",
+            "toro"
+          ]
+        },
+        {
+          "texto": "Caballo",
+          "puntos": 24,
+          "alias": [
+            "caballos",
+            "yegua"
+          ]
+        },
+        {
+          "texto": "Oveja",
+          "puntos": 18,
+          "alias": [
+            "ovejas",
+            "cordero"
+          ]
+        },
+        {
+          "texto": "Gallina",
+          "puntos": 12,
+          "alias": [
+            "gallinas",
+            "gallo"
+          ]
+        },
+        {
+          "texto": "Cerdo",
+          "puntos": 9,
+          "alias": [
+            "chancho",
+            "chanchos"
+          ]
+        },
+        {
+          "texto": "Carpincho",
+          "puntos": 7,
+          "alias": [
+            "carpinchos",
+            "capibara"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paseoperro",
+      "categoria": "animales",
+      "pregunta": "Algo que llevás cuando sacás a pasear al perro",
+      "respuestas": [
+        {
+          "texto": "Correa",
+          "puntos": 32,
+          "alias": [
+            "correas"
+          ]
+        },
+        {
+          "texto": "Bolsitas",
+          "puntos": 23,
+          "alias": [
+            "bolsa",
+            "bolsas",
+            "bolsita"
+          ]
+        },
+        {
+          "texto": "Agua",
+          "puntos": 17,
+          "alias": [
+            "botella de agua"
+          ]
+        },
+        {
+          "texto": "Collar",
+          "puntos": 12,
+          "alias": [
+            "arnes"
+          ]
+        },
+        {
+          "texto": "Pelota",
+          "puntos": 9,
+          "alias": [
+            "pelotita",
+            "juguete"
+          ]
+        },
+        {
+          "texto": "Premios",
+          "puntos": 7,
+          "alias": [
+            "galletitas",
+            "snacks",
+            "comida"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mochila",
+      "categoria": "escuela",
+      "pregunta": "Algo que llevás en la mochila para ir a clase",
+      "respuestas": [
+        {
+          "texto": "Cuaderno",
+          "puntos": 30,
+          "alias": [
+            "cuadernos"
+          ]
+        },
+        {
+          "texto": "Lápiz",
+          "puntos": 24,
+          "alias": [
+            "lapices",
+            "lapicera",
+            "boligrafo"
+          ]
+        },
+        {
+          "texto": "Libro",
+          "puntos": 18,
+          "alias": [
+            "libros"
+          ]
+        },
+        {
+          "texto": "Goma",
+          "puntos": 12,
+          "alias": [
+            "goma de borrar",
+            "borrador"
+          ]
+        },
+        {
+          "texto": "Regla",
+          "puntos": 9,
+          "alias": [
+            "reglas"
+          ]
+        },
+        {
+          "texto": "Merienda",
+          "puntos": 7,
+          "alias": [
+            "comida",
+            "colacion"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "recreo",
+      "categoria": "escuela",
+      "pregunta": "Algo que hacés durante el recreo",
+      "respuestas": [
+        {
+          "texto": "Jugar",
+          "puntos": 32,
+          "alias": [
+            "juegos"
+          ]
+        },
+        {
+          "texto": "Comer",
+          "puntos": 23,
+          "alias": [
+            "merendar",
+            "tomar la merienda"
+          ]
+        },
+        {
+          "texto": "Charlar",
+          "puntos": 17,
+          "alias": [
+            "hablar",
+            "conversar"
+          ]
+        },
+        {
+          "texto": "Correr",
+          "puntos": 12,
+          "alias": [
+            "carrera"
+          ]
+        },
+        {
+          "texto": "Ir al baño",
+          "puntos": 9,
+          "alias": [
+            "bano",
+            "banio"
+          ]
+        },
+        {
+          "texto": "Tomar agua",
+          "puntos": 7,
+          "alias": [
+            "agua",
+            "beber agua"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "materias",
+      "categoria": "escuela",
+      "pregunta": "Una materia que se estudia en la escuela",
+      "respuestas": [
+        {
+          "texto": "Matemática",
+          "puntos": 30,
+          "alias": [
+            "matematicas"
+          ]
+        },
+        {
+          "texto": "Lengua",
+          "puntos": 24,
+          "alias": [
+            "idioma espanol",
+            "lenguaje"
+          ]
+        },
+        {
+          "texto": "Historia",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Geografía",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Ciencias",
+          "puntos": 9,
+          "alias": [
+            "ciencias naturales"
+          ]
+        },
+        {
+          "texto": "Educación física",
+          "puntos": 7,
+          "alias": [
+            "gimnasia",
+            "deporte",
+            "deportes"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "heladeria",
+      "categoria": "comida",
+      "pregunta": "Un gusto de helado que todos piden",
+      "respuestas": [
+        {
+          "texto": "Dulce de leche",
+          "puntos": 30,
+          "alias": [
+            "ddl",
+            "dulce"
+          ]
+        },
+        {
+          "texto": "Chocolate",
+          "puntos": 24,
+          "alias": [
+            "choco"
+          ]
+        },
+        {
+          "texto": "Frutilla",
+          "puntos": 18,
+          "alias": [
+            "frutillas"
+          ]
+        },
+        {
+          "texto": "Vainilla",
+          "puntos": 12,
+          "alias": [
+            "crema americana"
+          ]
+        },
+        {
+          "texto": "Limón",
+          "puntos": 9,
+          "alias": [
+            "limon"
+          ]
+        },
+        {
+          "texto": "Sambayón",
+          "puntos": 7,
+          "alias": [
+            "sambayon"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "picada",
+      "categoria": "comida",
+      "pregunta": "Algo que no puede faltar en una picada",
+      "respuestas": [
+        {
+          "texto": "Queso",
+          "puntos": 30,
+          "alias": [
+            "quesos"
+          ]
+        },
+        {
+          "texto": "Salame",
+          "puntos": 24,
+          "alias": [
+            "salamin"
+          ]
+        },
+        {
+          "texto": "Aceitunas",
+          "puntos": 18,
+          "alias": [
+            "aceituna"
+          ]
+        },
+        {
+          "texto": "Jamón",
+          "puntos": 12,
+          "alias": [
+            "jamon",
+            "fiambre"
+          ]
+        },
+        {
+          "texto": "Maní",
+          "puntos": 9,
+          "alias": [
+            "mani"
+          ]
+        },
+        {
+          "texto": "Pan",
+          "puntos": 7,
+          "alias": [
+            "pancito",
+            "galletas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "domingo_almuerzo",
+      "categoria": "comida",
+      "pregunta": "Una comida típica del almuerzo de domingo",
+      "respuestas": [
+        {
+          "texto": "Asado",
+          "puntos": 30,
+          "alias": [
+            "parrilla"
+          ]
+        },
+        {
+          "texto": "Pastas",
+          "puntos": 24,
+          "alias": [
+            "ravioles",
+            "tallarines",
+            "noquis",
+            "ñoquis"
+          ]
+        },
+        {
+          "texto": "Milanesas",
+          "puntos": 18,
+          "alias": [
+            "milanesa"
+          ]
+        },
+        {
+          "texto": "Pollo",
+          "puntos": 12,
+          "alias": [
+            "pollo al horno"
+          ]
+        },
+        {
+          "texto": "Pizza",
+          "puntos": 9,
+          "alias": [
+            "pizzas"
+          ]
+        },
+        {
+          "texto": "Guiso",
+          "puntos": 7,
+          "alias": [
+            "puchero"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "desayuno",
+      "categoria": "comida",
+      "pregunta": "Algo que tomás en el desayuno",
+      "respuestas": [
+        {
+          "texto": "Café",
+          "puntos": 30,
+          "alias": [
+            "cafe",
+            "cafe con leche"
+          ]
+        },
+        {
+          "texto": "Mate",
+          "puntos": 24,
+          "alias": [
+            "mates"
+          ]
+        },
+        {
+          "texto": "Té",
+          "puntos": 18,
+          "alias": [
+            "te"
+          ]
+        },
+        {
+          "texto": "Leche",
+          "puntos": 12,
+          "alias": [
+            "chocolatada"
+          ]
+        },
+        {
+          "texto": "Jugo",
+          "puntos": 9,
+          "alias": [
+            "jugo de naranja"
+          ]
+        },
+        {
+          "texto": "Agua",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "sandwich",
+      "categoria": "comida",
+      "pregunta": "Algo que le ponés a un sándwich",
+      "respuestas": [
+        {
+          "texto": "Jamón",
+          "puntos": 30,
+          "alias": [
+            "jamon"
+          ]
+        },
+        {
+          "texto": "Queso",
+          "puntos": 24,
+          "alias": [
+            "quesos"
+          ]
+        },
+        {
+          "texto": "Lechuga",
+          "puntos": 18,
+          "alias": [
+            "verdes"
+          ]
+        },
+        {
+          "texto": "Tomate",
+          "puntos": 12,
+          "alias": [
+            "tomates"
+          ]
+        },
+        {
+          "texto": "Mayonesa",
+          "puntos": 9,
+          "alias": [
+            "mayo"
+          ]
+        },
+        {
+          "texto": "Huevo",
+          "puntos": 7,
+          "alias": [
+            "huevos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "murga_cosas",
+      "categoria": "carnaval",
+      "pregunta": "Algo que lleva puesto un murguista",
+      "respuestas": [
+        {
+          "texto": "Maquillaje",
+          "puntos": 30,
+          "alias": [
+            "pintura"
+          ]
+        },
+        {
+          "texto": "Galera",
+          "puntos": 24,
+          "alias": [
+            "sombrero"
+          ]
+        },
+        {
+          "texto": "Traje",
+          "puntos": 18,
+          "alias": [
+            "vestuario"
+          ]
+        },
+        {
+          "texto": "Guantes",
+          "puntos": 12,
+          "alias": [
+            "guante"
+          ]
+        },
+        {
+          "texto": "Zapatos",
+          "puntos": 9,
+          "alias": [
+            "zapatos de colores"
+          ]
+        },
+        {
+          "texto": "Moño",
+          "puntos": 7,
+          "alias": [
+            "moño",
+            "corbata"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "carnaval_festejo",
+      "categoria": "carnaval",
+      "pregunta": "Algo que tirás en carnaval",
+      "respuestas": [
+        {
+          "texto": "Agua",
+          "puntos": 30,
+          "alias": [
+            "bombitas",
+            "globos de agua"
+          ]
+        },
+        {
+          "texto": "Papelitos",
+          "puntos": 24,
+          "alias": [
+            "papel picado"
+          ]
+        },
+        {
+          "texto": "Espuma",
+          "puntos": 18,
+          "alias": [
+            "nieve",
+            "espuma de carnaval"
+          ]
+        },
+        {
+          "texto": "Serpentinas",
+          "puntos": 12,
+          "alias": [
+            "serpentina"
+          ]
+        },
+        {
+          "texto": "Harina",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Huevos",
+          "puntos": 7,
+          "alias": [
+            "huevo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "futbol_gritos",
+      "categoria": "futbol",
+      "pregunta": "Algo que le grita la hinchada al árbitro",
+      "respuestas": [
+        {
+          "texto": "Vendido",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Ladrón",
+          "puntos": 24,
+          "alias": [
+            "ladron"
+          ]
+        },
+        {
+          "texto": "Ciego",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Bombero",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Penal",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Fuera",
+          "puntos": 7,
+          "alias": [
+            "afuera"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "futbol_puestos",
+      "categoria": "futbol",
+      "pregunta": "Una posición en un equipo de fútbol",
+      "respuestas": [
+        {
+          "texto": "Golero",
+          "puntos": 30,
+          "alias": [
+            "arquero"
+          ]
+        },
+        {
+          "texto": "Delantero",
+          "puntos": 24,
+          "alias": [
+            "nueve",
+            "goleador"
+          ]
+        },
+        {
+          "texto": "Defensa",
+          "puntos": 18,
+          "alias": [
+            "zaguero",
+            "defensor"
+          ]
+        },
+        {
+          "texto": "Volante",
+          "puntos": 12,
+          "alias": [
+            "mediocampista"
+          ]
+        },
+        {
+          "texto": "Lateral",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Enganche",
+          "puntos": 7,
+          "alias": [
+            "diez"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "futbol_cancha",
+      "categoria": "futbol",
+      "pregunta": "Algo que hay en una cancha de fútbol",
+      "respuestas": [
+        {
+          "texto": "Arcos",
+          "puntos": 30,
+          "alias": [
+            "arco"
+          ]
+        },
+        {
+          "texto": "Pelota",
+          "puntos": 24,
+          "alias": []
+        },
+        {
+          "texto": "Césped",
+          "puntos": 18,
+          "alias": [
+            "pasto",
+            "cesped"
+          ]
+        },
+        {
+          "texto": "Tribuna",
+          "puntos": 12,
+          "alias": [
+            "tribunas"
+          ]
+        },
+        {
+          "texto": "Banderines",
+          "puntos": 9,
+          "alias": [
+            "banderin"
+          ]
+        },
+        {
+          "texto": "Red",
+          "puntos": 7,
+          "alias": [
+            "redes"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "habito_noche",
+      "categoria": "costumbres",
+      "pregunta": "Algo que hacés antes de dormir",
+      "respuestas": [
+        {
+          "texto": "Lavarte los dientes",
+          "puntos": 30,
+          "alias": [
+            "dientes",
+            "cepillarse"
+          ]
+        },
+        {
+          "texto": "Mirar el celular",
+          "puntos": 24,
+          "alias": [
+            "celular"
+          ]
+        },
+        {
+          "texto": "Ver tele",
+          "puntos": 18,
+          "alias": [
+            "tele",
+            "television"
+          ]
+        },
+        {
+          "texto": "Leer",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Bañarte",
+          "puntos": 9,
+          "alias": [
+            "ducharse",
+            "ducha"
+          ]
+        },
+        {
+          "texto": "Rezar",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "costumbre_verano",
+      "categoria": "costumbres",
+      "pregunta": "Algo que hacés en verano",
+      "respuestas": [
+        {
+          "texto": "Ir a la playa",
+          "puntos": 30,
+          "alias": [
+            "playa"
+          ]
+        },
+        {
+          "texto": "Tomar helado",
+          "puntos": 24,
+          "alias": [
+            "helado"
+          ]
+        },
+        {
+          "texto": "Piscina",
+          "puntos": 18,
+          "alias": [
+            "pileta"
+          ]
+        },
+        {
+          "texto": "Tomar mate",
+          "puntos": 12,
+          "alias": [
+            "mate"
+          ]
+        },
+        {
+          "texto": "Viajar",
+          "puntos": 9,
+          "alias": [
+            "vacaciones"
+          ]
+        },
+        {
+          "texto": "Dormir siesta",
+          "puntos": 7,
+          "alias": [
+            "siesta"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lunfardo_amigo",
+      "categoria": "lunfardo",
+      "pregunta": "Una forma de llamar a un amigo",
+      "respuestas": [
+        {
+          "texto": "Bo",
+          "puntos": 30,
+          "alias": [
+            "vo"
+          ]
+        },
+        {
+          "texto": "Hermano",
+          "puntos": 24,
+          "alias": [
+            "hermanito"
+          ]
+        },
+        {
+          "texto": "Loco",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Amigo",
+          "puntos": 12,
+          "alias": [
+            "amigazo"
+          ]
+        },
+        {
+          "texto": "Che",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Compañero",
+          "puntos": 7,
+          "alias": [
+            "compa"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lunfardo_lindo",
+      "categoria": "lunfardo",
+      "pregunta": "Una forma de decir que algo está muy bueno",
+      "respuestas": [
+        {
+          "texto": "Bárbaro",
+          "puntos": 30,
+          "alias": [
+            "barbaro"
+          ]
+        },
+        {
+          "texto": "Buenísimo",
+          "puntos": 24,
+          "alias": [
+            "buenisimo"
+          ]
+        },
+        {
+          "texto": "Genial",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "De más",
+          "puntos": 12,
+          "alias": [
+            "demas"
+          ]
+        },
+        {
+          "texto": "Espectacular",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Piola",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "lunfardo_enojo",
+      "categoria": "lunfardo",
+      "pregunta": "Una forma de decir que alguien está enojado",
+      "respuestas": [
+        {
+          "texto": "Caliente",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Re caliente",
+          "puntos": 24,
+          "alias": [
+            "recaliente"
+          ]
+        },
+        {
+          "texto": "Con bronca",
+          "puntos": 18,
+          "alias": [
+            "bronca"
+          ]
+        },
+        {
+          "texto": "Furioso",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Rabioso",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Sacado",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "ciudades_pasear",
+      "categoria": "ciudades",
+      "pregunta": "Un lugar para pasear en Montevideo",
+      "respuestas": [
+        {
+          "texto": "Rambla",
+          "puntos": 30,
+          "alias": [
+            "la rambla"
+          ]
+        },
+        {
+          "texto": "Ciudad Vieja",
+          "puntos": 24,
+          "alias": []
+        },
+        {
+          "texto": "Prado",
+          "puntos": 18,
+          "alias": [
+            "el prado"
+          ]
+        },
+        {
+          "texto": "Parque Rodó",
+          "puntos": 12,
+          "alias": [
+            "parque rodo"
+          ]
+        },
+        {
+          "texto": "Mercado del Puerto",
+          "puntos": 9,
+          "alias": [
+            "mercado"
+          ]
+        },
+        {
+          "texto": "Tres Cruces",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "ciudades_playas",
+      "categoria": "ciudades",
+      "pregunta": "Un balneario uruguayo para veranear",
+      "respuestas": [
+        {
+          "texto": "Punta del Este",
+          "puntos": 30,
+          "alias": [
+            "punta"
+          ]
+        },
+        {
+          "texto": "Piriápolis",
+          "puntos": 24,
+          "alias": [
+            "piriapolis"
+          ]
+        },
+        {
+          "texto": "La Paloma",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Atlántida",
+          "puntos": 12,
+          "alias": [
+            "atlantida"
+          ]
+        },
+        {
+          "texto": "Cabo Polonio",
+          "puntos": 9,
+          "alias": [
+            "polonio"
+          ]
+        },
+        {
+          "texto": "Punta del Diablo",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "ciudades_frontera",
+      "categoria": "ciudades",
+      "pregunta": "Una ciudad uruguaya de frontera",
+      "respuestas": [
+        {
+          "texto": "Rivera",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Chuy",
+          "puntos": 24,
+          "alias": []
+        },
+        {
+          "texto": "Salto",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Artigas",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Paysandú",
+          "puntos": 9,
+          "alias": [
+            "paysandu"
+          ]
+        },
+        {
+          "texto": "Fray Bentos",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "ciudades_turismo",
+      "categoria": "ciudades",
+      "pregunta": "Algo que visita un turista en Colonia",
+      "respuestas": [
+        {
+          "texto": "Faro",
+          "puntos": 30,
+          "alias": [
+            "el faro"
+          ]
+        },
+        {
+          "texto": "Calle de los Suspiros",
+          "puntos": 24,
+          "alias": [
+            "suspiros"
+          ]
+        },
+        {
+          "texto": "Murallas",
+          "puntos": 18,
+          "alias": [
+            "muralla",
+            "portón",
+            "porton"
+          ]
+        },
+        {
+          "texto": "Puerto",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Plaza",
+          "puntos": 9,
+          "alias": [
+            "plaza mayor"
+          ]
+        },
+        {
+          "texto": "Museos",
+          "puntos": 7,
+          "alias": [
+            "museo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "playa_vender",
+      "categoria": "playa",
+      "pregunta": "Algo que venden en la playa",
+      "respuestas": [
+        {
+          "texto": "Helados",
+          "puntos": 30,
+          "alias": [
+            "helado"
+          ]
+        },
+        {
+          "texto": "Churros",
+          "puntos": 24,
+          "alias": [
+            "churro"
+          ]
+        },
+        {
+          "texto": "Choclos",
+          "puntos": 18,
+          "alias": [
+            "choclo"
+          ]
+        },
+        {
+          "texto": "Bebidas",
+          "puntos": 12,
+          "alias": [
+            "refresco",
+            "agua"
+          ]
+        },
+        {
+          "texto": "Alfajores",
+          "puntos": 9,
+          "alias": [
+            "alfajor"
+          ]
+        },
+        {
+          "texto": "Bizcochos",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "playa_animales",
+      "categoria": "playa",
+      "pregunta": "Un animal que ves en la playa",
+      "respuestas": [
+        {
+          "texto": "Gaviota",
+          "puntos": 30,
+          "alias": [
+            "gaviotas"
+          ]
+        },
+        {
+          "texto": "Perro",
+          "puntos": 24,
+          "alias": [
+            "perros"
+          ]
+        },
+        {
+          "texto": "Cangrejo",
+          "puntos": 18,
+          "alias": [
+            "cangrejos"
+          ]
+        },
+        {
+          "texto": "Medusa",
+          "puntos": 12,
+          "alias": [
+            "aguaviva",
+            "aguavivas"
+          ]
+        },
+        {
+          "texto": "Lobo marino",
+          "puntos": 9,
+          "alias": [
+            "lobos"
+          ]
+        },
+        {
+          "texto": "Caracol",
+          "puntos": 7,
+          "alias": [
+            "caracoles"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "musica_fogon",
+      "categoria": "musica",
+      "pregunta": "Algo que no falta en un fogón con guitarra",
+      "respuestas": [
+        {
+          "texto": "Guitarra",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Canciones",
+          "puntos": 24,
+          "alias": [
+            "cantar"
+          ]
+        },
+        {
+          "texto": "Fuego",
+          "puntos": 18,
+          "alias": [
+            "leña"
+          ]
+        },
+        {
+          "texto": "Mate",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Amigos",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Bombo",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "musica_recital",
+      "categoria": "musica",
+      "pregunta": "Algo que llevás a un recital",
+      "respuestas": [
+        {
+          "texto": "Entrada",
+          "puntos": 30,
+          "alias": [
+            "ticket"
+          ]
+        },
+        {
+          "texto": "Celular",
+          "puntos": 24,
+          "alias": []
+        },
+        {
+          "texto": "Plata",
+          "puntos": 18,
+          "alias": [
+            "dinero"
+          ]
+        },
+        {
+          "texto": "Agua",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Campera",
+          "puntos": 9,
+          "alias": [
+            "abrigo"
+          ]
+        },
+        {
+          "texto": "Bandera",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "viajes_problemas",
+      "categoria": "viajes",
+      "pregunta": "Algo que sale mal en un viaje",
+      "respuestas": [
+        {
+          "texto": "Perder la valija",
+          "puntos": 30,
+          "alias": [
+            "valija"
+          ]
+        },
+        {
+          "texto": "Retraso",
+          "puntos": 24,
+          "alias": [
+            "demora"
+          ]
+        },
+        {
+          "texto": "Llueve",
+          "puntos": 18,
+          "alias": [
+            "lluvia"
+          ]
+        },
+        {
+          "texto": "Se pincha la rueda",
+          "puntos": 12,
+          "alias": [
+            "rueda"
+          ]
+        },
+        {
+          "texto": "Olvidarse algo",
+          "puntos": 9,
+          "alias": [
+            "olvido"
+          ]
+        },
+        {
+          "texto": "Mareo",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "viajes_hotel",
+      "categoria": "viajes",
+      "pregunta": "Algo que hay en la habitación de un hotel",
+      "respuestas": [
+        {
+          "texto": "Cama",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Tele",
+          "puntos": 24,
+          "alias": [
+            "televisor"
+          ]
+        },
+        {
+          "texto": "Baño",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Toallas",
+          "puntos": 12,
+          "alias": [
+            "toalla"
+          ]
+        },
+        {
+          "texto": "Aire acondicionado",
+          "puntos": 9,
+          "alias": [
+            "aire"
+          ]
+        },
+        {
+          "texto": "Frigobar",
+          "puntos": 7,
+          "alias": [
+            "heladerita"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "casa_living",
+      "categoria": "casa",
+      "pregunta": "Algo que hay en el living",
+      "respuestas": [
+        {
+          "texto": "Sillón",
+          "puntos": 30,
+          "alias": [
+            "sillon",
+            "sofa"
+          ]
+        },
+        {
+          "texto": "Tele",
+          "puntos": 24,
+          "alias": [
+            "televisor"
+          ]
+        },
+        {
+          "texto": "Mesa",
+          "puntos": 18,
+          "alias": [
+            "mesita"
+          ]
+        },
+        {
+          "texto": "Alfombra",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Cuadros",
+          "puntos": 9,
+          "alias": [
+            "cuadro"
+          ]
+        },
+        {
+          "texto": "Lámpara",
+          "puntos": 7,
+          "alias": [
+            "lampara"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "casa_arreglos",
+      "categoria": "casa",
+      "pregunta": "Algo que siempre se rompe en la casa",
+      "respuestas": [
+        {
+          "texto": "Canilla",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Lamparita",
+          "puntos": 24,
+          "alias": [
+            "luz"
+          ]
+        },
+        {
+          "texto": "Enchufe",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Cisterna",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Persiana",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Calefón",
+          "puntos": 7,
+          "alias": [
+            "calefon"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "animales_miedo",
+      "categoria": "animales",
+      "pregunta": "Un animal que da miedo",
+      "respuestas": [
+        {
+          "texto": "Araña",
+          "puntos": 30,
+          "alias": [
+            "arana"
+          ]
+        },
+        {
+          "texto": "Víbora",
+          "puntos": 24,
+          "alias": [
+            "vibora",
+            "serpiente"
+          ]
+        },
+        {
+          "texto": "Tiburón",
+          "puntos": 18,
+          "alias": [
+            "tiburon"
+          ]
+        },
+        {
+          "texto": "León",
+          "puntos": 12,
+          "alias": [
+            "leon"
+          ]
+        },
+        {
+          "texto": "Alacrán",
+          "puntos": 9,
+          "alias": [
+            "alacran"
+          ]
+        },
+        {
+          "texto": "Rata",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "animales_zoo",
+      "categoria": "animales",
+      "pregunta": "Un animal que ves en el zoológico",
+      "respuestas": [
+        {
+          "texto": "León",
+          "puntos": 30,
+          "alias": [
+            "leon"
+          ]
+        },
+        {
+          "texto": "Jirafa",
+          "puntos": 24,
+          "alias": []
+        },
+        {
+          "texto": "Elefante",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Mono",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Tigre",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Cebra",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "escuela_maestra",
+      "categoria": "escuela",
+      "pregunta": "Algo que dice siempre la maestra",
+      "respuestas": [
+        {
+          "texto": "Silencio",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Abran el cuaderno",
+          "puntos": 24,
+          "alias": [
+            "cuaderno"
+          ]
+        },
+        {
+          "texto": "Hagan fila",
+          "puntos": 18,
+          "alias": [
+            "fila"
+          ]
+        },
+        {
+          "texto": "Presten atención",
+          "puntos": 12,
+          "alias": [
+            "atencion"
+          ]
+        },
+        {
+          "texto": "Deberes",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Pasen al pizarrón",
+          "puntos": 7,
+          "alias": [
+            "pizarron"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "comida_parrilla",
+      "categoria": "comida",
+      "pregunta": "Un corte que se tira a la parrilla",
+      "respuestas": [
+        {
+          "texto": "Asado de tira",
+          "puntos": 30,
+          "alias": [
+            "tira",
+            "asado"
+          ]
+        },
+        {
+          "texto": "Vacío",
+          "puntos": 24,
+          "alias": [
+            "vacio"
+          ]
+        },
+        {
+          "texto": "Entraña",
+          "puntos": 18,
+          "alias": [
+            "entrana"
+          ]
+        },
+        {
+          "texto": "Chorizo",
+          "puntos": 12,
+          "alias": [
+            "chorizos"
+          ]
+        },
+        {
+          "texto": "Pollo",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Morcilla",
+          "puntos": 7,
+          "alias": [
+            "morcillas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "comida_feria",
+      "categoria": "comida",
+      "pregunta": "Algo que comprás en la feria vecinal",
+      "respuestas": [
+        {
+          "texto": "Frutas",
+          "puntos": 30,
+          "alias": [
+            "fruta"
+          ]
+        },
+        {
+          "texto": "Verduras",
+          "puntos": 24,
+          "alias": [
+            "verdura"
+          ]
+        },
+        {
+          "texto": "Huevos",
+          "puntos": 18,
+          "alias": [
+            "huevo"
+          ]
+        },
+        {
+          "texto": "Queso",
+          "puntos": 12,
+          "alias": [
+            "quesos"
+          ]
+        },
+        {
+          "texto": "Pescado",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Flores",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "comida_rapida",
+      "categoria": "comida",
+      "pregunta": "Una comida rápida para la noche",
+      "respuestas": [
+        {
+          "texto": "Pizza",
+          "puntos": 30,
+          "alias": [
+            "pizzas"
+          ]
+        },
+        {
+          "texto": "Chivito",
+          "puntos": 24,
+          "alias": [
+            "chivitos"
+          ]
+        },
+        {
+          "texto": "Hamburguesa",
+          "puntos": 18,
+          "alias": [
+            "hamburguesas"
+          ]
+        },
+        {
+          "texto": "Milanesa al pan",
+          "puntos": 12,
+          "alias": [
+            "milanesa"
+          ]
+        },
+        {
+          "texto": "Panchos",
+          "puntos": 9,
+          "alias": [
+            "pancho"
+          ]
+        },
+        {
+          "texto": "Empanadas",
+          "puntos": 7,
+          "alias": [
+            "empanada"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "carnaval_teatro",
+      "categoria": "carnaval",
+      "pregunta": "Una categoría del concurso de carnaval",
+      "respuestas": [
+        {
+          "texto": "Murga",
+          "puntos": 30,
+          "alias": [
+            "murgas"
+          ]
+        },
+        {
+          "texto": "Parodistas",
+          "puntos": 24,
+          "alias": [
+            "parodia"
+          ]
+        },
+        {
+          "texto": "Humoristas",
+          "puntos": 18,
+          "alias": [
+            "humor"
+          ]
+        },
+        {
+          "texto": "Revista",
+          "puntos": 12,
+          "alias": [
+            "revistas"
+          ]
+        },
+        {
+          "texto": "Lubolos",
+          "puntos": 9,
+          "alias": [
+            "comparsa"
+          ]
+        },
+        {
+          "texto": "Sociedades de negros",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "futbol_festejo",
+      "categoria": "futbol",
+      "pregunta": "Algo que hace un jugador al festejar un gol",
+      "respuestas": [
+        {
+          "texto": "Gritar",
+          "puntos": 30,
+          "alias": [
+            "grito"
+          ]
+        },
+        {
+          "texto": "Abrazarse",
+          "puntos": 24,
+          "alias": [
+            "abrazo"
+          ]
+        },
+        {
+          "texto": "Correr",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Besar la camiseta",
+          "puntos": 12,
+          "alias": [
+            "camiseta"
+          ]
+        },
+        {
+          "texto": "Bailar",
+          "puntos": 9,
+          "alias": [
+            "baile"
+          ]
+        },
+        {
+          "texto": "Tirarse al pasto",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "futbol_mundial",
+      "categoria": "futbol",
+      "pregunta": "Algo que hacés cuando juega la Celeste en un Mundial",
+      "respuestas": [
+        {
+          "texto": "Ver el partido",
+          "puntos": 30,
+          "alias": [
+            "mirar",
+            "partido"
+          ]
+        },
+        {
+          "texto": "Ponerte la camiseta",
+          "puntos": 24,
+          "alias": [
+            "camiseta"
+          ]
+        },
+        {
+          "texto": "Gritar",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Juntarte con amigos",
+          "puntos": 12,
+          "alias": [
+            "amigos"
+          ]
+        },
+        {
+          "texto": "Comer asado",
+          "puntos": 9,
+          "alias": [
+            "asado"
+          ]
+        },
+        {
+          "texto": "Faltar al trabajo",
+          "puntos": 7,
+          "alias": [
+            "faltar"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "costumbre_cumple",
+      "categoria": "costumbres",
+      "pregunta": "Algo que no falta en un cumpleaños",
+      "respuestas": [
+        {
+          "texto": "Torta",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Velitas",
+          "puntos": 24,
+          "alias": [
+            "velas"
+          ]
+        },
+        {
+          "texto": "Globos",
+          "puntos": 18,
+          "alias": [
+            "globo"
+          ]
+        },
+        {
+          "texto": "Regalos",
+          "puntos": 12,
+          "alias": [
+            "regalo"
+          ]
+        },
+        {
+          "texto": "Música",
+          "puntos": 9,
+          "alias": [
+            "musica"
+          ]
+        },
+        {
+          "texto": "Sándwiches",
+          "puntos": 7,
+          "alias": [
+            "sanguchitos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "costumbre_fin_de_anio",
+      "categoria": "costumbres",
+      "pregunta": "Algo que hacés el 31 de diciembre",
+      "respuestas": [
+        {
+          "texto": "Brindar",
+          "puntos": 30,
+          "alias": [
+            "brindis"
+          ]
+        },
+        {
+          "texto": "Comer",
+          "puntos": 24,
+          "alias": [
+            "cena"
+          ]
+        },
+        {
+          "texto": "Abrazarse",
+          "puntos": 18,
+          "alias": [
+            "abrazos"
+          ]
+        },
+        {
+          "texto": "Fuegos artificiales",
+          "puntos": 12,
+          "alias": [
+            "cuetes"
+          ]
+        },
+        {
+          "texto": "Tirar papeles",
+          "puntos": 9,
+          "alias": [
+            "papeles"
+          ]
+        },
+        {
+          "texto": "Bailar",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "lunfardo_nino",
+      "categoria": "lunfardo",
+      "pregunta": "Una forma de decir niño en el Río de la Plata",
+      "respuestas": [
+        {
+          "texto": "Gurí",
+          "puntos": 30,
+          "alias": [
+            "guri"
+          ]
+        },
+        {
+          "texto": "Botija",
+          "puntos": 24,
+          "alias": []
+        },
+        {
+          "texto": "Pibe",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Chiquilín",
+          "puntos": 12,
+          "alias": [
+            "chiquilin"
+          ]
+        },
+        {
+          "texto": "Nene",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Purrete",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "lunfardo_cansado",
+      "categoria": "lunfardo",
+      "pregunta": "Una forma de decir que estás muy cansado",
+      "respuestas": [
+        {
+          "texto": "Muerto",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Reventado",
+          "puntos": 24,
+          "alias": []
+        },
+        {
+          "texto": "Fundido",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Hecho pelota",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Molido",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Destruido",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "lunfardo_trabajar",
+      "categoria": "lunfardo",
+      "pregunta": "Una forma de decir que vas a trabajar",
+      "respuestas": [
+        {
+          "texto": "Voy a laburar",
+          "puntos": 30,
+          "alias": [
+            "laburar"
+          ]
+        },
+        {
+          "texto": "Voy al laburo",
+          "puntos": 24,
+          "alias": [
+            "laburo"
+          ]
+        },
+        {
+          "texto": "Voy a yugarla",
+          "puntos": 18,
+          "alias": [
+            "yugar"
+          ]
+        },
+        {
+          "texto": "Voy a trabajar",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Voy a la oficina",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Voy al trabajo",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "ciudades_interior",
+      "categoria": "ciudades",
+      "pregunta": "Un departamento del interior de Uruguay",
+      "respuestas": [
+        {
+          "texto": "Canelones",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Maldonado",
+          "puntos": 24,
+          "alias": []
+        },
+        {
+          "texto": "Salto",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Colonia",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Rivera",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Tacuarembó",
+          "puntos": 7,
+          "alias": [
+            "tacuarembo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ciudades_bsas",
+      "categoria": "ciudades",
+      "pregunta": "Un barrio de Buenos Aires",
+      "respuestas": [
+        {
+          "texto": "Palermo",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "La Boca",
+          "puntos": 24,
+          "alias": [
+            "boca"
+          ]
+        },
+        {
+          "texto": "San Telmo",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Recoleta",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Belgrano",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Puerto Madero",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "playa_problemas",
+      "categoria": "playa",
+      "pregunta": "Algo que te arruina un día de playa",
+      "respuestas": [
+        {
+          "texto": "Viento",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Lluvia",
+          "puntos": 24,
+          "alias": []
+        },
+        {
+          "texto": "Quemarte",
+          "puntos": 18,
+          "alias": [
+            "quemadura",
+            "sol"
+          ]
+        },
+        {
+          "texto": "Aguavivas",
+          "puntos": 12,
+          "alias": [
+            "medusas"
+          ]
+        },
+        {
+          "texto": "Mucha gente",
+          "puntos": 9,
+          "alias": [
+            "gente"
+          ]
+        },
+        {
+          "texto": "Arena en la comida",
+          "puntos": 7,
+          "alias": [
+            "arena"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "musica_cantar",
+      "categoria": "musica",
+      "pregunta": "Un lugar donde cantás aunque no sepas",
+      "respuestas": [
+        {
+          "texto": "Ducha",
+          "puntos": 30,
+          "alias": [
+            "baño"
+          ]
+        },
+        {
+          "texto": "Auto",
+          "puntos": 24,
+          "alias": []
+        },
+        {
+          "texto": "Karaoke",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Fiesta",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Fogón",
+          "puntos": 9,
+          "alias": [
+            "fogon"
+          ]
+        },
+        {
+          "texto": "Cancha",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "viajes_avion",
+      "categoria": "viajes",
+      "pregunta": "Algo que pasa en un vuelo",
+      "respuestas": [
+        {
+          "texto": "Turbulencia",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Te dan comida",
+          "puntos": 24,
+          "alias": [
+            "comida"
+          ]
+        },
+        {
+          "texto": "Dormís",
+          "puntos": 18,
+          "alias": [
+            "dormir"
+          ]
+        },
+        {
+          "texto": "Se te tapan los oídos",
+          "puntos": 12,
+          "alias": [
+            "oidos"
+          ]
+        },
+        {
+          "texto": "Ves una película",
+          "puntos": 9,
+          "alias": [
+            "pelicula"
+          ]
+        },
+        {
+          "texto": "Bebé llorando",
+          "puntos": 7,
+          "alias": [
+            "bebe"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "casa_dormitorio",
+      "categoria": "casa",
+      "pregunta": "Algo que hay en el dormitorio",
+      "respuestas": [
+        {
+          "texto": "Cama",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Ropero",
+          "puntos": 24,
+          "alias": [
+            "placard"
+          ]
+        },
+        {
+          "texto": "Mesita de luz",
+          "puntos": 18,
+          "alias": [
+            "mesita"
+          ]
+        },
+        {
+          "texto": "Almohada",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Lámpara",
+          "puntos": 9,
+          "alias": [
+            "lampara",
+            "velador"
+          ]
+        },
+        {
+          "texto": "Espejo",
+          "puntos": 7,
+          "alias": []
+        }
+      ]
+    },
+    {
+      "id": "animales_ruido",
+      "categoria": "animales",
+      "pregunta": "Un animal que hace mucho ruido",
+      "respuestas": [
+        {
+          "texto": "Perro",
+          "puntos": 30,
+          "alias": []
+        },
+        {
+          "texto": "Gallo",
+          "puntos": 24,
+          "alias": []
+        },
+        {
+          "texto": "Gato",
+          "puntos": 18,
+          "alias": []
+        },
+        {
+          "texto": "Loro",
+          "puntos": 12,
+          "alias": [
+            "cotorra"
+          ]
+        },
+        {
+          "texto": "Vaca",
+          "puntos": 9,
+          "alias": []
+        },
+        {
+          "texto": "Teru teru",
+          "puntos": 7,
+          "alias": [
+            "terutero"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "escuela_tunica",
+      "categoria": "escuela",
+      "pregunta": "Algo típico de la escuela pública uruguaya",
+      "respuestas": [
+        {
+          "texto": "Túnica",
+          "puntos": 30,
+          "alias": [
+            "tunica"
+          ]
+        },
+        {
+          "texto": "Moña",
+          "puntos": 24,
+          "alias": [
+            "mona",
+            "moña azul"
+          ]
+        },
+        {
+          "texto": "Copa de leche",
+          "puntos": 18,
+          "alias": [
+            "leche"
+          ]
+        },
+        {
+          "texto": "Recreo",
+          "puntos": 12,
+          "alias": []
+        },
+        {
+          "texto": "Pizarrón",
+          "puntos": 9,
+          "alias": [
+            "pizarron"
+          ]
+        },
+        {
+          "texto": "Ceibalita",
+          "puntos": 7,
+          "alias": [
+            "ceibal",
+            "computadora"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "escuela_excusas",
+      "categoria": "escuela",
+      "pregunta": "Una excusa para no hacer los deberes",
+      "respuestas": [
+        {
+          "texto": "Me olvidé",
+          "puntos": 30,
+          "alias": [
+            "olvide"
+          ]
+        },
+        {
+          "texto": "Se lo comió el perro",
+          "puntos": 24,
+          "alias": [
+            "perro"
+          ]
+        },
+        {
+          "texto": "Estaba enfermo",
+          "puntos": 18,
+          "alias": [
+            "enfermo"
+          ]
+        },
+        {
+          "texto": "No entendí",
+          "puntos": 12,
+          "alias": [
+            "no entendi"
+          ]
+        },
+        {
+          "texto": "Se cortó la luz",
+          "puntos": 9,
+          "alias": [
+            "luz"
+          ]
+        },
+        {
+          "texto": "No tenía cuaderno",
+          "puntos": 7,
+          "alias": [
+            "cuaderno"
+          ]
+        }
+      ]
+    }
+  ]
+}
