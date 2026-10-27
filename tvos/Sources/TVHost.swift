@@ -83,6 +83,7 @@ final class TVHost: ObservableObject {
     }
 
     func stop() {
+        if var active = puzzle { active.pauseAndSave() }
         heartbeat?.cancel(); heartbeat = nil
         nextRoundTask?.cancel(); nextRoundTask = nil
         spinTask?.cancel(); spinTask = nil
