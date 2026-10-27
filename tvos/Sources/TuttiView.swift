@@ -200,7 +200,8 @@ struct TuttiView: View {
                 .font(.system(size: 65, weight: .black))
                 .foregroundColor(TuttiPalette.gold)
             VStack(spacing: 12) {
-                ForEach(Array(game.orderedPlayers.enumerated()), id: \.element.pid) { index, player in
+                ForEach(game.orderedPlayers.indices, id: \.self) { index in
+                    let player = game.orderedPlayers[index]
                     HStack(spacing: 20) {
                         Text(index == 0 ? "🥇" : (index == 1 ? "🥈" : (index == 2 ? "🥉" : " ")))
                             .frame(width: 80)
