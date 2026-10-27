@@ -1,0 +1,12 @@
+.cuenta-acceso{display:block;margin:8px auto;padding:9px 16px;border-radius:14px;background:#2f2048;color:#ffe6a3;border:1px solid #f5b30188;font-size:.85rem;font-weight:800}
+.cuenta-acceso[hidden],.cuenta-capa[hidden]{display:none}
+.cuenta-capa{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:18px;background:#120820db}
+.cuenta-caja{position:relative;width:min(100%,390px);max-height:90vh;overflow:auto;padding:24px 18px 18px;border:1px solid #f5b30188;border-radius:22px;background:#2a193f;color:#fff;text-align:center;box-shadow:0 16px 40px #0009}
+.cuenta-caja h2{margin:4px 30px 12px;color:#ffd65d;font-size:1.35rem}
+.cuenta-caja p{line-height:1.45;font-size:.95rem}
+.cuenta-caja button{font:inherit}
+.cuenta-x{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;background:#ffffff21;color:#fff}
+#cuentaOpciones{display:grid;gap:10px;margin-top:18px}
+#cuentaOpciones button{padding:11px;border-radius:12px;font-weight:800}
+#cuentaOpciones .cuenta-principal{background:#f5b301;color:#241035}
+#cuentaOpciones .cuenta-secundario{background:#503869;color:#fff}

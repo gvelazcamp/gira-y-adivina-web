@@ -1,6 +1,6 @@
 {
   "name": "gira-y-adivina-rioplatense-tests",
   "private": true,
-  "scripts": { "test:tv": "node tests/sala-tv.cjs", "test:mobile": "node tests/mobile-ui.cjs", "test:background": "node tests/background.cjs", "test:escudos": "node tests/emergency-shields.cjs", "test:sopa": "node tests/sopa-fugaz.cjs", "test:rueda": "node tests/rueda-de-letras.cjs", "test:palabra": "node tests/palabra-secreta.cjs", "test:frases": "node tests/frases-en-giro.cjs", "test:memoria": "node tests/memoria-en-giro.cjs", "test:social": "node tests/social-city.cjs" },
+  "scripts": { "test:tv": "node tests/sala-tv.cjs", "test:mobile": "node tests/mobile-ui.cjs", "test:background": "node tests/background.cjs", "test:escudos": "node tests/emergency-shields.cjs", "test:sopa": "node tests/sopa-fugaz.cjs", "test:rueda": "node tests/rueda-de-letras.cjs", "test:palabra": "node tests/palabra-secreta.cjs", "test:cuenta": "node tests/cuenta-sync.cjs", "test:frases": "node tests/frases-en-giro.cjs", "test:memoria": "node tests/memoria-en-giro.cjs", "test:social": "node tests/social-city.cjs" },
   "devDependencies": { "playwright": "1.62.1" }
 }

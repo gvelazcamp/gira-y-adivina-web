@@ -93,6 +93,7 @@ document.documentElement.classList.add("cargando");setTimeout(()=>document.docum
      queda tapado por la pantalla de carga hasta que termina de cargar. -->
 <link rel="preload" as="style" href="extensiones.css?v=127" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="extensiones.css?v=127"></noscript>
+<link rel="stylesheet" href="cuenta.css?v=1">
 <!-- mqtt.js guardado en el propio juego (lib/): si unpkg anda mal, las salas igual conectan. Si el archivo local fallara, se prueba unpkg. -->
 <script src="lib/mqtt.min.js?v=5.10.1" defer onerror="(function(){var s=document.createElement('script');s.src='https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js';document.head.appendChild(s);})()"></script>
 <!-- supabase-js también guardado en el juego (lib/): si jsdelivr anda lento o bloqueado en algún país, el registro en Social igual llega. Si el archivo local fallara, se prueba jsdelivr. -->
@@ -4742,11 +4743,23 @@ function capturarEstadoJuego(){
       const clave=localStorage.key(i);
       if(!clave)continue;
       if(!(clave.startsWith("gya_")||clave.startsWith("larueda_")))continue;
-      if(ESTADO_JUEGO_EXCLUIR.has(clave))continue;
+      if(ESTADO_JUEGO_EXCLUIR.has(clave)||clave.startsWith("gya_cuenta_"))continue;
       datos[clave]=localStorage.getItem(clave);
     }
   }catch(e){}
   return{version:1,guardado_en:new Date().toISOString(),localStorage:datos,presenciaMapa:presenciaMapaActual()};
+}
+/* La cuenta verificada guarda el progreso completo en gya_cuentas (RLS).
+   Social conserva solamente los datos necesarios para mostrar el mapa. */
+function capturarEstadoParaSocial(){
+  const e=capturarEstadoJuego();
+  try{
+    if(!localStorage.getItem("gya_cuenta_usuario"))return e;
+    const claves=["gya_origen_app","gya_mapa_pais_social","gya_pais","larueda_mundo","larueda_mundo_argentina","larueda_pasos","larueda_pasos_argentina","gya_ultima_ciudad_social","gya_ultimo_juego"];
+    e.localStorage=Object.fromEntries(claves.filter(k=>k in e.localStorage).map(k=>[k,e.localStorage[k]]));
+    e.solo_social=true;
+  }catch(e){}
+  return e;
 }
 async function empujarRanking(){
   const rkPerfil=cargarRkPerfil(),supa=obtenerSupa();
@@ -4766,7 +4779,7 @@ async function empujarRanking(){
       tableros_todos:[...tablerosComprados],
       marcos_todos:[...fichasComprados],
       avatares_todos:[...avataresComprados],
-      estado_juego:capturarEstadoJuego(),
+      estado_juego:capturarEstadoParaSocial(),
       version_estado:1,
       actualizado_en:new Date().toISOString()
     },{onConflict:"grupo,apodo"});
@@ -4798,7 +4811,7 @@ async function empujarRanking(){
         let restauradas=0;
         Object.keys(datos).forEach(clave=>{
           if(!(clave.startsWith("gya_")||clave.startsWith("larueda_")))return;
-          if(ESTADO_JUEGO_EXCLUIR.has(clave))return;
+          if(ESTADO_JUEGO_EXCLUIR.has(clave)||clave.startsWith("gya_cuenta_"))return;
           try{localStorage.setItem(clave,datos[clave]);restauradas++;}catch(e){}
         });
         alert("Restaurado desde respaldo completo: "+restauradas+" datos recuperados.");
@@ -4908,7 +4921,7 @@ async function empujarUsuario(){
       avatar:perfil.avatar||null,
       tableros:tableroEquipado||null,
       marcos:fichaSkinEquipada||null,
-      estado_juego:capturarEstadoJuego(),
+      estado_juego:capturarEstadoParaSocial(),
       version_estado:1,
       actualizado_en:new Date().toISOString()
     },{onConflict:"grupo,apodo"});
@@ -7806,7 +7819,7 @@ function mostrarRecuperar(fila){
 function recuperarPartida(fila){
   try{
     const datos=fila.estado_juego.localStorage;let n=0;
-    Object.keys(datos).forEach(clave=>{if(!(clave.startsWith("gya_")||clave.startsWith("larueda_")))return;if(ESTADO_JUEGO_EXCLUIR.has(clave))return;try{localStorage.setItem(clave,datos[clave]);n++;}catch(e){}});
+    Object.keys(datos).forEach(clave=>{if(!(clave.startsWith("gya_")||clave.startsWith("larueda_")))return;if(ESTADO_JUEGO_EXCLUIR.has(clave)||clave.startsWith("gya_cuenta_"))return;try{localStorage.setItem(clave,datos[clave]);n++;}catch(e){}});
     $("capaRecuperar").classList.remove("ver");
     mostrarToast("✅","¡Listo! Recuperamos tu partida");
     setTimeout(()=>{location.href=location.pathname;},900);
@@ -11773,6 +11786,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
   armar();
 })();
 </script>
+<script src="cuenta.js?v=1"></script>
 <script src="duelo-extensiones.js?v=17"></script>
 <script src="sopa-fugaz-datos.js?v=6"></script>
 <script src="sopa-fugaz.js?v=15"></script>

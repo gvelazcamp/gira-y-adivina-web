@@ -17,7 +17,7 @@ const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp
     for(const viewport of [{width:360,height:780},{width:1280,height:900}]){
       const ctx=await browser.newContext({viewport,isMobile:viewport.width===360,hasTouch:viewport.width===360,serviceWorkers:'block'});
       const page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
-      await page.route('**/*',route=>route.request().url().startsWith(base)?route.continue():route.fulfill({status:200,body:''}));
+      await page.route('**/*',route=>route.request().url().includes('/lib/supabase.min.js')?route.fulfill({status:200,body:''}):route.request().url().startsWith(base)?route.continue():route.fulfill({status:200,body:''}));
       await page.addInitScript(()=>{
         localStorage.setItem('gya_bienvenida_vista','1');localStorage.setItem('gya_nombre','Gonzalo');
         localStorage.setItem('gya_avatar','avatar-01');localStorage.setItem('gya_pais','uruguay');
@@ -37,11 +37,11 @@ const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp
         window.__upserts=[];
         window.supabase={createClient:()=>({from:()=>({
           upsert(row){window.__upserts.push(row);const i=window.__rows.findIndex(x=>x.grupo===row.grupo&&x.apodo===row.apodo);if(i<0)window.__rows.push(row);else window.__rows[i]={...window.__rows[i],...row};return Promise.resolve({data:null,error:null});},
-          select(){const filters=[];let order=null;return{
+          select(cols){const unsupported=String(cols||"").includes("pm:estado_juego");const filters=[];let order=null;return{
             eq(k,v){filters.push(x=>x[k]===v);return this;},in(k,values){filters.push(x=>values.includes(x[k]));return this;},
             ilike(k,v){filters.push(x=>String(x[k]).toLowerCase()===String(v).toLowerCase());return this;},limit(){return this;},
-            order(k,options){order={k,options};return this;},
-            then(resolve,reject){let data=window.__rows.filter(x=>filters.every(fn=>fn(x)));if(order)data.sort((a,b)=>order.options&&order.options.ascending===false?Number(b[order.k]||0)-Number(a[order.k]||0):String(a[order.k]).localeCompare(String(b[order.k])));return Promise.resolve({data,error:null}).then(resolve,reject);}
+            order(k,options){order={k,options};return this;},range(){return this;},
+            then(resolve,reject){if(unsupported)return Promise.resolve({data:null,error:{message:"projection unsupported"}}).then(resolve,reject);let data=window.__rows.filter(x=>filters.every(fn=>fn(x)));if(order)data.sort((a,b)=>order.options&&order.options.ascending===false?Number(b[order.k]||0)-Number(a[order.k]||0):String(a[order.k]).localeCompare(String(b[order.k])));return Promise.resolve({data,error:null}).then(resolve,reject);}
           };}
         })})};
       });
@@ -72,6 +72,11 @@ const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp
       assert(await page.evaluate(()=>window.__upserts.every(x=>!Object.prototype.hasOwnProperty.call(x.estado_juego?.localStorage||{},'gya_ciudad'))),'no publica la antigua ciudad real');
       await page.evaluate(()=>verMundo());
       await page.waitForFunction(()=>window.__upserts.some(x=>x.grupo==='usuarios'&&x.estado_juego?.presenciaMapa?.jugando===false&&x.estado_juego.localStorage.gya_ultima_ciudad_social));
+      await page.evaluate(async()=>{localStorage.setItem('gya_cuenta_usuario','google-user-id');await empujarUsuario();});
+      assert(await page.evaluate(()=>{
+        const ultimo=window.__upserts.filter(x=>x.grupo==='usuarios').at(-1).estado_juego;
+        return ultimo.solo_social===true&&!!ultimo.localStorage.larueda_mundo&&!('gya_nombre' in ultimo.localStorage)&&!('gya_cuenta_usuario' in ultimo.localStorage);
+      }),'la cuenta vinculada publica en Social solo el resumen, no la partida completa');
       assert.equal(errors.length,0,errors.join('\n'));
       assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'sin desborde horizontal');
       await ctx.close();
