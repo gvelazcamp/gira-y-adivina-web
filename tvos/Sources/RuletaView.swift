@@ -13,10 +13,29 @@ private enum WheelPalette {
     ]
 }
 
+private struct RuletaSectorShape: Shape {
+    let index: Int
+
+    func path(in rect: CGRect) -> Path {
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        let radius = min(rect.width, rect.height) * 0.48
+        let start = -Double.pi / 2 + Double(index) * (2 * Double.pi / 24)
+        let stop = start + 2 * Double.pi / 24
+        var path = Path()
+        path.move(to: center)
+        path.addLine(to: CGPoint(x: center.x + radius * cos(start),
+                                 y: center.y + radius * sin(start)))
+        path.addArc(center: center, radius: radius,
+                    startAngle: .radians(start), endAngle: .radians(stop),
+                    clockwise: false)
+        path.closeSubpath()
+        return path
+    }
+}
+
 private struct RuletaWedge: View {
     let index: Int
     let segment: RuletaSegment
-    private let piece = 360.0 / Double(RuletaGame.wheel.count)
 
     private var fillColor: Color {
         switch segment.kind {
@@ -28,44 +47,31 @@ private struct RuletaWedge: View {
         }
     }
 
+    private var label: String {
+        if segment.kind.isEmpty { return "\(segment.value)" }
+        if segment.kind == "PIERDE" { return "PIERDE" }
+        return segment.kind
+    }
+
     var body: some View {
         GeometryReader { geometry in
-            let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
             let radius = min(geometry.size.width, geometry.size.height) * 0.48
-            let begin = -Double.pi / 2 + (Double(index) * 2 * Double.pi / 24)
-            let end = begin + 2 * Double.pi / 24
-            let midpoint = (begin + end) / 2
-            Path { path in
-                path.move(to: center)
-                path.addLine(to: CGPoint(x: center.x + radius * cos(begin),
-                                         y: center.y + radius * sin(begin)))
-                path.addArc(center: center, radius: radius,
-                            startAngle: .radians(begin), endAngle: .radians(end),
-                            clockwise: false)
-                path.closeSubpath()
+            let midpoint = -Double.pi / 2 + (Double(index) + 0.5) * 2 * Double.pi / 24
+            let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+            ZStack {
+                RuletaSectorShape(index: index)
+                    .fill(fillColor)
+                RuletaSectorShape(index: index)
+                    .stroke(WheelPalette.gold.opacity(0.75), lineWidth: 1.5)
+                Text(label)
+                    .font(.system(size: segment.kind.isEmpty ? 18 : 12, weight: .black))
+                    .foregroundColor(segment.kind == "QUIEBRA" ?
+                        WheelPalette.gold : WheelPalette.night)
+                    .fixedSize()
+                    .rotationEffect(.radians(midpoint + Double.pi / 2))
+                    .position(x: center.x + radius * 0.76 * cos(midpoint),
+                              y: center.y + radius * 0.76 * sin(midpoint))
             }
-            .fill(fillColor)
-            Path { path in
-                path.move(to: center)
-                path.addLine(to: CGPoint(x: center.x + radius * cos(begin),
-                                         y: center.y + radius * sin(begin)))
-                path.addArc(center: center, radius: radius,
-                            startAngle: .radians(begin), endAngle: .radians(end),
-                            clockwise: false)
-                path.closeSubpath()
-            }
-            .stroke(WheelPalette.gold.opacity(0.75), lineWidth: 1.5)
-
-            Text(segment.kind.isEmpty ? "\(segment.value)" :
-                 (segment.kind == "QUIEBRA" ? "QUIEBRA" :
-                  segment.kind == "PIERDE" ? "PIERDE" : segment.kind))
-                .font(.system(size: segment.kind.isEmpty ? 18 : 12, weight: .black))
-                .foregroundColor(segment.kind == "QUIEBRA" ?
-                    WheelPalette.gold : WheelPalette.night)
-                .fixedSize()
-                .rotationEffect(.radians(midpoint + Double.pi / 2))
-                .position(x: center.x + radius * 0.76 * cos(midpoint),
-                          y: center.y + radius * 0.76 * sin(midpoint))
         }
     }
 }
