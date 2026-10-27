@@ -36,6 +36,8 @@ private struct TVRoot: View {
                 if let game = host.cien { CienView(host: host, game: game) }
             case .ahorcado:
                 if let game = host.ahorcado { AhorcadoView(host: host, game: game) }
+            case .rosco:
+                if let game = host.rosco { RoscoView(host: host, game: game) }
             }
         }
         .foregroundColor(Theme.cream)
@@ -113,7 +115,9 @@ private struct TVRoot: View {
                         .font(.system(size: 32, weight: .bold))
                     Button("🪢  Ahorcado") { host.startAhorcado() }
                         .font(.system(size: 32, weight: .bold))
-                    Text("Rosco · Ruleta · Tutti Frutti · Puzzle: en preparación para tvOS")
+                    Button("🔤  El Rosco") { host.startRosco() }
+                        .font(.system(size: 32, weight: .bold))
+                    Text("Ruleta · Tutti Frutti · Puzzle: en preparación para tvOS")
                         .font(.system(size: 23))
                         .foregroundColor(Theme.aqua)
                     if !host.errorMessage.isEmpty {
@@ -130,6 +134,80 @@ private struct TVRoot: View {
                 .foregroundColor(Theme.aqua)
         }
         .padding(64)
+    }
+}
+
+private struct RoscoView: View {
+    @ObservedObject var host: TVHost
+    let game: RoscoGame
+
+    var body: some View {
+        VStack(spacing: 28) {
+            HStack {
+                Text("EL ROSCO RIOPLATENSE")
+                    .font(.system(size: 50, weight: .black, design: .rounded))
+                    .foregroundColor(Theme.gold)
+                Spacer()
+                Text("⏱ \(game.clock)   ✓ \(game.correctCount)   ✘ \(game.wrongCount)")
+                    .font(.system(size: 31, weight: .bold))
+            }
+            if game.stage == .finished {
+                Spacer()
+                Text("🏆 \(game.correctCount) de \(game.items.count) aciertos")
+                    .font(.system(size: 77, weight: .black))
+                    .foregroundColor(Theme.gold)
+                Text("Desde el celular con 🎮 podés jugar otra vez.")
+                    .font(.system(size: 30))
+                Spacer()
+            } else {
+                HStack(spacing: 42) {
+                    ZStack {
+                        Circle().stroke(Theme.gold.opacity(0.45), lineWidth: 6)
+                            .frame(width: 495, height: 495)
+                        ForEach(0..<game.items.count, id: \.self) { index in
+                            let angle = Double(index) * 2 * Double.pi / Double(game.items.count) - Double.pi / 2
+                            Text(game.items[index].letra)
+                                .font(.system(size: 29, weight: .black))
+                                .frame(width: 66, height: 66)
+                                .background(game.marks[index] == .correct ? Theme.aqua :
+                                            (game.marks[index] == .wrong ? Color.red : Theme.violet), in: Circle())
+                                .overlay(Circle().stroke(index == game.current ? Theme.gold : Theme.cream.opacity(0.4), lineWidth: index == game.current ? 5 : 1))
+                                .position(x: CGFloat(310 + 247 * cos(angle)), y: CGFloat(310 + 247 * sin(angle)))
+                        }
+                        VStack(spacing: 8) {
+                            Text(game.currentItem.letra)
+                                .font(.system(size: 106, weight: .black, design: .rounded))
+                                .foregroundColor(Theme.gold)
+                            Text(game.rule)
+                                .font(.system(size: 25, weight: .bold))
+                        }
+                    }
+                    .frame(width: 620, height: 620)
+                    VStack(alignment: .leading, spacing: 28) {
+                        Text("🎮 Juega \(host.controllerName)")
+                            .font(.system(size: 29, weight: .bold))
+                            .foregroundColor(Theme.aqua)
+                        Text(game.currentItem.definicion)
+                            .font(.system(size: 47, weight: .bold, design: .rounded))
+                            .frame(maxWidth: .infinity, minHeight: 230, alignment: .leading)
+                        Text(game.lastMessage)
+                            .font(.system(size: 29, weight: .semibold))
+                            .foregroundColor(Theme.gold)
+                        Text("Respondé o pasá desde el celular")
+                            .font(.system(size: 25))
+                        Button("⏭ Pasar") { host.passRosco() }
+                            .font(.system(size: 29, weight: .bold))
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            HStack {
+                Spacer()
+                Button("Menú de juegos") { host.showMenu() }
+            }
+        }
+        .padding(60)
     }
 }
 

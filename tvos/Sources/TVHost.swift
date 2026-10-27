@@ -9,7 +9,7 @@ struct TVPlayer: Identifiable {
 
 @MainActor
 final class TVHost: ObservableObject {
-    enum Screen: Equatable { case home, menu, cien, ahorcado }
+    enum Screen: Equatable { case home, menu, cien, ahorcado, rosco }
 
     @Published private(set) var screen: Screen = .home
     @Published private(set) var code = ""
@@ -18,6 +18,7 @@ final class TVHost: ObservableObject {
     @Published private(set) var connectedBrokers = 0
     @Published private(set) var cien: CienGame?
     @Published private(set) var ahorcado: AhorcadoGame?
+    @Published private(set) var rosco: RoscoGame?
     @Published private(set) var errorMessage = ""
 
     private let brokerURLs = [
@@ -58,13 +59,18 @@ final class TVHost: ObservableObject {
                 guard let self, self.screen != .home else { return }
                 self.broadcast()
                 try? await Task.sleep(nanoseconds: 2_500_000_000)
+                guard !Task.isCancelled else { return }
+                if var game = self.rosco {
+                    game.tick(2.5)
+                    self.rosco = game
+                }
             }
         }
     }
 
     func back() {
         switch screen {
-        case .cien, .ahorcado: showMenu()
+        case .cien, .ahorcado, .rosco: showMenu()
         case .menu: stop()
         case .home: break
         }
@@ -80,6 +86,7 @@ final class TVHost: ObservableObject {
         controllerPID = nil
         cien = nil
         ahorcado = nil
+        rosco = nil
         screen = .home
     }
 
@@ -88,6 +95,7 @@ final class TVHost: ObservableObject {
         spinTask?.cancel(); spinTask = nil
         cien = nil
         ahorcado = nil
+        rosco = nil
         screen = .menu
         broadcast()
     }
@@ -109,6 +117,22 @@ final class TVHost: ObservableObject {
         errorMessage = ""
         broadcast()
         beginAhorcadoAfterSpin()
+    }
+
+    func startRosco() {
+        guard screen == .menu else { return }
+        guard let game = RoscoGame() else { errorMessage = "No se pudo cargar El Rosco"; return }
+        rosco = game
+        screen = .rosco
+        errorMessage = ""
+        broadcast()
+    }
+
+    func passRosco() {
+        guard screen == .rosco, var game = rosco else { return }
+        game.pass()
+        rosco = game
+        broadcast()
     }
 
     private func beginAhorcadoAfterSpin() {
@@ -170,8 +194,20 @@ final class TVHost: ObservableObject {
         if action == "menu" { showMenu(); return }
         if action == "elegir", object["juego"] as? String == "cien" { startCien(); return }
         if action == "elegir", object["juego"] as? String == "ahorcado" { startAhorcado(); return }
+        if action == "elegir", object["juego"] as? String == "rosco" { startRosco(); return }
         if action == "otra", screen == .cien { showMenu(); startCien(); return }
         if action == "otra", screen == .ahorcado { showMenu(); startAhorcado(); return }
+        if action == "otra", screen == .rosco { showMenu(); startRosco(); return }
+        if action == "pasar", screen == .rosco {
+            passRosco()
+            return
+        }
+        if action == "responder", screen == .rosco, let text = object["txt"] as? String, var game = rosco {
+            game.answer(String(text.prefix(40)))
+            rosco = game
+            broadcast()
+            return
+        }
         if action == "letra", screen == .ahorcado, let letter = object["l"] as? String, var game = ahorcado {
             let result = game.tryLetter(letter)
             ahorcado = game
@@ -210,7 +246,7 @@ final class TVHost: ObservableObject {
         guard screen != .home else { return }
         let games: [[String: Any]] = [
             ["id": "cien", "nombre": "100 Rioplatenses", "ok": true],
-            ["id": "rosco", "nombre": "El Rosco", "ok": false],
+            ["id": "rosco", "nombre": "El Rosco", "ok": true],
             ["id": "ahorcado", "nombre": "Ahorcado", "ok": true],
             ["id": "ruleta", "nombre": "La Ruleta", "ok": false],
             ["id": "tutti", "nombre": "Tutti Frutti", "ok": false],
@@ -220,12 +256,13 @@ final class TVHost: ObservableObject {
         switch screen {
         case .cien: cell = cien?.phoneState ?? ["pantalla": "menu", "juegos": games]
         case .ahorcado: cell = ahorcado?.phoneState ?? ["pantalla": "menu", "juegos": games]
+        case .rosco: cell = rosco?.phoneState ?? ["pantalla": "menu", "juegos": games]
         case .home, .menu: cell = ["pantalla": "menu", "juegos": games]
         }
         let message: [String: Any] = [
             "t": "estado", "pid": String(tvPID), "s": sequence + 1, "cod": code,
             "fase": screen == .menu ? "menu" : "juego",
-            "juego": screen == .cien ? "cien" as Any : (screen == .ahorcado ? "ahorcado" as Any : NSNull()),
+            "juego": screen == .cien ? "cien" as Any : (screen == .ahorcado ? "ahorcado" as Any : (screen == .rosco ? "rosco" as Any : NSNull())),
             "jug": players.map { ["pid": $0.pid, "n": $0.name] },
             "mando": controllerPID.map { $0 as Any } ?? NSNull(), "cel": cell
         ]
