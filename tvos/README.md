@@ -4,7 +4,7 @@ Proyecto **nativo tvOS**, separado del APK/AAB de Android TV. La televisión es 
 
 ## Estado
 
-Se prepara la primera prueba nativa con Sala TV, mando de Apple TV y el protocolo `gya/tele/<código>` del sitio. Por ahora **100 Rioplatenses, Ahorcado y El Rosco son jugables en el código fuente**; Ruleta, Tutti Frutti y Puzzle siguen pendientes de portar a tvOS. GitHub Actions compiló una primera versión y generó un IPA sin firma. **No hay todavía un IPA firmado ni probado en Apple TV.**
+Se prepara la primera prueba nativa con Sala TV, mando de Apple TV y el protocolo `gya/tele/<código>` del sitio. Por ahora **100 Rioplatenses, Ahorcado, El Rosco y Tutti Frutti son jugables en el código fuente**; Ruleta y Puzzle siguen pendientes de portar a tvOS. Tutti Frutti admite varios celulares y tres rondas de palabras, reloj, BASTA, revisión local, apelaciones y anulaciones. Las palabras ausentes del banco local se marcan como dudosas para apelar, porque la consulta externa de la versión web todavía no está disponible en tvOS. GitHub Actions compiló una primera versión y generó un IPA sin firma. **No hay todavía un IPA firmado ni probado en Apple TV.**
 
 ## Compilación
 
