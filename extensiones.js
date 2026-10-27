@@ -196,6 +196,10 @@ const Extensiones=(()=>{
   }
   async function pedirHorizontal(){
     if(!modoGonzalo()||!horizontalPreferido||vista==="lobby")return;
+    // Si el usuario ya giró el Redmi, NO entrar en pantalla completa.
+    // Chrome/Android muestra un aviso del sistema que tapa los controles.
+    // Para forzar landscape desde portrait se conserva el método previo.
+    if(matchMedia("(orientation: landscape)").matches&&!document.fullscreenElement)return;
     try{
       const completo=matchMedia("(display-mode: fullscreen)").matches;
       if(!completo&&!document.fullscreenElement&&document.documentElement.requestFullscreen){
