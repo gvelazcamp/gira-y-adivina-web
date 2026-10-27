@@ -4,7 +4,7 @@ Proyecto **nativo tvOS**, separado del APK/AAB de Android TV. La televisión es 
 
 ## Estado
 
-Se prepara la primera prueba nativa con Sala TV, mando de Apple TV y el protocolo `gya/tele/<código>` del sitio. Por ahora **100 Rioplatenses, Ahorcado y El Rosco son jugables en el código fuente**; Ruleta, Tutti Frutti y Puzzle siguen pendientes de portar a tvOS. GitHub Actions compiló una primera versión y generó un IPA sin firma. **No hay todavía un IPA firmado ni probado en Apple TV.** La app `sideloadATV` instalada por Gonzalo no se ha verificado como método de instalación; no afirmar que acepte un IPA sin firma.
+Se prepara la primera prueba nativa con Sala TV, mando de Apple TV y el protocolo `gya/tele/<código>` del sitio. Por ahora **100 Rioplatenses, Ahorcado y El Rosco son jugables en el código fuente**; Ruleta, Tutti Frutti y Puzzle siguen pendientes de portar a tvOS. GitHub Actions compiló una primera versión y generó un IPA sin firma. **No hay todavía un IPA firmado ni probado en Apple TV.**
 
 ## Compilación
 
@@ -19,3 +19,5 @@ xcodebuild -project GiraYAdivinaTV.xcodeproj -scheme GiraYAdivinaTV -sdk appletv
 Para instalar en una Apple TV real se necesita una firma y un perfil de aprovisionamiento compatibles con esa televisión. Los certificados y claves no se guardan en este repositorio. Antes de distribuir a otros usuarios, probar el mando, sonido, conexión real con un Redmi y los juegos en una Apple TV física.
 
 El workflow `build-tvos.yml` compila en un runner macOS si este repositorio se publica en GitHub. Su artefacto `GiraYAdivinaTV-unsigned.ipa` **no es instalable directamente** hasta que se firme mediante un método válido; tampoco sustituye la prueba en un dispositivo real. El workflow no usa ninguna credencial de Apple.
+
+El proyecto [sideloadATV](https://github.com/thangaraj26/sideloadATV) documenta que su app Android toma un IPA de tvOS, lo firma con la cuenta Apple del dueño del dispositivo y lo instala por Wi-Fi. Si la app instalada por Gonzalo corresponde a esa versión, se puede probar con el IPA sin firma de Actions: descargar el artefacto, extraer el `.ipa`, conectar Redmi y Apple TV a la misma red, iniciar sesión en sideloadATV, emparejar la televisión e instalar el archivo. **Todavía no se probó este flujo con Girá y Adiviná ni con su Apple TV.** En una cuenta Apple gratuita, la firma suele durar 7 días y sideloadATV ofrece renovarla.
