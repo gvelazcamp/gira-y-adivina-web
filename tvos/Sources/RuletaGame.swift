@@ -309,7 +309,8 @@ struct RuletaGame {
         let pool = all.isEmpty ? bank : all
         let chosen = pool.randomElement() ?? bank[0]
         seen.insert(chosen.t)
-        phrase = Self.normalize(chosen.t)
+        phrase = chosen.t.folding(options: [.diacriticInsensitive, .caseInsensitive],
+                                    locale: Locale(identifier: "es_UY")).uppercased()
         category = chosen.c
         opened.removeAll()
         used.removeAll()
