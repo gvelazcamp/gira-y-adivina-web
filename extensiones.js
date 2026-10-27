@@ -224,7 +224,6 @@ const Extensiones=(()=>{
       try{document.exitFullscreen().catch(()=>{});}catch(e){}
     }
     fullscreenHorizontal=false;
-    pintarHorizontal();
   }
   function alternarHorizontal(){
     if(!modoGonzalo())return;
