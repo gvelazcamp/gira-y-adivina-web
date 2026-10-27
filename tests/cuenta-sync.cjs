@@ -53,6 +53,7 @@ async function device(browser,base,options){
    assert.equal(await c.page.evaluate(()=>localStorage.getItem('gya_nombre')),'Meg 2','no automatic merge by similar name');
    await c.page.locator('#cuentaOpciones button').filter({hasText:'Decidir después'}).click();
    await c.page.waitForTimeout(3000);assert(await c.page.locator('#cuentaCapa').isHidden(),'deferring should not reopen the choice automatically');
+   await c.page.evaluate(()=>document.getElementById('capaMas').classList.add('ver'));
    await c.page.locator('#bCuenta').click();await c.page.locator('#cuentaCapa:not([hidden])').waitFor();
    await c.page.locator('#cuentaOpciones button').filter({hasText:'Continuar la partida de mi cuenta'}).click();
    await c.page.waitForFunction(()=>localStorage.getItem('gya_nombre')==='Meg');
