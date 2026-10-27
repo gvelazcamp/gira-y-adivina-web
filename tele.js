@@ -132,13 +132,19 @@
       const prim=raiz.querySelector(".tl-tarjeta:not([disabled])");if(prim&&!raiz.contains(document.activeElement))prim.focus({preventScroll:true});
     }
     function avisoTele(t){let a=raiz.querySelector(".tl-aviso");if(!a){a=document.createElement("div");a.className="tl-aviso";raiz.appendChild(a);}a.textContent=t;a.classList.add("tl-ver");clearTimeout(avisoTele.t);avisoTele.t=setTimeout(()=>a.classList.remove("tl-ver"),2600);}
-    /* Control remoto: flechas mueven entre botones, Enter elige (lo hace el navegador). */
-    document.addEventListener("keydown",e=>{
+    window.gyaTVRemote=direction=>{
       const bs=[...raiz.querySelectorAll("button:not([disabled])")];if(!bs.length)return;
       const i=bs.indexOf(document.activeElement);
-      if(["ArrowRight","ArrowDown"].includes(e.key)){e.preventDefault();bs[(i+1+bs.length)%bs.length].focus();}
-      else if(["ArrowLeft","ArrowUp"].includes(e.key)){e.preventDefault();bs[(i-1+bs.length)%bs.length].focus();}
-      else if(e.key==="Backspace"||e.key==="Escape"){if(T.fase==="juego"){e.preventDefault();volverMenu();}}
+      if(direction==="select"){bs[i>=0?i:0].click();return;}
+      const paso=direction==="right"||direction==="down"?1:direction==="left"||direction==="up"?-1:0;
+      if(paso)bs[(i<0?0:i+paso+bs.length)%bs.length].focus();
+    };
+    window.gyaTVBack=()=>{if(T.fase!=="juego")return false;volverMenu();return true;};
+    /* Control remoto: flechas mueven entre botones, Enter elige (lo hace el navegador). */
+    document.addEventListener("keydown",e=>{
+      if(e.key==="Backspace"||e.key==="Escape"){if(T.fase==="juego"){e.preventDefault();volverMenu();}return;}
+      const direction={ArrowRight:"right",ArrowDown:"down",ArrowLeft:"left",ArrowUp:"up"}[e.key];
+      if(direction){e.preventDefault();window.gyaTVRemote(direction);}
     });
     pintar();
     conectar(cod,()=>{difundir();setInterval(difundir,2500);},()=>{avisoTele("No se pudo conectar. Revisá el internet de la tele y recargá.");},recibir);

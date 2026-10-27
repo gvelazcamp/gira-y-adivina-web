@@ -2,7 +2,7 @@
 
 Idea: **la tele muestra el juego en grande y se responde desde el celular.**
 
-**Hecho (26/10/2026, `tele.js` + `tele.css` + `tele/index.html`):** sala nueva con código y menú de juegos (también con el control remoto), **Rosco**, **Ahorcado**, **100 Rioplatenses**, **Tutti Frutti** y **Puzzle**. Entrada: tele `girayadivina.com/index.html?tele=1`; celulares `girayadivina.com/tele`. El botón "Sala TV / Familia" del inicio y la tarjeta "Juegos en la tele" de Extensiones se muestran a Andrés, Romina, Gonzalo y Vale y abren la sala nueva. Tutti Frutti se probó con tele y dos celulares simulados, incluidas tres rondas, apelación y anulación. Puzzle se probó con dos celulares, encastre, progreso y guardado; falta probar en una tele real.
+**Hecho (26/10/2026, `tele.js` + `tele.css` + `tele/index.html`):** sala nueva con código y menú de juegos (también con el control remoto), **Rosco**, **Ahorcado**, **100 Rioplatenses**, **Tutti Frutti** y **Puzzle**. Entrada: tele `girayadivina.com/index.html?tele=1`; celulares `girayadivina.com/tele`. El botón "Sala TV / Familia" del inicio y la tarjeta "Juegos en la tele" de Extensiones se muestran a Andrés, Romina, Gonzalo y Vale y abren la sala nueva. Para estos cuatro perfiles, el inicio oculta Torneos y Eventos ocupa ese lugar; los demás perfiles mantienen su menú. Tutti Frutti se probó con tele y dos celulares simulados, incluidas tres rondas, apelación y anulación. Puzzle se probó con dos celulares, encastre, progreso y guardado; falta probar en una tele real.
 Estado de la prueba actual de la Ruleta: ver `SALA_TV_PRUEBA.md`.
 
 ## Cómo se entra (igual para todos los juegos)
@@ -65,11 +65,10 @@ Ya existe ("Sala TV"). La tele muestra la ruleta y el tablero; cada jugador gira
 2. Tutti Frutti → 100 Rioplatenses → Ahorcado → Rosco → Puzzle (del más fácil al más difícil).
 
 ## Play Store de la tele (Android TV)
-- Hoy la app **no aparece** en la Play Store de la tele: está hecha para celulares.
-- Hace falta una **versión para tele**: banner apaisado para el menú de la tele, manejo con el control remoto, capturas en formato tele. La app actual abre el juego con Chrome y las teles Android **no traen Chrome**, así que la versión de tele se arma distinta. Hubo una APK de prueba en el repo `gira-y-adivina-tv` (apuntaba a la dirección vieja).
+- El proyecto `gira-y-adivina-tv` ya abre la sala nueva desde `girayadivina.com` en WebView, sin depender de Chrome. Incluye entrada Leanback, banner apaisado y mando. El AAB v18 está firmado con la misma clave de subida y usa el mismo identificador que la app de celular. No se ha subido a Play Console.
 - **Seguridad (verificado 26/10):** mientras Google revisa una versión nueva, **la app publicada sigue funcionando y la gente sigue jugando** (ya pasó con la 16 publicada mientras se revisaba la 17). Además el juego se actualiza desde la web.
-- **Subirla solo por la vía "Android TV"** de Play Console (vía aparte de la de celulares), sin tocar la versión de celular publicada. Se habilita en Configuración avanzada → Tipos de dispositivo.
-- Subirla cuando ya haya varios juegos de tele andando (una sola revisión de Google).
+- **Subirla solo por la vía "Android TV"** de la misma app en Play Console, sin tocar la versión de celular publicada. Habilitar el tipo de dispositivo en Configuración avanzada → Tipos de dispositivo; completar banner y capturas de la ficha para TV.
+- Primero probar el APK en una tele real y el AAB en la prueba interna de Android TV. Después enviar a producción para revisión de Google. Ver instrucciones de compilación y prueba en el README del repositorio `gira-y-adivina-tv`.
 
 ## Mientras tanto (para jugar ya)
 - **Tele:** abrir el navegador de la tele (en Android/Google TV se puede instalar uno gratis de su Play Store, por ejemplo "TV Bro" o "Puffin TV Browser") y entrar a `girayadivina.com/index.html?tele=1`.

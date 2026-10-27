@@ -1,23 +1,21 @@
-# Sala TV — prueba de septiembre de 2026
+# Sala TV — prueba histórica de la Ruleta, septiembre de 2026
 
-> Plan completo de juegos en la tele (Tutti Frutti, 100 Rioplatenses, Ahorcado, Rosco, Puzzle) y de la versión para la Play Store de la tele: ver `SALA_TV_PLAN.md`.
+> Este documento describe la primera Sala TV, solo de Ruleta. Para la sala nueva, los otros juegos y la versión de Android TV preparada en octubre, ver `SALA_TV_PLAN.md` y el README de `gira-y-adivina-tv`.
 
 Sala TV ya es parte del juego. La pantalla de TV mantiene la partida; los celulares
 envían acciones y escriben las respuestas. No hay que instalar otra app en los celulares.
-La tarjeta del menú normal permanece oculta mientras se prueba.
+Esta prueba antecede al menú actual: la tarjeta "Sala TV / Familia" ahora es visible para Andrés, Romina, Gonzalo y Vale.
 
 ## Abrir
 
-- TV o computadora: https://girayadivina.com/index.html?tvhost=1 (antes: gvelazcamp.github.io/gira-y-adivina-rioplatense/…; con el dominio nuevo todavía no se probó)
+- TV o computadora para la Ruleta antigua: https://girayadivina.com/index.html?tvhost=1
 - Celulares: https://girayadivina.com/tv.html
-- APK para Android TV: https://github.com/gvelazcamp/gira-y-adivina-tv/releases
+- La app nueva de Android TV abre el menú de seis juegos; ver el README de https://github.com/gvelazcamp/gira-y-adivina-tv
 
 En la TV, elegir «Mostrar código de sala». En cada celular escribir nombre y código.
 Con 2 a 6 jugadores, comenzar y sortear quién arranca. Las respuestas se escriben
 en el celular. En la TV se puede navegar con flechas y Enter/control remoto.
-La dirección se calcula desde el origen actual; un dominio futuro necesitará además
-configurar DNS/hosting y actualizar la URL permitida de la aplicación Android TV.
-No se ha configurado un dominio personalizado.
+La dirección se calcula desde el origen actual. El proyecto Android TV actual ya usa `girayadivina.com`.
 
 ## Cambios
 

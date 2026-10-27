@@ -1717,3 +1717,7 @@ Fecha: 26/10/2026 — Puzzle terminado en Juegos en la tele. tele.js v4, tele.cs
 ```text
 Fecha: 26/10/2026 — Acceso a Sala TV para cuatro perfiles. El botón "Sala TV / Familia" del inicio se muestra solo a Andrés, Romina, Gonzalo y Vale y abre el menú nuevo "Juegos en la tele" (con Ruleta, Tutti Frutti, Puzzle, etc.). La tarjeta correspondiente en Extensiones usa la misma lista. Los nombres se comparan sin distinguir tildes y el botón se actualiza al editar el perfil. extensiones.js v69, sw v448. La Sala TV vieja de la Ruleta sigue siendo el juego Ruleta dentro del menú nuevo.
 ```
+
+```text
+Fecha: 27/10/2026 — Menú de los cuatro perfiles de prueba y envoltorio Android TV. Para Andrés, Romina, Gonzalo y Vale, el inicio oculta la tarjeta Torneos y Eventos ocupa su lugar; los demás perfiles no cambian. tele.js v5 expone gyaTVRemote y gyaTVBack para flechas, Enter y Atrás del mando Android, sin sacar el control desde el celular. sw v449. En el repo gira-y-adivina-tv, el proyecto Android WebView abre index.html?tele=1 en girayadivina.com, usa el mismo applicationId que Play (io.github.gvelazcamp.twa), versión 18, Leanback requerido y la clave de subida comprobada contra el AAB v17. Se compiló y firmó un AAB de TV; Android Lint, bundletool validate y pruebas de navegador pasaron. Pendientes: publicar la web antes de probar la app, prueba en tele física, ficha y prueba interna de Android TV en Play Console, revisión de Google. No se subió todavía el AAB a Play Console.
+```
