@@ -94,7 +94,7 @@ struct AhorcadoGame {
         if stage == .finished {
             return ["pantalla": "fin", "juego": "ahorcado", "resumen": "\(points) puntos"]
         }
-        return ["pantalla": "ahorcado", "usadas": used.map(String.init),
+        return ["pantalla": "ahorcado", "usadas": used.map { String($0) },
                 "puede": stage == .playing, "letras": Self.alphabet]
     }
 

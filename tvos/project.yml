@@ -8,7 +8,11 @@ targets:
     deploymentTarget: "15.0"
     sources:
       - path: Sources
-      - path: Resources
+      - path: Resources/cien.json
+        buildPhase: resources
+      - path: Resources/ahorcado.json
+        buildPhase: resources
+      - path: Resources/rosco.json
         buildPhase: resources
     settings:
       base:
