@@ -25,7 +25,7 @@ async function device(browser,base,options){
        if(op==='insert'&&!window.__cloud){window.__cloud={...payload};return Promise.resolve({data:{revision:1},error:null});}return Promise.resolve({data:null,error:{message:'duplicate'}});}};return q;
    }};
  },options);
- await page.goto(base);await page.locator('#cuentaInicio:not([hidden])').waitFor();
+ await page.goto(base);await page.waitForFunction(()=>typeof document.getElementById('bCuenta')?.onclick==='function'&&!!document.getElementById('cuentaCapa'));
  return{context,page};
 }
 (async()=>{
@@ -35,6 +35,8 @@ async function device(browser,base,options){
    const a=await device(browser,base,mock(null,'Meg'));
    await a.page.waitForFunction(()=>window.__cloud?.estado_juego?.localStorage?.gya_nombre==='Meg');
    assert.equal(await a.page.evaluate(()=>localStorage.getItem('gya_cuenta_usuario')),'same-google-user');
+   assert.equal(await a.page.locator('#cuentaInicio,#cuentaPerfil').count(),0,'account shortcut removed from home/profile');
+   assert.equal(await a.page.locator('#bCuenta .btn-txt').textContent(),'Partida vinculada','account status belongs to settings only');
    await a.page.evaluate(()=>localStorage.setItem('gya_logro_prueba','ganado'));
    await a.page.evaluate(()=>GyaCuenta.revisar());
    const cloud=await a.page.evaluate(()=>window.__cloud);assert.equal(cloud.revision,2);assert.equal(cloud.estado_juego.localStorage.gya_logro_prueba,'ganado');
@@ -48,20 +50,20 @@ async function device(browser,base,options){
    assert.equal(await c.page.evaluate(()=>localStorage.getItem('gya_nombre')),'Meg 2','no automatic merge by similar name');
    await c.page.locator('#cuentaOpciones button').filter({hasText:'Decidir después'}).click();
    await c.page.waitForTimeout(3000);assert(await c.page.locator('#cuentaCapa').isHidden(),'deferring should not reopen the choice automatically');
-   await c.page.locator('#cuentaInicio').click();await c.page.locator('#cuentaCapa:not([hidden])').waitFor();
+   await c.page.locator('#bCuenta').click();await c.page.locator('#cuentaCapa:not([hidden])').waitFor();
    await c.page.locator('#cuentaOpciones button').filter({hasText:'Continuar la partida de mi cuenta'}).click();
    await c.page.waitForFunction(()=>localStorage.getItem('gya_nombre')==='Meg');
    assert(await c.page.evaluate(()=>!!localStorage.getItem('gya_cuenta_respaldo_local')),'keeps backup before replacing local progress');
    const d=await browser.newContext({serviceWorkers:'block'}),off=await d.newPage();
    await off.addInitScript(()=>{window.__googleEnabled=false;window.fetch=async()=>({ok:true,json:async()=>({external:{google:window.__googleEnabled}})});window.__client={auth:{getUser:async()=>({data:{user:null}})},from:()=>({select(){return this;},limit(){return Promise.resolve({data:[],error:null});}})};});
-   await off.goto(base);await off.waitForFunction(()=>document.querySelector('#cuentaInicio')?.hidden===true);
-   assert(await off.locator('#cuentaInicio').isHidden(),'Google disabled keeps the unfinished feature hidden');
+   await off.goto(base);await off.waitForFunction(()=>typeof document.getElementById('bCuenta')?.onclick==='function');
+   assert.equal(await off.locator('#cuentaInicio,#cuentaPerfil').count(),0,'no account banner if Google is unavailable');
    await off.locator('#bCuenta').click();
    await off.locator('#cuentaCapa:not([hidden])').waitFor();
    assert.match(await off.locator('#cuentaTitulo').textContent(),/Inicio de sesión no disponible/);
    await off.evaluate(()=>{window.__googleEnabled=true;});
    await off.locator('#cuentaOpciones button').filter({hasText:'Reintentar'}).click();
-   await off.locator('#cuentaInicio:not([hidden])').waitFor();
+   await off.waitForFunction(()=>document.querySelector('#bCuenta .btn-txt')?.textContent==='Guardar mi progreso');
    assert.match(await off.locator('#cuentaTitulo').textContent(),/Guardar mi progreso/);
    assert(!await off.locator('#capaMas').evaluate(e=>e.classList.contains('ver')),'account button closes settings before opening login');
    // Una cuenta creada en otro dispositivo justo después del SELECT
