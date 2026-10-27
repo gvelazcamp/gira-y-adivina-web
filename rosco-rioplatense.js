@@ -81,7 +81,17 @@ const RoscoRioplatense=(()=>{
     if(acierto){bip(660,.2,"sine",.065);bip(990,.3,"triangle",.04);}
     if(typeof vibrar==="function")vibrar(acierto?25:[45,40,45]);
   }
-  function enfocar(){if(raiz&&!document.hidden){$("#rrEntrada").focus({preventScroll:true});ajustarPantalla();}}
+  // En la prueba 16:9 de Gonzalo no abrir el teclado automáticamente:
+  // en Mirror taparía la mitad de la televisión. Se abre al tocar el campo.
+  const esRoscoHorizontal=()=>document.body.classList.contains("gonzalo-admin")
+    &&document.body.classList.contains("ext-horizontal")
+    &&matchMedia("(orientation: landscape)").matches;
+  function enfocar(){
+    if(!raiz||document.hidden)return;
+    if(esRoscoHorizontal())$("#rrEntrada").blur();
+    else $("#rrEntrada").focus({preventScroll:true});
+    ajustarPantalla();
+  }
   /* Que el teclado nunca tape donde se escribe (Android e iPhone), sin cambiar cómo se ve el juego:
      la ventana del Rosco ocupa exactamente la parte de la pantalla que queda ARRIBA del teclado
      (visualViewport) y, si el campo queda abajo, se corre solo un poquito hasta que se vea. */
@@ -89,6 +99,7 @@ const RoscoRioplatense=(()=>{
     if(!raiz||!shell)return;
     const vv=window.visualViewport,alto=Math.round(vv?vv.height:innerHeight),arriba=vv?Math.max(0,Math.round(vv.offsetTop)):0;
     shell.style.height=alto+"px";shell.style.top=arriba+"px";shell.style.bottom="auto";
+    shell.style.setProperty("--rr-viewport-alto",alto+"px");
     if(document.activeElement===$("#rrEntrada")){
       const sb=shell.getBoundingClientRect(),fb=$("#rrForm").getBoundingClientRect();
       if(fb.bottom>sb.bottom-10)shell.scrollTop+=fb.bottom-(sb.bottom-10);
@@ -234,7 +245,7 @@ const RoscoRioplatense=(()=>{
   function visibilidad(){if(document.hidden)detenerMusicaJuego();else iniciarMusicaJuego();ultimo=performance.now();}
   function abrir(contenedor){
     salir();datos=cargar();nivel=datos.nivelMax;config=configNivel(nivel);fase="inicio";usadasSesion=new Set();
-    raiz=document.createElement("div");raiz.className="rr-game";
+    raiz=document.createElement("div");raiz.className="rr-game";raiz.dataset.fase="inicio";
     raiz.innerHTML='<button type="button" class="ext-volver" id="rrVolver">⟵ Extensiones</button><div class="rr-titulo rr-titulo-arte"><h2 class="rr-logo-h"><img class="rr-logo" src="'+ARTE("logo")+'" alt="El Rosco" draggable="false"></h2><p>Una vuelta, muchas palabras nuestras.</p></div><div id="rrJuego" hidden><div class="sf-hud"><div><small>Nivel</small><b id="rrNivel"></b></div><div><small>'+ico("aciertos")+'Aciertos</small><b id="rrAciertos"></b></div><div><small>'+ico("errores")+'Errores</small><b id="rrErrores"></b></div><div><small>'+ico("reloj")+'Tiempo</small><b id="rrTiempo"></b></div></div><div class="sf-bar"><i id="rrBarra"></i></div><div class="rr-rueda"><div id="rrDisco"></div><b id="rrGrande"></b></div><div class="rr-pista" role="status" aria-live="polite"><div class="voz-fila"><span class="rr-pista-ico">'+ico("pista")+'</span><small id="rrRegla"></small><button type="button" class="voz-btn rr-escuchar" id="rrEscuchar" aria-label="Escuchar la pista">'+ico("escuchar")+'</button></div><p id="rrDefinicion"></p></div><p id="rrMensaje" class="rr-mensaje" role="status"></p><form id="rrForm" autocomplete="off"><label class="rr-sr" for="rrEntrada">Tu respuesta</label><div class="rr-fila"><input id="rrEntrada" placeholder="Tu palabra" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" enterkeyhint="send" maxlength="60"><button id="rrEnviar" type="submit">Enviar</button><button id="rrPasar" type="button">'+ico("pasapalabra")+'<span>Pasapalabra</span></button></div></form></div><div id="rrPanel" class="rr-panel-capa"></div>';
     contenedor.appendChild(raiz);shell=raiz.closest(".ext-shell");shell?.classList.add("rr-abierta");
     $("#rrVolver").onclick=()=>Extensiones.abrirLobby();
@@ -252,7 +263,7 @@ const RoscoRioplatense=(()=>{
   function salir(){
     clearInterval(intervalo);intervalo=null;document.removeEventListener("visibilitychange",visibilidad);
     window.visualViewport?.removeEventListener("resize",ajustarPantalla);window.visualViewport?.removeEventListener("scroll",ajustarPantalla);window.removeEventListener("resize",ajustarPantalla);
-    if(shell){shell.style.height="";shell.style.top="";shell.style.bottom="";}
+    if(shell){shell.style.height="";shell.style.top="";shell.style.bottom="";shell.style.removeProperty("--rr-viewport-alto");}
     shell?.classList.remove("rr-abierta");
     if("speechSynthesis" in window)speechSynthesis.cancel();
     if(typeof sincronizarMusica==="function")sincronizarMusica();
