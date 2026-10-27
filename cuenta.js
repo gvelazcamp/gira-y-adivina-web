@@ -3,7 +3,7 @@
 const Cuenta=(()=>{
   const TABLA="gya_cuentas",ID="gya_cuenta_usuario",REV="gya_cuenta_revision",FIRMA="gya_cuenta_firma";
   const EXCLUIR=new Set(["gya_origen_app","gya_bienvenida_vista","gya_social_ocultos"]);
-  let usuario=null,revision=0,firma="",ocupado=false,panelAbierto=false,pospuesto=false,habilitado=false,btnInicio=null,btnPerfil=null,btnAjustes=null,inicioPendiente=null,temporizadorActivo=false;
+  let usuario=null,revision=0,firma="",ocupado=false,panelAbierto=false,pospuesto=false,habilitado=false,btnAjustes=null,inicioPendiente=null,temporizadorActivo=false;
   const cliente=()=>typeof obtenerSupa==="function"?obtenerSupa():null;
   const puedeGuardar=k=>!EXCLUIR.has(k)&&!k.startsWith("gya_cuenta_")&&!k.startsWith("gya_tele_")&&!k.startsWith("gya_admin_")&&!k.startsWith("gya_backup_");
   function partidaLocal(){
@@ -24,15 +24,12 @@ const Cuenta=(()=>{
   const nombre=p=>p?.localStorage?.gya_nombre||"Sin perfil";
   function marcar(p,r,publicar=true){const primera=localStorage.getItem(ID)!==usuario.id;revision=r;firma=huella(p);localStorage.setItem(ID,usuario.id);localStorage.setItem(REV,String(r));localStorage.setItem(FIRMA,firma);pintar();if(primera&&publicar){if(typeof empujarUsuario==="function")empujarUsuario();if(typeof empujarRanking==="function")empujarRanking();}}
   function pintar(){
-    const t=usuario?"☁️ Partida vinculada":"☁️ Guardar mi progreso";
-    [btnInicio,btnPerfil].forEach(b=>{if(b){b.textContent=t;b.hidden=!habilitado;}});
-    if(btnAjustes)btnAjustes.querySelector(".btn-txt").textContent=usuario?"Partida vinculada":"Guardar mi progreso";
+    if(btnAjustes){
+      const etiqueta=btnAjustes.querySelector(".btn-txt");
+      if(etiqueta)etiqueta.textContent=usuario?"Partida vinculada":"Guardar mi progreso";
+    }
   }
   function interfaz(){
-    btnInicio=document.createElement("button");btnInicio.id="cuentaInicio";btnInicio.type="button";btnInicio.className="cuenta-acceso";btnInicio.onclick=abrir;
-    document.querySelector("#setup .setup-topbar")?.after(btnInicio);
-    btnPerfil=document.createElement("button");btnPerfil.id="cuentaPerfil";btnPerfil.type="button";btnPerfil.className="cuenta-acceso";btnPerfil.onclick=abrir;
-    document.querySelector("#perfilCerrar")?.before(btnPerfil);
     btnAjustes=document.getElementById("bCuenta");
     if(btnAjustes)btnAjustes.onclick=abrirDesdeAjustes;
     const capa=document.createElement("div");capa.id="cuentaCapa";capa.className="cuenta-capa";capa.hidden=true;
@@ -174,7 +171,7 @@ const Cuenta=(()=>{
   function iniciar(){
     if(inicioPendiente)return inicioPendiente;
     inicioPendiente=(async()=>{
-      if(!btnInicio)interfaz();
+      if(!document.getElementById("cuentaCapa"))interfaz();
       habilitado=await disponible();pintar();if(!habilitado)return;
       try{const r=await cliente().auth.getUser();usuario=r.data?.user||null;if(usuario){pintar();await revisar();}}
       catch(e){fallo(e);}
