@@ -607,6 +607,156 @@
       raiz.querySelectorAll("[data-decidir]").forEach(b=>b.onclick=()=>accion("decidir",{r:ronda,id:b.dataset.decidir,...(b.dataset.p!==undefined?{p:Number(b.dataset.p)}:{v:b.dataset.v==="1"})}));
       const sig=raiz.querySelector("#tlTfSiguienteRonda");if(sig)sig.onclick=()=>accion("siguiente",{r:ronda});enlazarMenu();
     }
+
+    /* Control nativo tvOS: usa la misma sala MQTT, sin redirigir al modo Ruleta web anterior. */
+    function pintarRuletaNativa(c,cab,soyMando,jugadores,miPid){
+      const turno=c.jug?.[c.turno],miTurno=turno?.pid===miPid;
+      const velocidad=c.fase==="tossup",bonus=c.fase==="bonus_resolver",fin=c.fase==="fin";
+      const bloquear=velocidad&&(c.bloqueados||[]).includes(miPid)||(bonus&&(c.bonusListos||[]).includes(miPid));
+      const puedeResolver=(velocidad||bonus)?!bloquear:miTurno&&["girar","consonante","vocal"].includes(c.fase);
+      const faseClave=JSON.stringify([c.fase,c.turno,c.usadas,c.jug,c.valor,c.cons,c.hayVoc,c.r,c.premio,soyMando,bloquear]);
+      const label=velocidad?"⚡ Prueba de Velocidad":bonus?"⭐ Ronda Bonus":fin?"🏆 Resultado final":"🎡 La Ruleta";
+      if(pantallaPintada!==faseClave){
+        pantallaPintada=faseClave;
+        const esLetra=c.fase==="consonante"||c.fase==="vocal";
+        const alfabeto="ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
+        const teclado=esLetra&&miTurno?[...alfabeto].filter(l=>c.fase==="vocal"?"AEIOU".includes(l):!"AEIOU".includes(l)).map(l=>
+          '<button type="button" data-letra="'+l+'" '+((c.usadas||[]).includes(l)?"disabled":"")+'>'+l+'</button>').join(""):"";
+        const marcador=(c.jug||[]).map(j=>'<div style="display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #ffffff20"><span>'+
+          esc(j.n)+(j.pid===turno?.pid?" 🎯":"")+'</span><b>if(!m)return;const soyMando=m.mando===yo,c=m.cel||{},clave=JSON.stringify([soyMando,c,m.jug.length]);
+      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&c.pantalla!=="ruleta_nativa"&&clave===pantallaPintada)return;
+      const escribiendo=document.activeElement&&document.activeElement.id==="tlTexto"?document.activeElement.value:"";
+      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&c.pantalla!=="ruleta_nativa")pantallaPintada=clave;
+      const cab=`<div class="tl-cel-cab">📺 Sala ${esc(m.cod)} · ${esc(nombre)}${soyMando?" · 🎮":""}</div>`;
+      if(!m.jug.some(j=>j.pid===yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Entrando…</h2></div>`;return;}
+      if(c.pantalla==="ruleta_nativa"){pintarRuletaNativa(c,cab,soyMando,m.jug,yo);return;}
+      if(c.pantalla==="ruleta"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎡 La Ruleta</h2><p>La Ruleta tiene su propia entrada. Cuando la tele muestre el código nuevo, tocá acá y ponelo:</p><a class="tl-boton tl-oro" href="tv.html">Entrar a la Ruleta</a></div>`;return;}
+      if(c.pantalla==="tutti"){pintarTutti(c,cab,soyMando);return;}
+      if(c.pantalla==="puzzle"){pintarPuzzle(c,cab,soyMando);return;}
+      if(!soyMando){
+        const mando=(m.jug.find(j=>j.pid===m.mando)||{}).n||"otro";
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2><p>El control lo tiene <b>${esc(mando)}</b>. Ayudalo con las respuestas 😉</p><button type="button" class="tl-boton" id="tlTomar">Tomar el control</button></div>`;
+        raiz.querySelector("#tlTomar").onclick=()=>mandar({t:"tomar"});return;}
+      if(c.pantalla==="menu"){
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>¿A qué juegan?</h2><div class="tl-cel-juegos">${(c.juegos||[]).map(j=>`<button type="button" class="tl-boton${j.ok?"":" tl-pronto"}" data-j="${esc(j.id)}" ${j.ok?"":"disabled"}>${esc(j.nombre)}${j.ok?"":" · pronto"}</button>`).join("")}</div></div>`;
+        raiz.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>accion("elegir",{juego:b.dataset.j}));return;}
+      const menu=`<button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>`;
+      if(c.pantalla==="fin"){
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>¡Terminó! 🎉</h2><p>${esc(c.resumen||"")}</p><button type="button" class="tl-boton tl-oro" id="tlOtra">Jugar otra vez</button>${menu}</div>`;
+        raiz.querySelector("#tlOtra").onclick=()=>accion("otra");raiz.querySelector("#tlMenu").onclick=()=>accion("menu");return;}
+      if(c.pantalla==="rosco"||c.pantalla==="cien"){
+        const rosco=c.pantalla==="rosco";
+        raiz.innerHTML=cab+`<div class="tl-cel-caja">${rosco?`<div class="tl-cel-letra">${esc(c.letra)}</div><p>${esc(c.regla||"")}</p>`:`<p class="tl-cel-preg">${esc(c.pregunta||"")}</p>`}
+          <input id="tlTexto" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${rosco?"Tu respuesta":"Lo que dice el grupo"}" ${!rosco&&!c.puede?"disabled":""}>
+          <button type="button" class="tl-boton tl-oro" id="tlEnviar" ${!rosco&&!c.puede?"disabled":""}>Enviar</button>
+          ${rosco?`<button type="button" class="tl-boton" id="tlPasar">⏭ Pasar</button>`:""}${menu}</div>`;
+        const t=raiz.querySelector("#tlTexto");if(escribiendo)t.value=escribiendo;
+        const enviar=()=>{const v=t.value.trim();if(!v)return;accion("responder",{txt:v});t.value="";t.focus();};
+        raiz.querySelector("#tlEnviar").onclick=enviar;t.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();enviar();}};
+        if(rosco)raiz.querySelector("#tlPasar").onclick=()=>{accion("pasar");t.value="";t.focus();};
+        raiz.querySelector("#tlMenu").onclick=()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");};
+        if(c.puede!==false)t.focus();return;}
+      if(c.pantalla==="ahorcado"){
+        const us=new Set(c.usadas||[]);
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>${c.puede?"Elegí una letra":"Mirá la tele…"}</h2><div class="tl-cel-teclado">${[...(c.letras||"")].map(l=>`<button type="button" data-l="${l}" ${us.has(l)||!c.puede?"disabled":""}>${l}</button>`).join("")}</div>${menu}</div>`;
+        raiz.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{b.disabled=true;accion("letra",{l:b.dataset.l});});
+        raiz.querySelector("#tlMenu").onclick=()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");};return;}
+      raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2></div>`;
+    }
+    /* Si la tele deja de contestar, avisar. */
+    setInterval(()=>{const el=raiz.querySelector("#tlTfReloj");if(el){const ms=Math.max(0,tfSegundos-(Date.now()-tfInicioReloj));el.textContent=Math.ceil(ms/1000)+" s";el.classList.toggle("tl-urgente",ms<=10000);}},250);
+    setInterval(()=>{if(conectado&&ultimo&&Date.now()-visto>12000){pantallaPintada="";raiz.innerHTML=`<div class="tl-cel-caja"><h2>La tele no responde 📺</h2><p>Revisá que la tele siga abierta y con internet.</p></div>`;}},4000);
+    if(nombre&&P.get("n"))entrar();else pedirNombre();
+  }
+
+  const arrancar=()=>{if(esTele)iniciarTele();else iniciarCel();};
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arrancar);else arrancar();
+})();
++(j.tot||0)+' · Ronda if(!m)return;const soyMando=m.mando===yo,c=m.cel||{},clave=JSON.stringify([soyMando,c,m.jug.length]);
+      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&clave===pantallaPintada)return;
+      const escribiendo=document.activeElement&&document.activeElement.id==="tlTexto"?document.activeElement.value:"";
+      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle")pantallaPintada=clave;
+      const cab=`<div class="tl-cel-cab">📺 Sala ${esc(m.cod)} · ${esc(nombre)}${soyMando?" · 🎮":""}</div>`;
+      if(!m.jug.some(j=>j.pid===yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Entrando…</h2></div>`;return;}
+      if(c.pantalla==="ruleta"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎡 La Ruleta</h2><p>La Ruleta tiene su propia entrada. Cuando la tele muestre el código nuevo, tocá acá y ponelo:</p><a class="tl-boton tl-oro" href="tv.html">Entrar a la Ruleta</a></div>`;return;}
+      if(c.pantalla==="tutti"){pintarTutti(c,cab,soyMando);return;}
+      if(c.pantalla==="puzzle"){pintarPuzzle(c,cab,soyMando);return;}
+      if(!soyMando){
+        const mando=(m.jug.find(j=>j.pid===m.mando)||{}).n||"otro";
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2><p>El control lo tiene <b>${esc(mando)}</b>. Ayudalo con las respuestas 😉</p><button type="button" class="tl-boton" id="tlTomar">Tomar el control</button></div>`;
+        raiz.querySelector("#tlTomar").onclick=()=>mandar({t:"tomar"});return;}
+      if(c.pantalla==="menu"){
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>¿A qué juegan?</h2><div class="tl-cel-juegos">${(c.juegos||[]).map(j=>`<button type="button" class="tl-boton${j.ok?"":" tl-pronto"}" data-j="${esc(j.id)}" ${j.ok?"":"disabled"}>${esc(j.nombre)}${j.ok?"":" · pronto"}</button>`).join("")}</div></div>`;
+        raiz.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>accion("elegir",{juego:b.dataset.j}));return;}
+      const menu=`<button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>`;
+      if(c.pantalla==="fin"){
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>¡Terminó! 🎉</h2><p>${esc(c.resumen||"")}</p><button type="button" class="tl-boton tl-oro" id="tlOtra">Jugar otra vez</button>${menu}</div>`;
+        raiz.querySelector("#tlOtra").onclick=()=>accion("otra");raiz.querySelector("#tlMenu").onclick=()=>accion("menu");return;}
+      if(c.pantalla==="rosco"||c.pantalla==="cien"){
+        const rosco=c.pantalla==="rosco";
+        raiz.innerHTML=cab+`<div class="tl-cel-caja">${rosco?`<div class="tl-cel-letra">${esc(c.letra)}</div><p>${esc(c.regla||"")}</p>`:`<p class="tl-cel-preg">${esc(c.pregunta||"")}</p>`}
+          <input id="tlTexto" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${rosco?"Tu respuesta":"Lo que dice el grupo"}" ${!rosco&&!c.puede?"disabled":""}>
+          <button type="button" class="tl-boton tl-oro" id="tlEnviar" ${!rosco&&!c.puede?"disabled":""}>Enviar</button>
+          ${rosco?`<button type="button" class="tl-boton" id="tlPasar">⏭ Pasar</button>`:""}${menu}</div>`;
+        const t=raiz.querySelector("#tlTexto");if(escribiendo)t.value=escribiendo;
+        const enviar=()=>{const v=t.value.trim();if(!v)return;accion("responder",{txt:v});t.value="";t.focus();};
+        raiz.querySelector("#tlEnviar").onclick=enviar;t.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();enviar();}};
+        if(rosco)raiz.querySelector("#tlPasar").onclick=()=>{accion("pasar");t.value="";t.focus();};
+        raiz.querySelector("#tlMenu").onclick=()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");};
+        if(c.puede!==false)t.focus();return;}
+      if(c.pantalla==="ahorcado"){
+        const us=new Set(c.usadas||[]);
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>${c.puede?"Elegí una letra":"Mirá la tele…"}</h2><div class="tl-cel-teclado">${[...(c.letras||"")].map(l=>`<button type="button" data-l="${l}" ${us.has(l)||!c.puede?"disabled":""}>${l}</button>`).join("")}</div>${menu}</div>`;
+        raiz.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{b.disabled=true;accion("letra",{l:b.dataset.l});});
+        raiz.querySelector("#tlMenu").onclick=()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");};return;}
+      raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2></div>`;
+    }
+    /* Si la tele deja de contestar, avisar. */
+    setInterval(()=>{const el=raiz.querySelector("#tlTfReloj");if(el){const ms=Math.max(0,tfSegundos-(Date.now()-tfInicioReloj));el.textContent=Math.ceil(ms/1000)+" s";el.classList.toggle("tl-urgente",ms<=10000);}},250);
+    setInterval(()=>{if(conectado&&ultimo&&Date.now()-visto>12000){pantallaPintada="";raiz.innerHTML=`<div class="tl-cel-caja"><h2>La tele no responde 📺</h2><p>Revisá que la tele siga abierta y con internet.</p></div>`;}},4000);
+    if(nombre&&P.get("n"))entrar();else pedirNombre();
+  }
+
+  const arrancar=()=>{if(esTele)iniciarTele();else iniciarCel();};
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arrancar);else arrancar();
+})();
++(j.ronda||0)+'</b></div>').join("");
+        raiz.innerHTML=cab+'<div class="tl-cel-caja"><h2>'+label+'</h2><p>Ronda '+(c.r||0)+'/3 · '+esc(c.cat||"")+'</p>'+
+          '<p id="tlRvEstado" style="font-weight:700;color:#37D6C0"></p><p id="tlRvTimer" style="font-size:1.3rem;font-weight:900"></p>'+
+          '<div style="margin:14px 0;text-align:left">'+marcador+'</div>'+
+          (miTurno&&c.fase==="girar"?
+            '<button type="button" class="tl-boton tl-oro" id="tlRvGirar" '+(c.cons===0?"disabled":"")+'>🎡 Girar la ruleta</button>'+
+            '<button type="button" class="tl-boton" id="tlRvVocal" '+((turno?.ronda||0)<250||!c.hayVoc?"disabled":"")+'>Comprar vocal · $250</button>':"")+
+          (teclado?'<h3>Elegí una '+(c.fase==="vocal"?"vocal":"consonante")+'</h3><div class="tl-cel-teclado" id="tlRvTeclado">'+teclado+'</div>':"")+
+          (puedeResolver?'<label for="tlRvRespuesta">¿Sabés la frase?</label><input id="tlRvRespuesta" type="text" maxlength="90" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Escribí la frase completa">'+
+            '<button type="button" class="tl-boton tl-oro" id="tlRvResolver">Resolver la frase</button>':"")+
+          (fin&&soyMando?'<button type="button" class="tl-boton tl-oro" id="tlRvOtra">Jugar otra vez</button>':"")+
+          (soyMando?'<button type="button" class="tl-boton tl-chico" id="tlRvMenu">⟵ Menú de juegos</button>':"")+
+          '</div>';
+        const girar=raiz.querySelector("#tlRvGirar"),vocal=raiz.querySelector("#tlRvVocal");
+        if(girar)girar.onclick=()=>{girar.disabled=true;accion("girar");};
+        if(vocal)vocal.onclick=()=>{vocal.disabled=true;accion("comprar_vocal");};
+        raiz.querySelectorAll("[data-letra]").forEach(b=>b.onclick=()=>{
+          b.disabled=true;accion("letra",{l:b.dataset.letra});
+        });
+        const input=raiz.querySelector("#tlRvRespuesta"),resolver=raiz.querySelector("#tlRvResolver");
+        if(input&&resolver){
+          const enviar=()=>{const txt=limpio(input.value,90);if(!txt)return;
+            resolver.disabled=true;accion("resolver",{txt});input.value="";};
+          resolver.onclick=enviar;
+          input.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();enviar();}};
+        }
+        const otra=raiz.querySelector("#tlRvOtra");if(otra)otra.onclick=()=>accion("otra");
+        const menu=raiz.querySelector("#tlRvMenu");if(menu)menu.onclick=()=>{
+          if(confirm("¿Volver al menú? Se termina la partida de la ruleta."))accion("menu");
+        };
+      }
+      const estado=raiz.querySelector("#tlRvEstado"),clock=raiz.querySelector("#tlRvTimer");
+      if(estado)estado.textContent=c.mensaje||(
+        fin?"La partida terminó":miTurno?"Es tu turno":"Esperando a "+(turno?.n||"otro jugador"));
+      if(clock)clock.textContent=fin?"":((velocidad||bonus||miTurno)&&Number.isFinite(+c.seg)?"⏱ "+c.seg+" s":"");
+    }
+
     function pintar(){
       const m=ultimo;if(!m)return;const soyMando=m.mando===yo,c=m.cel||{},clave=JSON.stringify([soyMando,c,m.jug.length]);
       if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&clave===pantallaPintada)return;
