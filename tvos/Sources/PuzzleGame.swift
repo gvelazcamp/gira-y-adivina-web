@@ -202,6 +202,8 @@ struct PuzzleGame {
         }
     }
 
+    mutating func pauseAndSave() { if stage == .juego { persist() } }
+
     mutating func tick(_ seconds: Double) -> Bool {
         guard stage == .juego else { return false }
         elapsed += seconds
