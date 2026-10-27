@@ -627,104 +627,7 @@
             '<button type="button" data-ruleta-letra="'+l+'" '+((c.usadas||[]).includes(l)?"disabled":"")+'>'+l+'</button>').join(""):"";
         const marcador=(c.jug||[]).map(j=>
           '<div style="display:flex;justify-content:space-between;gap:8px;margin:7px 0"><span>'+
-          esc(j.n)+(j.pid===turno?.pid?" 🎯":"")+'</span><b>const soyMando=m.mando===yo,c=m.cel||{},clave=JSON.stringify([soyMando,c,m.jug.length]);
-      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&c.pantalla!=="ruleta_nativa"&&clave===pantallaPintada)return;
-      const escribiendo=document.activeElement&&document.activeElement.id==="tlTexto"?document.activeElement.value:"";
-      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&c.pantalla!=="ruleta_nativa")pantallaPintada=clave;
-      const cab=`<div class="tl-cel-cab">📺 Sala ${esc(m.cod)} · ${esc(nombre)}${soyMando?" · 🎮":""}</div>`;
-      if(!m.jug.some(j=>j.pid===yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Entrando…</h2></div>`;return;}
-      if(c.pantalla==="ruleta_nativa"){pintarRuletaNativa(c,cab,soyMando,yo);return;}
-      if(c.pantalla==="ruleta"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎡 La Ruleta</h2><p>La Ruleta tiene su propia entrada. Cuando la tele muestre el código nuevo, tocá acá y ponelo:</p><a class="tl-boton tl-oro" href="tv.html">Entrar a la Ruleta</a></div>`;return;}
-      if(c.pantalla==="tutti"){pintarTutti(c,cab,soyMando);return;}
-      if(c.pantalla==="puzzle"){pintarPuzzle(c,cab,soyMando);return;}
-      if(!soyMando){
-        const mando=(m.jug.find(j=>j.pid===m.mando)||{}).n||"otro";
-        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2><p>El control lo tiene <b>${esc(mando)}</b>. Ayudalo con las respuestas 😉</p><button type="button" class="tl-boton" id="tlTomar">Tomar el control</button></div>`;
-        raiz.querySelector("#tlTomar").onclick=()=>mandar({t:"tomar"});return;}
-      if(c.pantalla==="menu"){
-        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>¿A qué juegan?</h2><div class="tl-cel-juegos">${(c.juegos||[]).map(j=>`<button type="button" class="tl-boton${j.ok?"":" tl-pronto"}" data-j="${esc(j.id)}" ${j.ok?"":"disabled"}>${esc(j.nombre)}${j.ok?"":" · pronto"}</button>`).join("")}</div></div>`;
-        raiz.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>accion("elegir",{juego:b.dataset.j}));return;}
-      const menu=`<button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>`;
-      if(c.pantalla==="fin"){
-        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>¡Terminó! 🎉</h2><p>${esc(c.resumen||"")}</p><button type="button" class="tl-boton tl-oro" id="tlOtra">Jugar otra vez</button>${menu}</div>`;
-        raiz.querySelector("#tlOtra").onclick=()=>accion("otra");raiz.querySelector("#tlMenu").onclick=()=>accion("menu");return;}
-      if(c.pantalla==="rosco"||c.pantalla==="cien"){
-        const rosco=c.pantalla==="rosco";
-        raiz.innerHTML=cab+`<div class="tl-cel-caja">${rosco?`<div class="tl-cel-letra">${esc(c.letra)}</div><p>${esc(c.regla||"")}</p>`:`<p class="tl-cel-preg">${esc(c.pregunta||"")}</p>`}
-          <input id="tlTexto" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${rosco?"Tu respuesta":"Lo que dice el grupo"}" ${!rosco&&!c.puede?"disabled":""}>
-          <button type="button" class="tl-boton tl-oro" id="tlEnviar" ${!rosco&&!c.puede?"disabled":""}>Enviar</button>
-          ${rosco?`<button type="button" class="tl-boton" id="tlPasar">⏭ Pasar</button>`:""}${menu}</div>`;
-        const t=raiz.querySelector("#tlTexto");if(escribiendo)t.value=escribiendo;
-        const enviar=()=>{const v=t.value.trim();if(!v)return;accion("responder",{txt:v});t.value="";t.focus();};
-        raiz.querySelector("#tlEnviar").onclick=enviar;t.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();enviar();}};
-        if(rosco)raiz.querySelector("#tlPasar").onclick=()=>{accion("pasar");t.value="";t.focus();};
-        raiz.querySelector("#tlMenu").onclick=()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");};
-        if(c.puede!==false)t.focus();return;}
-      if(c.pantalla==="ahorcado"){
-        const us=new Set(c.usadas||[]);
-        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>${c.puede?"Elegí una letra":"Mirá la tele…"}</h2><div class="tl-cel-teclado">${[...(c.letras||"")].map(l=>`<button type="button" data-l="${l}" ${us.has(l)||!c.puede?"disabled":""}>${l}</button>`).join("")}</div>${menu}</div>`;
-        raiz.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{b.disabled=true;accion("letra",{l:b.dataset.l});});
-        raiz.querySelector("#tlMenu").onclick=()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");};return;}
-      raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2></div>`;
-    }
-    /* Si la tele deja de contestar, avisar. */
-    setInterval(()=>{const el=raiz.querySelector("#tlTfReloj");if(el){const ms=Math.max(0,tfSegundos-(Date.now()-tfInicioReloj));el.textContent=Math.ceil(ms/1000)+" s";el.classList.toggle("tl-urgente",ms<=10000);}},250);
-    setInterval(()=>{if(conectado&&ultimo&&Date.now()-visto>12000){pantallaPintada="";raiz.innerHTML=`<div class="tl-cel-caja"><h2>La tele no responde 📺</h2><p>Revisá que la tele siga abierta y con internet.</p></div>`;}},4000);
-    if(nombre&&P.get("n"))entrar();else pedirNombre();
-  }
-
-  const arrancar=()=>{if(esTele)iniciarTele();else iniciarCel();};
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arrancar);else arrancar();
-})();
-+(j.tot||0)+' · Ronda const soyMando=m.mando===yo,c=m.cel||{},clave=JSON.stringify([soyMando,c,m.jug.length]);
-      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&clave===pantallaPintada)return;
-      const escribiendo=document.activeElement&&document.activeElement.id==="tlTexto"?document.activeElement.value:"";
-      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle")pantallaPintada=clave;
-      const cab=`<div class="tl-cel-cab">📺 Sala ${esc(m.cod)} · ${esc(nombre)}${soyMando?" · 🎮":""}</div>`;
-      if(!m.jug.some(j=>j.pid===yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Entrando…</h2></div>`;return;}
-      if(c.pantalla==="ruleta"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎡 La Ruleta</h2><p>La Ruleta tiene su propia entrada. Cuando la tele muestre el código nuevo, tocá acá y ponelo:</p><a class="tl-boton tl-oro" href="tv.html">Entrar a la Ruleta</a></div>`;return;}
-      if(c.pantalla==="tutti"){pintarTutti(c,cab,soyMando);return;}
-      if(c.pantalla==="puzzle"){pintarPuzzle(c,cab,soyMando);return;}
-      if(!soyMando){
-        const mando=(m.jug.find(j=>j.pid===m.mando)||{}).n||"otro";
-        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2><p>El control lo tiene <b>${esc(mando)}</b>. Ayudalo con las respuestas 😉</p><button type="button" class="tl-boton" id="tlTomar">Tomar el control</button></div>`;
-        raiz.querySelector("#tlTomar").onclick=()=>mandar({t:"tomar"});return;}
-      if(c.pantalla==="menu"){
-        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>¿A qué juegan?</h2><div class="tl-cel-juegos">${(c.juegos||[]).map(j=>`<button type="button" class="tl-boton${j.ok?"":" tl-pronto"}" data-j="${esc(j.id)}" ${j.ok?"":"disabled"}>${esc(j.nombre)}${j.ok?"":" · pronto"}</button>`).join("")}</div></div>`;
-        raiz.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>accion("elegir",{juego:b.dataset.j}));return;}
-      const menu=`<button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>`;
-      if(c.pantalla==="fin"){
-        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>¡Terminó! 🎉</h2><p>${esc(c.resumen||"")}</p><button type="button" class="tl-boton tl-oro" id="tlOtra">Jugar otra vez</button>${menu}</div>`;
-        raiz.querySelector("#tlOtra").onclick=()=>accion("otra");raiz.querySelector("#tlMenu").onclick=()=>accion("menu");return;}
-      if(c.pantalla==="rosco"||c.pantalla==="cien"){
-        const rosco=c.pantalla==="rosco";
-        raiz.innerHTML=cab+`<div class="tl-cel-caja">${rosco?`<div class="tl-cel-letra">${esc(c.letra)}</div><p>${esc(c.regla||"")}</p>`:`<p class="tl-cel-preg">${esc(c.pregunta||"")}</p>`}
-          <input id="tlTexto" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${rosco?"Tu respuesta":"Lo que dice el grupo"}" ${!rosco&&!c.puede?"disabled":""}>
-          <button type="button" class="tl-boton tl-oro" id="tlEnviar" ${!rosco&&!c.puede?"disabled":""}>Enviar</button>
-          ${rosco?`<button type="button" class="tl-boton" id="tlPasar">⏭ Pasar</button>`:""}${menu}</div>`;
-        const t=raiz.querySelector("#tlTexto");if(escribiendo)t.value=escribiendo;
-        const enviar=()=>{const v=t.value.trim();if(!v)return;accion("responder",{txt:v});t.value="";t.focus();};
-        raiz.querySelector("#tlEnviar").onclick=enviar;t.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();enviar();}};
-        if(rosco)raiz.querySelector("#tlPasar").onclick=()=>{accion("pasar");t.value="";t.focus();};
-        raiz.querySelector("#tlMenu").onclick=()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");};
-        if(c.puede!==false)t.focus();return;}
-      if(c.pantalla==="ahorcado"){
-        const us=new Set(c.usadas||[]);
-        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>${c.puede?"Elegí una letra":"Mirá la tele…"}</h2><div class="tl-cel-teclado">${[...(c.letras||"")].map(l=>`<button type="button" data-l="${l}" ${us.has(l)||!c.puede?"disabled":""}>${l}</button>`).join("")}</div>${menu}</div>`;
-        raiz.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{b.disabled=true;accion("letra",{l:b.dataset.l});});
-        raiz.querySelector("#tlMenu").onclick=()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");};return;}
-      raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2></div>`;
-    }
-    /* Si la tele deja de contestar, avisar. */
-    setInterval(()=>{const el=raiz.querySelector("#tlTfReloj");if(el){const ms=Math.max(0,tfSegundos-(Date.now()-tfInicioReloj));el.textContent=Math.ceil(ms/1000)+" s";el.classList.toggle("tl-urgente",ms<=10000);}},250);
-    setInterval(()=>{if(conectado&&ultimo&&Date.now()-visto>12000){pantallaPintada="";raiz.innerHTML=`<div class="tl-cel-caja"><h2>La tele no responde 📺</h2><p>Revisá que la tele siga abierta y con internet.</p></div>`;}},4000);
-    if(nombre&&P.get("n"))entrar();else pedirNombre();
-  }
-
-  const arrancar=()=>{if(esTele)iniciarTele();else iniciarCel();};
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arrancar);else arrancar();
-})();
-+(j.ronda||0)+'</b></div>').join("");
+          esc(j.n)+(j.pid===turno?.pid?" 🎯":"")+'</span><b>$'+(j.tot||0)+' · Ronda $'+(j.ronda||0)+'</b></div>').join("");
         raiz.innerHTML=cab+'<div class="tl-cel-caja"><h2>'+
           (velocidad?"⚡ Prueba de Velocidad":bonus?"⭐ Ronda Bonus":fin?"🏆 Resultado final":"🎡 La Ruleta")+
           '</h2><p>Ronda '+(c.r||0)+'/3 · '+esc(c.cat||"")+'</p>'+
@@ -767,11 +670,12 @@
 
     function pintar(){
       const m=ultimo;if(!m)return;const soyMando=m.mando===yo,c=m.cel||{},clave=JSON.stringify([soyMando,c,m.jug.length]);
-      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&clave===pantallaPintada)return;
+      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&c.pantalla!=="ruleta_nativa"&&clave===pantallaPintada)return;
       const escribiendo=document.activeElement&&document.activeElement.id==="tlTexto"?document.activeElement.value:"";
-      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle")pantallaPintada=clave;
+      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&c.pantalla!=="ruleta_nativa")pantallaPintada=clave;
       const cab=`<div class="tl-cel-cab">📺 Sala ${esc(m.cod)} · ${esc(nombre)}${soyMando?" · 🎮":""}</div>`;
       if(!m.jug.some(j=>j.pid===yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Entrando…</h2></div>`;return;}
+      if(c.pantalla==="ruleta_nativa"){pintarRuletaNativa(c,cab,soyMando,yo);return;}
       if(c.pantalla==="ruleta"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎡 La Ruleta</h2><p>La Ruleta tiene su propia entrada. Cuando la tele muestre el código nuevo, tocá acá y ponelo:</p><a class="tl-boton tl-oro" href="tv.html">Entrar a la Ruleta</a></div>`;return;}
       if(c.pantalla==="tutti"){pintarTutti(c,cab,soyMando);return;}
       if(c.pantalla==="puzzle"){pintarPuzzle(c,cab,soyMando);return;}
