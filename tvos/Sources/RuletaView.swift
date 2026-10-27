@@ -23,8 +23,8 @@ private struct RuletaSectorShape: Shape {
         let stop = start + 2 * Double.pi / 24
         var path = Path()
         path.move(to: center)
-        path.addLine(to: CGPoint(x: center.x + radius * cos(start),
-                                 y: center.y + radius * sin(start)))
+        path.addLine(to: CGPoint(x: center.x + radius * CGFloat(cos(start)),
+                                 y: center.y + radius * CGFloat(sin(start))))
         path.addArc(center: center, radius: radius,
                     startAngle: .radians(start), endAngle: .radians(stop),
                     clockwise: false)
@@ -69,8 +69,8 @@ private struct RuletaWedge: View {
                         WheelPalette.gold : WheelPalette.night)
                     .fixedSize()
                     .rotationEffect(.radians(midpoint + Double.pi / 2))
-                    .position(x: center.x + radius * 0.76 * cos(midpoint),
-                              y: center.y + radius * 0.76 * sin(midpoint))
+                    .position(x: center.x + radius * 0.76 * CGFloat(cos(midpoint)),
+                              y: center.y + radius * 0.76 * CGFloat(sin(midpoint)))
             }
         }
     }
