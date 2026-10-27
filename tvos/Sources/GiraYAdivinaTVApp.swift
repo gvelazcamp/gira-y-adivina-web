@@ -42,6 +42,8 @@ private struct TVRoot: View {
                 if let game = host.tutti { TuttiView(host: host, game: game) }
             case .ruleta:
                 if let game = host.ruleta { RuletaView(host: host, game: game) }
+            case .puzzle:
+                if let game = host.puzzle { PuzzleView(host: host, game: game) }
             }
         }
         .foregroundColor(Theme.cream)
@@ -125,9 +127,8 @@ private struct TVRoot: View {
                         .font(.system(size: 32, weight: .bold))
                     Button("🎡  La Ruleta") { host.startRuleta() }
                         .font(.system(size: 32, weight: .bold))
-                    Text("Puzzle: en preparación para tvOS")
-                        .font(.system(size: 23))
-                        .foregroundColor(Theme.aqua)
+                    Button("🧩  Puzzle") { host.startPuzzle() }
+                        .font(.system(size: 32, weight: .bold))
                     if !host.errorMessage.isEmpty {
                         Text(host.errorMessage).foregroundColor(.red)
                     }
