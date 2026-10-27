@@ -33,7 +33,7 @@
   body.gonzalo-admin.ext-horizontal .rr-game #rrJuego:not([hidden]) {
     display: grid;
     grid-template-columns: minmax(0, 0.96fr) minmax(0, 1fr);
-    grid-template-rows: 42px 6px minmax(0, 1fr) minmax(18px,auto) auto;
+    grid-template-rows: 42px 6px max-content minmax(18px,max-content) max-content minmax(0,1fr);
     gap: 8px 18px;
     width: 100%;
     height: max(235px,calc(var(--rr-viewport-alto,100dvh) - 62px));
@@ -74,7 +74,7 @@
   }
   body.gonzalo-admin.ext-horizontal .rr-game .rr-rueda {
     grid-column: 1;
-    grid-row: 3 / 6;
+    grid-row: 3 / -1;
     align-self: center;
     justify-self: center;
     width: min(44vw, calc(var(--rr-viewport-alto,100dvh) - 166px), 510px);
@@ -123,6 +123,13 @@
     margin: 0 0 4px;
     align-self: end;
   }
+  /* En Android el aviso nativo de pantalla completa aparece abajo.
+     Subir la respuesta junto a la pista, no anclarla al borde inferior. */
+  body.gonzalo-admin.ext-horizontal .rr-game #rrForm {
+    align-self: start;
+    margin-bottom: 0;
+  }
+  body.gonzalo-admin.ext-horizontal .rr-game .rr-pista {align-self:start}
   body.gonzalo-admin.ext-horizontal .rr-game .rr-fila {
     display: flex;
     align-items: stretch;
@@ -215,7 +222,14 @@
 /* El teclado Android tapa mucha pantalla en landscape. Cuando el usuario
    empieza a escribir, la vista de respuesta es prioritaria. */
 @media (orientation:landscape) and (min-width:700px) and (max-height:480px) {
-  body.gonzalo-admin.ext-horizontal .rr-game #rrJuego > .sf-hud > div {padding:2px 5px;gap:5px}
+  body.gonzalo-admin.ext-horizontal .rr-game #rrJuego:not([hidden]) {
+    grid-template-rows: 35px 5px max-content 18px max-content minmax(0,1fr);
+    gap:5px 12px;
+  }
+  body.gonzalo-admin.ext-horizontal .rr-game .rr-pista {padding:9px 12px}
+  body.gonzalo-admin.ext-horizontal .rr-game .rr-pista p {font-size:clamp(13px,3.2vh,18px)}
+  body.gonzalo-admin.ext-horizontal .rr-game .rr-fila input {height:41px}
+    body.gonzalo-admin.ext-horizontal .rr-game #rrJuego > .sf-hud > div {padding:2px 5px;gap:5px}
   body.gonzalo-admin.ext-horizontal .rr-game #rrJuego > .sf-hud small {font-size:11px}
   body.gonzalo-admin.ext-horizontal .rr-game .rr-pista {min-height:80px}
 }
