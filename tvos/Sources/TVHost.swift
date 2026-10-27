@@ -9,7 +9,7 @@ struct TVPlayer: Identifiable {
 
 @MainActor
 final class TVHost: ObservableObject {
-    enum Screen: Equatable { case home, menu, cien }
+    enum Screen: Equatable { case home, menu, cien, ahorcado }
 
     @Published private(set) var screen: Screen = .home
     @Published private(set) var code = ""
@@ -17,6 +17,7 @@ final class TVHost: ObservableObject {
     @Published private(set) var controllerPID: String?
     @Published private(set) var connectedBrokers = 0
     @Published private(set) var cien: CienGame?
+    @Published private(set) var ahorcado: AhorcadoGame?
     @Published private(set) var errorMessage = ""
 
     private let brokerURLs = [
@@ -29,6 +30,7 @@ final class TVHost: ObservableObject {
     private var links = [MQTTLink]()
     private var heartbeat: Task<Void, Never>?
     private var nextRoundTask: Task<Void, Never>?
+    private var spinTask: Task<Void, Never>?
     private var sequence = 0
     private var recentMessages = [String: Date]()
 
@@ -62,7 +64,7 @@ final class TVHost: ObservableObject {
 
     func back() {
         switch screen {
-        case .cien: showMenu()
+        case .cien, .ahorcado: showMenu()
         case .menu: stop()
         case .home: break
         }
@@ -71,17 +73,21 @@ final class TVHost: ObservableObject {
     func stop() {
         heartbeat?.cancel(); heartbeat = nil
         nextRoundTask?.cancel(); nextRoundTask = nil
+        spinTask?.cancel(); spinTask = nil
         links.forEach { $0.close() }; links.removeAll()
         connectedBrokers = 0
         players.removeAll()
         controllerPID = nil
         cien = nil
+        ahorcado = nil
         screen = .home
     }
 
     func showMenu() {
         nextRoundTask?.cancel(); nextRoundTask = nil
+        spinTask?.cancel(); spinTask = nil
         cien = nil
+        ahorcado = nil
         screen = .menu
         broadcast()
     }
@@ -93,6 +99,27 @@ final class TVHost: ObservableObject {
         screen = .cien
         errorMessage = ""
         broadcast()
+    }
+
+    func startAhorcado() {
+        guard screen == .menu else { return }
+        guard let game = AhorcadoGame() else { errorMessage = "No se pudo cargar Ahorcado"; return }
+        ahorcado = game
+        screen = .ahorcado
+        errorMessage = ""
+        broadcast()
+        beginAhorcadoAfterSpin()
+    }
+
+    private func beginAhorcadoAfterSpin() {
+        spinTask?.cancel()
+        spinTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 1_800_000_000)
+            guard !Task.isCancelled, let self, var game = self.ahorcado else { return }
+            game.beginWord()
+            self.ahorcado = game
+            self.broadcast()
+        }
     }
 
     private func brokerChanged() {
@@ -142,7 +169,26 @@ final class TVHost: ObservableObject {
         guard let action = object["a"] as? String else { return }
         if action == "menu" { showMenu(); return }
         if action == "elegir", object["juego"] as? String == "cien" { startCien(); return }
+        if action == "elegir", object["juego"] as? String == "ahorcado" { startAhorcado(); return }
         if action == "otra", screen == .cien { showMenu(); startCien(); return }
+        if action == "otra", screen == .ahorcado { showMenu(); startAhorcado(); return }
+        if action == "letra", screen == .ahorcado, let letter = object["l"] as? String, var game = ahorcado {
+            let result = game.tryLetter(letter)
+            ahorcado = game
+            if result != .ignored { broadcast() }
+            if result == .roundEnded {
+                nextRoundTask?.cancel()
+                nextRoundTask = Task { [weak self] in
+                    try? await Task.sleep(nanoseconds: 3_000_000_000)
+                    guard !Task.isCancelled, let self, var next = self.ahorcado else { return }
+                    next.nextWord()
+                    self.ahorcado = next
+                    self.broadcast()
+                    if next.stage == .spin { self.beginAhorcadoAfterSpin() }
+                }
+            }
+            return
+        }
         if action == "responder", screen == .cien, let text = object["txt"] as? String, var game = cien {
             let result = game.answer(String(text.prefix(40)))
             cien = game
@@ -165,16 +211,21 @@ final class TVHost: ObservableObject {
         let games: [[String: Any]] = [
             ["id": "cien", "nombre": "100 Rioplatenses", "ok": true],
             ["id": "rosco", "nombre": "El Rosco", "ok": false],
-            ["id": "ahorcado", "nombre": "Ahorcado", "ok": false],
+            ["id": "ahorcado", "nombre": "Ahorcado", "ok": true],
             ["id": "ruleta", "nombre": "La Ruleta", "ok": false],
             ["id": "tutti", "nombre": "Tutti Frutti", "ok": false],
             ["id": "puzzle", "nombre": "Puzzle", "ok": false]
         ]
-        let cell: [String: Any] = screen == .cien ? (cien?.phoneState ?? ["pantalla": "menu", "juegos": games]) : ["pantalla": "menu", "juegos": games]
+        let cell: [String: Any]
+        switch screen {
+        case .cien: cell = cien?.phoneState ?? ["pantalla": "menu", "juegos": games]
+        case .ahorcado: cell = ahorcado?.phoneState ?? ["pantalla": "menu", "juegos": games]
+        case .home, .menu: cell = ["pantalla": "menu", "juegos": games]
+        }
         let message: [String: Any] = [
             "t": "estado", "pid": String(tvPID), "s": sequence + 1, "cod": code,
-            "fase": screen == .cien ? "juego" : "menu",
-            "juego": screen == .cien ? "cien" as Any : NSNull(),
+            "fase": screen == .menu ? "menu" : "juego",
+            "juego": screen == .cien ? "cien" as Any : (screen == .ahorcado ? "ahorcado" as Any : NSNull()),
             "jug": players.map { ["pid": $0.pid, "n": $0.name] },
             "mando": controllerPID.map { $0 as Any } ?? NSNull(), "cel": cell
         ]

@@ -34,6 +34,8 @@ private struct TVRoot: View {
             case .menu: menu
             case .cien:
                 if let game = host.cien { CienView(host: host, game: game) }
+            case .ahorcado:
+                if let game = host.ahorcado { AhorcadoView(host: host, game: game) }
             }
         }
         .foregroundColor(Theme.cream)
@@ -109,7 +111,9 @@ private struct TVRoot: View {
                         .font(.system(size: 30, weight: .bold))
                     Button("🍖  100 Rioplatenses") { host.startCien() }
                         .font(.system(size: 32, weight: .bold))
-                    Text("Rosco · Ahorcado · Ruleta · Tutti Frutti · Puzzle: en preparación para tvOS")
+                    Button("🪢  Ahorcado") { host.startAhorcado() }
+                        .font(.system(size: 32, weight: .bold))
+                    Text("Rosco · Ruleta · Tutti Frutti · Puzzle: en preparación para tvOS")
                         .font(.system(size: 23))
                         .foregroundColor(Theme.aqua)
                     if !host.errorMessage.isEmpty {
@@ -185,6 +189,91 @@ private struct CienView: View {
             HStack {
                 Text("🎮 \(host.controllerName) escribe lo que dice el grupo")
                     .font(.system(size: 25))
+                Spacer()
+                Button("Menú de juegos") { host.showMenu() }
+            }
+        }
+        .padding(60)
+    }
+}
+
+private struct AhorcadoView: View {
+    @ObservedObject var host: TVHost
+    let game: AhorcadoGame
+
+    private var letters: String {
+        game.word.palabra.map { letter in
+            game.used.contains(letter) || game.stage == .reveal ? String(letter) : "＿"
+        }.joined(separator: " ")
+    }
+
+    var body: some View {
+        VStack(spacing: 28) {
+            HStack {
+                Text("AHORCADO RIOPLATENSE")
+                    .font(.system(size: 48, weight: .black, design: .rounded))
+                    .foregroundColor(Theme.gold)
+                Spacer()
+                Text("Palabra \(game.number)/5 · ⭐ \(game.points)")
+                    .font(.system(size: 30, weight: .bold))
+            }
+            if game.stage == .finished {
+                Spacer()
+                Text("🏆 \(game.won) de 5 palabras")
+                    .font(.system(size: 76, weight: .black))
+                Text("⭐ \(game.points) puntos")
+                    .font(.system(size: 52, weight: .bold))
+                Spacer()
+            } else if game.stage == .spin {
+                Spacer()
+                Text("🎡 Girando la categoría…")
+                    .font(.system(size: 62, weight: .bold))
+                    .foregroundColor(Theme.aqua)
+                Spacer()
+            } else {
+                HStack(spacing: 48) {
+                    Path { path in
+                        path.move(to: CGPoint(x: 45, y: 305))
+                        path.addLine(to: CGPoint(x: 245, y: 305))
+                        path.move(to: CGPoint(x: 95, y: 305))
+                        path.addLine(to: CGPoint(x: 95, y: 30))
+                        path.addLine(to: CGPoint(x: 220, y: 30))
+                        path.addLine(to: CGPoint(x: 220, y: 70))
+                        if game.errors >= 1 { path.addEllipse(in: CGRect(x: 197, y: 70, width: 46, height: 46)) }
+                        if game.errors >= 2 { path.move(to: CGPoint(x: 220, y: 116)); path.addLine(to: CGPoint(x: 220, y: 205)) }
+                        if game.errors >= 3 { path.move(to: CGPoint(x: 220, y: 145)); path.addLine(to: CGPoint(x: 175, y: 178)) }
+                        if game.errors >= 4 { path.move(to: CGPoint(x: 220, y: 145)); path.addLine(to: CGPoint(x: 265, y: 178)) }
+                        if game.errors >= 5 { path.move(to: CGPoint(x: 220, y: 205)); path.addLine(to: CGPoint(x: 180, y: 260)) }
+                        if game.errors >= 6 { path.move(to: CGPoint(x: 220, y: 205)); path.addLine(to: CGPoint(x: 260, y: 260)) }
+                    }
+                    .stroke(Theme.gold, style: StrokeStyle(lineWidth: 9, lineCap: .round, lineJoin: .round))
+                    .frame(width: 310, height: 320)
+                    VStack(spacing: 34) {
+                        Text("\(game.category?.emoji ?? "❓")  \(game.category?.nombre ?? game.word.categoria)")
+                            .font(.system(size: 48, weight: .bold))
+                            .foregroundColor(Theme.aqua)
+                        Text(letters)
+                            .font(.system(size: 52, weight: .black, design: .monospaced))
+                            .minimumScaleFactor(0.55)
+                            .lineLimit(1)
+                        Text("Errores: \(game.errors)/6")
+                            .font(.system(size: 30))
+                            .foregroundColor(game.errors >= 5 ? .red : Theme.cream)
+                        Text("Letras usadas: \(String(game.used.sorted()))")
+                            .font(.system(size: 28))
+                        if game.stage == .reveal {
+                            Text(game.isSolved ? "¡La sacaron! ✓" : "Era \(game.word.palabra)")
+                                .font(.system(size: 38, weight: .black))
+                                .foregroundColor(game.isSolved ? Theme.aqua : .red)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                Spacer()
+            }
+            HStack {
+                Text("🎮 \(host.controllerName) elige la letra desde el celular")
+                    .font(.system(size: 26))
                 Spacer()
                 Button("Menú de juegos") { host.showMenu() }
             }

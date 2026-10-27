@@ -4,7 +4,7 @@ Proyecto **nativo tvOS**, separado del APK/AAB de Android TV. La televisión es 
 
 ## Estado
 
-Se prepara la primera prueba nativa con Sala TV, mando de Apple TV y el protocolo `gya/tele/<código>` del sitio. Por ahora **solo 100 Rioplatenses es jugable**; Ruleta, Tutti Frutti, Ahorcado, Rosco y Puzzle siguen pendientes de portar a tvOS. **No hay todavía un IPA compilado, firmado ni probado en Apple TV.** La app `sideloadATV` instalada por Gonzalo no se ha verificado como método de instalación; no afirmar que acepte un IPA sin firma.
+Se prepara la primera prueba nativa con Sala TV, mando de Apple TV y el protocolo `gya/tele/<código>` del sitio. Por ahora **100 Rioplatenses y Ahorcado son jugables en el código fuente**; Ruleta, Tutti Frutti, Rosco y Puzzle siguen pendientes de portar a tvOS. **No hay todavía un IPA compilado, firmado ni probado en Apple TV.** La app `sideloadATV` instalada por Gonzalo no se ha verificado como método de instalación; no afirmar que acepte un IPA sin firma.
 
 ## Compilación
 
