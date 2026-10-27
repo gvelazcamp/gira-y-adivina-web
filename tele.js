@@ -408,8 +408,8 @@
       else{errores++;sonar(170,.25,"sawtooth",.05);if(errores>=C.vidas){cerrarPalabra(false);return;}}
       actualizar();
     }
-    function munieco(){const partes=['<circle cx="85" cy="36" r="10"/>','<path d="M85 46V80"/>','<path d="M85 54L68 68"/>','<path d="M85 54L102 68"/>','<path d="M85 80L70 102"/>','<path d="M85 80L100 102"/>'];
-      return'<svg viewBox="0 0 120 130" class="tl-horca"><path d="M10 122H80M30 122V10H85V26" stroke="#F6EFE2" stroke-width="5" stroke-linecap="round" fill="none"/><g stroke="#FF6B7A" stroke-width="5" stroke-linecap="round" fill="none">'+partes.slice(0,errores).join("")+'</g></svg>';}
+    function munieco(){const partes=['<circle cx="245" cy="98" r="22"/>','<path d="M245 120V185"/>','<path d="M245 138L210 168"/>','<path d="M245 138L280 168"/>','<path d="M245 185L215 235"/>','<path d="M245 185L275 235"/>'];
+      return'<div class="tl-horca"><img src="assets/ahorcado/horca.webp" alt="" draggable="false"><svg viewBox="0 0 315 309" aria-hidden="true"><path d="M245 50V76" stroke="#C99A5B" stroke-width="7" stroke-linecap="round"/><g stroke="#F5B301" stroke-width="9" stroke-linecap="round" fill="none">'+partes.slice(0,errores).join("")+'</g></svg></div>';}
     function pintar(raiz,quien){
       if(fase==="fin"){raiz.innerHTML=`<div class="tl-centro tl-fin"><h1>${ganadas>=4?"¡Impresionante! 🎉":ganadas>=2?"¡Bien jugado! 👏":"¡Se terminó!"}</h1><div class="tl-res"><span class="tl-ok">✓ ${ganadas} de ${C.palabras} palabras</span><span>⭐ ${puntos} puntos</span></div><p class="tl-ayuda">${quien?esc(quien)+": desde el celular podés jugar otra vez o volver al menú.":""}</p></div>`;return;}
       const cat=CATS.find(c=>c.id===pal.categoria)||{nombre:pal.categoria,emoji:"❓",color:"#7B3FE4"};

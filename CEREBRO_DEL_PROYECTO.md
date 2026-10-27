@@ -1725,3 +1725,7 @@ Fecha: 27/10/2026 — Menú de los cuatro perfiles de prueba y envoltorio Androi
 ```text
 Fecha: 27/10/2026 — Pantalla negra con música en navegadores de TV sin HTMLImageElement.decode(). Se reprodujo en Chromium anulando esa función: la Sala TV creaba su código pero el splash permanecía visible porque el script fallaba antes de registrar el límite de 8 s. index.html ahora espera load/error cuando decode no existe y registra el límite antes de procesar imágenes. sw.js pasa a v450. La reproducción volvió a mostrar el menú de TV sin errores y pasó la partida simulada de Tutti Frutti con dos celulares. La prueba real en Apple TV sigue pendiente; un navegador tvOS también puede tener otras limitaciones.
 ```
+
+```text
+Fecha: 27/10/2026 — Colores y dibujos de los juegos en la tele. Pedido de Gonzalo: que se vean como en el celular. tele.css v5 usa en el Rosco las fichas crema, turquesa, rosa y magenta de la versión móvil; en Ahorcado, las casillas originales; en 100 Rioplatenses, las placas azules con borde dorado. tele.js v6 usa el dibujo original de la horca y conserva las seis partes del muñeco. index.html y el shell de sw.js cargan esas versiones; sw v451. Se compararon capturas de Rosco, Ahorcado y 100 Rioplatenses a 1920×1080 con sus recursos reales cargados, sin errores JavaScript. Falta verificar la imagen y los colores en una tele física.
+```
