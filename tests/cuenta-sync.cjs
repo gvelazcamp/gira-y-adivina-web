@@ -2,7 +2,7 @@ const {chromium}=require('playwright');
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),http=require('node:http'),path=require('node:path');
 const root=path.resolve(__dirname,'..');
-const html=`<!doctype html><html><head><meta charset="utf-8"></head><body><div id="setup"><div class="setup-topbar"></div></div><section id="pantPerfil"><button id="perfilCerrar">Cerrar</button></section><script>
+const html=`<!doctype html><html><head><meta charset="utf-8"></head><body><div id="setup"><div class="setup-topbar"></div></div><section id="pantPerfil"><button id="perfilCerrar">Cerrar</button></section><div id="capaMas" class="ver"><button id="bCuenta"><span class="btn-txt">Guardar mi progreso</span></button></div><script>
 const SUPA_URL='https://mock.supabase.co',SUPA_KEY='public-test-key';
 function capturarEstadoJuego(){const d={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('gya_')||k.startsWith('larueda_'))d[k]=localStorage.getItem(k);}return{localStorage:d};}
 function obtenerSupa(){return window.__client;}
@@ -51,9 +51,17 @@ async function device(browser,base,options){
    await c.page.waitForFunction(()=>localStorage.getItem('gya_nombre')==='Meg');
    assert(await c.page.evaluate(()=>!!localStorage.getItem('gya_cuenta_respaldo_local')),'keeps backup before replacing local progress');
    const d=await browser.newContext({serviceWorkers:'block'}),off=await d.newPage();
-   await off.addInitScript(()=>{window.fetch=async()=>({ok:true,json:async()=>({external:{google:false}})});window.__client={from:()=>({select(){return this;},limit(){return Promise.resolve({data:[],error:null});}})};});
+   await off.addInitScript(()=>{window.__googleEnabled=false;window.fetch=async()=>({ok:true,json:async()=>({external:{google:window.__googleEnabled}})});window.__client={auth:{getUser:async()=>({data:{user:null}})},from:()=>({select(){return this;},limit(){return Promise.resolve({data:[],error:null});}})};});
    await off.goto(base);await off.waitForFunction(()=>document.querySelector('#cuentaInicio')?.hidden===true);
    assert(await off.locator('#cuentaInicio').isHidden(),'Google disabled keeps the unfinished feature hidden');
+   await off.locator('#bCuenta').click();
+   await off.locator('#cuentaCapa:not([hidden])').waitFor();
+   assert.match(await off.locator('#cuentaTitulo').textContent(),/Inicio de sesión no disponible/);
+   await off.evaluate(()=>{window.__googleEnabled=true;});
+   await off.locator('#cuentaOpciones button').filter({hasText:'Reintentar'}).click();
+   await off.locator('#cuentaInicio:not([hidden])').waitFor();
+   assert.match(await off.locator('#cuentaTitulo').textContent(),/Guardar mi progreso/);
+   assert(!await off.locator('#capaMas').evaluate(e=>e.classList.contains('ver')),'account button closes settings before opening login');
    await Promise.all([a.context.close(),b.context.close(),c.context.close(),d.close()]);
    console.log('Cuenta y progreso entre dispositivos: OK');
  }finally{await browser.close();server.close();}

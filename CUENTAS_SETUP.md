@@ -4,7 +4,7 @@ La vinculación es opcional. Los invitados siguen jugando como antes. La identid
 
 ## Activación en Supabase
 
-El frontend muestra «Guardar mi progreso» solo cuando **ambos** requisitos están activos. El 27/10/2026 se comprobó que Google Auth está activo (`external.google: true`) y que `gya_cuentas` aún no existe (`PGRST205`); el botón permanece oculto hasta ejecutar el SQL de abajo. El cliente OAuth de Google sigue en modo Prueba y debe pasar a producción antes de abrir el acceso a todos los jugadores.
+El 27/10/2026 se activó Google Auth, se creó `gya_cuentas` y se publicó el cliente OAuth de Google. La opción «Guardar mi progreso» aparece en **Más opciones** (engranaje); también aparece junto al inicio y el perfil cuando la comprobación de conexión se completa. Si falla la primera comprobación, el botón de Más opciones permite reintentar sin tocar la partida local.
 
 1. En el proyecto Supabase `qfeubudlnoogwzozywph`, abrir **SQL Editor** y ejecutar [supabase/cuentas.sql](supabase/cuentas.sql). Crea `gya_cuentas` con una fila por ID verificado y políticas RLS. La clave pública del sitio solo puede leer o modificar la partida del usuario que inició sesión.
 2. En Google Cloud, crear un cliente OAuth web. Agregar `https://qfeubudlnoogwzozywph.supabase.co/auth/v1/callback` como URI de redirección autorizada. Configurar la pantalla de consentimiento y publicar el cliente para los jugadores previstos.

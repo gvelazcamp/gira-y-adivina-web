@@ -3,7 +3,7 @@
 const Cuenta=(()=>{
   const TABLA="gya_cuentas",ID="gya_cuenta_usuario",REV="gya_cuenta_revision",FIRMA="gya_cuenta_firma";
   const EXCLUIR=new Set(["gya_origen_app","gya_bienvenida_vista","gya_social_ocultos"]);
-  let usuario=null,revision=0,firma="",ocupado=false,panelAbierto=false,pospuesto=false,habilitado=false,btnInicio=null,btnPerfil=null;
+  let usuario=null,revision=0,firma="",ocupado=false,panelAbierto=false,pospuesto=false,habilitado=false,btnInicio=null,btnPerfil=null,btnAjustes=null,inicioPendiente=null,temporizadorActivo=false;
   const cliente=()=>typeof obtenerSupa==="function"?obtenerSupa():null;
   const puedeGuardar=k=>!EXCLUIR.has(k)&&!k.startsWith("gya_cuenta_")&&!k.startsWith("gya_tele_")&&!k.startsWith("gya_admin_")&&!k.startsWith("gya_backup_");
   function partidaLocal(){
@@ -22,12 +22,15 @@ const Cuenta=(()=>{
   function pintar(){
     const t=usuario?"☁️ Partida vinculada":"☁️ Guardar mi progreso";
     [btnInicio,btnPerfil].forEach(b=>{if(b){b.textContent=t;b.hidden=!habilitado;}});
+    if(btnAjustes)btnAjustes.querySelector(".btn-txt").textContent=usuario?"Partida vinculada":"Guardar mi progreso";
   }
   function interfaz(){
     btnInicio=document.createElement("button");btnInicio.id="cuentaInicio";btnInicio.type="button";btnInicio.className="cuenta-acceso";btnInicio.onclick=abrir;
     document.querySelector("#setup .setup-topbar")?.after(btnInicio);
     btnPerfil=document.createElement("button");btnPerfil.id="cuentaPerfil";btnPerfil.type="button";btnPerfil.className="cuenta-acceso";btnPerfil.onclick=abrir;
     document.querySelector("#perfilCerrar")?.before(btnPerfil);
+    btnAjustes=document.getElementById("bCuenta");
+    if(btnAjustes)btnAjustes.onclick=abrirDesdeAjustes;
     const capa=document.createElement("div");capa.id="cuentaCapa";capa.className="cuenta-capa";capa.hidden=true;
     capa.innerHTML='<div class="cuenta-caja" role="dialog" aria-modal="true" aria-labelledby="cuentaTitulo"><button type="button" class="cuenta-x" id="cuentaCerrar" aria-label="Cerrar">✕</button><h2 id="cuentaTitulo">Guardá tu partida</h2><p id="cuentaTexto"></p><div id="cuentaOpciones"></div></div>';
     document.body.append(capa);capa.querySelector("#cuentaCerrar").onclick=cerrar;capa.onclick=e=>{if(e.target===capa)cerrar();};pintar();
@@ -50,6 +53,18 @@ const Cuenta=(()=>{
       {texto:"Continuar con Google",principal:true,accion:entrar},
       {texto:"Ahora no",accion:cerrar}
     ]);
+  }
+  async function abrirDesdeAjustes(){
+    document.getElementById("capaMas")?.classList.remove("ver");
+    if(!habilitado)await iniciar();
+    if(!habilitado){
+      mostrar("Inicio de sesión no disponible","No se pudo comprobar la conexión con Google. Tu partida sigue guardada en este dispositivo.",[
+        {texto:"Reintentar",principal:true,accion:()=>{cerrar();abrirDesdeAjustes();}},
+        {texto:"Cerrar",accion:cerrar}
+      ]);
+      return;
+    }
+    if(!panelAbierto)abrir();
   }
   async function entrar(){
     const supa=cliente();if(!supa)return;
@@ -125,13 +140,21 @@ const Cuenta=(()=>{
       return config?.external?.google===true&&!tabla.error;
     }catch(e){return false;}
   }
-  async function iniciar(){
-    interfaz();habilitado=await disponible();pintar();if(!habilitado)return;
-    try{const r=await cliente().auth.getUser();usuario=r.data?.user||null;if(usuario){pintar();await revisar();}}
-    catch(e){fallo(e);}
-    setInterval(tic,2500);
-    window.addEventListener("online",tic);
-    document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")tic();});
+  function iniciar(){
+    if(inicioPendiente)return inicioPendiente;
+    inicioPendiente=(async()=>{
+      if(!btnInicio)interfaz();
+      habilitado=await disponible();pintar();if(!habilitado)return;
+      try{const r=await cliente().auth.getUser();usuario=r.data?.user||null;if(usuario){pintar();await revisar();}}
+      catch(e){fallo(e);}
+      if(!temporizadorActivo){
+        temporizadorActivo=true;
+        setInterval(tic,2500);
+        window.addEventListener("online",tic);
+        document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")tic();});
+      }
+    })().finally(()=>{inicioPendiente=null;});
+    return inicioPendiente;
   }
   window.addEventListener("load",iniciar);
   return{partidaLocal,huella,iniciar,disponible,revisar};
