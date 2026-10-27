@@ -177,10 +177,67 @@ const Fichas=(()=>{
 window.Fichas=Fichas;
 const Extensiones=(()=>{
   let shell=null,contenido=null,vista="";
+  // Prueba de Gonzalo, independiente del modo horizontal de la Ruleta.
+  // La preferencia solo altera el perfil Gonzalo; los demás quedan verticales.
+  const CLAVE_HORIZONTAL="gya_gonzalo_ext_horizontal";
+  let horizontalPreferido=true,fullscreenHorizontal=false,orientacionHorizontal=false;
+  try{horizontalPreferido=localStorage.getItem(CLAVE_HORIZONTAL)!=="0";}catch(e){}
+  const modoGonzalo=()=>typeof esGonzalo==="function"&&esGonzalo();
+  function pintarHorizontal(){
+    if(!shell)return;
+    const habilitado=modoGonzalo()&&vista!=="lobby"&&horizontalPreferido;
+    document.body.classList.toggle("ext-horizontal",habilitado);
+    const b=shell.querySelector("#extHorizontal");
+    if(b){
+      b.hidden=!modoGonzalo()||vista==="lobby";
+      b.setAttribute("aria-pressed",String(habilitado));
+      b.textContent=habilitado?"📺 Horizontal: sí":"📱 Horizontal: no";
+    }
+  }
+  async function pedirHorizontal(){
+    if(!modoGonzalo()||!horizontalPreferido||vista==="lobby")return;
+    try{
+      const completo=matchMedia("(display-mode: fullscreen)").matches;
+      if(!completo&&!document.fullscreenElement&&document.documentElement.requestFullscreen){
+        await document.documentElement.requestFullscreen({navigationUI:"hide"});
+        fullscreenHorizontal=true;
+      }
+    }catch(e){}
+    if(!modoGonzalo()||!horizontalPreferido||vista==="lobby")return;
+    try{
+      if(screen.orientation?.lock){
+        await screen.orientation.lock("landscape");
+        orientacionHorizontal=true;
+      }
+    }catch(e){
+      // Si Android/Play Store fija portrait, HTML no puede anularlo.
+      // Se mantiene el estilo horizontal para cuando la pantalla gire.
+    }
+  }
+  function soltarHorizontal(){
+    document.body.classList.remove("ext-horizontal");
+    if(orientacionHorizontal){
+      try{screen.orientation.unlock();}catch(e){}
+      orientacionHorizontal=false;
+    }
+    if(fullscreenHorizontal&&document.fullscreenElement){
+      try{document.exitFullscreen().catch(()=>{});}catch(e){}
+    }
+    fullscreenHorizontal=false;
+    pintarHorizontal();
+  }
+  function alternarHorizontal(){
+    if(!modoGonzalo())return;
+    horizontalPreferido=!horizontalPreferido;
+    try{localStorage.setItem(CLAVE_HORIZONTAL,horizontalPreferido?"1":"0");}catch(e){}
+    if(!horizontalPreferido)soltarHorizontal();
+    pintarHorizontal();
+    if(horizontalPreferido)pedirHorizontal();
+  }
   function asegurar(){
     if(shell)return;
     shell=document.createElement("section");shell.id="extShell";shell.className="ext-shell";shell.hidden=true;
-    shell.innerHTML='<div class="ext-wrap"><header class="ext-header"><button class="ext-atras" id="extAtras" type="button" aria-label="Volver">‹</button><strong id="extTitulo">Extensiones</strong><span class="ext-fichas" id="extFichas" hidden></span><button class="ext-cerrar" id="extCerrar" type="button" aria-label="Cerrar">✕</button></header><div id="extContenido"></div></div>';
+    shell.innerHTML='<div class="ext-wrap"><header class="ext-header"><button class="ext-atras" id="extAtras" type="button" aria-label="Volver">‹</button><strong id="extTitulo">Extensiones</strong><span class="ext-fichas" id="extFichas" hidden></span><button class="ext-horizontal-btn" id="extHorizontal" type="button" aria-pressed="false" hidden>📺 Horizontal</button><button class="ext-cerrar" id="extCerrar" type="button" aria-label="Cerrar">✕</button></header><div id="extContenido"></div></div>';
     document.body.appendChild(shell);
     contenido=shell.querySelector("#extContenido");
     /* Todas las ventanitas de inicio/fin de los juegos llevan un "Volver"
@@ -195,6 +252,7 @@ const Extensiones=(()=>{
     }).observe(contenido,{childList:true,subtree:true});
     shell.querySelector("#extAtras").onclick=()=>vista==="lobby"?cerrar():abrirLobby();
     shell.querySelector("#extCerrar").onclick=cerrar;
+    shell.querySelector("#extHorizontal").onclick=alternarHorizontal;
     document.addEventListener("keydown",e=>{
       if(shell.hidden)return;
       /* Juegos de previa en pantalla fija: Escape no saca del juego. */
@@ -230,7 +288,8 @@ const Extensiones=(()=>{
     precargarIconos();
     if(!EXTENSIONES_HABILITADAS)return;
     salirJuego();
-    mostrar();vista="lobby";Fichas.enJuego("");
+    soltarHorizontal();
+    mostrar();vista="lobby";pintarHorizontal();Fichas.enJuego("");
     shell.querySelector("#extTitulo").textContent="Jugá más juegos de Girá y Adiviná";
     contenido.innerHTML='<div class="ext-hero"><span>✦ MÁS JUEGOS, MÁS DESAFÍOS</span><h2>Extensiones</h2><p>Elegí un juego del universo Girá y Adiviná. Jugá gratis, sin gastar vidas ni monedas.</p></div><h3 class="ext-seccion">🎮 Más juegos</h3><div class="ext-lista" id="extListaResto"></div><h3 class="ext-seccion">🎉 Juegos de previa</h3><div class="ext-lista" id="extListaPrevia"></div>';
     /* "Juegos de previa": los de juntarse en grupo (grupo:"previa") van en su propia sección. */
@@ -256,12 +315,14 @@ const Extensiones=(()=>{
     if(!EXTENSIONES_HABILITADAS)return;
     const ext=EXTENSIONES.find(x=>x.id===id&&x.estado==="disponible"&&extensionVisible(x));if(!ext)return;
     mostrar();vista=id;contenido.replaceChildren();Fichas.enJuego(id);
+    pintarHorizontal();
+    if(modoGonzalo()&&horizontalPreferido)pedirHorizontal();
     shell.querySelector("#extTitulo").textContent=ext.nombre;
     if(typeof window.anotarUltimoJuego==="function")window.anotarUltimoJuego(ext.nombre);
     ext.abrir(contenido);shell.scrollTop=0;
   }
   function salirJuego(){for(const juego of [window.SopaFugaz,window.RuedaDeLetras,window.PalabraSecreta,window.FrasesEnGiro,window.MemoriaEnGiro,window.RoscoRioplatense,window.SilabarioRioplatense,window.CienRioplatenses,window.AhorcadoRioplatense,window.ContraRelojRioplatense,window.MoonTap,window.Puzzle,window.QueNumeroSoy,window.QuienSoy,window.Bomba,window.Impostor,window.Mimica,window.CantaLaCancion,window.TuttiFrutti])if(juego)juego.salir();}
-  function cerrar(){if(!shell)return;salirJuego();Fichas.enJuego("");shell.hidden=true;document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
+  function cerrar(){if(!shell)return;salirJuego();Fichas.enJuego("");vista="lobby";soltarHorizontal();shell.hidden=true;document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
   return{abrirLobby,abrirJuego,cerrar};
 })();
 window.Extensiones=Extensiones;
