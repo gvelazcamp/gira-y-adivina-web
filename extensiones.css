@@ -790,6 +790,25 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .ext-fichas small{font-size:.66rem;font-weight:800;color:#37D6C0}
 .ext-header .ext-fichas+.ext-cerrar{margin-left:8px}
 
+/* Selector discreto al principio de Más juegos; aparece solo en Gonzalo. */
+.ext-selector-modo{
+  display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;
+  gap:5px;margin:3px 2px 11px;padding:0 4px;
+}
+.ext-selector-modo>span{color:#BCAACC;font:700 .69rem Outfit,system-ui,sans-serif;margin-right:5px}
+.ext-selector-modo button{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:32px;padding:5px 10px;border:1px solid #74638588;border-radius:9px;
+  background:#25182F;color:#CFBFDC;font:800 .73rem Outfit,system-ui,sans-serif;
+  transition:background .16s ease,color .16s ease;
+}
+.ext-selector-modo button[aria-pressed="true"]{
+  background:#1D514D;color:#F2FFF9;border-color:#37D6C0BB;
+}
+@media(max-width:400px){
+  .ext-selector-modo{gap:4px;margin-bottom:8px}
+  .ext-selector-modo button{padding:5px 8px;font-size:.68rem}
+}
 /* Botón pequeño para TV, visible solamente dentro de las extensiones de Gonzalo. */
 .ext-header .ext-tv-mini{
   display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
