@@ -119,7 +119,7 @@ window.EXTENSIONES=EXTENSIONES;
    juego principal no se tocan. */
 const Fichas=(()=>{
   const MAX=3,MS=30*60*1000,CLAVE="gya_fichas_ext",PRECIO=400;
-  const JUEGOS=["palabra-secreta","sopa-fugaz","rueda-de-letras","frases-en-giro","memoria-en-giro","rosco-rioplatense","silabario-rioplatense","cien-rioplatenses","ahorcado-rioplatense","moon-tap","tutti-frutti","puzzle"];
+  const JUEGOS=["palabra-secreta","sopa-fugaz","rueda-de-letras","frases-en-giro","memoria-en-giro","rosco-rioplatense","silabario-rioplatense","cien-rioplatenses","ahorcado-rioplatense","moon-tap","tutti-frutti","puzzle","duelo-conocimiento"];
   const TESTERS_LIBRES=new Set(["andres","flor","grace","juan e","mari","romina","ruben","vale"]);
   const activo=()=>{
     try{

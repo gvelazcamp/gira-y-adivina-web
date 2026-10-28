@@ -245,6 +245,10 @@ start=function(){
  botError=Number($dc("dc-bot-error").value);
  if(![...document.querySelectorAll('input[name=category]:checked')].length){$dc("setup-voice-error").textContent="Elegí al menos una categoría.";return;}
  mode=modeSel.value;
+ // Solo una partida contra el BOT gasta ficha; jugar con otra persona es libre.
+ // El contador y el cartel viven en la pantalla de Extensiones, fuera de este iframe.
+ if(mode==="bot"&&window.parent!==window&&window.parent.Fichas&&
+    !window.parent.Fichas.usar("duelo-conocimiento",()=>{if(document.contains(place))start();}))return;
  clearTimeout(botHandle);stopOnline();
  if(mode==="bot"){$dc("input1").disabled=false;$dc("input1").value="BOT";}
  if(mode==="online"){
