@@ -10,9 +10,9 @@ const rosco=fs.readFileSync(path.join(root,"rosco-rioplatense.js"),"utf8");
 const index=fs.readFileSync(path.join(root,"index.html"),"utf8");
 const sw=fs.readFileSync(path.join(root,"sw.js"),"utf8");
 new Function(src);new Function(rosco);new Function(sw);
-assert(index.includes('rosco-rioplatense.js?v=27'));
-assert(sw.includes('"./giro-rosco-piloto.js?v=2"'));
-assert(sw.includes('"./giro-rosco-piloto.css?v=1"'));
+assert(index.includes('rosco-rioplatense.js?v=28'));
+assert(sw.includes('"./giro-rosco-piloto.js?v=3"'));
+assert(sw.includes('"./giro-rosco-piloto.css?v=2"'));
 assert(rosco.includes('cargarEscenaGiroG(raiz);'));
 assert(rosco.includes('window.GIRO_ROSCO_PILOTO!==false'));
 assert(rosco.includes('window.GiroRoscoPiloto.mostrarFinal({aciertos,total:items.length,puntos})'));
@@ -32,6 +32,7 @@ for(const rel of [
 function el(tag){
   return {
     tag,children:[],dataset:{},attributes:{},
+    classList:{add(){},remove(){},contains(){return false;}},
     append(...nodes){this.children.push(...nodes);},
     appendChild(node){this.children.push(node);return node;},
     setAttribute(k,v){this.attributes[k]=v;},
@@ -53,6 +54,7 @@ function comprobar(nombre,permitido,flag){
     window,document,SpeechSynthesisUtterance:function(){},
     esGonzalo:()=>permitido,
     matchMedia:()=>({matches:true}),
+    requestAnimationFrame:cb=>cb(),
     setInterval:()=>1,clearInterval:()=>{}
   };
   vm.runInNewContext(src,contexto,{filename:"giro-rosco-piloto.js"});
