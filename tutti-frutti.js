@@ -49,7 +49,13 @@ const TuttiFrutti=(()=>{
       if(audioMusica.paused)audioMusica.play().catch(()=>{});}catch(e){}
   }
   function detenerMusica(){try{if(audioMusica)audioMusica.pause();}catch(e){}}
-  document.addEventListener("visibilitychange",()=>{if(document.hidden)detenerMusica();else if(raiz&&on&&on.fase==="jugando"&&on.fin)iniciarMusica();salidaJuego();});
+  document.addEventListener("visibilitychange",()=>{
+    if(document.hidden){detenerMusica();if(micActivo){pararMicrofono();micAviso="Micrófono pausado. Tocá Activar micrófono para reanudar.";}}
+    else if(raiz&&on&&on.fase==="jugando"&&on.fin){
+      iniciarMusica();const msg=q("tfMsg");if(msg&&micAviso){msg.textContent=micAviso;micAviso="";}
+    }
+    salidaJuego();
+  });
   /* Salir de la app en plena ronda (por ej. a buscar en internet): se avisa a
      todos con un aviso chico. A la 3ª salida en la misma ronda, ese jugador
      pierde los puntos de la ronda. Contra bots no cuenta. El aviso se manda al
@@ -106,13 +112,86 @@ const TuttiFrutti=(()=>{
      En vertical (y con teclado físico en escritorio) el input es normal. */
   const tecladoHorizontal=()=>window.matchMedia("(orientation: landscape) and (min-width:600px) and (max-width:1024px) and (max-height:600px)").matches
     &&(window.matchMedia("(pointer: coarse)").matches||navigator.maxTouchPoints>0);
+  let micActivo=false,micPidiendo=false,micStream=null,micRecon=null,micReinicio=null,micToken=0,micInicioPendiente=false,micAviso="",micReiniciosCortos=0;
+  function pintarMicrofono(){
+    const boton=raiz&&q("tfMic");if(!boton)return;
+    boton.classList.toggle("tf-mic-activo",micActivo);
+    boton.setAttribute("aria-pressed",String(micActivo));
+    boton.disabled=micPidiendo;
+    boton.textContent=micPidiendo?"🎙️ Permiso…":micActivo?"🎙️ Encendido":"🎙️ Activar micrófono";
+  }
+  function pararMicrofono(reanudarMusica=false){
+    micActivo=false;micPidiendo=false;micInicioPendiente=false;micToken++;
+    clearTimeout(micReinicio);micReinicio=null;
+    const r=micRecon;micRecon=null;
+    if(r){r.onend=null;r.onerror=null;r.onresult=null;try{r.abort();}catch(e){}}
+    if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null;}
+    pintarMicrofono();
+    if(reanudarMusica&&on&&on.fase==="jugando"&&!on.basta)iniciarMusica();
+  }
+  function escucharMicrofono(){
+    if(!micActivo||!on||on.fase!=="jugando"||on.basta||!q("tfInput")||document.hidden)return;
+    const Recon=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!Recon){pararMicrofono(true);micAviso="Este navegador no admite respuestas por voz.";const msg=q("tfMsg");if(msg)msg.textContent=micAviso;return;}
+    const r=new Recon(),token=micToken,inicio=performance.now();micRecon=r;
+    r.lang="es-UY";r.continuous=true;r.interimResults=false;r.maxAlternatives=1;
+    r.onresult=e=>{
+      if(!micActivo||micRecon!==r||token!==micToken||!q("tfInput"))return;
+      micReiniciosCortos=0;
+      for(let i=e.resultIndex||0;i<e.results.length;i++){
+        if(!e.results[i].isFinal)continue;
+        const frase=String(e.results[i][0]?.transcript||"").trim().replace(/[.!?]+$/g,"");
+        const orden=frase.toLocaleLowerCase("es");
+        if(orden==="siguiente"){confirmarCampo();continue;}
+        if(orden==="anterior"){q("tfAnt")?.click();continue;}
+        if(orden==="basta"){q("tfBasta")?.click();continue;}
+        if(frase&&q("tfInput")&&!q("tfEdit")?.hidden){q("tfInput").value=frase.slice(0,30);const msg=q("tfMsg");if(msg)msg.textContent="Escuché: «"+frase.slice(0,30)+"»";}
+      }
+    };
+    r.onerror=e=>{if(micRecon!==r||!micActivo)return;
+      if(["not-allowed","service-not-allowed","audio-capture","language-not-supported","network"].includes(e.error)){
+        pararMicrofono(true);micAviso="No pude usar el micrófono. Revisá el permiso y tocá Activar micrófono.";
+        const msg=q("tfMsg");if(msg)msg.textContent=micAviso;
+      }
+    };
+    r.onend=()=>{if(micRecon!==r)return;micRecon=null;
+      if(micActivo&&token===micToken&&on&&on.fase==="jugando"&&!on.basta){
+        micReiniciosCortos=performance.now()-inicio<1200?Math.min(micReiniciosCortos+1,3):0;
+        clearTimeout(micReinicio);micReinicio=setTimeout(escucharMicrofono,400+micReiniciosCortos*350);
+      }
+    };
+    try{r.start();}catch(e){micRecon=null;pararMicrofono(true);micAviso="No pude iniciar el micrófono. Tocá Activar micrófono para reintentar.";const msg=q("tfMsg");if(msg)msg.textContent=micAviso;}
+  }
+  async function activarMicrofono(antesDelSorteo=false){
+    if(micActivo||micPidiendo)return micActivo;
+    if(!(window.SpeechRecognition||window.webkitSpeechRecognition)||!navigator.mediaDevices?.getUserMedia){
+      micAviso="Este navegador no permite usar el micrófono. Podés escribir con el teclado.";
+      const msg=q("tfMsg");if(msg)msg.textContent=micAviso;return false;
+    }
+    micPidiendo=true;micAviso="";micReiniciosCortos=0;pintarMicrofono();const token=++micToken;
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      if(token!==micToken||!on||on.fase!=="jugando"||on.basta||!tecladoHorizontal()){
+        stream.getTracks().forEach(t=>t.stop());return false;
+      }
+      micStream=stream;micActivo=true;micPidiendo=false;micInicioPendiente=antesDelSorteo;
+      detenerMusica();pintarMicrofono();
+      if(!antesDelSorteo)escucharMicrofono();
+      return true;
+    }catch(e){
+      if(token!==micToken)return false;
+      micPidiendo=false;micAviso="No se pudo activar el micrófono. Permitilo en Chrome o en la app y tocá Activar micrófono.";
+      pintarMicrofono();const msg=q("tfMsg");if(msg)msg.textContent=micAviso;return false;
+    }
+  }
   function sincronizarTeclado(){
     const pantalla=raiz?.querySelector(".qns-pantalla"),inp=raiz?.querySelector("#tfInput"),teclado=raiz?.querySelector("#tfTeclado");
     if(!pantalla||!inp||!teclado)return;
-    const propio=tecladoHorizontal()&&!raiz.querySelector("#tfEdit")?.hidden;
-    pantalla.classList.toggle("tf-teclado-propio",propio);
-    inp.readOnly=propio;inp.inputMode=propio?"none":"text";
-    if(propio&&document.activeElement===inp)inp.blur();
+    const horizontal=tecladoHorizontal();
+    pantalla.classList.toggle("tf-teclado-propio",horizontal);
+    inp.readOnly=horizontal;inp.inputMode=horizontal?"none":"text";
+    if(horizontal&&document.activeElement===inp)inp.blur();
+    if(!horizontal&&micActivo)pararMicrofono(true);
   }
   function crearTeclado(){
     const panel=q("tfTeclado");if(!panel)return;
@@ -150,7 +229,7 @@ const TuttiFrutti=(()=>{
   }
   if(window.visualViewport){visualViewport.addEventListener("resize",ajustarVV);visualViewport.addEventListener("scroll",ajustarVV);}
   window.addEventListener("resize",ajustarVV);window.addEventListener("orientationchange",ajustarVV);
-  function parar(){jugando=false;clearTimeout(timer);}
+  function parar(){jugando=false;clearTimeout(timer);pararMicrofono();}
   function salir(){document.querySelectorAll(".tf-modos").forEach(x=>x.remove());if(typeof cerrarApelaciones==="function")cerrarApelaciones();detenerMusica();parar();cerrarSala();if(raiz)PantallaFija.salir();if(raiz)raiz.remove();raiz=null;}
   /* ===== Control de respuestas =====
      Listas propias (tutti-frutti-datos.js) para Nombre, Apellido, Lugar, Animal,
@@ -481,7 +560,7 @@ const TuttiFrutti=(()=>{
   /* Cada bot "escribe" categoría por categoría: se calcula cuándo termina
      cada una (acumulado). Si completa todo antes del tiempo, canta BASTA. */
   function planBots(){
-    const n=on.n,T=on.tiempo*1000,t0=Date.now()+2200,letraDif=LETRAS_DIFICILES.includes(on.letra);
+    const n=on.n,T=on.tiempo*1000,t0=Date.now(),letraDif=LETRAS_DIFICILES.includes(on.letra);
     on.botT0=t0;on.botResp={};
     on.jug.filter(j=>j.bot).forEach(j=>{
       const r=on.cats.map(c=>respuestaBot(c,on.letra,j.bot.hab));on.botResp[j.pid]=r;
@@ -573,7 +652,6 @@ const TuttiFrutti=(()=>{
       if(Number(m.n)<=Number(on.n||0)&&on.fase!=="lobby")return;
       on.n=m.n;if(Array.isArray(m.usadas))on.usadas=m.usadas.slice();on.rj=m.rj||on.rj;on.tot=m.tot||on.tot||RONDAS;on.letra=m.letra;on.cats=m.cats;on.tiempo=m.tiempo;on.fase="jugando";on.resps={};on.extra={};on.apeladas={};on.anuladas={};on.salidas={};on.avisoSalida=0;on.salidaPend=false;on.ganador=null;on.basta=null;on.mias=Array(on.cats.length).fill("");on.envie=false;
       jugarOnline();
-      if(on.bots)planBots();
     }else if(m.t==="basta"&&m.n===on.n){
       if(!on.basta){on.basta=m.pid;if(on.host)on.ganador=m.pid;}
       cortarRonda(m.pid);
@@ -633,6 +711,26 @@ const TuttiFrutti=(()=>{
   function jugarOnline(){
     cerrarApelaciones();
     PantallaFija.activar({completa:false});
+    if(on.rj===1&&tecladoHorizontal()){
+      pantalla(`<div class="tf-mic-aviso" role="dialog" aria-modal="true" aria-labelledby="tfMicTitulo"><div class="tf-mic-aviso-caja">
+        <h3 id="tfMicTitulo">🎙️ Micrófono para jugar</h3>
+        <p>Para una mejor jugabilidad en horizontal, recomendamos responder con el micrófono.</p>
+        <p>Quedará encendido durante la ronda y se pausará al llegar a <b>¡BASTA!</b>. Podés volver a activarlo con el botón del juego.</p>
+        <div class="tf-mic-aviso-botones"><button type="button" id="tfVozNo">No, escribir</button><button type="button" id="tfVozSi">Sí, usar micrófono</button></div>
+        <small id="tfVozPermiso" role="status"></small>
+      </div></div>`);
+      q("tfVozNo").onclick=()=>{micAviso="";sortearLetra();};
+      q("tfVozSi").onclick=async()=>{
+        q("tfVozSi").disabled=true;q("tfVozNo").disabled=true;q("tfVozPermiso").textContent="Solicitando permiso para el micrófono…";
+        await activarMicrofono(true);
+        if(on&&on.fase==="jugando"&&!on.basta)sortearLetra();
+      };
+      return;
+    }
+    sortearLetra();
+  }
+  function sortearLetra(){
+    if(!raiz||!on||on.fase!=="jugando"||on.basta)return;
     pantalla(`<div class="imp-centro"><div class="imp-quien">🎲 Ronda ${on.rj||1} de ${on.tot||RONDAS} · sorteando la letra…</div><div class="tf-ficha"><img src="${ARTE("ficha")}" alt="" draggable="false"><div class="tf-letra" id="tfLetra">?</div></div></div>`);
     let k=0;const giro=()=>{if(!raiz||!on)return;const el=q("tfLetra");if(!el)return;
       if(k<12){el.textContent=LETRAS[Math.floor(Math.random()*LETRAS.length)];if(typeof bip==="function")bip(600+k*25,.04,"square",.03);k++;setTimeout(giro,60+k*8);return;}
@@ -642,19 +740,22 @@ const TuttiFrutti=(()=>{
   function campos(){
     if(!raiz||!on||on.fase!=="jugando"||on.basta)return;
     on.fin=Date.now()+on.tiempo*1000;on.pend=on.cats.map((_,i)=>i);on.hist=[];
+    if(on.bots)planBots();
     if(audioMusica)try{audioMusica.currentTime=0;}catch(e){}
-    iniciarMusica();
+    if(!micActivo)iniciarMusica();
     pantalla(`<div class="qs-tope"><span>🍓 Letra ${on.letra}</span><b id="tfReloj">${on.tiempo}</b><span></span></div>
       <div class="imp-centro tf-campo"><div class="tf-ficha tf-ficha-chica"><img src="${ARTE("ficha")}" alt="" draggable="false"><div class="tf-letra tf-final tf-chica">${on.letra}</div></div>
       <div class="tf-prog" id="tfProg"></div>
+      <button type="button" class="tf-mic-btn" id="tfMic" aria-pressed="false">🎙️ Activar micrófono</button>
       <div id="tfEdit"><div class="imp-quien" id="tfCat"></div>
       <input id="tfInput" maxlength="30" autocomplete="off" autocapitalize="words" enterkeyhint="next" aria-label="Tu palabra">
-      <p class="imp-ayuda" id="tfMsg"></p>
+      <p class="imp-ayuda" id="tfMsg" role="status"></p>
       <div class="mim-btns"><button type="button" class="bb-pasar imp-gris" id="tfAnt">⟵ Anterior</button><button type="button" class="bb-pasar mim-ok" id="tfSig">Siguiente ➜</button></div>
       <div id="tfTeclado" class="tf-teclado-digital" role="group" aria-label="Teclado para responder"></div></div>
       <div id="tfRev" class="tf-rev" hidden></div></div>`);
     const inp=q("tfInput");
-    crearTeclado();sincronizarTeclado();
+    crearTeclado();sincronizarTeclado();pintarMicrofono();
+    q("tfMic").onclick=()=>{if(micActivo)pararMicrofono(true);else activarMicrofono();};
     q("tfSig").onclick=confirmarCampo;
     inp.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();confirmarCampo();}});
     /* Anterior: va a la categoría de antes en el orden (vacía o completa,
@@ -663,7 +764,10 @@ const TuttiFrutti=(()=>{
       guardarCampo();if(todoCompleto()){on.pend=[];revision();return;}const n=on.cats.length;irACampo((on.pend[0]-1+n)%n);};
     /* Los puntitos de arriba también llevan directo a cualquier categoría. */
     q("tfProg").onclick=e=>{const d=e.target.closest("i[data-i]");if(!d||!on||on.fase!=="jugando"||on.basta)return;if(on.pend.length)guardarCampo();irACampo(Number(d.dataset.i));};
-    pintarCampo();relojOnline();
+    pintarCampo();
+    if(micAviso){q("tfMsg").textContent=micAviso;micAviso="";}
+    if(micActivo&&micInicioPendiente){micInicioPendiente=false;escucharMicrofono();}
+    relojOnline();
   }
   function irACampo(k){on.pend=[k,...on.pend.filter(x=>x!==k)];pintarCampo();}
   /* Con todo completo no se manda BASTA solo: se muestran las respuestas
@@ -721,6 +825,7 @@ const TuttiFrutti=(()=>{
   /* BASTA (o tiempo): todos mandan lo que tienen; el anfitrión junta y publica. */
   function cortarRonda(quien){
     if(!on||on.fase!=="jugando")return;
+    pararMicrofono();
     detenerMusica();
     if(on.pend&&on.pend.length&&q("tfInput")){const v=(q("tfInput").value||"").trim();if(v.length>=2&&N(v)[0]===on.letra)guardarCampo();}
     on.fase="cortada";

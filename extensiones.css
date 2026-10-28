@@ -1003,6 +1003,16 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
    El campo no abre el IME de Android, por lo que categorías y botones
    quedan visibles. En vertical esta distribución NO se activa. */
 .tf .tf-teclado-digital{display:none}
+.tf .tf-mic-btn{display:none}
+.tf-mic-aviso{position:absolute;inset:0;z-index:6;display:grid;place-items:center;padding:12px;background:#0A0412D9}
+.tf-mic-aviso-caja{width:min(100%,500px);max-height:calc(100dvh - 24px);overflow:auto;background:#2A1A3C;border:2px solid #F5B30199;border-radius:18px;padding:17px;text-align:center;box-shadow:0 16px 40px #0009}
+.tf-mic-aviso h3{margin:0 0 9px;color:#F5B301;font:900 clamp(18px,4dvh,24px) 'Archivo Black',Outfit,sans-serif}
+.tf-mic-aviso p{margin:6px 0;font-size:clamp(13px,3.2dvh,17px);line-height:1.3;color:#F6EFE2}
+.tf-mic-aviso-botones{display:flex;gap:10px;justify-content:center;margin-top:14px}
+.tf-mic-aviso-botones button{flex:1;min-height:42px;border:0;border-radius:11px;padding:7px;font:900 clamp(13px,3.1dvh,16px) Outfit,sans-serif;color:#fff;background:#51366B}
+.tf-mic-aviso-botones #tfVozSi{background:#1FA866;color:#fff}
+.tf-mic-aviso-botones button:disabled{opacity:.55}
+.tf-mic-aviso small{display:block;min-height:16px;margin-top:6px;color:#37D6C0}
 @media (orientation:landscape) and (min-width:600px) and (max-width:1024px) and (max-height:600px){
   .tf .qns-pantalla.tf-teclado-propio{
     padding:4px max(8px,var(--safe-right)) 4px max(8px,var(--safe-left));
@@ -1018,7 +1028,7 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
   .tf .qns-pantalla.tf-teclado-propio>.tf-campo{
     display:grid;align-items:center;justify-content:center;justify-items:center;
     grid-template-columns:minmax(135px,.32fr) minmax(0,.68fr);
-    grid-template-rows:minmax(0,1fr) auto;column-gap:14px;row-gap:5px;
+    grid-template-rows:minmax(0,1fr) auto auto;column-gap:14px;row-gap:5px;
     width:100%;max-width:960px;height:100%;max-height:100%;min-height:0;box-sizing:border-box;
     padding:32px 4px 4px!important;margin:0!important;overflow:hidden;
   }
@@ -1030,15 +1040,23 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
     font-size:clamp(1.5rem,6.4dvh,3rem);
   }
   .tf .qns-pantalla.tf-teclado-propio>.tf-campo>.tf-prog{
-    grid-column:1;grid-row:2;display:flex;flex-wrap:wrap;
+    grid-column:1;grid-row:3;display:flex;flex-wrap:wrap;
     justify-content:center;gap:5px;max-width:220px;margin:0 auto 6px;
   }
   .tf .qns-pantalla.tf-teclado-propio>.tf-campo>.tf-prog i{width:12px;height:12px}
+  .tf .qns-pantalla.tf-teclado-propio>.tf-campo>.tf-mic-btn{
+    display:block;grid-column:1;grid-row:2;width:100%;min-height:34px;
+    border:1px solid #37D6C088;border-radius:10px;padding:5px 7px;margin:0;
+    background:#19465C;color:#E8FFF8;font:900 clamp(.68rem,2.8dvh,.82rem) Outfit,sans-serif;
+  }
+  .tf .qns-pantalla.tf-teclado-propio>.tf-campo>.tf-mic-btn.tf-mic-activo{background:#0B675C;border-color:#37D6C0;box-shadow:0 0 10px #37D6C066}
+  .tf .qns-pantalla.tf-teclado-propio>.tf-campo>.tf-mic-btn:disabled{opacity:.7}
   .tf .qns-pantalla.tf-teclado-propio>.tf-campo>#tfEdit:not([hidden]){
-    grid-column:2;grid-row:1 / span 2;width:100%;min-width:0;
+    grid-column:2;grid-row:1 / span 3;width:100%;min-width:0;
     display:flex;flex-direction:column;align-items:stretch;justify-content:center;
     gap:3px;margin:0;max-height:100%;min-height:0;
   }
+  .tf .qns-pantalla.tf-teclado-propio>.tf-campo>#tfRev:not([hidden]){grid-column:2;grid-row:1 / span 3;max-width:100%;max-height:100%;overflow:auto}
   .tf .qns-pantalla.tf-teclado-propio>.tf-campo #tfCat{
     font-size:clamp(.9rem,3.8dvh,1.2rem);line-height:1.1;
     min-height:21px;margin:0;
