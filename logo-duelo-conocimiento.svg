@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Duelo de Conocimiento">
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#150e39"/><stop offset=".55" stop-color="#4d1689"/><stop offset="1" stop-color="#0a2254"/></linearGradient><linearGradient id="gold" x2=".2" y2="1"><stop stop-color="#fff1ac"/><stop offset=".38" stop-color="#ffd53f"/><stop offset="1" stop-color="#f08c09"/></linearGradient><linearGradient id="blue" x2="0" y2="1"><stop stop-color="#45d9ff"/><stop offset="1" stop-color="#163bb2"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="8"/></filter></defs>
+<rect x="26" y="28" width="548" height="544" rx="86" fill="url(#bg)" stroke="#f5b301" stroke-width="20"/>
+<path d="M90 150Q300 45 510 150" stroke="#eb53cf" stroke-width="15" fill="none" opacity=".6" filter="url(#glow)"/>
+<circle cx="303" cy="137" r="66" fill="#ffcf32" opacity=".12"/><circle cx="303" cy="137" r="58" fill="url(#gold)" stroke="#fff8cf" stroke-width="8"/>
+<path d="M284 125a22 22 0 1 1 38 16c-8 9-8 17-8 20h-22c0-11-1-15-8-23a22 22 0 0 1 0-13Z" fill="#fff7d7" stroke="#a65c00" stroke-width="5"/><path d="M288 170h30M291 179h23" stroke="#8c5100" stroke-width="6" stroke-linecap="round"/>
+<circle cx="162" cy="202" r="45" fill="#f4b585"/><path d="M119 194q6-69 83-44l8 31q-30-16-48-10-28 1-43 23Z" fill="#371b36"/><path d="M116 239q41-30 91 0l37 108H84Z" fill="#1f9459" stroke="#a9ffca" stroke-width="5"/>
+<circle cx="445" cy="202" r="45" fill="#e7aa8c"/><path d="M401 199q-5-75 52-60 52 7 34 76-6-34-17-42-42-17-69 26Z" fill="#401d26"/><path d="M400 239q40-30 89 0l33 108H364Z" fill="#e63b8d" stroke="#ffd1e7" stroke-width="5"/>
+<rect x="83" y="320" width="160" height="73" rx="18" fill="url(#blue)" stroke="#ffd23d" stroke-width="9"/><rect x="364" y="320" width="154" height="73" rx="18" fill="url(#blue)" stroke="#ffd23d" stroke-width="9"/>
+<circle cx="166" cy="307" r="18" fill="#f5326f" stroke="#ffafbd" stroke-width="6"/><circle cx="441" cy="307" r="18" fill="#f5326f" stroke="#ffafbd" stroke-width="6"/>
+<text x="302" y="371" fill="#fff9d5" font-size="45" font-weight="1000" text-anchor="middle" font-family="Arial,sans-serif" stroke="#220d43" stroke-width="5" paint-order="stroke">VS</text>
+<rect x="49" y="403" width="502" height="133" rx="30" fill="#170b35" stroke="#f2a910" stroke-width="9"/>
+<text x="300" y="451" fill="#fff8de" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="64" font-weight="1000" stroke="#602499" stroke-width="5" paint-order="stroke">DUELO</text>
+<text x="300" y="479" fill="#ffe5a2" text-anchor="middle" font-family="Arial,sans-serif" font-size="24" font-weight="900">DE</text>
+<text x="300" y="513" fill="url(#gold)" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="37" font-weight="1000">CONOCIMIENTO</text>
+<g fill="#ffdb49"><circle cx="75" cy="101" r="8"/><circle cx="525" cy="101" r="8"/><path d="m80 260 8 15 18 3-14 12 3 18-15-9-16 9 3-18-13-12 18-3ZM520 262l8 14 16 3-12 11 3 17-15-9-15 9 3-17-12-11 16-3Z"/></g>
+</svg>
