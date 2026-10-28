@@ -1,4 +1,4 @@
-# Bocass v2 — Giro / Rosco
+# Bocas v2 — Giro / Rosco
 
 **Estado:** siete PNG aprobados, **aún pendientes de importar** como binarios a esta carpeta. No borrar ni reemplazar los sprites antiguos de `../bocas/`.
 
