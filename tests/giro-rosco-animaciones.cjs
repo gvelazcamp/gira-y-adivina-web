@@ -11,8 +11,8 @@ const sw=fs.readFileSync(path.join(root,"sw.js"),"utf8");
 assert(css.includes("@keyframes grp-respirar"),"respiración animada");
 assert(css.includes(".grp-actor .grp-giro.grp-visible{opacity:1}"),"capas fundidas");
 assert(css.includes("prefers-reduced-motion:reduce"),"accesibilidad");
-assert(sw.includes('"./giro-rosco-piloto.js?v=6"'),"PWA piloto JS versionado");
-assert(sw.includes('"./giro-rosco-piloto.css?v=5"'),"PWA piloto CSS versionado");
+assert(sw.includes('"./giro-rosco-piloto.js?v=7"'),"PWA piloto JS versionado");
+assert(sw.includes('"./giro-rosco-piloto.css?v=6"'),"PWA piloto CSS versionado");
 assert(!src.includes("new Audio("),"no incorporar música nueva");
 assert(!src.includes("grp-atril"),"no duplicar atril");
 
