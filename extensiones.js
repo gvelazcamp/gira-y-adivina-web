@@ -181,8 +181,9 @@ const Extensiones=(()=>{
     if(!shell||shell.hidden||shell.classList.contains("rr-abierta"))return;
     const campo=document.activeElement;
     const escribiendo=shell.contains(campo)&&campo.matches("input:not([type=checkbox]):not([type=radio]),textarea");
-    if(!escribiendo){shell.style.top="";shell.style.height="";shell.style.bottom="";return;}
+    if(!escribiendo){shell.classList.remove("ext-teclado-abierto");shell.style.top="";shell.style.height="";shell.style.bottom="";return;}
     const vv=window.visualViewport;
+    shell.classList.toggle("ext-teclado-abierto",!!vv&&innerHeight-vv.height>90);
     shell.style.top=Math.max(0,Math.round(vv?.offsetTop||0))+"px";
     shell.style.height=Math.round(vv?.height||innerHeight)+"px";
     shell.style.bottom="auto";
@@ -282,7 +283,7 @@ const Extensiones=(()=>{
     ext.abrir(contenido);shell.scrollTop=0;
   }
   function salirJuego(){for(const juego of [window.SopaFugaz,window.RuedaDeLetras,window.PalabraSecreta,window.FrasesEnGiro,window.MemoriaEnGiro,window.RoscoRioplatense,window.SilabarioRioplatense,window.CienRioplatenses,window.AhorcadoRioplatense,window.ContraRelojRioplatense,window.MoonTap,window.Puzzle,window.QueNumeroSoy,window.QuienSoy,window.Bomba,window.Impostor,window.Mimica,window.CantaLaCancion,window.TuttiFrutti])if(juego)juego.salir();}
-  function cerrar(){if(!shell)return;salirJuego();Fichas.enJuego("");shell.hidden=true;shell.style.top="";shell.style.height="";shell.style.bottom="";document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
+  function cerrar(){if(!shell)return;salirJuego();Fichas.enJuego("");shell.hidden=true;shell.classList.remove("ext-teclado-abierto");shell.style.top="";shell.style.height="";shell.style.bottom="";document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
   return{abrirLobby,abrirJuego,cerrar};
 })();
 window.Extensiones=Extensiones;

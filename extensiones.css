@@ -842,6 +842,9 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
   .rl-game>.rl-grilla{grid-column:1;grid-row:6 / span 6}
   .rl-game>.rl-rueda{grid-column:2;grid-row:6 / span 4;width:min(40dvh,190px)}
   .rl-game>.rl-rango,.rl-game>.rl-faltan,.rl-game>.rl-cajon,.rl-game>.rl-actual,.rl-game>.rl-acciones{grid-column:2}
+  .rl-game>.rl-rueda{justify-self:start;margin-left:12px}
+  .rl-game>.rl-acciones{grid-row:6 / span 4;justify-self:end;align-self:center;display:flex;flex-direction:column;width:min(115px,32%);margin:0}
+  .rl-game>.rl-acciones button{min-height:35px;padding:5px}
   .rl-game>.rl-cajon{max-height:23dvh;overflow:auto;margin:0}
   .rl-game .rl-letra{width:clamp(32px,8dvh,45px);height:clamp(32px,8dvh,45px)}
   .ps-game>.ps-tablero{grid-column:1;grid-row:5 / span 5;max-width:min(100%,54dvh)}
@@ -853,7 +856,8 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
   .fg-game .fg-banco{min-height:70px}
   .fg-game>.fg-acciones{margin:2px 0}
   .mg-game .mg-titulo{margin-bottom:3px}
-  .mg-game .mg-tablero{max-width:min(100%,90dvh)}
+  .mg-game>.ext-volver,.mg-game>.mg-titulo{display:none}
+  .mg-game .mg-tablero{max-width:min(100%,70dvh)}
   .mg-game .mg-carta{aspect-ratio:1.35}
   .mg-game .mg-mensaje{min-height:18px;margin:3px 0}
   .rr-game .rr-titulo-arte{margin:0}
@@ -864,6 +868,15 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
   .rr-game #rrJuego>.rr-pista,.rr-game #rrJuego>.rr-mensaje,.rr-game #rrJuego>#rrForm{grid-column:2}
   .rr-game .rr-pista{margin:0;padding:6px;min-height:0}
   .rr-game .rr-pista p{font-size:.83rem;line-height:1.18}
+  .sb-game>.ext-volver,.sb-game>.sb-titulo{display:none}
+  .sb-game #sbJuego:not([hidden]){display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:3px 12px;align-items:start}
+  .sb-game #sbJuego>.sf-hud,.sb-game #sbJuego>.sf-bar{grid-column:1 / -1}
+  .sb-game #sbJuego>.sb-pista,.sb-game #sbJuego>.sb-respuesta,.sb-game #sbJuego>.sb-mensaje,.sb-game #sbJuego>.sf-acciones{grid-column:1}
+  .sb-game #sbJuego>.sb-tablero-caja{grid-column:2;grid-row:3 / span 5}
+  .sb-game #sbJuego>.sb-pista{grid-row:3}
+  .sb-game #sbJuego>.sb-respuesta{grid-row:4}
+  .sb-game #sbJuego>.sb-mensaje{grid-row:5}
+  .sb-game #sbJuego>.sf-acciones{grid-row:6;margin:2px 0}
   .sb-game .sb-titulo-arte{margin:0}
   .sb-game .sb-logo{height:clamp(35px,7dvh,52px)}
   .sb-game .sb-pista{min-height:0;margin:2px 0}
@@ -871,6 +884,15 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
   .sb-game .sb-ficha{min-height:33px}
   .cr-game .cr-titulo{margin:0 0 4px}
   .cr-game .cr-titulo img{width:38px;height:38px}
+  .cr-game{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:3px 12px;align-items:start}
+  .cr-game>.cr-hud,.cr-game>#crEscenaRuleta,.cr-game>#crFinal,.cr-game>.cr-nota{grid-column:1 / -1}
+  .cr-game>#crEscenaPanel{grid-column:1}
+  .cr-game>#crControles{grid-column:2;display:flex;flex-direction:column;gap:4px;min-width:0}
+  .cr-game .cr-tablero{gap:3px}
+  .cr-game .cr-respuesta{min-height:33px;padding:0 3px}
+  .cr-game #crPregunta{font-size:.9rem;line-height:1.2;padding:6px 8px;margin:0 0 5px}
+  .cr-game #crControles .cr-mensaje{margin:0;min-height:0}
+  .cr-game #crControles .cr-rendirse{margin:0}
   .cr-game #crEscenaRuleta{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto;align-items:center;gap:3px 12px}
   .cr-game #crRuletaTitulo{grid-column:1;grid-row:1}
   .cr-game .cr-ruleta{grid-column:1;grid-row:2;width:min(45dvh,190px);margin:0 auto}
@@ -895,4 +917,36 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
   .mt-game .mt-escenario{max-height:none}
   .mt-game .mt-escenario canvas{height:min(56dvh,220px)}
   .mt-game .mt-controles{margin:3px auto}
+  .ext-shell.cr-abierta.ext-teclado-abierto .ext-header,
+  .ext-shell.cr-abierta.ext-teclado-abierto .cr-game>.cr-hud,
+  .ext-shell.cr-abierta.ext-teclado-abierto .cr-game #crEscenaPanel .cr-panel-cabecera,
+  .ext-shell.cr-abierta.ext-teclado-abierto .cr-game #crTablero,
+  .ext-shell.cr-abierta.ext-teclado-abierto .cr-game .cr-nota,
+  .ext-shell.cr-abierta.ext-teclado-abierto .cr-game #crRendirse{display:none!important}
+  .ext-shell.cr-abierta.ext-teclado-abierto .cr-game{display:block}
+  .ext-shell.cr-abierta.ext-teclado-abierto .cr-game #crPregunta{font-size:.82rem;line-height:1.16;padding:3px 6px;margin:0 0 3px}
+  .ext-shell.cr-abierta.ext-teclado-abierto .cr-game #crControles{display:block}
+  #extContenido .tf .tf-config{width:min(100%,760px);max-width:760px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto 1fr;gap:4px 12px;align-items:start;padding:9px 12px}
+  #extContenido .tf .tf-config .tf-cab{grid-column:1;grid-row:1}
+  #extContenido .tf .tf-config .tf-tarjetas{grid-column:1;grid-row:2;width:min(100%,280px);min-width:0;margin:0 auto;gap:4px}
+  #extContenido .tf .tf-config .tf-tiempo{grid-column:2;grid-row:1;margin:0}
+  #extContenido .tf .tf-config #tfZona{grid-column:2;grid-row:2;min-width:0}
+  #extContenido .tf .tf-config #tfZona .qs-sub{margin:3px 0}
+  #extContenido .tf .tf-config #tfZona .tf-cod{font-size:1.25rem;padding:3px;letter-spacing:.12em}
+  #extContenido .tf .tf-config #tfZona button{min-height:30px;margin:3px 0;padding:5px}
+  #extContenido .tf .tf-config #tfZona .imp-tabla{margin:2px 0}
+  #extContenido .crr .crr-top{margin-bottom:3px}
+  #extContenido .crr #crr-localPreRound{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:3px 12px;align-items:start;padding:8px 12px}
+  #extContenido .crr #crr-localPreRound h2{grid-column:1;grid-row:1;margin:0;font-size:1.2rem}
+  #extContenido .crr #crr-lPreTurno{grid-column:1;grid-row:2;margin:0;font-size:.85rem}
+  #extContenido .crr #crr-lPreScores{grid-column:1;grid-row:3;margin:2px 0}
+  #extContenido .crr #crr-localPreRound>.crr-intro{grid-column:1;grid-row:4;margin:0!important;font-size:.76rem;line-height:1.15}
+  #extContenido .crr #crr-localPreRound .crr-diebox{grid-column:2;grid-row:1 / span 7;grid-template-columns:84px minmax(0,1fr);margin:0;padding:7px;gap:3px}
+  #extContenido .crr #crr-localPreRound .crr-die{width:80px;height:80px}
+  #extContenido .crr #crr-localPreRound .crr-calc{font-size:.75rem;line-height:1.15;text-align:left}
+  #extContenido .crr #crr-localPreRound .crr-calc strong{font-size:.85rem}
+  #extContenido .crr #crr-lPreRoll{grid-column:1;grid-row:5}
+  #extContenido .crr #crr-lPreStart{grid-column:1;grid-row:6}
+  #extContenido .crr #crr-lPreHome{grid-column:1;grid-row:7}
+  #extContenido .crr #crr-localPreRound button{min-height:34px;padding:5px;margin:1px 0!important}
 }

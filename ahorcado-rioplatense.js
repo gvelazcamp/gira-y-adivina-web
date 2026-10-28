@@ -76,7 +76,8 @@ const AhorcadoRioplatense=(()=>{
     const N=AHORCADO_CATEGORIAS.length,reducido=matchMedia("(prefers-reduced-motion: reduce)").matches;
     const a=indice*360/N+180/N,falta=((-a-W)%360+360)%360;
     W+=reducido?falta:1080+falta;posicionarRueda();
-    setTimeout(cb,reducido?30:AHORCADO_CONFIG.giroMs);
+    const partida=raiz;
+    setTimeout(()=>{if(raiz===partida)cb();},reducido?30:AHORCADO_CONFIG.giroMs);
   }
   function elegirPalabra(excluir){
     const libres=Vistas.filtrar("ahorcado",AHORCADO_DATOS.filter(d=>!excluir.some(u=>u.palabra===d.palabra)),d=>d.palabra);

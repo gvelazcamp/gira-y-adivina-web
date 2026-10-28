@@ -40,6 +40,7 @@ const server = http.createServer((req, res) => {
       }, id);
       if (result.error || result.overflow) failures.push(result);
       console.log(JSON.stringify(result));
+      if (process.env.UI_AUDIT) console.log('BUTTONS', id, await page.evaluate(() => [...document.querySelectorAll('#extContenido button')].filter(b => {const r=b.getBoundingClientRect();return r.width>0&&r.height>0&&getComputedStyle(b).visibility==='visible';}).slice(0,15).map(b => [b.id,b.textContent.trim().replace(/\s+/g,' ').slice(0,42)])));
       if (process.env.UI_SCREENSHOTS && ['cien-rioplatenses','rueda-de-letras','rosco-rioplatense','frases-en-giro','moon-tap'].includes(id)) {
         await page.screenshot({path:path.join(process.env.UI_SCREENSHOTS, id + '.png')});
       }
@@ -59,6 +60,18 @@ const server = http.createServer((req, res) => {
     });
     assert.equal(answer.focused,'crEntrada');
     assert(answer.formBottom<=answer.shellBottom+1, 'answer hidden below screen: '+JSON.stringify(answer));
+    await page.evaluate(() => {const vv=window.visualViewport;window.__vvOriginalHeight=vv.height;Object.defineProperty(vv,'height',{value:135,configurable:true});vv.dispatchEvent(new Event('resize'));});
+    await page.waitForFunction(() => document.querySelector('#extShell').classList.contains('ext-teclado-abierto'));
+    const keyboard = await page.evaluate(() => {
+      const shell=document.querySelector('#extShell').getBoundingClientRect();
+      const question=document.querySelector('#crPregunta').getBoundingClientRect();
+      const form=document.querySelector('#crForm').getBoundingClientRect();
+      return {shellBottom:shell.bottom,questionBottom:question.bottom,formBottom:form.bottom,board:getComputedStyle(document.querySelector('#crTablero')).display};
+    });
+    assert.equal(keyboard.board,'none','board hides while typing');
+    assert(keyboard.questionBottom<=keyboard.shellBottom+2,'question hidden by keyboard: '+JSON.stringify(keyboard));
+    assert(keyboard.formBottom<=keyboard.shellBottom+2,'answer hidden by keyboard: '+JSON.stringify(keyboard));
+    await page.evaluate(() => {const vv=window.visualViewport;Object.defineProperty(vv,'height',{value:window.__vvOriginalHeight,configurable:true});document.querySelector('#crEntrada').blur();vv.dispatchEvent(new Event('resize'));});
     console.log('PASS 100 Rioplatenses answer stays visible');
     for (const id of ['rueda-de-letras','frases-en-giro','rosco-rioplatense']) {
       await page.evaluate(id => {Extensiones.cerrar();Extensiones.abrirJuego(id);}, id);
