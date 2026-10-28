@@ -447,7 +447,8 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .ps-play,.ps-entrada{min-width:0}
 .ps-mic-btn,.ps-mic-aviso[hidden]{display:none}
 .ps-mic-aviso{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:max(10px,var(--safe-top)) max(10px,var(--safe-right)) max(10px,var(--safe-bottom)) max(10px,var(--safe-left));background:#0A0412DF;overflow-x:hidden}
-.ps-mic-aviso-caja{box-sizing:border-box;width:min(100%,500px);max-height:calc(100dvh - 20px);overflow-y:auto;overflow-x:hidden;background:#2A1A3C;border:2px solid #F5B30199;border-radius:18px;padding:16px;text-align:center;box-shadow:0 16px 40px #0009}
+.ps-mic-aviso-caja{position:relative;box-sizing:border-box;width:min(100%,500px);max-height:calc(100dvh - 20px);overflow-y:auto;overflow-x:hidden;background:#2A1A3C;border:2px solid #F5B30199;border-radius:18px;padding:16px;text-align:center;box-shadow:0 16px 40px #0009}
+.ps-mic-aviso-cerrar{position:absolute;right:6px;top:6px;width:30px;height:30px;border:0;border-radius:50%;background:#FFFFFF20;color:#fff;font-size:1rem;font-weight:900}
 .ps-mic-aviso h3{margin:0 0 8px;color:#F5B301;font:900 clamp(18px,4dvh,24px) 'Archivo Black',Outfit,sans-serif}
 .ps-mic-aviso p{margin:6px 0;color:#F6EFE2;font-size:clamp(13px,3.2dvh,17px);line-height:1.3}
 .ps-mic-aviso-botones{display:flex;gap:8px;margin-top:12px}
@@ -916,7 +917,7 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
   .ps-game .ps-entrada .ps-reto{align-self:center;max-width:100%;margin:0 auto;padding:3px 8px;text-align:center}
   .ps-game .ps-entrada .ps-stats{width:100%;margin:0;text-align:center}
   .ps-game .ps-mensaje{min-height:16px;margin:0;font-size:.7rem}
-  .ps-game .ps-mic-btn{display:block;align-self:stretch;min-height:30px;border:1px solid #37D6C088;border-radius:9px;padding:3px 6px;background:#19465C;color:#E8FFF8;font:900 .75rem Outfit,sans-serif}
+  .ps-game .ps-mic-btn{display:block;align-self:stretch;min-height:30px;border:1px solid #FFFFFF55;border-radius:9px;padding:3px 6px;background:#3D294F;color:#E8FFF8;font:900 .75rem Outfit,sans-serif}
   .ps-game .ps-mic-btn.ps-mic-activo{background:#0B675C;border-color:#37D6C0}
   .ps-game .ps-teclado{width:100%;max-width:none;margin:0;padding:5px;background:#261837;border:1px solid #F5B30155;border-radius:10px;box-sizing:border-box}
   .ps-game .ps-teclado button{max-width:none;height:clamp(25px,7dvh,34px);background:#56406D;border:1px solid #B5A1C466;font-size:clamp(.8rem,3.7dvh,1rem)}

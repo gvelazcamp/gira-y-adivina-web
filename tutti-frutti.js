@@ -183,8 +183,7 @@ const TuttiFrutti=(()=>{
     try{
       let stream=null;
       if(navigator.mediaDevices?.getUserMedia){
-        try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});}
-        catch(e){if(e?.name==="NotAllowedError"||e?.name==="PermissionDeniedError")throw e;}
+        stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
       }
       if(token!==micToken||!on||on.fase!=="jugando"||on.basta||!tecladoHorizontal()){
         if(stream)stream.getTracks().forEach(t=>t.stop());return false;
@@ -734,7 +733,7 @@ const TuttiFrutti=(()=>{
         <div class="tf-mic-aviso-botones"><button type="button" id="tfVozNo">No, escribir</button><button type="button" id="tfVozSi">Sí, usar micrófono</button></div>
         <small id="tfVozPermiso" role="status"></small>
       </div></div>`);
-      q("tfVozNo").onclick=()=>{micAviso="";sortearLetra();};
+      q("tfVozNo").onclick=()=>{pararMicrofono();micAviso="";sortearLetra();};
       q("tfVozSi").onclick=async()=>{
         q("tfVozSi").disabled=true;q("tfVozNo").disabled=true;q("tfVozPermiso").textContent="Solicitando permiso para el micrófono…";
         await activarMicrofono(true);

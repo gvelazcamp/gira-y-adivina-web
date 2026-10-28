@@ -30,7 +30,7 @@ const PalabraSecreta=(()=>{
   function iniciarNivel(){if(!datos.partidaNivel||datos.partidaNivel.terminada||!PALABRA_SECRETAS.includes(datos.partidaNivel.objetivo)){if(datos.diaria?.objetivo)Vistas.marcar("palabra",datos.diaria.objetivo);datos.partidaNivel=nueva(elegirPalabra(),datos.nivel);guardar();}else if(datos.partidaNivel.repeticiones===undefined){/* Una ronda empezada antes de esta regla conserva sus intentos. */datos.partidaNivel.repeticiones=datos.partidaNivel.intentos.length<=1?repeticionesDelNivel(datos.partidaNivel.nivel):0;if(datos.partidaNivel.repeticiones)datos.partidaNivel.max=MAX;guardar();}partida=datos.partidaNivel;borrador="";}
   function siguienteNivel(){iniciarNivel();tablero();mensaje("");}
   function pantalla(){
-    raiz.innerHTML='<div class="ps-game"><button type="button" class="ext-volver" id="psVolver">⟵ Extensiones</button><div class="ps-top"><div><h2 class="ps-logo-h"><img class="ps-logo" src="'+ARTE("logo")+'" alt="Palabra Secreta" draggable="false"></h2><p class="ps-aviso">💡 Tocá "?" para ver cómo se juega</p></div><button type="button" id="psEstadisticas" class="ps-btn-img" aria-label="Estadísticas">'+ico("stats")+'</button><button type="button" id="psAyuda" aria-label="Cómo se juega">?</button></div><div class="ps-reto" id="psReto"></div><div class="ps-stats" id="psStats"></div><div class="ps-play"><div class="ps-tablero" id="psTablero"></div><div class="ps-entrada"><div class="ps-mensaje" id="psMensaje" aria-live="polite"></div><button type="button" class="ps-mic-btn" id="psMic" aria-pressed="false">🎙️ Activar micrófono</button><div class="ps-teclado" id="psTeclado"></div><div class="ps-acciones"><button type="button" id="psEnviar">Enviar</button><button type="button" id="psBorrar">Borrar</button></div><button type="button" class="ps-duelo" id="psDuelo">👥 Jugar con un amigo</button></div></div><div class="ps-final" id="psFinal" hidden></div><div class="sf-panel-capa" id="psAyudaPanel" hidden></div><div class="ps-mic-aviso" id="psMicAviso" role="dialog" aria-modal="true" aria-labelledby="psMicTitulo" hidden><div class="ps-mic-aviso-caja"><h3 id="psMicTitulo">🎙️ Micrófono para jugar</h3><p>En horizontal podés decir una palabra de cinco letras. Si está en el diccionario, se envía sola.</p><p>El micrófono seguirá activo durante la partida. Podés apagarlo o prenderlo con el botón del juego.</p><div class="ps-mic-aviso-botones"><button type="button" id="psVozNo">No, usar teclado</button><button type="button" id="psVozSi">Sí, usar micrófono</button></div><small id="psVozPermiso" role="status"></small></div></div></div>';
+    raiz.innerHTML='<div class="ps-game"><button type="button" class="ext-volver" id="psVolver">⟵ Extensiones</button><div class="ps-top"><div><h2 class="ps-logo-h"><img class="ps-logo" src="'+ARTE("logo")+'" alt="Palabra Secreta" draggable="false"></h2><p class="ps-aviso">💡 Tocá "?" para ver cómo se juega</p></div><button type="button" id="psEstadisticas" class="ps-btn-img" aria-label="Estadísticas">'+ico("stats")+'</button><button type="button" id="psAyuda" aria-label="Cómo se juega">?</button></div><div class="ps-reto" id="psReto"></div><div class="ps-stats" id="psStats"></div><div class="ps-play"><div class="ps-tablero" id="psTablero"></div><div class="ps-entrada"><div class="ps-mensaje" id="psMensaje" aria-live="polite"></div><button type="button" class="ps-mic-btn" id="psMic" aria-pressed="false">🎙️ Activar micrófono</button><div class="ps-teclado" id="psTeclado"></div><div class="ps-acciones"><button type="button" id="psEnviar">Enviar</button><button type="button" id="psBorrar">Borrar</button></div><button type="button" class="ps-duelo" id="psDuelo">👥 Jugar con un amigo</button></div></div><div class="ps-final" id="psFinal" hidden></div><div class="sf-panel-capa" id="psAyudaPanel" hidden></div><div class="ps-mic-aviso" id="psMicAviso" role="dialog" aria-modal="true" aria-labelledby="psMicTitulo" hidden><div class="ps-mic-aviso-caja"><button type="button" class="ps-mic-aviso-cerrar" id="psVozCerrar" aria-label="Cerrar y jugar sin micrófono">✕</button><h3 id="psMicTitulo">🎙️ Micrófono para jugar</h3><p>En horizontal podés decir una palabra de cinco letras. Si está en el diccionario, se envía sola.</p><p>El micrófono seguirá activo durante la partida. Podés apagarlo o prenderlo con el botón del juego.</p><div class="ps-mic-aviso-botones"><button type="button" id="psVozNo">No, usar teclado</button><button type="button" id="psVozSi">Sí, usar micrófono</button></div><small id="psVozPermiso" role="status"></small></div></div></div>';
     raiz.querySelector("#psVolver").onclick=()=>Extensiones.abrirLobby();
     raiz.querySelector("#psAyuda").onclick=ayuda;
     raiz.querySelector("#psEstadisticas").onclick=mostrarEstadisticas;
@@ -38,13 +38,15 @@ const PalabraSecreta=(()=>{
     raiz.querySelector("#psBorrar").onclick=()=>tecla("Backspace");
     raiz.querySelector("#psDuelo").onclick=iniciarDuelo;
     raiz.querySelector("#psMic").onclick=()=>micActivo?pararMicrofono():activarMicrofono();
-    raiz.querySelector("#psVozNo").onclick=()=>raiz.querySelector("#psMicAviso").hidden=true;
+    const rechazarMicrofono=()=>{pararMicrofono();const aviso=raiz?.querySelector("#psMicAviso");if(aviso)aviso.hidden=true;};
+    raiz.querySelector("#psVozNo").onclick=rechazarMicrofono;
+    raiz.querySelector("#psVozCerrar").onclick=rechazarMicrofono;
     raiz.querySelector("#psVozSi").onclick=async()=>{
-      const si=raiz.querySelector("#psVozSi"),no=raiz.querySelector("#psVozNo");
+      const aviso=raiz.querySelector("#psMicAviso"),si=raiz.querySelector("#psVozSi"),no=raiz.querySelector("#psVozNo");
       si.disabled=true;no.disabled=true;raiz.querySelector("#psVozPermiso").textContent="Solicitando permiso para el micrófono…";
       const ok=await activarMicrofono();
-      if(!raiz)return;
-      raiz.querySelector("#psMicAviso").hidden=true;
+      if(!raiz||!aviso.isConnected||aviso.hidden)return;
+      aviso.hidden=true;
       si.disabled=false;no.disabled=false;
       if(!ok)mensaje("No se pudo activar el micrófono. Usá el teclado o tocá Activar micrófono para reintentar.");
     };
@@ -69,7 +71,7 @@ const PalabraSecreta=(()=>{
     const b=raiz?.querySelector("#psMic");if(!b)return;
     b.classList.toggle("ps-mic-activo",micActivo);b.disabled=micPidiendo;
     b.setAttribute("aria-pressed",String(micActivo));
-    b.textContent=micPidiendo?"🎙️ Permiso…":!micActivo?"🎙️ Activar micrófono":micEscuchando?"🎙️ Escuchando…":"🎙️ Conectando…";
+    b.textContent=micPidiendo?"🎙️ Permiso…":!micActivo?"🎙️ Micrófono apagado · Activar":micEscuchando?"🎙️ Escuchando…":"🎙️ Conectando…";
   }
   function pararMicrofono(){
     micActivo=false;micPidiendo=false;micEscuchando=false;micToken++;
@@ -121,8 +123,7 @@ const PalabraSecreta=(()=>{
     try{
       let stream=null;
       if(navigator.mediaDevices?.getUserMedia){
-        try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});}
-        catch(e){if(["NotAllowedError","PermissionDeniedError"].includes(e?.name))throw e;}
+        stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
       }
       if(sesion!==micToken||!raiz||partida?.terminada||!horizontal()){if(stream)for(const t of stream.getTracks())t.stop();return false;}
       micStream=stream;micPidiendo=false;micActivo=true;detenerMusicaJuego();pintarMicrofono();escucharMicrofono();return true;

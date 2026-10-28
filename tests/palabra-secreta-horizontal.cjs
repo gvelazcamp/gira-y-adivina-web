@@ -31,6 +31,15 @@ const server=http.createServer((req,res)=>{
     assert(box.x>=0&&box.x+box.width<=844&&box.y>=0&&box.y+box.height<=390,'El aviso de voz debe entrar en horizontal');
     await page.locator('#psVozNo').click();
     assert.equal(await page.evaluate(()=>window.__psMic.requests),0,'Elegir teclado no debe pedir permiso');
+    await page.waitForTimeout(150);
+    assert.equal(await page.evaluate(()=>window.__psMic.starts),0,'Elegir No no debe iniciar reconocimiento más tarde');
+    assert.equal(await page.locator('#psMic').getAttribute('aria-pressed'),'false');
+    assert.match(await page.locator('#psMic').textContent(),/apagado/);
+    await page.evaluate(()=>{Extensiones.cerrar();Extensiones.abrirJuego('palabra-secreta');});
+    await page.locator('#psAyudaPanel .sf-principal').click();
+    await page.locator('#psVozCerrar').click();
+    assert.equal(await page.evaluate(()=>window.__psMic.requests),0,'La cruz no debe pedir permiso');
+    assert.equal(await page.locator('#psMic').getAttribute('aria-pressed'),'false','La cruz deja el micrófono apagado');
     let board=await page.locator('#psTablero').boundingBox(),keyboard=await page.locator('#psTeclado').boundingBox();
     assert(board&&board.width>100&&board.x+board.width<keyboard.x,'El tablero debe verse siempre a la izquierda del teclado');
     assert(board.y>=0&&board.y+board.height<=390,'El tablero debe entrar en la pantalla');
@@ -77,6 +86,19 @@ const server=http.createServer((req,res)=>{
     const result=await page.locator('.ps-final-caja').boundingBox();
     assert(result&&result.x>=0&&result.x+result.width<=844,'El popup final debe entrar en el ancho horizontal');
     assert(await page.evaluate(()=>{const el=document.querySelector('.ps-final-caja');return el.scrollWidth<=el.clientWidth+1;}),'El popup final no debe requerir scroll horizontal');
+    await page.evaluate(()=>{Extensiones.cerrar();navigator.mediaDevices.getUserMedia=async()=>{window.__psMic.requests++;throw new DOMException('Se cerró el permiso','AbortError');};Extensiones.abrirJuego('palabra-secreta');});
+    await page.locator('#psAyudaPanel .sf-principal').click();
+    await page.locator('#psVozSi').click();
+    assert.equal(await page.evaluate(()=>window.__psMic.starts),2,'Cerrar o fallar el permiso no debe iniciar reconocimiento');
+    assert.equal(await page.locator('#psMic').getAttribute('aria-pressed'),'false','El micrófono debe quedar apagado si el permiso falla');
+    await page.evaluate(()=>{Extensiones.cerrar();navigator.mediaDevices.getUserMedia=()=>new Promise(resolve=>{window.__resolvePsPermission=resolve;});Extensiones.abrirJuego('palabra-secreta');});
+    await page.locator('#psAyudaPanel .sf-principal').click();
+    await page.locator('#psVozSi').click();
+    await page.locator('#psVozCerrar').click();
+    await page.evaluate(()=>window.__resolvePsPermission({getTracks:()=>[{stop:()=>window.__psMic.stops++}]}));
+    await page.waitForTimeout(100);
+    assert.equal(await page.evaluate(()=>window.__psMic.starts),2,'La cruz debe cancelar incluso un permiso pendiente');
+    assert.equal(await page.locator('#psMic').getAttribute('aria-pressed'),'false');
     assert.deepEqual(errors,[]);
     console.log('PASS Palabra Secreta horizontal: tablero, teclado, voz y popup');
   }finally{await browser.close();server.close();}
