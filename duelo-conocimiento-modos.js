@@ -73,7 +73,33 @@ async function startMic(){
 }
 voiceBtn.onclick=()=>{if(micRunning){micWanted=false;mic.abort();micNote("🎙 ACTIVAR MICRÓFONO");return;}micBlocked=false;micWanted=false;startMic()};
 function stopMic(){micWanted=false;micRunning=false;voiceBtn.classList.remove("ok");if(mic){try{mic.abort()}catch(e){}}micNote("🎙 ACTIVAR MICRÓFONO")}
-function canAnswer(){return mode!=="bot"||active===0}
+function canAnswer(){
+ if(mode==="bot")return active===0;
+ if(mode==="online"&&online)return active===(online.host?0:1);
+ return true;
+}
+/* El reconocimiento de voz puede devolver "treinta y dos" en vez de "32". */
+const numberWords={cero:0,un:1,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10,once:11,doce:12,trece:13,catorce:14,quince:15,dieciseis:16,diecisiete:17,dieciocho:18,diecinueve:19,veinte:20,veintiuno:21,veintiun:21,veintidos:22,veintitres:23,veinticuatro:24,veinticinco:25,veintiseis:26,veintisiete:27,veintiocho:28,veintinueve:29,treinta:30,cuarenta:40,cincuenta:50,sesenta:60,setenta:70,ochenta:80,noventa:90,cien:100,ciento:100,doscientos:200,trescientos:300,cuatrocientos:400,quinientos:500,seiscientos:600,setecientos:700,ochocientos:800,novecientos:900,mil:1000};
+function spokenNumber(text){
+ let raw=normalize(text).replace(/^(la respuesta es|el resultado es|es|son|igual a)\s+/g,"").trim();
+ if(/^-?\d+$/.test(raw))return Number(raw);
+ let negative=false;if(raw.startsWith("menos ")){negative=true;raw=raw.slice(6)}
+ let result=0,current=0,valid=false;
+ for(const word of raw.split(/\s+/)){
+   if(word==="y")continue;
+   if(!Object.prototype.hasOwnProperty.call(numberWords,word))return null;
+   valid=true;const val=numberWords[word];
+   if(val===1000){result+=Math.max(current,1)*1000;current=0;}
+   else if(val>=100)current+=val;
+   else current+=val;
+ }
+ return valid?(negative?-1:1)*(result+current):null;
+}
+const baseIsRightAnswer=isRightAnswer;
+isRightAnswer=function(v,q){
+ if(q&&q.category==="matematica"){const n=spokenNumber(v);return n!==null&&n===Number(q.answer)}
+ return baseIsRightAnswer(v,q);
+};
 function applyAnswer(value){
  if(phase!=="playing"||!question||!canAnswer())return;
  if(!isRightAnswer(value,question)){$dc("feedback").textContent="No es correcto. Seguí intentando.";return;}
