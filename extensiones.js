@@ -177,6 +177,22 @@ const Fichas=(()=>{
 window.Fichas=Fichas;
 const Extensiones=(()=>{
   let shell=null,contenido=null,vista="";
+  function ajustarTeclado(){
+    if(!shell||shell.hidden||shell.classList.contains("rr-abierta"))return;
+    const campo=document.activeElement;
+    const escribiendo=shell.contains(campo)&&campo.matches("input:not([type=checkbox]):not([type=radio]),textarea");
+    if(!escribiendo){shell.style.top="";shell.style.height="";shell.style.bottom="";return;}
+    const vv=window.visualViewport;
+    shell.style.top=Math.max(0,Math.round(vv?.offsetTop||0))+"px";
+    shell.style.height=Math.round(vv?.height||innerHeight)+"px";
+    shell.style.bottom="auto";
+    requestAnimationFrame(()=>{
+      if(shell.hidden||document.activeElement!==campo)return;
+      const visible=shell.getBoundingClientRect(),objetivo=(campo.closest("form")||campo.parentElement||campo).getBoundingClientRect();
+      if(objetivo.bottom>visible.bottom-10)shell.scrollTop+=objetivo.bottom-(visible.bottom-10);
+      else if(objetivo.top<visible.top+8)shell.scrollTop-=visible.top+8-objetivo.top;
+    });
+  }
   function asegurar(){
     if(shell)return;
     shell=document.createElement("section");shell.id="extShell";shell.className="ext-shell";shell.hidden=true;
@@ -195,6 +211,11 @@ const Extensiones=(()=>{
     }).observe(contenido,{childList:true,subtree:true});
     shell.querySelector("#extAtras").onclick=()=>vista==="lobby"?cerrar():abrirLobby();
     shell.querySelector("#extCerrar").onclick=cerrar;
+    shell.addEventListener("focusin",()=>{ajustarTeclado();setTimeout(ajustarTeclado,350);});
+    shell.addEventListener("focusout",()=>setTimeout(ajustarTeclado,150));
+    window.visualViewport?.addEventListener("resize",ajustarTeclado);
+    window.visualViewport?.addEventListener("scroll",ajustarTeclado);
+    window.addEventListener("resize",ajustarTeclado);
     document.addEventListener("keydown",e=>{
       if(shell.hidden)return;
       /* Juegos de previa en pantalla fija: Escape no saca del juego. */
@@ -261,7 +282,7 @@ const Extensiones=(()=>{
     ext.abrir(contenido);shell.scrollTop=0;
   }
   function salirJuego(){for(const juego of [window.SopaFugaz,window.RuedaDeLetras,window.PalabraSecreta,window.FrasesEnGiro,window.MemoriaEnGiro,window.RoscoRioplatense,window.SilabarioRioplatense,window.CienRioplatenses,window.AhorcadoRioplatense,window.ContraRelojRioplatense,window.MoonTap,window.Puzzle,window.QueNumeroSoy,window.QuienSoy,window.Bomba,window.Impostor,window.Mimica,window.CantaLaCancion,window.TuttiFrutti])if(juego)juego.salir();}
-  function cerrar(){if(!shell)return;salirJuego();Fichas.enJuego("");shell.hidden=true;document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
+  function cerrar(){if(!shell)return;salirJuego();Fichas.enJuego("");shell.hidden=true;shell.style.top="";shell.style.height="";shell.style.bottom="";document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
   return{abrirLobby,abrirJuego,cerrar};
 })();
 window.Extensiones=Extensiones;

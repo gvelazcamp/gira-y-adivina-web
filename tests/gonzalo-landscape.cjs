@@ -35,31 +35,21 @@ const server = http.createServer((req, res) => {
         armarTeclado();iniciarPartida(perfil.nombre,'Margarita');
         S.frase='EL JUEGO RIOPLATENSE';S.cat='Montevideo';publicar('Te toca jugar.');
       });
-      const access=await page.evaluate(() => ({name:perfil.nombre,admin:document.body.classList.contains('gonzalo-admin'),display:getComputedStyle($('bHorizontalJuego')).display}));
-      assert.equal(await page.locator('#bHorizontalJuego').isVisible(), name === 'Gonzalo', JSON.stringify(access));
-      if (name === 'Gonzalo') {
-        await page.locator('#bHorizontalJuego').click();
-        assert.equal(await page.locator('#bHorizontalJuego').getAttribute('aria-pressed'), 'true');
-        assert.equal(await page.locator('#juego').evaluate(el => getComputedStyle(el).display), 'block');
-        assert.equal(await page.locator('#horizontalAyuda').isVisible(), true);
-        await page.setViewportSize({width:844,height:390});
-        const layout = await page.evaluate(() => {
-          const board=$('tablero').getBoundingClientRect(), panel=$('juego').querySelector('.zona').getBoundingClientRect();
-          return {board, panel, overflow:document.documentElement.scrollWidth>innerWidth};
-        });
-        assert(layout.panel.x > layout.board.x + layout.board.width - 2, JSON.stringify(layout));
-        assert(!layout.overflow, 'landscape has horizontal overflow');
-        if (process.env.UI_SCREENSHOTS) await page.screenshot({path:path.join(process.env.UI_SCREENSHOTS,'gonzalo-landscape.png')});
-        await page.evaluate(() => $('juego').style.display='none');
-        await page.waitForFunction(() => !document.body.classList.contains('modo-horizontal'));
-        assert.equal(await page.locator('#bHorizontalJuego').getAttribute('aria-pressed'), 'false');
-      } else {
-        await page.setViewportSize({width:844,height:390});
-        assert.equal(await page.locator('#juego').evaluate(el => getComputedStyle(el).display), 'block');
-      }
+      assert.equal(await page.locator('#bHorizontalJuego').isVisible(), false);
+      await page.setViewportSize({width:844,height:390});
+      const layout = await page.evaluate(() => {
+        const board=$('tablero').getBoundingClientRect(), panel=$('juego').querySelector('.zona').getBoundingClientRect();
+        return {board, panel, display:getComputedStyle($('juego')).display, overflow:document.documentElement.scrollWidth>innerWidth};
+      });
+      assert.equal(layout.display,'grid',name+' should rotate automatically');
+      assert(layout.panel.x > layout.board.x + layout.board.width - 2, JSON.stringify(layout));
+      assert(!layout.overflow, name+' landscape has horizontal overflow');
+      if (process.env.UI_SCREENSHOTS && name === 'Gonzalo') await page.screenshot({path:path.join(process.env.UI_SCREENSHOTS,'gonzalo-landscape.png')});
+      await page.setViewportSize({width:390,height:844});
+      assert.equal(await page.locator('#juego').evaluate(el => getComputedStyle(el).display), 'block');
       assert.deepEqual(errors, [], name + ' page errors');
       await context.close();
     }
-    console.log('PASS Gonzalo landscape game; other profiles unchanged');
+    console.log('PASS automatic landscape for Gonzalo and Vale');
   } finally {await browser.close();server.close();}
 })().catch(e => {console.error(e);server.close();process.exitCode=1;});

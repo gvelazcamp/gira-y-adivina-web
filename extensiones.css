@@ -808,3 +808,91 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 
 .mg-panel .tf-anular-btn{display:block;width:fit-content;min-height:0;margin:10px auto 4px;padding:5px 14px;border-radius:99px;border:0;background:#C2334D;color:#fff;font:inherit;font-size:.72rem;font-weight:900;box-shadow:0 2px 0 #7D2348;cursor:pointer}.tf-anular .pf-caja{max-height:88vh;display:flex;flex-direction:column}.tf-anular-lista{overflow:auto;max-height:55vh;margin:8px auto}.tf-anular-lista .tf-rev-fila span{white-space:nowrap;font-size:.8rem}.tf-anular-lista .tf-anulada-fila b{text-decoration:line-through;text-decoration-color:#FF6B81}
 .tf .qs-tope>#tfReloj{position:absolute;left:50%;transform:translateX(-50%)}
+
+/* Celular girado: usar el ancho real y conservar los controles dentro del alto visible. */
+@media (orientation:landscape) and (max-width:1024px) and (max-height:600px){
+  .ext-shell{padding:max(5px,var(--safe-top)) max(8px,var(--safe-right)) max(5px,var(--safe-bottom)) max(8px,var(--safe-left))}
+  .ext-wrap{max-width:960px}
+  .ext-header{min-height:34px;margin-bottom:4px}
+  .ext-atras,.ext-cerrar{flex-basis:34px;width:34px;height:34px;font-size:1.1rem}
+  .ext-lista{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+  .ext-tarjeta{min-width:0;gap:5px;padding:8px}
+  .ext-tarjeta img{width:40px;height:40px}
+  .ext-hero{padding:10px 14px;margin-bottom:6px}
+  .ext-hero h2{font-size:1.3rem;margin:2px 0}
+  .ext-seccion{margin:12px 2px 6px;padding-top:8px}
+  #extContenido>:is(.sf-game,.rl-game,.ps-game,.fg-game,.mg-game,.rr-game,.sb-game,.cr-game,.ah-game,.mt-game){max-width:100%;min-width:0}
+  #extContenido .ext-volver{min-height:28px;padding:4px 9px;margin:0 0 3px;font-size:.72rem}
+  #extContenido :is(.rl-game,.fg-game,.cr-game,.mt-game)>.ext-volver{display:none}
+  .rl-game>.rl-logo-h,.rl-game>.rl-sub,.fg-game>.fg-logo-h,.fg-game>.fg-sub,.cr-game>.cr-titulo{display:none}
+  #extContenido :is(.sf-hud,.rl-hud,.fg-hud,.mg-hud,.cr-hud){margin:2px 0;gap:4px}
+  #extContenido :is(.sf-bar,.mg-bar,.fg-bar){margin:2px 0 4px}
+  #extContenido :is(.sf-panel,.mg-panel,.rr-panel){max-height:calc(100dvh - 20px);overflow:auto;margin:4px auto;padding:12px}
+  .sf-game,.rl-game,.ps-game,.fg-game,.ah-game{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:3px 12px;align-items:start}
+  .sf-game>.ext-volver,.sf-game>.sf-cabeza,.sf-game>.sf-hud,.sf-game>.sf-bar,
+  .rl-game>.ext-volver,.rl-game>.rl-logo-h,.rl-game>.rl-sub,.rl-game>.rl-hud,.rl-game>.rl-reloj,
+  .ps-game>.ext-volver,.ps-game>.ps-top,.ps-game>.ps-reto,.ps-game>.ps-stats,
+  .fg-game>.ext-volver,.fg-game>.fg-logo-h,.fg-game>.fg-sub,.fg-game>.fg-hud,.fg-game>.fg-bar,
+  .ah-game>.ext-volver,.ah-game>.ah-titulo,.ah-game>.sf-hud{grid-column:1 / -1}
+  .sf-game>.sf-tablero{grid-column:1;grid-row:5 / span 5}
+  .sf-game .sf-grid{width:min(100%,59dvh);max-width:none}
+  .sf-game>.sf-mudanza,.sf-game>.sf-lista,.sf-game>.sf-acciones,.sf-game>.sf-historial{grid-column:2}
+  .sf-game>.sf-lista{max-height:37dvh;overflow:auto}
+  .sf-game>.sf-acciones{margin-top:3px}
+  .rl-game>.rl-grilla{grid-column:1;grid-row:6 / span 6}
+  .rl-game>.rl-rueda{grid-column:2;grid-row:6 / span 4;width:min(40dvh,190px)}
+  .rl-game>.rl-rango,.rl-game>.rl-faltan,.rl-game>.rl-cajon,.rl-game>.rl-actual,.rl-game>.rl-acciones{grid-column:2}
+  .rl-game>.rl-cajon{max-height:23dvh;overflow:auto;margin:0}
+  .rl-game .rl-letra{width:clamp(32px,8dvh,45px);height:clamp(32px,8dvh,45px)}
+  .ps-game>.ps-tablero{grid-column:1;grid-row:5 / span 5;max-width:min(100%,54dvh)}
+  .ps-game>.ps-mensaje,.ps-game>.ps-teclado,.ps-game>.ps-acciones,.ps-game>.ps-duelo,.ps-game>.ps-final{grid-column:2}
+  .ps-game .ps-teclado{max-width:none;margin:0}
+  .ps-game .ps-teclado button{height:clamp(24px,6dvh,32px)}
+  .fg-game>.fg-espacios{grid-column:1;grid-row:7 / span 5;min-height:0}
+  .fg-game>.fg-banco-caja,.fg-game>.fg-mensaje,.fg-game>.fg-acciones{grid-column:2}
+  .fg-game .fg-banco{min-height:70px}
+  .fg-game>.fg-acciones{margin:2px 0}
+  .mg-game .mg-titulo{margin-bottom:3px}
+  .mg-game .mg-tablero{max-width:min(100%,90dvh)}
+  .mg-game .mg-carta{aspect-ratio:1.35}
+  .mg-game .mg-mensaje{min-height:18px;margin:3px 0}
+  .rr-game .rr-titulo-arte{margin:0}
+  .rr-game .rr-logo{height:clamp(35px,8dvh,55px)}
+  .rr-game #rrJuego:not([hidden]){display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:3px 12px;align-items:start}
+  .rr-game #rrJuego>.sf-hud,.rr-game #rrJuego>.sf-bar{grid-column:1 / -1}
+  .rr-game #rrJuego>.rr-rueda{grid-column:1;grid-row:3 / span 4;width:min(40dvh,30vw);margin:0 auto}
+  .rr-game #rrJuego>.rr-pista,.rr-game #rrJuego>.rr-mensaje,.rr-game #rrJuego>#rrForm{grid-column:2}
+  .rr-game .rr-pista{margin:0;padding:6px;min-height:0}
+  .rr-game .rr-pista p{font-size:.83rem;line-height:1.18}
+  .sb-game .sb-titulo-arte{margin:0}
+  .sb-game .sb-logo{height:clamp(35px,7dvh,52px)}
+  .sb-game .sb-pista{min-height:0;margin:2px 0}
+  .sb-game .sb-tablero{grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:3px}
+  .sb-game .sb-ficha{min-height:33px}
+  .cr-game .cr-titulo{margin:0 0 4px}
+  .cr-game .cr-titulo img{width:38px;height:38px}
+  .cr-game #crEscenaRuleta{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto;align-items:center;gap:3px 12px}
+  .cr-game #crRuletaTitulo{grid-column:1;grid-row:1}
+  .cr-game .cr-ruleta{grid-column:1;grid-row:2;width:min(45dvh,190px);margin:0 auto}
+  .cr-game .cr-seleccion{grid-column:1;grid-row:3;min-height:0;margin:2px 0;padding:4px 6px}
+  .cr-game #crIntro{grid-column:2;grid-row:1 / 4}
+  .cr-game #crIntro .cr-reglas{margin:5px 0;line-height:1.3}
+  .cr-game #crIntro .cr-principal{margin:3px 0;min-height:42px;padding:8px}
+  .cr-game #crIntro .cr-rendirse{margin:3px 0;min-height:35px}
+  .cr-game #crRuletaTitulo{margin:0 0 5px}
+  .cr-game .cr-panel-cabecera{margin:2px 0 4px}
+  .cr-game #crForm{margin:3px auto}
+  .cr-game .cr-nota{margin:4px auto}
+  .ah-game>.ah-top{grid-column:1;grid-row:4 / span 5;margin:0}
+  .ah-game>.ah-pregunta,.ah-game>.ah-palabra,.ah-game>.ah-feedback,.ah-game>.ah-teclado,.ah-game>.ah-siguiente{grid-column:2}
+  .ah-game>.ah-pregunta{margin:0;min-height:30px;padding:4px 8px}
+  .ah-game>.ah-palabra{margin:0}
+  .ah-game>.ah-feedback{min-height:0;margin:0}
+  .ah-game .ah-rueda-wrap,.ah-game .ah-figura{width:min(27dvh,120px)}
+  .ah-game .ah-teclado{gap:3px;margin:0}
+  .ah-game .ah-teclado button{padding:5px 0}
+  .mt-game .mt-top{margin-bottom:3px}
+  .mt-game .mt-escenario{max-height:none}
+  .mt-game .mt-escenario canvas{height:min(56dvh,220px)}
+  .mt-game .mt-controles{margin:3px auto}
+}
