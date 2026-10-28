@@ -15,6 +15,8 @@ const RoscoRioplatense=(()=>{
   /* Dibujos en assets/rosco/ (hoja de ChatGPT recortada). */
   const ARTE=n=>"assets/rosco/"+n+".webp",ico=n=>'<img class="rr-ico" src="'+ARTE(n)+'" alt="" draggable="false">';
   function iniciarMusicaJuego(){
+    /* En el piloto de Giro no reproducir la música del Rosco para Gonzalo. */
+    if(pruebaG)return;
     try{
       if(typeof sonidoPermitido==="function"&&!sonidoPermitido())return;
       if(!audioMusica){audioMusica=new Audio("assets/audio/rosco-rioplatense-musica.mp3");audioMusica.loop=true;audioMusica.volume=.28;}
@@ -431,6 +433,9 @@ const RoscoRioplatense=(()=>{
       aciertos+" aciertos · "+errores+" errores · "+faltan+" sin responder. "+puntos+" puntos"+(bonus?" ("+bonus+" por tiempo)":"")+". Récord: "+datos.mejor+"."+(avanzar?" ¡Desbloqueaste el nivel "+(nivel+1)+"!":" Acertá al menos "+Math.ceil(items.length*ROSCO_CONFIG.proporcionAvance)+" y terminá la vuelta para avanzar."),acciones,faltan?"tiempo":errores?"terminado":"perfecto");
     const revision=document.createElement("div");revision.innerHTML=tablaRespuestas(respuestas,null);
     $(".rr-panel").insertBefore(revision,$(".rr-panel button"));$(".rr-principal").focus({preventScroll:true});
+    if(pruebaG&&typeof window.GiroRoscoPiloto?.mostrarFinal==="function"){
+      window.GiroRoscoPiloto.mostrarFinal({aciertos,total:items.length,puntos});
+    }
   }
   function compartir(b,puntos,aciertos,errores,faltan){
     const texto="🎡 El Rosco · nivel "+nivel+" · "+puntos+" puntos\n✓ "+aciertos+" · ✕ "+errores+" · pendientes "+faltan+"\nGirá y Adiviná: "+location.origin+location.pathname;
@@ -458,6 +463,27 @@ const RoscoRioplatense=(()=>{
     hud();
   }
   function visibilidad(){if(document.hidden){detenerMusicaJuego();if(pruebaG&&vozG)pararVozG();else if(pruebaG)detenerVoz();}else iniciarMusicaJuego();ultimo=performance.now();}
+  /* El módulo del estudio se carga solamente si el Rosco lo abre Gonzalo.
+     Sin depender de él para iniciar ni terminar una partida normal. */
+  function cargarEscenaGiroG(referencia){
+    if(!pruebaG||window.GIRO_ROSCO_PILOTO===false)return;
+    const activar=()=>{
+      if(raiz===referencia&&raiz.isConnected&&fase==="inicio"&&typeof window.GiroRoscoPiloto?.mostrarInicio==="function"){
+        window.GiroRoscoPiloto.mostrarInicio();
+      }
+    };
+    if(window.GiroRoscoPiloto){activar();return;}
+    if(!document.querySelector('link[data-giro-rosco]')){
+      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=1";
+      estilo.dataset.giroRosco="1";document.head.appendChild(estilo);
+    }
+    let script=document.querySelector('script[data-giro-rosco]');
+    if(!script){
+      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=1";script.async=true;
+      script.dataset.giroRosco="1";script.addEventListener("load",activar,{once:true});
+      document.head.appendChild(script);
+    }else script.addEventListener("load",activar,{once:true});
+  }
   function abrir(contenedor){
     salir();datos=cargar();nivel=datos.nivelMax;config=configNivel(nivel);fase="inicio";usadasSesion=new Set();
     raiz=document.createElement("div");raiz.className="rr-game";raiz.dataset.fase="inicio";altoLibre=0;
@@ -483,8 +509,10 @@ const RoscoRioplatense=(()=>{
     const acciones=[["Jugar nivel "+nivel,iniciar]];if(nivel>1)acciones.push(["Practicar desde el nivel 1",()=>{nivel=1;iniciar();}]);
     acciones.push(["Jugar con un amigo 👥",iniciarDuelo]);
     panel("El Rosco Rioplatense",config.letras+" letras y "+config.segundos+" segundos. Leé cada pista y escribí la palabra: tenés un intento por letra. Pasapalabra la deja para después. El reloj se pausa al girar. Acertá al menos "+Math.ceil(config.letras*ROSCO_CONFIG.proporcionAvance)+" y respondé todas para avanzar. Jugás gratis, sin gastar vidas ni monedas. Mejor: "+datos.mejor+" puntos.",acciones,"personaje");ajustarPantalla();
+    cargarEscenaGiroG(raiz);
   }
   function salir(){
+    if(window.GiroRoscoPiloto)window.GiroRoscoPiloto.cerrar();
     if(pruebaG)pararVozG();
     detenerVoz();clearInterval(intervalo);intervalo=null;document.removeEventListener("visibilitychange",visibilidad);
     window.visualViewport?.removeEventListener("resize",ajustarPantalla);window.visualViewport?.removeEventListener("scroll",ajustarPantalla);window.removeEventListener("resize",ajustarPantalla);
