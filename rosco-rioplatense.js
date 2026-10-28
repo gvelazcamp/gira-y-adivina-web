@@ -10,6 +10,8 @@ const RoscoRioplatense=(()=>{
   let datos=cargar(),raiz=null,shell=null,items=[],estados=[],respuestas=[],actual=-1,destino=-1,angulo=0;
   let nivel=1,config=null,fase="inicio",tiempo=0,espera=0,ultimo=0,intervalo=null,ultimoTac=0,duelo=false,usadasSesion=new Set();
   let audioMusica=null,reconocimiento=null,escuchando=false,altoLibre=0;
+  /* Opciones experimentales solo para el perfil Gonzalo. */
+  let pruebaG=false,giroG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozMensajeG="",fullscreenG=false,vozPistaG=null;
   /* Dibujos en assets/rosco/ (hoja de ChatGPT recortada). */
   const ARTE=n=>"assets/rosco/"+n+".webp",ico=n=>'<img class="rr-ico" src="'+ARTE(n)+'" alt="" draggable="false">';
   function iniciarMusicaJuego(){
@@ -82,8 +84,144 @@ const RoscoRioplatense=(()=>{
     if(acierto){bip(660,.2,"sine",.065);bip(990,.3,"triangle",.04);}
     if(typeof vibrar==="function")vibrar(acierto?25:[45,40,45]);
   }
+
+  function horizontalG(){
+    return pruebaG&&(matchMedia("(orientation: landscape) and (min-width:700px)").matches||Boolean(shell?.classList.contains("rr-giro-forzado")));
+  }
+  function mostrarEstadoVozG(texto){
+    vozMensajeG=texto;
+    const estado=$("#rrEstadoVozG"),boton=$("#rrVoz");
+    if(estado)estado.textContent=texto;
+    if(boton&&pruebaG){boton.classList.toggle("rr-grabando",vozG);boton.setAttribute("aria-pressed",String(vozG));const span=boton.querySelector("span");if(span)span.textContent=vozG?"Apagar":"Hablar";}
+  }
+  function actualizarEntradaG(){
+    if(!raiz||!pruebaG)return;
+    const campo=$("#rrEntrada"),propio=horizontalG();
+    campo.readOnly=propio||vozG;campo.inputMode=propio||vozG?"none":"text";
+    if((propio||vozG)&&document.activeElement===campo)campo.blur();
+    raiz.classList.toggle("rr-con-teclado",propio&&!vozG);
+    raiz.classList.toggle("rr-con-voz",vozG);
+    if(!vozG)mostrarEstadoVozG(propio?"Escribí a la derecha o activá Hablar.":"Modo escritura.");
+  }
+  function tecladoG(){
+    const panel=$("#rrTecladoG");if(!panel)return;
+    panel.replaceChildren();
+    for(const letras of ["QWERTYUIOP","ASDFGHJKLÑ","ZXCVBNM"]){
+      const fila=document.createElement("div");fila.className="rr-teclas-fila";
+      for(const letra of letras){
+        const b=document.createElement("button");b.type="button";b.className="rr-tecla-g";b.textContent=letra;
+        b.onclick=()=>{if(fase!=="resolver"||vozG)return;const input=$("#rrEntrada");input.value=(input.value+letra).slice(0,60);};fila.appendChild(b);
+      }
+      panel.appendChild(fila);
+    }
+    const fila=document.createElement("div");fila.className="rr-teclas-fila";
+    for(const [t,f] of [["⌫ Borrar",()=>{$("#rrEntrada").value=$("#rrEntrada").value.slice(0,-1);}],["Limpiar",()=>{$("#rrEntrada").value="";}]]){
+      const b=document.createElement("button");b.type="button";b.className="rr-tecla-g rr-tecla-accion";b.textContent=t;b.onclick=()=>{if(fase==="resolver"&&!vozG)f();};fila.appendChild(b);
+    }
+    panel.appendChild(fila);
+  }
+  function pararVozG(){
+    vozG=false;vozLeyendoG=false;clearTimeout(vozTimerG);vozTimerG=null;
+    if(vozPistaG){try{speechSynthesis.cancel();}catch(e){}vozPistaG=null;}
+    detenerVoz();actualizarEntradaG();
+    mostrarEstadoVozG("Micrófono apagado.");
+  }
+  function arrancarEscuchaG(){
+    if(!pruebaG||!vozG||vozLeyendoG||fase!=="resolver"||document.hidden||escuchando)return;
+    const Recon=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!Recon){pararVozG();mensaje("El navegador no permite reconocer voz. Probá abrir girayadivina.com desde Chrome.");return;}
+    const r=new Recon();reconocimiento=r;escuchando=true;
+    r.lang="es-UY";r.continuous=false;r.interimResults=false;r.maxAlternatives=4;
+    detenerMusicaJuego();
+    mostrarEstadoVozG("Escuchando · Decí la palabra o Pasapalabra");
+    r.onresult=e=>{
+      if(!vozG||reconocimiento!==r||fase!=="resolver"||actual<0)return;
+      const opciones=Array.from(e.results?.[0]||[]).map(x=>String(x.transcript||"").trim().replace(/[¿¡!?,.;:]+$/g,"")).filter(Boolean);
+      if(!opciones.length)return;
+      const pasa=opciones.some(t=>["PASAPALABRA","PASAR","PASO"].includes(normalizar(t)));
+      if(pasa){pasar();return;}
+      const reconocida=opciones.find(t=>vale(items[actual],normalizar(t)))||opciones[0];
+      $("#rrEntrada").value=reconocida.slice(0,60);
+      enviar();
+    };
+    r.onerror=e=>{
+      if(reconocimiento!==r)return;
+      const error=String(e.error||"");
+      if(["not-allowed","service-not-allowed","audio-capture","language-not-supported"].includes(error)){
+        pararVozG();mensaje("No se pudo usar el micrófono ("+error+"). Revisá el permiso de Chrome o de la app.");return;
+      }
+      if(error==="network")mostrarEstadoVozG("El reconocimiento necesita conexión. Reintentando…");
+      if(error==="no-speech")mostrarEstadoVozG("No escuché una palabra. Reintentando…");
+    };
+    r.onend=()=>{
+      if(reconocimiento!==r)return;
+      reconocimiento=null;escuchando=false;
+      if(vozG&&!vozLeyendoG&&fase==="resolver"&&!document.hidden){
+        clearTimeout(vozTimerG);vozTimerG=setTimeout(arrancarEscuchaG,450);
+      }
+    };
+    try{r.start();}catch(err){reconocimiento=null;escuchando=false;pararVozG();mensaje("No se pudo iniciar el micrófono. Revisá los permisos del juego.");}
+  }
+  function leerPistaG(){
+    if(!pruebaG||!vozG||fase!=="resolver"||actual<0)return;
+    detenerVoz();vozLeyendoG=true;
+    mostrarEstadoVozG("Leyendo la pista…");
+    try{
+      if(!("speechSynthesis" in window))throw Error("Sin lectura de voz");
+      speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(items[actual].definicion);
+      u.lang="es-UY";u.rate=.97;vozPistaG=u;
+      const terminar=()=>{
+        if(vozPistaG!==u)return;vozPistaG=null;vozLeyendoG=false;
+        ultimo=performance.now();
+        if(vozG&&fase==="resolver")arrancarEscuchaG();
+      };
+      u.onend=terminar;u.onerror=terminar;
+      speechSynthesis.speak(u);
+      clearTimeout(vozTimerG);
+      vozTimerG=setTimeout(()=>{if(vozPistaG===u){try{speechSynthesis.cancel();}catch(e){}terminar();}},10000);
+    }catch(err){vozPistaG=null;vozLeyendoG=false;arrancarEscuchaG();}
+  }
+  function alternarVozG(){
+    if(!pruebaG)return;
+    if(vozG){pararVozG();return;}
+    if(fase!=="resolver")return;
+    if(!window.SpeechRecognition&&!window.webkitSpeechRecognition){
+      mostrarEstadoVozG("Este navegador no admite respuestas habladas.");
+      mensaje("Para probar voz usá Chrome en Android.");
+      return;
+    }
+    vozG=true;actualizarEntradaG();mostrarEstadoVozG("Solicitando micrófono…");
+    /* La primera llamada ocurre en el toque y provoca el permiso del navegador. */
+    arrancarEscuchaG();
+  }
+  function actualizarGiroG(){
+    if(!shell||!pruebaG)return;
+    shell.classList.toggle("rr-giro-forzado",giroG&&matchMedia("(orientation:portrait)").matches);
+    const boton=$("#rrGirarG");if(boton)boton.textContent=giroG?"↶ Vertical":"↔ Horizontal";
+    actualizarEntradaG();
+    requestAnimationFrame(ajustarPantalla);
+  }
+  async function alternarGiroG(){
+    if(!pruebaG||!shell)return;
+    giroG=!giroG;
+    if(giroG){
+      try{
+        if(!document.fullscreenElement&&document.documentElement.requestFullscreen){
+          await document.documentElement.requestFullscreen();fullscreenG=true;
+        }
+        if(screen.orientation?.lock)await screen.orientation.lock("landscape");
+      }catch(e){}
+    }else{
+      try{screen.orientation?.unlock?.();}catch(e){}
+      if(fullscreenG&&document.fullscreenElement)try{await document.exitFullscreen();}catch(e){}
+      fullscreenG=false;
+    }
+    actualizarGiroG();
+  }
+
   // Al girar el celular, el teclado se abre solo cuando se toca el campo.
-  const esRoscoHorizontal=()=>matchMedia("(orientation: landscape) and (max-width:1024px) and (max-height:600px)").matches;
+  const esRoscoHorizontal=()=>horizontalG()||matchMedia("(orientation: landscape) and (max-width:1024px) and (max-height:600px)").matches;
   function enfocar(){
     if(!raiz||document.hidden)return;
     if(esRoscoHorizontal())$("#rrEntrada").blur();
@@ -98,6 +236,7 @@ const RoscoRioplatense=(()=>{
     if(raiz&&fase!=="fin")iniciarMusicaJuego();
   }
   function responderPorVoz(){
+    if(pruebaG){alternarVozG();return;}
     if(!raiz||fase!=="resolver")return;
     if(escuchando){detenerVoz();return;}
     const Recon=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -144,6 +283,7 @@ const RoscoRioplatense=(()=>{
      (visualViewport) y, si el campo queda abajo, se corre solo un poquito hasta que se vea. */
   function ajustarPantalla(){
     if(!raiz||!shell)return;
+    if(pruebaG)actualizarEntradaG();
     const vv=window.visualViewport,alto=Math.round(vv?vv.height:innerHeight),arriba=vv?Math.max(0,Math.round(vv.offsetTop)):0;
     const enfocado=document.activeElement===$("#rrEntrada");
     if(!enfocado)altoLibre=Math.max(altoLibre,alto);
@@ -177,7 +317,8 @@ const RoscoRioplatense=(()=>{
     actual=destino;fase="resolver";const d=items[actual];
     $("#rrGrande").textContent=d.letra;$("#rrRegla").textContent=(d.contiene?"Contiene la ":"Empieza con ")+d.letra;
     $("#rrDefinicion").textContent=d.definicion;hud();enfocar();
-    if(typeof hablar==="function")hablar(d.definicion,audioMusica);
+    if(pruebaG&&vozG)leerPistaG();
+    else if(typeof hablar==="function")hablar(d.definicion,audioMusica);
   }
   function iniciar(){if(window.Fichas&&!Fichas.usar("rosco-rioplatense",iniciar))return;duelo=false;config=configNivel(nivel);items=armarRonda();guardar();arrancarRonda();}
   function arrancarRonda(){
@@ -288,7 +429,7 @@ const RoscoRioplatense=(()=>{
   function tic(){
     const ahora=performance.now(),dt=Math.max(0,ahora-ultimo);ultimo=ahora;
     if(!raiz||document.hidden||fase==="inicio"||fase==="fin")return;
-    if(fase==="resolver"||fase==="respuesta"){
+    if((fase==="resolver"||fase==="respuesta")&&!vozLeyendoG){
       tiempo=Math.max(0,tiempo-dt);if(tiempo===0){terminar();return;}
     }
     if(fase==="giro"){
@@ -298,12 +439,22 @@ const RoscoRioplatense=(()=>{
     }else if(fase==="respuesta"){espera-=dt;if(espera<=0)siguiente();}
     hud();
   }
-  function visibilidad(){if(document.hidden)detenerMusicaJuego();else iniciarMusicaJuego();ultimo=performance.now();}
+  function visibilidad(){if(document.hidden){detenerMusicaJuego();if(pruebaG)detenerVoz();}else{iniciarMusicaJuego();if(pruebaG&&vozG&&fase==="resolver"&&!vozLeyendoG)arrancarEscuchaG();}ultimo=performance.now();}
   function abrir(contenedor){
     salir();datos=cargar();nivel=datos.nivelMax;config=configNivel(nivel);fase="inicio";usadasSesion=new Set();
     raiz=document.createElement("div");raiz.className="rr-game";raiz.dataset.fase="inicio";altoLibre=0;
+    pruebaG=typeof esGonzalo==="function"&&esGonzalo();giroG=false;vozG=false;
+    if(pruebaG)raiz.classList.add("rr-gonzalo");
     raiz.innerHTML='<button type="button" class="ext-volver" id="rrVolver">⟵ Extensiones</button><div class="rr-titulo rr-titulo-arte"><h2 class="rr-logo-h"><img class="rr-logo" src="'+ARTE("logo")+'" alt="El Rosco" draggable="false"></h2><p>Una vuelta, muchas palabras nuestras.</p></div><div id="rrJuego" hidden><div class="sf-hud"><div><small>Nivel</small><b id="rrNivel"></b></div><div><small>'+ico("aciertos")+'Aciertos</small><b id="rrAciertos"></b></div><div><small>'+ico("errores")+'Errores</small><b id="rrErrores"></b></div><div><small>'+ico("reloj")+'Tiempo</small><b id="rrTiempo"></b></div></div><div class="sf-bar"><i id="rrBarra"></i></div><div class="rr-rueda"><div id="rrDisco"></div><b id="rrGrande"></b></div><div class="rr-pista" role="status" aria-live="polite"><div class="voz-fila"><span class="rr-pista-ico">'+ico("pista")+'</span><small id="rrRegla"></small><button type="button" class="voz-btn rr-escuchar" id="rrEscuchar" aria-label="Escuchar la pista">'+ico("escuchar")+'</button></div><p id="rrDefinicion"></p></div><p id="rrMensaje" class="rr-mensaje" role="status"></p><form id="rrForm" autocomplete="off"><label class="rr-sr" for="rrEntrada">Tu respuesta</label><div class="rr-fila"><input id="rrEntrada" placeholder="Tu palabra" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" enterkeyhint="send" maxlength="60"><button id="rrEnviar" type="submit">Enviar</button><button id="rrPasar" type="button">'+ico("pasapalabra")+'<span>Pasapalabra</span></button><button id="rrVoz" type="button" class="rr-microfono" aria-label="Responder hablando" aria-pressed="false" title="Responder por voz">🎙<span>Hablar</span></button></div></form></div><div id="rrPanel" class="rr-panel-capa"></div>';
     contenedor.appendChild(raiz);shell=raiz.closest(".ext-shell");shell?.classList.add("rr-abierta");
+    if(pruebaG){
+      const boton=document.createElement("button");boton.id="rrGirarG";boton.type="button";boton.className="rr-girar-g";boton.textContent="↔ Horizontal";
+      raiz.insertBefore(boton,raiz.firstChild);boton.onclick=alternarGiroG;
+      const teclado=document.createElement("div");teclado.id="rrTecladoG";teclado.className="rr-teclado-g";teclado.setAttribute("aria-label","Teclado propio del Rosco");
+      $("#rrJuego").appendChild(teclado);tecladoG();
+      const estado=document.createElement("p");estado.id="rrEstadoVozG";estado.className="rr-estado-voz-g";$("#rrJuego").appendChild(estado);
+      actualizarEntradaG();
+    }
     $("#rrVolver").onclick=()=>Extensiones.abrirLobby();
     $("#rrForm").onsubmit=e=>{e.preventDefault();enviar();};$("#rrPasar").onclick=pasar;$("#rrVoz").onclick=responderPorVoz;
     $("#rrEscuchar").onclick=()=>{if(actual>=0&&typeof hablar==="function")hablar(items[actual].definicion,audioMusica);};
@@ -314,13 +465,15 @@ const RoscoRioplatense=(()=>{
     document.addEventListener("visibilitychange",visibilidad);ultimo=performance.now();intervalo=setInterval(tic,ROSCO_CONFIG.ticMs);iniciarMusicaJuego();
     const acciones=[["Jugar nivel "+nivel,iniciar]];if(nivel>1)acciones.push(["Practicar desde el nivel 1",()=>{nivel=1;iniciar();}]);
     acciones.push(["Jugar con un amigo 👥",iniciarDuelo]);
+    if(pruebaG)acciones.push(["↔ Probar horizontal",()=>{alternarGiroG();}]);
     panel("El Rosco Rioplatense",config.letras+" letras y "+config.segundos+" segundos. Leé cada pista y escribí la palabra: tenés un intento por letra. Pasapalabra la deja para después. El reloj se pausa al girar. Acertá al menos "+Math.ceil(config.letras*ROSCO_CONFIG.proporcionAvance)+" y respondé todas para avanzar. Jugás gratis, sin gastar vidas ni monedas. Mejor: "+datos.mejor+" puntos.",acciones,"personaje");ajustarPantalla();
   }
   function salir(){
+    if(pruebaG){pararVozG();try{screen.orientation?.unlock?.();}catch(e){}if(fullscreenG&&document.fullscreenElement){try{document.exitFullscreen().catch(()=>{});}catch(e){}}fullscreenG=false;}
     detenerVoz();clearInterval(intervalo);intervalo=null;document.removeEventListener("visibilitychange",visibilidad);
     window.visualViewport?.removeEventListener("resize",ajustarPantalla);window.visualViewport?.removeEventListener("scroll",ajustarPantalla);window.removeEventListener("resize",ajustarPantalla);
     if(shell){shell.style.height="";shell.style.top="";shell.style.bottom="";shell.style.removeProperty("--rr-viewport-alto");}
-    shell?.classList.remove("rr-abierta","rr-teclado-abierto");altoLibre=0;
+    shell?.classList.remove("rr-abierta","rr-teclado-abierto","rr-giro-forzado");altoLibre=0;pruebaG=false;giroG=false;vozG=false;
     if("speechSynthesis" in window)speechSynthesis.cancel();
     if(typeof sincronizarMusica==="function")sincronizarMusica();
     detenerMusicaJuego();
