@@ -11,7 +11,7 @@ const RoscoRioplatense=(()=>{
   let nivel=1,config=null,fase="inicio",tiempo=0,espera=0,ultimo=0,intervalo=null,ultimoTac=0,duelo=false,usadasSesion=new Set();
   let audioMusica=null,reconocimiento=null,escuchando=false,altoLibre=0;
   /* Opciones experimentales solo para el perfil Gonzalo. */
-  let pruebaG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozMensajeG="",vozPistaG=null,vozSilenciosG=0;
+  let pruebaG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozMensajeG="",vozPistaG=null,vozSilenciosG=0,vozStreamG=null,vozGeneracionG=0;
   /* Dibujos en assets/rosco/ (hoja de ChatGPT recortada). */
   const ARTE=n=>"assets/rosco/"+n+".webp",ico=n=>'<img class="rr-ico" src="'+ARTE(n)+'" alt="" draggable="false">';
   function iniciarMusicaJuego(){
@@ -120,10 +120,15 @@ const RoscoRioplatense=(()=>{
     }
     panel.appendChild(fila);
   }
+  function liberarMicrofonoG(){
+    const stream=vozStreamG;vozStreamG=null;
+    if(stream)for(const track of stream.getTracks())try{track.stop();}catch(e){}
+  }
   function pararVozG(){
+    ++vozGeneracionG;
     vozG=false;vozLeyendoG=false;vozSilenciosG=0;clearTimeout(vozTimerG);vozTimerG=null;
     if(vozPistaG){try{speechSynthesis.cancel();}catch(e){}vozPistaG=null;}
-    detenerVoz();actualizarEntradaG();
+    detenerVoz();liberarMicrofonoG();actualizarEntradaG();
     mostrarEstadoVozG("Micrófono apagado.");
   }
   function arrancarEscuchaG(){
@@ -132,19 +137,20 @@ const RoscoRioplatense=(()=>{
     if(!Recon){pararVozG();mensaje("El navegador no permite reconocer voz. Probá abrir girayadivina.com desde Chrome.");return;}
     const r=new Recon();reconocimiento=r;escuchando=true;
     r.lang="es-UY";r.continuous=true;r.interimResults=false;r.maxAlternatives=4;
-    /* En Android el modo continuo evita parte de los cierres al guardar silencio.
-       Si el motor se detiene igual, reintentar con pausa en vez de cada 450 ms:
-       cada start() puede emitir un aviso audible que maneja Android. */
-    let huboRespuesta=false;
+    /* El navegador puede terminar sesiones continuas por inactividad.
+       La captura permanece abierta mientras el modo voz esté activo. */
+    let inicioIntento=performance.now();
     detenerMusicaJuego();
     mostrarEstadoVozG("Escuchando · Decí la palabra o Pasapalabra");
     r.onresult=e=>{
       if(!vozG||reconocimiento!==r||fase!=="resolver"||actual<0)return;
-      const opciones=Array.from(e.results?.[0]||[]).map(x=>String(x.transcript||"").trim().replace(/[¿¡!?,.;:]+$/g,"")).filter(Boolean);
+      const resultado=e.results?.[e.resultIndex]||e.results?.[e.results.length-1];
+      if(!resultado||!resultado.isFinal)return;
+      const opciones=Array.from(resultado).map(x=>String(x.transcript||"").trim().replace(/[¿¡!?,.;:]+$/g,"")).filter(Boolean);
       if(!opciones.length)return;
       const pasa=opciones.some(t=>["PASAPALABRA","PASAR","PASO"].includes(normalizar(t)));
-      if(pasa){huboRespuesta=true;vozSilenciosG=0;pasar();return;}
-      huboRespuesta=true;vozSilenciosG=0;
+      if(pasa){vozSilenciosG=0;pasar();return;}
+      vozSilenciosG=0;
       const reconocida=opciones.find(t=>vale(items[actual],normalizar(t)))||opciones[0];
       $("#rrEntrada").value=reconocida.slice(0,60);
       enviar();
@@ -162,13 +168,16 @@ const RoscoRioplatense=(()=>{
       if(reconocimiento!==r)return;
       reconocimiento=null;escuchando=false;
       if(vozG&&!vozLeyendoG&&fase==="resolver"&&!document.hidden){
-        if(!huboRespuesta)vozSilenciosG=Math.min(vozSilenciosG+1,4);
-        /* Evitar encender el reconocimiento repetidamente cuando nadie habla. */
-        const pausa=huboRespuesta?600:Math.min(5000,900+vozSilenciosG*950);
+        /* El reintento anterior escalaba hasta 5 s después de estar en silencio.
+           Reabrir rápido tras una sesión normal; frenar un bucle de errores
+           inmediatos para evitar avisos repetidos del micrófono de Android. */
+        const duro=performance.now()-inicioIntento;
+        vozSilenciosG=duro<1200?Math.min(vozSilenciosG+1,3):0;
+        const pausa=vozSilenciosG?650+vozSilenciosG*350:300;
         clearTimeout(vozTimerG);vozTimerG=setTimeout(arrancarEscuchaG,pausa);
       }
     };
-    try{r.start();}catch(err){reconocimiento=null;escuchando=false;pararVozG();mensaje("No se pudo iniciar el micrófono. Revisá los permisos del juego.");}
+    try{r.start();inicioIntento=performance.now();}catch(err){reconocimiento=null;escuchando=false;pararVozG();mensaje("No se pudo iniciar el micrófono. Revisá los permisos del juego.");}
   }
   function leerPistaG(){
     if(!pruebaG||!vozG||fase!=="resolver"||actual<0)return;
@@ -199,9 +208,27 @@ const RoscoRioplatense=(()=>{
       mensaje("Para probar voz usá Chrome en Android.");
       return;
     }
-    vozG=true;vozSilenciosG=0;actualizarEntradaG();mostrarEstadoVozG("Solicitando micrófono…");
-    /* La primera llamada ocurre en el toque y provoca el permiso del navegador. */
-    arrancarEscuchaG();
+    vozG=true;vozSilenciosG=0;const sesion=++vozGeneracionG;
+    actualizarEntradaG();mostrarEstadoVozG("Solicitando micrófono…");
+    /* Una sola autorización al tocar Hablar y captura mantenida durante el modo.
+       Chrome puede reiniciar el reconocimiento sin soltar el micrófono físico. */
+    if(navigator.mediaDevices?.getUserMedia){
+      navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})
+        .then(stream=>{
+          if(!vozG||sesion!==vozGeneracionG||document.hidden||!raiz){
+            for(const t of stream.getTracks())t.stop();return;
+          }
+          vozStreamG=stream;arrancarEscuchaG();
+        })
+        .catch(error=>{
+          if(!vozG||sesion!==vozGeneracionG)return;
+          if(error?.name==="NotAllowedError"||error?.name==="PermissionDeniedError"){
+            pararVozG();mensaje("Permití el micrófono en Chrome o en la app para responder hablando.");return;
+          }
+          /* Web Speech puede funcionar sin getUserMedia en ciertos navegadores. */
+          arrancarEscuchaG();
+        });
+    }else arrancarEscuchaG();
   }
   /* Cambiar entre vertical clásico y horizontal al girar físicamente.
      No solicitar fullscreen ni bloquear la orientación de Android. */
@@ -224,7 +251,7 @@ const RoscoRioplatense=(()=>{
     const boton=$("#rrVoz");
     if(boton){boton.classList.remove("rr-grabando");boton.setAttribute("aria-pressed","false");}
     if(r){r.onend=null;r.onerror=null;r.onresult=null;try{r.abort();}catch(e){}}
-    if(raiz&&fase!=="fin")iniciarMusicaJuego();
+    if(raiz&&fase!=="fin"&&!(pruebaG&&vozG))iniciarMusicaJuego();
   }
   function responderPorVoz(){
     if(pruebaG){alternarVozG();return;}
@@ -379,7 +406,7 @@ const RoscoRioplatense=(()=>{
   }
   function terminar(){
     if(fase==="fin")return;
-    detenerVoz();fase="fin";actual=-1;$("#rrEntrada").blur();
+    if(pruebaG)pararVozG();else detenerVoz();fase="fin";actual=-1;$("#rrEntrada").blur();
     const aciertos=conteo("acierto"),errores=conteo("error"),faltan=pendientes().length;
     const bonus=faltan===0&&aciertos>0?Math.max(0,Math.ceil(tiempo/1000))*ROSCO_CONFIG.bonoSegundo:0;
     const puntos=aciertos*ROSCO_CONFIG.puntosAcierto+bonus;
@@ -430,7 +457,7 @@ const RoscoRioplatense=(()=>{
     }else if(fase==="respuesta"){espera-=dt;if(espera<=0)siguiente();}
     hud();
   }
-  function visibilidad(){if(document.hidden){detenerMusicaJuego();if(pruebaG)detenerVoz();}else{iniciarMusicaJuego();if(pruebaG&&vozG&&fase==="resolver"&&!vozLeyendoG)arrancarEscuchaG();}ultimo=performance.now();}
+  function visibilidad(){if(document.hidden){detenerMusicaJuego();if(pruebaG&&vozG)pararVozG();else if(pruebaG)detenerVoz();}else iniciarMusicaJuego();ultimo=performance.now();}
   function abrir(contenedor){
     salir();datos=cargar();nivel=datos.nivelMax;config=configNivel(nivel);fase="inicio";usadasSesion=new Set();
     raiz=document.createElement("div");raiz.className="rr-game";raiz.dataset.fase="inicio";altoLibre=0;
