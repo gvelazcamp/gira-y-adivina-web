@@ -31,6 +31,10 @@ const server=http.createServer((req,res)=>{
    },name);
    await page.goto(base,{waitUntil:"load"});
    await page.evaluate(()=>{
+     window.__orientationLocks=[];
+     Object.defineProperty(screen.orientation,"lock",{configurable:true,value:async mode=>{window.__orientationLocks.push(mode);}});
+     Object.defineProperty(screen.orientation,"unlock",{configurable:true,value:()=>{window.__orientationLocks.push("unlock");}});
+     Object.defineProperty(document.documentElement,"requestFullscreen",{configurable:true,value:async()=>{}});
      document.querySelector("#splash")?.remove();
      document.querySelectorAll(".capa.ver").forEach(el=>el.classList.remove("ver"));
      document.documentElement.classList.remove("cargando");
@@ -39,6 +43,7 @@ const server=http.createServer((req,res)=>{
      modo="bot";miJug=0;arranca=0;meta.pistasGratis=0;enTutorial=false;
      armarTeclado();iniciarPartida(perfil.nombre,"Margarita");
    });
+   if(name==="Gonzalo")await page.waitForFunction(()=>window.__orientationLocks.includes("landscape"));
    await page.setViewportSize({width:844,height:390});
    await page.waitForFunction(()=>!matchMedia("(orientation:portrait)").matches);
    await page.waitForFunction(()=>document.body.classList.contains("modo-horizontal"));

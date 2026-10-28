@@ -28,7 +28,13 @@ const server=http.createServer((req,res)=>{
       },name);
       await page.goto(base,{waitUntil:"load"});
       await page.waitForFunction(()=>typeof window.Extensiones==="object"&&typeof window.EXTENSIONES==="object");
-      const results=await page.evaluate(()=>{
+      await page.evaluate(()=>{
+        window.__orientationLocks=[];
+        Object.defineProperty(screen.orientation,"lock",{configurable:true,value:async mode=>{window.__orientationLocks.push(mode);}});
+        Object.defineProperty(screen.orientation,"unlock",{configurable:true,value:()=>{window.__orientationLocks.push("unlock");}});
+        Object.defineProperty(document.documentElement,"requestFullscreen",{configurable:true,value:async()=>{}});
+      });
+      const results=await page.evaluate(async()=>{
         document.querySelector("#splash")?.remove();
         document.documentElement.classList.remove("cargando");
         const gameIds=EXTENSIONES.filter(x=>x.estado==="disponible"&&
@@ -41,19 +47,26 @@ const server=http.createServer((req,res)=>{
         for(const id of gameIds){
           Extensiones.abrirJuego(id);
           out.push({id,button:!!document.getElementById("extHorizontal"),
+            enabled:document.getElementById("extHorizontal")?.getAttribute("aria-pressed"),
             width:document.querySelector(".ext-wrap")?.getBoundingClientRect().width});
         }
+        await new Promise(resolve=>setTimeout(resolve,10));
+        const locks=window.__orientationLocks.slice();
         Extensiones.abrirLobby();
         const lobbyVertical=!document.body.classList.contains("ext-horizontal");
         Extensiones.cerrar();
         const closed=!document.body.classList.contains("ext-horizontal");
         EXTENSIONES.forEach((x,i)=>x.abrir=originals[i]);
-        return{out,lobbyVertical,closed};
+        return{out,locks,lobbyVertical,closed};
       });
       assert(results.out.length>=15,"expected full extension catalog");
       for(const test of results.out){
-        assert.equal(test.button,false,"no manual orientation button: "+test.id);
+        assert.equal(test.button,true,"orientation control exists: "+test.id);
+        assert.equal(test.enabled,name==="Gonzalo"?"true":"false","Gonzalo game orientation mode: "+test.id);
         assert(test.width>520,"landscape width available to every player: "+test.id);
+      }
+      if(name==="Gonzalo"){
+        await page.waitForFunction(()=>window.__orientationLocks.includes("landscape"));
       }
       assert(results.lobbyVertical&&results.closed,"landscape must not leak to lobby or other screens");
       await context.close();

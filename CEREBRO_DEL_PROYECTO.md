@@ -1757,3 +1757,7 @@ Fecha: 28/10/2026 — El giro horizontal pasa a ser automático para todos los p
 ```text
 Fecha: 28/10/2026 — Seguimiento del giro horizontal web: auditadas las 20 extensiones al entrar en juego a 844×390. Se compactaron las pantallas activas de Silabario, Memoria, Tutti Frutti y Contra Reloj; se reorganizaron los controles de Rueda de Letras y 100 Rioplatenses para mantener pregunta y respuesta visibles con el teclado del celular. Se evita un callback tardío de Ahorcado al cambiar de juego. Versiones de recursos actualizadas y caché sw v468. Sin cambios en Play Store ni en el proyecto Android.
 ```
+
+```text
+Fecha: 28/10/2026 — Corrección urgente: la actualización web anterior había eliminado de Extensiones la petición de pantalla completa y screen.orientation.lock("landscape") al abrir un juego con el perfil Gonzalo. La captura de la app instalada mostraba el control «Horizontal: sí» de la implementación anterior. Se restauró el control y la petición de orientación para todos los juegos de Extensiones de Gonzalo, con liberación al salir. La Ruleta principal recuperó la petición al iniciar partida y su control manual de respaldo. No se modificó Android ni Play Store. Caché sw v469.
+```

@@ -91,8 +91,8 @@ document.documentElement.classList.add("cargando");setTimeout(()=>document.docum
 <!-- Hojas de estilo sin bloquear el primer dibujo (con internet lento la
      pantalla de carga quedaba oscura y vacía hasta que bajaban). El juego
      queda tapado por la pantalla de carga hasta que termina de cargar. -->
-<link rel="preload" as="style" href="extensiones.css?v=130" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="extensiones.css?v=130"></noscript>
+<link rel="preload" as="style" href="extensiones.css?v=131" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="extensiones.css?v=131"></noscript>
 <link rel="stylesheet" href="rosco-horizontal.css?v=4">
 <link rel="stylesheet" href="ruleta-horizontal.css?v=2">
 <link rel="stylesheet" href="ahorcado-horizontal.css?v=2">
@@ -1284,7 +1284,7 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
 /* La partida se acomoda sola al girar el celular, sin activar un botón. */
 #bHorizontalJuego{display:none;margin:0 auto 8px;padding:7px 12px;border:1px solid #37D6C088;
  border-radius:99px;background:#0B3B52;color:var(--crema);font-size:.78rem;font-weight:800}
-body.gonzalo-admin #bHorizontalJuego{display:none}
+body.gonzalo-admin #bHorizontalJuego{display:block}
 #horizontalAyuda{display:none;text-align:center;color:var(--agua);font-size:.78rem;margin:0 0 8px}
 body:not(.tvhost) #horizontalAyuda{display:none}
 @media(orientation:landscape) and (max-width:1024px) and (max-height:600px){
@@ -5181,19 +5181,44 @@ function puedeVerSalaTV(){
   return ["andres","romina","gonzalo","vale"].includes(nombre);
 }
 function actualizarModoAdminGonzalo(){try{document.body.classList.toggle("gonzalo-admin",esGonzalo());sincronizarHorizontalRuletaPorGiro();}catch(e){}}
+const CLAVE_HORIZONTAL_RULETA="gya_gonzalo_ruleta_horizontal";
+let horizontalPreferidoRuleta=true,horizontalFullscreenRuleta=false,horizontalBloqueadoRuleta=false;
+try{horizontalPreferidoRuleta=localStorage.getItem(CLAVE_HORIZONTAL_RULETA)!=="0";}catch(e){}
+async function pedirHorizontalRuleta(){
+  if(!esGonzalo()||!horizontalPreferidoRuleta||modo==="tvhost")return;
+  try{
+    if(!matchMedia("(display-mode: fullscreen)").matches&&!document.fullscreenElement&&document.documentElement.requestFullscreen){
+      await document.documentElement.requestFullscreen({navigationUI:"hide"});
+      horizontalFullscreenRuleta=true;
+    }
+  }catch(e){}
+  if(!esGonzalo()||!horizontalPreferidoRuleta||modo==="tvhost")return;
+  try{if(screen.orientation?.lock){await screen.orientation.lock("landscape");horizontalBloqueadoRuleta=true;}}catch(e){}
+}
+function soltarHorizontalRuleta(){
+  if(horizontalBloqueadoRuleta){try{screen.orientation.unlock();}catch(e){}horizontalBloqueadoRuleta=false;}
+  if(horizontalFullscreenRuleta&&document.fullscreenElement){try{document.exitFullscreen().catch(()=>{});}catch(e){}}
+  horizontalFullscreenRuleta=false;
+}
 function sincronizarHorizontalRuletaPorGiro(){
   // La Ruleta se adapta al giro real del celular para todos los perfiles.
   const activo=$("juego")?.style.display==="block";
+  if(!activo&&(horizontalBloqueadoRuleta||horizontalFullscreenRuleta))soltarHorizontalRuleta();
   const apaisado=matchMedia("(orientation: landscape) and (max-width:1024px) and (max-height:600px)").matches;
   if(activo&&apaisado)document.body.classList.add("modo-horizontal");
   else document.body.classList.remove("modo-horizontal");
   const boton=$("bHorizontalJuego");
   if(boton){
-    const si=document.body.classList.contains("modo-horizontal");
-    boton.textContent=si?"📺 Salir del modo horizontal":"📺 Probar en horizontal";
-    boton.setAttribute("aria-pressed",String(si));
+    boton.textContent=horizontalPreferidoRuleta?"📺 Horizontal: sí":"📱 Horizontal: no";
+    boton.setAttribute("aria-pressed",String(horizontalPreferidoRuleta));
   }
 }
+$("bHorizontalJuego").onclick=()=>{
+  horizontalPreferidoRuleta=!horizontalPreferidoRuleta;
+  try{localStorage.setItem(CLAVE_HORIZONTAL_RULETA,horizontalPreferidoRuleta?"1":"0");}catch(e){}
+  if(horizontalPreferidoRuleta)pedirHorizontalRuleta();else soltarHorizontalRuleta();
+  sincronizarHorizontalRuletaPorGiro();
+};
 const escucharGiroRuleta=matchMedia("(orientation: landscape)");
 if(escucharGiroRuleta.addEventListener)escucharGiroRuleta.addEventListener("change",sincronizarHorizontalRuletaPorGiro);
 else if(escucharGiroRuleta.addListener)escucharGiroRuleta.addListener(sincronizarHorizontalRuletaPorGiro);
@@ -8396,6 +8421,7 @@ window.anotarUltimoJuego=anotarUltimoJuego;
 function nombreJuegoRueda(){return(modo==="tvhost"||modo==="tvguest")?"Sala TV":(modo==="host"||modo==="guest")?"Girá y Adiviná con amigos":"Girá y Adiviná";}
 function iniciarPartidaJugadores(jugadores,cats){
   detenerPartidaAnterior();
+  if(modo!=="tvhost"&&esGonzalo()&&horizontalPreferidoRuleta)pedirHorizontalRuleta();
   if(modo!=="tvhost")anotarUltimoJuego(nombreJuegoRueda());
   const js=jugadores.map((j,i)=>({id:j.id||null,n:(j.n||("Jugador "+(i+1))).slice(0,30),av:j.av||null,frame:j.frame||null,tab:j.tab||null,tot:0,ronda:0,rg:0,
     escudo:false,hielo:{},lodo:false,comodin:false,poderesRonda:[],poderUsadoTurno:false}));
@@ -11899,7 +11925,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="canta-la-cancion.js?v=13"></script>
 <script src="tutti-frutti-datos.js?v=35"></script>
 <script src="tutti-frutti.js?v=91"></script>
-<script src="extensiones.js?v=74"></script>
+<script src="extensiones.js?v=75"></script>
 <script src="sala-tv.js?v=1"></script>
 <link rel="stylesheet" href="tele.css?v=5">
 <script src="tele.js?v=7"></script>
