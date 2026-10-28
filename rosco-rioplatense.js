@@ -230,11 +230,10 @@ const RoscoRioplatense=(()=>{
         });
     }else arrancarEscuchaG();
   }
-  /* Cambiar entre vertical clásico y horizontal al girar físicamente.
-     No solicitar fullscreen ni bloquear la orientación de Android. */
+  /* El modo Hablar funciona tanto vertical como horizontal.
+     Girar el teléfono no debe apagar una captura de audio activa. */
   function cambioOrientacionG(){
     if(!pruebaG||!raiz)return;
-    if(!horizontalG()&&vozG)pararVozG();
     actualizarEntradaG();
     ajustarPantalla();
   }
@@ -242,7 +241,8 @@ const RoscoRioplatense=(()=>{
   const esRoscoHorizontal=()=>horizontalG()||matchMedia("(orientation: landscape) and (max-width:1024px) and (max-height:600px)").matches;
   function enfocar(){
     if(!raiz||document.hidden)return;
-    if(esRoscoHorizontal())$("#rrEntrada").blur();
+    /* En voz no abrir el teclado Android: la palabra entra por el micrófono. */
+    if((pruebaG&&vozG)||esRoscoHorizontal())$("#rrEntrada").blur();
     else $("#rrEntrada").focus({preventScroll:true});
     ajustarPantalla();
   }
