@@ -164,7 +164,7 @@ const RoscoRioplatense=(()=>{
   }
   function leerPistaG(){
     if(!pruebaG||!vozG||fase!=="resolver"||actual<0)return;
-    detenerVoz();vozLeyendoG=true;
+    detenerVoz();detenerMusicaJuego();vozLeyendoG=true;
     mostrarEstadoVozG("Leyendo la pista…");
     try{
       if(!("speechSynthesis" in window))throw Error("Sin lectura de voz");
