@@ -99,7 +99,7 @@ nextQuestion=async function(){
  if(mode==="online"&&online&&!online.host)return;
  await baseNext();
  if(phase!=="playing")return;
- if(mode==="bot"&&active===1)botTurn();
+ if(mode==="bot"&&active===1){$dc("answer-input").disabled=true;$dc("answer-submit").disabled=true;botTurn();}
  if(mode==="online"&&online&&online.host)sendSnapshot();
  if(answerSel.value==="voice"&&canAnswer()&&!micWanted&&!micBlocked)startMic();
 };
@@ -156,7 +156,8 @@ function onOnlineMsg(message){
  if(message.type==="state"&&!online.host){
    if(!online.started)return;
    const d=message.data;players=d.players.map(p=>({name:p.name,ms:p.ms,score:p.score}));
-   active=d.active;turn=d.turn;phase=d.phase;
+   active=d.active;turn=d.turn;if(d.phase==="finished")return;
+   phase=d.phase;
    const olderKey=question&&JSON.stringify([question.category,question.code,question.math,question.person&&question.person.name]);
    const nextKey=d.question&&JSON.stringify([d.question.category,d.question.code,d.question.math,d.question.person&&d.question.person.name]);
    question=d.question;
@@ -232,5 +233,15 @@ try{
  const c=new URLSearchParams(location.search).get("sala");
  if(c&&codeValid(c.toUpperCase())){modeSel.value="online";roomChoice.value="join";roomInput.value=c.toUpperCase();}
 }catch(e){}
+/* Los botones registrados por el HTML original conservaban sus callbacks anteriores.
+   Reasignarlos aquí garantiza que una salida cierre la sala y el micrófono. */
+["new-btn","configure-again"].forEach(id=>{
+ const b=$dc(id);b.removeEventListener("click",baseReset);b.addEventListener("click",()=>resetToConfig());
+});
+$dc("rematch-btn").removeEventListener("click",originalStart);
+$dc("rematch-btn").addEventListener("click",()=>{
+ if(mode==="online"){resetToConfig();$dc("dc-room-status").textContent="Para la revancha, vuelvan a crear o unirse a una sala.";}
+ else start();
+});
 syncSetup();syncAnswer();
 })();
