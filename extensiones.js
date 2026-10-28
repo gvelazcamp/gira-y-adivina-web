@@ -286,8 +286,11 @@ const Extensiones=(()=>{
     salirJuego();
     vista="lobby";if(!modoTVElegido)salirTV();mostrar();pintarTV();Fichas.enJuego("");
     shell.querySelector("#extTitulo").textContent="Jugá más juegos de Girá y Adiviná";
-    const selector=modoGonzalo()?'<div class="ext-selector-modo" role="group" aria-label="Modo de pantalla"><span>Pantalla</span><button type="button" data-modo="celular" aria-pressed="true">📱 Celular</button><button type="button" data-modo="tv" aria-pressed="false">📺 TV</button></div>':"";
-    contenido.innerHTML=selector+'<div class="ext-hero"><span>✦ MÁS JUEGOS, MÁS DESAFÍOS</span><h2>Extensiones</h2><p>Elegí un juego del universo Girá y Adiviná. Jugá gratis, sin gastar vidas ni monedas.</p></div><h3 class="ext-seccion">🎮 Más juegos</h3><div class="ext-lista" id="extListaResto"></div><h3 class="ext-seccion">🎉 Juegos de previa</h3><div class="ext-lista" id="extListaPrevia"></div>';
+    const selector=modoGonzalo()?'<div class="ext-selector-modo" role="group" aria-label="Modo de pantalla"><button type="button" data-modo="celular" aria-pressed="true">📱 Celular</button><button type="button" data-modo="tv" aria-pressed="false">📺 TV</button></div>':"";
+    /* Mantener la portada pegada al título. El selector de Gonzalo comparte
+       fila con «Más juegos» y no genera una fila adicional sobre la portada. */
+    const tituloJuegos=selector?'<div class="ext-seccion-barra"><h3 class="ext-seccion">🎮 Más juegos</h3>'+selector+'</div>':'<h3 class="ext-seccion">🎮 Más juegos</h3>';
+    contenido.innerHTML='<div class="ext-hero"><span>✦ MÁS JUEGOS, MÁS DESAFÍOS</span><h2>Extensiones</h2><p>Elegí un juego del universo Girá y Adiviná. Jugá gratis, sin gastar vidas ni monedas.</p></div>'+tituloJuegos+'<div class="ext-lista" id="extListaResto"></div><h3 class="ext-seccion">🎉 Juegos de previa</h3><div class="ext-lista" id="extListaPrevia"></div>';
     if(selector){
       const barra=contenido.querySelector(".ext-selector-modo");
       barra.onclick=ev=>{const boton=ev.target.closest("button[data-modo]");if(boton)seleccionarModo(boton.dataset.modo);};
