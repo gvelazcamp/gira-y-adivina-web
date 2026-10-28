@@ -21,7 +21,10 @@ const PantallaFija=(()=>{
   const yaCompleta=()=>{try{return matchMedia("(display-mode: fullscreen)").matches;}catch(e){return false;}};
   function entrar(opts={}){
     if(opts.completa===false){
-      try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});}catch(e){}
+      /* No cerrar fullscreen si Gonzalo eligió expresamente TV: Chrome puede
+         soltar la orientación horizontal y devolverlo a vertical. */
+      if(!window.GyaTV?.activo?.("ext"))
+        try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});}catch(e){}
       return Promise.resolve();
     }
     if(yaCompleta())return Promise.resolve();
@@ -49,7 +52,10 @@ const PantallaFija=(()=>{
   function salir(){
     document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());
     siempre=false;desactivar();soltarWake();
-    try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});}catch(e){}
+    /* Al volver al menú de Extensiones, el modo TV sigue seleccionado.
+       Quien cierra Extensiones es el encargado de desbloquearlo. */
+    if(!window.GyaTV?.activo?.("ext"))
+      try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});}catch(e){}
   }
   /* Popup de bienvenida al entrar a un juego de previa: logo grande + cómo
      se juega + "¡A jugar!". La pantalla completa se pide al cerrarlo, así el
