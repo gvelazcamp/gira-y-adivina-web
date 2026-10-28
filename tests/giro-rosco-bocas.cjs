@@ -9,9 +9,9 @@ const css=fs.readFileSync(path.join(root,"giro-rosco-piloto.css"),"utf8");
 const index=fs.readFileSync(path.join(root,"index.html"),"utf8");
 const sw=fs.readFileSync(path.join(root,"sw.js"),"utf8");
 new Function(src);new Function(sw);
-assert(index.includes('rosco-rioplatense.js?v=30'));
-assert(sw.includes('"./giro-rosco-piloto.js?v=5"'));
-assert(sw.includes('"./giro-rosco-piloto.css?v=4"'));
+assert(index.includes('rosco-rioplatense.js?v=31'));
+assert(sw.includes('"./giro-rosco-piloto.js?v=6"'));
+assert(sw.includes('"./giro-rosco-piloto.css?v=5"'));
 assert(!/bocas-v2|grp-labios|grp-speaking|iniciarLabios|fonemaAIndice/.test(src+css),
   "No deben quedar funciones ni capas de sincronización de boca");
 assert(src.includes('voz.addEventListener("click",()=>hablar(locucion))'),
