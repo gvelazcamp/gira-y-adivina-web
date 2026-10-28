@@ -11,7 +11,7 @@ const RoscoRioplatense=(()=>{
   let nivel=1,config=null,fase="inicio",tiempo=0,espera=0,ultimo=0,intervalo=null,ultimoTac=0,duelo=false,usadasSesion=new Set();
   let audioMusica=null,reconocimiento=null,escuchando=false,altoLibre=0;
   /* Opciones experimentales solo para el perfil Gonzalo. */
-  let pruebaG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozMensajeG="",vozPistaG=null;
+  let pruebaG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozMensajeG="",vozPistaG=null,vozSilenciosG=0;
   /* Dibujos en assets/rosco/ (hoja de ChatGPT recortada). */
   const ARTE=n=>"assets/rosco/"+n+".webp",ico=n=>'<img class="rr-ico" src="'+ARTE(n)+'" alt="" draggable="false">';
   function iniciarMusicaJuego(){
@@ -121,7 +121,7 @@ const RoscoRioplatense=(()=>{
     panel.appendChild(fila);
   }
   function pararVozG(){
-    vozG=false;vozLeyendoG=false;clearTimeout(vozTimerG);vozTimerG=null;
+    vozG=false;vozLeyendoG=false;vozSilenciosG=0;clearTimeout(vozTimerG);vozTimerG=null;
     if(vozPistaG){try{speechSynthesis.cancel();}catch(e){}vozPistaG=null;}
     detenerVoz();actualizarEntradaG();
     mostrarEstadoVozG("Micrófono apagado.");
@@ -131,7 +131,11 @@ const RoscoRioplatense=(()=>{
     const Recon=window.SpeechRecognition||window.webkitSpeechRecognition;
     if(!Recon){pararVozG();mensaje("El navegador no permite reconocer voz. Probá abrir girayadivina.com desde Chrome.");return;}
     const r=new Recon();reconocimiento=r;escuchando=true;
-    r.lang="es-UY";r.continuous=false;r.interimResults=false;r.maxAlternatives=4;
+    r.lang="es-UY";r.continuous=true;r.interimResults=false;r.maxAlternatives=4;
+    /* En Android el modo continuo evita parte de los cierres al guardar silencio.
+       Si el motor se detiene igual, reintentar con pausa en vez de cada 450 ms:
+       cada start() puede emitir un aviso audible que maneja Android. */
+    let huboRespuesta=false;
     detenerMusicaJuego();
     mostrarEstadoVozG("Escuchando · Decí la palabra o Pasapalabra");
     r.onresult=e=>{
@@ -139,7 +143,8 @@ const RoscoRioplatense=(()=>{
       const opciones=Array.from(e.results?.[0]||[]).map(x=>String(x.transcript||"").trim().replace(/[¿¡!?,.;:]+$/g,"")).filter(Boolean);
       if(!opciones.length)return;
       const pasa=opciones.some(t=>["PASAPALABRA","PASAR","PASO"].includes(normalizar(t)));
-      if(pasa){pasar();return;}
+      if(pasa){huboRespuesta=true;vozSilenciosG=0;pasar();return;}
+      huboRespuesta=true;vozSilenciosG=0;
       const reconocida=opciones.find(t=>vale(items[actual],normalizar(t)))||opciones[0];
       $("#rrEntrada").value=reconocida.slice(0,60);
       enviar();
@@ -151,13 +156,16 @@ const RoscoRioplatense=(()=>{
         pararVozG();mensaje("No se pudo usar el micrófono ("+error+"). Revisá el permiso de Chrome o de la app.");return;
       }
       if(error==="network")mostrarEstadoVozG("El reconocimiento necesita conexión. Reintentando…");
-      if(error==="no-speech")mostrarEstadoVozG("No escuché una palabra. Reintentando…");
+      if(error==="no-speech")mostrarEstadoVozG("Sin respuesta · Mantengo activo el modo voz.");
     };
     r.onend=()=>{
       if(reconocimiento!==r)return;
       reconocimiento=null;escuchando=false;
       if(vozG&&!vozLeyendoG&&fase==="resolver"&&!document.hidden){
-        clearTimeout(vozTimerG);vozTimerG=setTimeout(arrancarEscuchaG,450);
+        if(!huboRespuesta)vozSilenciosG=Math.min(vozSilenciosG+1,4);
+        /* Evitar encender el reconocimiento repetidamente cuando nadie habla. */
+        const pausa=huboRespuesta?600:Math.min(5000,900+vozSilenciosG*950);
+        clearTimeout(vozTimerG);vozTimerG=setTimeout(arrancarEscuchaG,pausa);
       }
     };
     try{r.start();}catch(err){reconocimiento=null;escuchando=false;pararVozG();mensaje("No se pudo iniciar el micrófono. Revisá los permisos del juego.");}
@@ -191,7 +199,7 @@ const RoscoRioplatense=(()=>{
       mensaje("Para probar voz usá Chrome en Android.");
       return;
     }
-    vozG=true;actualizarEntradaG();mostrarEstadoVozG("Solicitando micrófono…");
+    vozG=true;vozSilenciosG=0;actualizarEntradaG();mostrarEstadoVozG("Solicitando micrófono…");
     /* La primera llamada ocurre en el toque y provoca el permiso del navegador. */
     arrancarEscuchaG();
   }
