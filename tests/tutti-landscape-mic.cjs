@@ -23,7 +23,7 @@ const server=http.createServer((req,res)=>{
       localStorage.setItem('gya_nombre','Gonzalo');localStorage.setItem('gya_pais','uruguay');localStorage.setItem('gya_bienvenida_vista','1');
       window.__mic={starts:0,stops:0,requests:0,active:null};
       class FakeRecognition{
-        start(){window.__mic.starts++;window.__mic.active=this;}
+        start(){window.__mic.starts++;window.__mic.active=this;setTimeout(()=>this.onstart?.(),0);}
         abort(){this.onend?.();}
       }
       window.SpeechRecognition=FakeRecognition;
@@ -47,24 +47,32 @@ const server=http.createServer((req,res)=>{
     assert.equal(await page.locator('#tfMic').getAttribute('aria-pressed'),'true');
     assert.equal(await page.evaluate(()=>window.__mic.requests),1);
     assert.equal(await page.evaluate(()=>window.__mic.starts),1);
+    await page.waitForFunction(()=>document.querySelector('#tfMic')?.textContent.includes('Escuchando'));
     await page.setViewportSize({width:700,height:320});
     const boton=await page.locator('#tfMic').boundingBox(),teclado=await page.locator('#tfTeclado').boundingBox();
     assert(boton.y>=0&&boton.y+boton.height<=320,'El botón del micrófono debe verse en una pantalla baja');
     assert(teclado.y>=0&&teclado.y+teclado.height<=320,'El teclado debe seguir visible en una pantalla baja');
     await page.setViewportSize({width:844,height:390});
     const letra=await page.locator('.tf-letra.tf-chica').textContent();
-    await page.evaluate(l=>{const r=window.__mic.active;r.onresult({resultIndex:0,results:[{isFinal:true,0:{transcript:l+'oca'}}]});},letra);
-    assert.equal(await page.locator('#tfInput').inputValue(),letra+'oca');
+    const decir=async(texto,final=true,alternativas=[])=>page.evaluate(({texto,final,alternativas})=>{
+      const r=window.__mic.active,resultado=[{transcript:texto},...alternativas.map(transcript=>({transcript}))];
+      resultado.isFinal=final;r.onresult({resultIndex:0,results:[resultado]});
+    },{texto,final,alternativas});
     const anterior=await page.locator('#tfCat').textContent();
-    await page.evaluate(()=>{const r=window.__mic.active;r.onresult({resultIndex:0,results:[{isFinal:true,0:{transcript:'siguiente'}}]});});
-    assert.notEqual(await page.locator('#tfCat').textContent(),anterior,'La orden hablada Siguiente debe avanzar');
+    await decir('Zorro');
+    assert.equal(await page.locator('#tfCat').textContent(),anterior,'Una palabra con letra incorrecta no debe avanzar');
+    await decir(letra+'oco',false);
+    assert.equal(await page.locator('#tfInput').inputValue(),letra+'oco','El reconocimiento parcial debe verse');
+    assert.equal(await page.locator('#tfCat').textContent(),anterior,'Una palabra parcial no debe avanzar');
+    await decir('Zorro',true,[letra+'oca']);
+    assert.notEqual(await page.locator('#tfCat').textContent(),anterior,'Una palabra válida debe avanzar sola');
     await page.evaluate(()=>window.__mic.active.onend());
     await page.waitForFunction(()=>window.__mic.starts>=2);
     for(let i=0;i<10&&await page.locator('#tfBasta').count()===0;i++){
-      await page.evaluate(l=>{document.querySelector('#tfInput').value=l+'a';document.querySelector('#tfSig').click();},letra);
+      await decir(letra+'a');
     }
     assert(await page.locator('#tfMic').isVisible(),'El botón del micrófono debe seguir visible en la revisión');
-    await page.locator('#tfBasta').click();
+    await decir('basta');
     assert.equal(await page.evaluate(()=>window.__mic.stops),1,'¡BASTA! debe liberar el micrófono');
     const starts=await page.evaluate(()=>window.__mic.starts);
     await page.waitForTimeout(700);

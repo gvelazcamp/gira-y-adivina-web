@@ -112,16 +112,16 @@ const TuttiFrutti=(()=>{
      En vertical (y con teclado físico en escritorio) el input es normal. */
   const tecladoHorizontal=()=>window.matchMedia("(orientation: landscape) and (min-width:600px) and (max-width:1024px) and (max-height:600px)").matches
     &&(window.matchMedia("(pointer: coarse)").matches||navigator.maxTouchPoints>0);
-  let micActivo=false,micPidiendo=false,micStream=null,micRecon=null,micReinicio=null,micToken=0,micInicioPendiente=false,micAviso="",micReiniciosCortos=0;
+  let micActivo=false,micPidiendo=false,micEscuchando=false,micStream=null,micRecon=null,micReinicio=null,micToken=0,micInicioPendiente=false,micAviso="",micReiniciosCortos=0;
   function pintarMicrofono(){
     const boton=raiz&&q("tfMic");if(!boton)return;
     boton.classList.toggle("tf-mic-activo",micActivo);
     boton.setAttribute("aria-pressed",String(micActivo));
     boton.disabled=micPidiendo;
-    boton.textContent=micPidiendo?"🎙️ Permiso…":micActivo?"🎙️ Encendido":"🎙️ Activar micrófono";
+    boton.textContent=micPidiendo?"🎙️ Permiso…":!micActivo?"🎙️ Activar micrófono":q("tfRev")&&!q("tfRev").hidden?"🎙️ Decí ¡BASTA!":micEscuchando?"🎙️ Escuchando…":"🎙️ Conectando…";
   }
   function pararMicrofono(reanudarMusica=false){
-    micActivo=false;micPidiendo=false;micInicioPendiente=false;micToken++;
+    micActivo=false;micPidiendo=false;micEscuchando=false;micInicioPendiente=false;micToken++;
     clearTimeout(micReinicio);micReinicio=null;
     const r=micRecon;micRecon=null;
     if(r){r.onend=null;r.onerror=null;r.onresult=null;try{r.abort();}catch(e){}}
@@ -133,28 +133,39 @@ const TuttiFrutti=(()=>{
     if(!micActivo||!on||on.fase!=="jugando"||on.basta||!q("tfInput")||document.hidden)return;
     const Recon=window.SpeechRecognition||window.webkitSpeechRecognition;
     if(!Recon){pararMicrofono(true);micAviso="Este navegador no admite respuestas por voz.";const msg=q("tfMsg");if(msg)msg.textContent=micAviso;return;}
-    const r=new Recon(),token=micToken,inicio=performance.now();micRecon=r;
-    r.lang="es-UY";r.continuous=true;r.interimResults=false;r.maxAlternatives=1;
+    let r;try{r=new Recon();}catch(e){pararMicrofono(true);micAviso="No pude abrir el reconocimiento de voz. Usá el teclado o tocá Activar micrófono para reintentar.";const msg=q("tfMsg");if(msg)msg.textContent=micAviso;return;}
+    const token=micToken,inicio=performance.now();micRecon=r;
+    r.lang="es-UY";r.continuous=true;r.interimResults=true;r.maxAlternatives=4;
+    r.onstart=()=>{if(micRecon!==r||!micActivo)return;micEscuchando=true;pintarMicrofono();const msg=q("tfMsg");if(msg&&!msg.textContent)msg.textContent="Escuchando. Decí una palabra con "+on.letra+".";};
     r.onresult=e=>{
       if(!micActivo||micRecon!==r||token!==micToken||!q("tfInput"))return;
+      micEscuchando=true;pintarMicrofono();
       micReiniciosCortos=0;
       for(let i=e.resultIndex||0;i<e.results.length;i++){
-        if(!e.results[i].isFinal)continue;
-        const frase=String(e.results[i][0]?.transcript||"").trim().replace(/[.!?]+$/g,"");
-        const orden=frase.toLocaleLowerCase("es");
-        if(orden==="siguiente"){confirmarCampo();continue;}
-        if(orden==="anterior"){q("tfAnt")?.click();continue;}
-        if(orden==="basta"){q("tfBasta")?.click();continue;}
-        if(frase&&q("tfInput")&&!q("tfEdit")?.hidden){q("tfInput").value=frase.slice(0,30);const msg=q("tfMsg");if(msg)msg.textContent="Escuché: «"+frase.slice(0,30)+"»";}
+        const resultado=e.results[i],opciones=Array.from(resultado||[]).map(x=>String(x.transcript||"").trim().replace(/[¿¡!?,.;:]+$/g,"")).filter(Boolean);
+        if(!opciones.length)continue;
+        if(!resultado.isFinal){if(!q("tfEdit")?.hidden){q("tfInput").value=opciones[0].slice(0,30);q("tfMsg").textContent="Escuchando: «"+opciones[0]+"»";}continue;}
+        const frase=opciones.find(v=>valida(v))||opciones[0],orden=N(frase);
+        if(orden==="SIGUIENTE"){confirmarCampo();continue;}
+        if(orden==="ANTERIOR"){q("tfAnt")?.click();continue;}
+        if(orden==="BASTA"){q("tfBasta")?.click();continue;}
+        if(q("tfEdit")?.hidden)continue;
+        q("tfInput").value=frase.slice(0,30);
+        if(!valida(frase)){q("tfMsg").textContent="Escuché «"+frase+"». Tiene que empezar con "+on.letra+". Probá de nuevo.";continue;}
+        const categoria=on.pend?.[0];confirmarCampo();
+        if(on.fase==="jugando"&&on.pend?.[0]!==categoria){
+          const msg=q("tfMsg");if(msg)msg.textContent="✅ «"+frase.slice(0,30)+"» guardado. Decí la próxima palabra.";
+          pintarMicrofono();
+        }
       }
     };
     r.onerror=e=>{if(micRecon!==r||!micActivo)return;
       if(["not-allowed","service-not-allowed","audio-capture","language-not-supported","network"].includes(e.error)){
-        pararMicrofono(true);micAviso="No pude usar el micrófono. Revisá el permiso y tocá Activar micrófono.";
+        pararMicrofono(true);micAviso="No pude usar el micrófono ("+e.error+"). Revisá el permiso o la conexión y tocá Activar micrófono.";
         const msg=q("tfMsg");if(msg)msg.textContent=micAviso;
-      }
+      }else if(e.error==="no-speech"){const msg=q("tfMsg");if(msg)msg.textContent="No te escuché. Acercate al micrófono y repetí la palabra.";}
     };
-    r.onend=()=>{if(micRecon!==r)return;micRecon=null;
+    r.onend=()=>{if(micRecon!==r)return;micRecon=null;micEscuchando=false;pintarMicrofono();
       if(micActivo&&token===micToken&&on&&on.fase==="jugando"&&!on.basta){
         micReiniciosCortos=performance.now()-inicio<1200?Math.min(micReiniciosCortos+1,3):0;
         clearTimeout(micReinicio);micReinicio=setTimeout(escucharMicrofono,400+micReiniciosCortos*350);
@@ -164,15 +175,19 @@ const TuttiFrutti=(()=>{
   }
   async function activarMicrofono(antesDelSorteo=false){
     if(micActivo||micPidiendo)return micActivo;
-    if(!(window.SpeechRecognition||window.webkitSpeechRecognition)||!navigator.mediaDevices?.getUserMedia){
+    if(!(window.SpeechRecognition||window.webkitSpeechRecognition)){
       micAviso="Este navegador no permite usar el micrófono. Podés escribir con el teclado.";
       const msg=q("tfMsg");if(msg)msg.textContent=micAviso;return false;
     }
-    micPidiendo=true;micAviso="";micReiniciosCortos=0;pintarMicrofono();const token=++micToken;
+    micPidiendo=true;micAviso="";micEscuchando=false;micReiniciosCortos=0;pintarMicrofono();const token=++micToken;
     try{
-      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      let stream=null;
+      if(navigator.mediaDevices?.getUserMedia){
+        try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});}
+        catch(e){if(e?.name==="NotAllowedError"||e?.name==="PermissionDeniedError")throw e;}
+      }
       if(token!==micToken||!on||on.fase!=="jugando"||on.basta||!tecladoHorizontal()){
-        stream.getTracks().forEach(t=>t.stop());return false;
+        if(stream)stream.getTracks().forEach(t=>t.stop());return false;
       }
       micStream=stream;micActivo=true;micPidiendo=false;micInicioPendiente=antesDelSorteo;
       detenerMusica();pintarMicrofono();
@@ -774,7 +789,7 @@ const TuttiFrutti=(()=>{
      para corregir la que sea (tocándola) y recién después ¡BASTA!. */
   function revision(){
     if(!raiz||!on)return;const ed=q("tfEdit"),rv=q("tfRev");if(!ed||!rv)return;
-    ed.hidden=true;rv.hidden=false;sincronizarTeclado();
+    ed.hidden=true;rv.hidden=false;sincronizarTeclado();pintarMicrofono();
     q("tfProg").innerHTML=on.cats.map((c,j)=>`<i class="${on.mias[j]?"ok":""}" data-i="${j}"></i>`).join("");
     rv.innerHTML='<p class="imp-ayuda">¿Todo bien? Tocá una respuesta para corregirla.</p>'+
       on.cats.map((c,j)=>`<button type="button" class="tf-rev-fila" data-i="${j}"><small>${esc(etiq(c))}</small><b>${esc(on.mias[j]||"—")}</b><span>✏️</span></button>`).join("")+
@@ -813,7 +828,7 @@ const TuttiFrutti=(()=>{
        se hayan completado salteando o volviendo con Anterior. */
     if(!on.pend.length||todoCompleto()){on.pend=[];revision();return;}
     pintarCampo();
-    revisar(cat,v).then(ok=>{if(ok===false&&on&&on.fase==="jugando"){const m=raiz&&raiz.querySelector("#tfMsg");if(m&&!m.textContent)m.textContent="⚠️ «"+v+"» no la encontré como "+NOM_CAT[cat]+". Al final la pueden votar.";}});
+    revisar(cat,v).then(ok=>{if(ok===false&&on&&on.fase==="jugando"){const m=raiz&&raiz.querySelector("#tfMsg");if(m&&(!m.textContent||m.textContent.startsWith("✅")))m.textContent="⚠️ «"+v+"» no la encontré como "+NOM_CAT[cat]+". Al final la pueden votar.";}});
   }
   function relojOnline(){
     if(!raiz||!on||on.fase!=="jugando")return;
