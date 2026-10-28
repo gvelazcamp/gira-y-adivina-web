@@ -201,6 +201,7 @@ window.Fichas=Fichas;
 const Extensiones=(()=>{
   let shell=null,contenido=null,vista="";
   let modoTVElegido=false,versionModo=0;
+  let avisoTV=null,focoAntesAvisoTV=null;
   /* Por defecto cada extensión responde al giro físico. El botón TV solo
      existe para Gonzalo y puede solicitar landscape si la app no rota sola. */
   const modoGonzalo=()=>typeof esGonzalo==="function"&&esGonzalo();
@@ -230,6 +231,22 @@ const Extensiones=(()=>{
     if(version!==versionModo)return;
     if(!window.GyaTV?.activo("ext"))modoTVElegido=false;
     pintarSelectorModo();pintarTV();
+  }
+  function cerrarAvisoTV(){
+    if(!avisoTV)return;
+    avisoTV.remove();avisoTV=null;
+    if(focoAntesAvisoTV?.isConnected&&!shell?.hidden)focoAntesAvisoTV.focus({preventScroll:true});
+    focoAntesAvisoTV=null;
+  }
+  function mostrarAvisoTV(){
+    if(avisoTV||!shell||shell.hidden)return;
+    focoAntesAvisoTV=document.activeElement;
+    const capa=document.createElement("div");capa.className="ext-tv-aviso";
+    capa.setAttribute("role","dialog");capa.setAttribute("aria-modal","true");capa.setAttribute("aria-labelledby","extTvAvisoTitulo");
+    capa.innerHTML='<div class="ext-tv-aviso-caja"><div class="ext-tv-aviso-icono" aria-hidden="true">📺</div><h3 id="extTvAvisoTitulo">Jugá en modo TV</h3><p>Los juegos se adaptan al formato horizontal para aprovechar mejor la pantalla.</p><p>En los juegos que permiten hablar, te recomendamos activar el micrófono. Si preferís escribir, podés usar el teclado adaptado del juego.</p><small>El modo horizontal se activa al abrir un juego.</small><div class="ext-tv-aviso-acciones"><button type="button" data-tv="no">Ahora no</button><button type="button" data-tv="si">Usar modo TV</button></div></div>';
+    capa.onclick=e=>{const boton=e.target.closest("button[data-tv]");if(!boton&&e.target!==capa)return;const activar=boton?.dataset.tv==="si";cerrarAvisoTV();if(activar)void seleccionarModo("tv");};
+    shell.appendChild(capa);avisoTV=capa;
+    capa.querySelector('[data-tv="si"]').focus({preventScroll:true});
   }
   function ajustarTeclado(){
     if(!shell||shell.hidden||shell.classList.contains("rr-abierta"))return;
@@ -274,6 +291,7 @@ const Extensiones=(()=>{
     window.addEventListener("resize",ajustarTeclado);
     document.addEventListener("keydown",e=>{
       if(shell.hidden)return;
+      if(e.key==="Escape"&&avisoTV){e.preventDefault();e.stopImmediatePropagation();cerrarAvisoTV();return;}
       /* Juegos de previa en pantalla fija: Escape no saca del juego. */
       /* Solo Escape se bloquea: las demás teclas tienen que escribir (en iPhone,
          frenar todas dejaba sin escribir ni borrar en el Tutti Frutti). */
@@ -306,6 +324,7 @@ const Extensiones=(()=>{
   function abrirLobby(){
     precargarIconos();
     if(!EXTENSIONES_HABILITADAS)return;
+    cerrarAvisoTV();
     salirJuego();
     vista="lobby";salirTV();mostrar();pintarTV();Fichas.enJuego("");
     shell.querySelector("#extTitulo").textContent="Jugá más juegos de Girá y Adiviná";
@@ -316,7 +335,7 @@ const Extensiones=(()=>{
     contenido.innerHTML='<div class="ext-hero"><span>✦ MÁS JUEGOS, MÁS DESAFÍOS</span><h2>Extensiones</h2><p>Elegí un juego del universo Girá y Adiviná. Jugá gratis, sin gastar vidas ni monedas.</p></div>'+tituloJuegos+'<div class="ext-lista" id="extListaResto"></div><h3 class="ext-seccion">🎉 Juegos de previa</h3><div class="ext-lista" id="extListaPrevia"></div>';
     if(selector){
       const barra=contenido.querySelector(".ext-selector-modo");
-      barra.onclick=ev=>{const boton=ev.target.closest("button[data-modo]");if(boton)seleccionarModo(boton.dataset.modo);};
+      barra.onclick=ev=>{const boton=ev.target.closest("button[data-modo]");if(!boton)return;if(boton.dataset.modo==="tv")mostrarAvisoTV();else void seleccionarModo("celular");};
       pintarSelectorModo();
     }
     /* "Juegos de previa": los de juntarse en grupo (grupo:"previa") van en su propia sección. */
@@ -351,7 +370,7 @@ const Extensiones=(()=>{
     ext.abrir(contenido);shell.scrollTop=0;
   }
   function salirJuego(){for(const juego of [window.SopaFugaz,window.RuedaDeLetras,window.PalabraSecreta,window.FrasesEnGiro,window.MemoriaEnGiro,window.RoscoRioplatense,window.SilabarioRioplatense,window.CienRioplatenses,window.AhorcadoRioplatense,window.ContraRelojRioplatense,window.MoonTap,window.DueloConocimiento,window.Puzzle,window.QueNumeroSoy,window.QuienSoy,window.Bomba,window.Impostor,window.Mimica,window.CantaLaCancion,window.TuttiFrutti])if(juego)juego.salir();}
-  function cerrar(){if(!shell)return;salirJuego();Fichas.enJuego("");vista="lobby";modoTVElegido=false;versionModo++;salirTV();shell.hidden=true;shell.classList.remove("ext-teclado-abierto");shell.style.top="";shell.style.height="";shell.style.bottom="";document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
+  function cerrar(){if(!shell)return;cerrarAvisoTV();salirJuego();Fichas.enJuego("");vista="lobby";modoTVElegido=false;versionModo++;salirTV();shell.hidden=true;shell.classList.remove("ext-teclado-abierto");shell.style.top="";shell.style.height="";shell.style.bottom="";document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
   return{abrirLobby,abrirJuego,cerrar};
 })();
 window.Extensiones=Extensiones;
