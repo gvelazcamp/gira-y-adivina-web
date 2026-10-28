@@ -203,6 +203,9 @@ const Extensiones=(()=>{
     }
     if(modo!=="tv")return;
     modoTVElegido=true;pintarSelectorModo();
+    /* Al elegir TV en Más juegos todavía no giramos: el menú sigue
+       vertical. El giro se solicita cuando Gonzalo toca un juego. */
+    if(vista==="lobby"){salirTV();pintarSelectorModo();return;}
     if(!window.GyaTV?.activo("ext"))await window.GyaTV?.alternar("ext");
     if(version!==versionModo)return;
     if(!window.GyaTV?.activo("ext"))modoTVElegido=false;
@@ -284,9 +287,9 @@ const Extensiones=(()=>{
     precargarIconos();
     if(!EXTENSIONES_HABILITADAS)return;
     salirJuego();
-    vista="lobby";if(!modoTVElegido)salirTV();mostrar();pintarTV();Fichas.enJuego("");
+    vista="lobby";salirTV();mostrar();pintarTV();Fichas.enJuego("");
     shell.querySelector("#extTitulo").textContent="Jugá más juegos de Girá y Adiviná";
-    const selector=modoGonzalo()?'<div class="ext-selector-modo" role="group" aria-label="Modo de pantalla"><button type="button" data-modo="celular" aria-pressed="true">📱 Celular</button><button type="button" data-modo="tv" aria-pressed="false">📺 TV</button></div>':"";
+    const selector=modoGonzalo()?'<div class="ext-selector-modo" role="group" aria-label="Modo de pantalla"><span>Pantallas</span><button type="button" data-modo="celular" aria-pressed="true">📱 Celular</button><button type="button" data-modo="tv" aria-pressed="false">📺 TV</button></div>':"";
     /* Mantener la portada pegada al título. El selector de Gonzalo comparte
        fila con «Más juegos» y no genera una fila adicional sobre la portada. */
     const tituloJuegos=selector?'<div class="ext-seccion-barra"><h3 class="ext-seccion">🎮 Más juegos</h3>'+selector+'</div>':'<h3 class="ext-seccion">🎮 Más juegos</h3>';
@@ -319,8 +322,8 @@ const Extensiones=(()=>{
     if(!EXTENSIONES_HABILITADAS)return;
     const ext=EXTENSIONES.find(x=>x.id===id&&x.estado==="disponible"&&extensionVisible(x));if(!ext)return;
     mostrar();vista=id;contenido.replaceChildren();Fichas.enJuego(id);pintarTV();
-    /* Si un juego anterior salió de fullscreen, solicitar TV de nuevo
-       al tocar otra tarjeta solo si Gonzalo lo eligió. */
+    /* Pedir orientación horizontal solo al entrar al juego y solo cuando
+       Gonzalo eligió TV, nunca al seleccionar el modo en el menú. */
     if(modoGonzalo()&&modoTVElegido&&!window.GyaTV?.activo("ext"))
       void window.GyaTV?.alternar("ext").then(()=>pintarTV());
     shell.querySelector("#extTitulo").textContent=ext.nombre;

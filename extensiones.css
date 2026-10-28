@@ -803,6 +803,10 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
   display:flex;align-items:center;justify-content:flex-end;gap:4px;
   flex:0 0 auto;margin:0;padding:0;white-space:nowrap;
 }
+.ext-seccion-barra>.ext-selector-modo>span{
+  color:#BCAACC;font:700 .68rem Outfit,system-ui,sans-serif;
+  margin-right:2px;white-space:nowrap;
+}
 .ext-selector-modo button{
   display:inline-flex;align-items:center;justify-content:center;
   min-height:30px;padding:5px 8px;border:1px solid #74638588;border-radius:9px;
@@ -812,10 +816,12 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .ext-selector-modo button[aria-pressed="true"]{
   background:#1D514D;color:#F2FFF9;border-color:#37D6C0BB;
 }
-@media(max-width:360px){
-  .ext-hero+.ext-seccion-barra{gap:4px}
-  .ext-seccion-barra>.ext-seccion{font-size:.85rem}
-  .ext-selector-modo button{min-height:29px;padding:4px 5px;font-size:.63rem}
+@media(max-width:380px){
+  .ext-hero+.ext-seccion-barra{gap:3px}
+  .ext-seccion-barra>.ext-seccion{font-size:.83rem}
+  .ext-seccion-barra>.ext-selector-modo{gap:3px}
+  .ext-seccion-barra>.ext-selector-modo>span{font-size:.59rem;margin-right:0}
+  .ext-selector-modo button{min-height:28px;padding:4px 5px;font-size:.62rem}
 }
 /* Botón pequeño para TV, visible solamente dentro de las extensiones de Gonzalo. */
 .ext-header .ext-tv-mini{
