@@ -19,16 +19,6 @@
   object-fit:contain;object-position:center bottom;opacity:0;
   transition:opacity .8s cubic-bezier(.4,0,.2,1);will-change:opacity}
 .grp-actor .grp-giro.grp-visible{opacity:1}
-/* Boca v2: la imagen aprobada de Giro queda inmóvil al hablar.
-   El sprite se calibra dentro del lienzo frontal 1024x1536, sin ojos ni nariz. */
-.grp-hablando{position:absolute;inset:0;z-index:3;opacity:0;transition:opacity .35s ease;pointer-events:none}
-.grp-hablando-rostro{position:absolute;left:50%;bottom:0;height:100%;aspect-ratio:2 / 3;max-width:100%;transform:translateX(-50%)}
-.grp-hablando-base{display:block;width:100%;height:100%;object-fit:fill}
-.grp-labios{position:absolute;left:42.48%;top:28.19%;width:18.75%;height:6.25%;
-  object-fit:fill;pointer-events:none}
-.grp-actor.grp-speaking .grp-hablando{opacity:1}
-.grp-actor.grp-speaking .grp-giro.grp-visible{opacity:0}
-
 @keyframes grp-respirar{
   from{transform:translateX(-50%) translateY(0) scale(1)}
   to{transform:translateX(-50%) translateY(-.65%) scale(1.008)}
