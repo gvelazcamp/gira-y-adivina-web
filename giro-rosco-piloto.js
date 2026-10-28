@@ -76,7 +76,10 @@
     host.alt="Giro, conductor de Girá y Adiviná";
     const atril=document.createElement("img");atril.className="grp-atril";atril.src=ATRIL;atril.alt="";
     const rotulo=document.createElement("div");rotulo.className="grp-rotulo";rotulo.textContent="GIRÁ Y ADIVINÁ · EL ROSCO";
-    stage.append(fondo,halo,host,atril,rotulo);
+    const efecto=document.createElement("img");efecto.className="grp-efecto";
+    efecto.src=BASE+"efectos/"+(tipo==="final"?"Giro_efecto_confeti_transparente.png":"Giro_efecto_destellos_transparente.png");
+    efecto.alt="";efecto.setAttribute("aria-hidden","true");
+    stage.append(fondo,halo,host,atril,efecto,rotulo);
     const panel=document.createElement("div");panel.className="grp-panel";
     const etiqueta=document.createElement("p");etiqueta.className="grp-etiqueta";etiqueta.textContent="PRESENTACIÓN DE PRUEBA · GONZALO";
     const h=document.createElement("h2");h.textContent=titulo;
