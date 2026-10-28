@@ -4,6 +4,12 @@
   "use strict";
   const BASE="presentacion-y-locucion-extensiones/Giro/";
   const ESCENA=BASE+"estudios/Giro_estudio_rosco_16x9.png";
+  // Planos oficiales: imágenes completas del programa, sin elementos añadidos.
+  const PLANOS=[
+    BASE+"escenas/Giro_presentacion_plano_general_16x9.png",
+    BASE+"escenas/Giro_presentacion_plano_medio_16x9.png",
+    BASE+"escenas/Giro_presentacion_primer_plano_16x9.png"
+  ];
   const IMAGENES={
     neutral:BASE+"opcionales/espera/Giro_espera_neutral.png",
     respira:BASE+"opcionales/espera/Giro_espera_respirando.png",
@@ -15,6 +21,7 @@
     revancha:BASE+"Giro_confundido.png"
   };
   let capa=null, intervalo=null, frase=null, activa=false, salirDeCapa=null, anteriorFoco=null;
+  let reiniciarCine=null, salidaTimer=null;
   const habilitado=()=>typeof esGonzalo==="function"&&esGonzalo()&&window.GIRO_ROSCO_PILOTO!==false;
   function cancelarVoz(){
     if(frase&&"speechSynthesis" in window){
@@ -23,7 +30,10 @@
     frase=null;
   }
   function limpiar(){
-    clearInterval(intervalo);intervalo=null;cancelarVoz();
+    clearInterval(intervalo);intervalo=null;
+    if(salidaTimer!==null){clearTimeout(salidaTimer);salidaTimer=null;}
+    reiniciarCine=null;
+    cancelarVoz();
     if(capa){capa.remove();capa=null;}
     document.removeEventListener("keydown",teclado);
     activa=false;
@@ -85,17 +95,43 @@
     efecto.src=BASE+"efectos/"+(tipo==="final"?"Giro_efecto_confeti_transparente.png":"Giro_efecto_destellos_transparente.png");
     efecto.alt="";efecto.setAttribute("aria-hidden","true");
     // El estudio del Rosco ya tiene atril integrado: no superponer otro.
-    stage.append(fondo,halo,actor,efecto,rotulo);
+    // El plano general/medio/cercano solo cubre el escenario durante la apertura.
+    // Debajo se conserva exactamente el estudio del Rosco con su Giro original.
+    let cine=null,planos=[];
+    if(tipo==="inicio"){
+      cine=document.createElement("div");cine.className="grp-cine";
+      cine.setAttribute("aria-hidden","true");
+      planos=PLANOS.map((ruta,i)=>{
+        const plano=document.createElement("img");
+        plano.className="grp-cine-plano";plano.alt="";plano.decoding="async";
+        plano.onerror=()=>plano.classList.add("grp-cine-error");
+        plano.src=ruta;
+        cine.appendChild(plano);
+        return plano;
+      });
+    }
+    stage.append(fondo,halo,actor,...(cine?[cine]:[]),efecto,rotulo);
     const panel=document.createElement("div");panel.className="grp-panel";
     const etiqueta=document.createElement("p");etiqueta.className="grp-etiqueta";etiqueta.textContent="PRESENTACIÓN DE PRUEBA · GONZALO";
     const h=document.createElement("h2");h.textContent=titulo;
     const p=document.createElement("p");p.className="grp-descripcion";p.textContent=descripcion;
     const acciones=document.createElement("div");acciones.className="grp-acciones";
     const voz=document.createElement("button");voz.type="button";voz.className="grp-boton grp-voz";voz.textContent="🔊 Escuchar a Giro";
-    voz.addEventListener("click",()=>hablar(locucion));
+    voz.addEventListener("click",()=>{
+      // Una acción directa del usuario permite iniciar la voz en Android.
+      // Reiniciamos los planos para que acompañen la presentación hablada.
+      if(tipo==="inicio"&&reiniciarCine)reiniciarCine();
+      hablar(locucion);
+    });
     const avanzar=document.createElement("button");avanzar.type="button";avanzar.className="grp-boton grp-accion";
     avanzar.textContent=tipo==="final"?"Ver resultados":"Ir al Rosco";
-    avanzar.addEventListener("click",cerrar);
+    avanzar.addEventListener("click",()=>{
+      if(!activa||capa!==overlay||salidaTimer!==null)return;
+      // Fundido hacia el panel original del Rosco; no inicia ni cambia la partida.
+      avanzar.disabled=true;
+      overlay.classList.add("grp-saliendo");
+      salidaTimer=setTimeout(cerrar,460);
+    });
     acciones.append(voz,avanzar);
     const aviso=document.createElement("small");aviso.className="grp-aviso";aviso.textContent="Sin música · Voz opcional · Solo perfil Gonzalo";
     panel.append(etiqueta,h,p,acciones,aviso);
@@ -107,7 +143,12 @@
     // no se mezclan aquí para evitar un salto visual.
     if(tipo==="inicio"&&!matchMedia("(prefers-reduced-motion: reduce)").matches){
       const ciclos=["saludo","neutral","respira","neutral","escucha","neutral","presenta","neutral","señala","neutral"];
-      let i=0,visible=host,oculto=hostSiguiente,gesto="saludo",cargando=false;
+      let i=0,visible=host,oculto=hostSiguiente,gesto="saludo",cargando=false,camaraPaso=0;
+      const cambiarPlano=paso=>{
+        if(capa!==overlay||!activa||!cine)return;
+        cine.classList.toggle("grp-cine-fuera",paso>=PLANOS.length);
+        planos.forEach((plano,j)=>plano.classList.toggle("grp-cine-visible",paso===j));
+      };
       const transicionar=nombre=>{
         if(cargando||nombre===gesto||!IMAGENES[nombre]||capa!==overlay||!activa)return;
         cargando=true;
@@ -116,7 +157,6 @@
         const listo=()=>{
           if(atendido)return;atendido=true;
           if(capa!==overlay||!activa){cargando=false;return;}
-          // Dos cuadros: asegura la transición también con archivos cacheados.
           requestAnimationFrame(()=>{
             if(capa!==overlay||!activa){cargando=false;return;}
             requestAnimationFrame(()=>{
@@ -136,10 +176,22 @@
           catch(e){if(destino.complete&&destino.naturalWidth>0)listo();else error();}
         }else if(destino.complete&&destino.naturalWidth>0)listo();
       };
-      intervalo=setInterval(()=>{
-        if(capa!==overlay||document.hidden||cargando)return;
+      const ciclo=()=>{
+        if(capa!==overlay||document.hidden)return;
+        // Tres planos aprobados, después regreso al estudio original.
+        if(camaraPaso<PLANOS.length)cambiarPlano(++camaraPaso);
+        if(cargando)return;
         i=(i+1)%ciclos.length;transicionar(ciclos[i]);
-      },2600);
+      };
+      reiniciarCine=()=>{
+        if(capa!==overlay||!activa)return;
+        camaraPaso=0;cambiarPlano(0);
+        clearInterval(intervalo);intervalo=setInterval(ciclo,2600);
+      };
+      reiniciarCine();
+    }else if(cine){
+      // Movimiento reducido: estudio original inmóvil, con voz disponible.
+      cine.classList.add("grp-cine-fuera");
     }
     return true;
   }
