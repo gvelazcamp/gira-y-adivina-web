@@ -11,8 +11,8 @@ const sw=fs.readFileSync(path.join(root,"sw.js"),"utf8");
 assert(css.includes("@keyframes grp-respirar"),"respiración animada");
 assert(css.includes(".grp-actor .grp-giro.grp-visible{opacity:1}"),"capas fundidas");
 assert(css.includes("prefers-reduced-motion:reduce"),"accesibilidad");
-assert(sw.includes('"./giro-rosco-piloto.js?v=5"'),"PWA piloto JS versionado");
-assert(sw.includes('"./giro-rosco-piloto.css?v=4"'),"PWA piloto CSS versionado");
+assert(sw.includes('"./giro-rosco-piloto.js?v=6"'),"PWA piloto JS versionado");
+assert(sw.includes('"./giro-rosco-piloto.css?v=5"'),"PWA piloto CSS versionado");
 assert(!src.includes("new Audio("),"no incorporar música nueva");
 assert(!src.includes("grp-atril"),"no duplicar atril");
 
@@ -20,7 +20,7 @@ function elemento(tag){
   const clases=new Set();
   return {
     tag,children:[],dataset:{},attributes:{},isConnected:true,
-    classList:{add:x=>clases.add(x),remove:x=>clases.delete(x),contains:x=>clases.has(x)},
+    classList:{add:x=>clases.add(x),remove:x=>clases.delete(x),contains:x=>clases.has(x),toggle:(x,force)=>{const on=force===undefined?!clases.has(x):!!force;if(on)clases.add(x);else clases.delete(x);return on;}},
     append(...nodos){this.children.push(...nodos);},
     appendChild(nodo){this.children.push(nodo);return nodo;},
     setAttribute(k,v){this.attributes[k]=v;},
