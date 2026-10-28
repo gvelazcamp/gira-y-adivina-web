@@ -11,7 +11,7 @@ const RoscoRioplatense=(()=>{
   let nivel=1,config=null,fase="inicio",tiempo=0,espera=0,ultimo=0,intervalo=null,ultimoTac=0,duelo=false,usadasSesion=new Set();
   let audioMusica=null,reconocimiento=null,escuchando=false,altoLibre=0;
   /* Opciones experimentales solo para el perfil Gonzalo. */
-  let pruebaG=false,giroG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozMensajeG="",fullscreenG=false,vozPistaG=null;
+  let pruebaG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozMensajeG="",vozPistaG=null;
   /* Dibujos en assets/rosco/ (hoja de ChatGPT recortada). */
   const ARTE=n=>"assets/rosco/"+n+".webp",ico=n=>'<img class="rr-ico" src="'+ARTE(n)+'" alt="" draggable="false">';
   function iniciarMusicaJuego(){
@@ -86,7 +86,7 @@ const RoscoRioplatense=(()=>{
   }
 
   function horizontalG(){
-    return pruebaG&&(matchMedia("(orientation: landscape) and (min-width:700px)").matches||Boolean(shell?.classList.contains("rr-giro-forzado")));
+    return pruebaG&&matchMedia("(orientation: landscape) and (min-width:700px) and (max-width:1024px) and (max-height:600px)").matches;
   }
   function mostrarEstadoVozG(texto){
     vozMensajeG=texto;
@@ -195,31 +195,14 @@ const RoscoRioplatense=(()=>{
     /* La primera llamada ocurre en el toque y provoca el permiso del navegador. */
     arrancarEscuchaG();
   }
-  function actualizarGiroG(){
-    if(!shell||!pruebaG)return;
-    shell.classList.toggle("rr-giro-forzado",giroG&&matchMedia("(orientation:portrait)").matches);
-    const boton=$("#rrGirarG");if(boton)boton.textContent=giroG?"↶ Vertical":"↔ Horizontal";
+  /* Cambiar entre vertical clásico y horizontal al girar físicamente.
+     No solicitar fullscreen ni bloquear la orientación de Android. */
+  function cambioOrientacionG(){
+    if(!pruebaG||!raiz)return;
+    if(!horizontalG()&&vozG)pararVozG();
     actualizarEntradaG();
-    requestAnimationFrame(ajustarPantalla);
+    ajustarPantalla();
   }
-  async function alternarGiroG(){
-    if(!pruebaG||!shell)return;
-    giroG=!giroG;
-    if(giroG){
-      try{
-        if(!document.fullscreenElement&&document.documentElement.requestFullscreen){
-          await document.documentElement.requestFullscreen();fullscreenG=true;
-        }
-        if(screen.orientation?.lock)await screen.orientation.lock("landscape");
-      }catch(e){}
-    }else{
-      try{screen.orientation?.unlock?.();}catch(e){}
-      if(fullscreenG&&document.fullscreenElement)try{await document.exitFullscreen();}catch(e){}
-      fullscreenG=false;
-    }
-    actualizarGiroG();
-  }
-
   // Al girar el celular, el teclado se abre solo cuando se toca el campo.
   const esRoscoHorizontal=()=>horizontalG()||matchMedia("(orientation: landscape) and (max-width:1024px) and (max-height:600px)").matches;
   function enfocar(){
@@ -443,13 +426,11 @@ const RoscoRioplatense=(()=>{
   function abrir(contenedor){
     salir();datos=cargar();nivel=datos.nivelMax;config=configNivel(nivel);fase="inicio";usadasSesion=new Set();
     raiz=document.createElement("div");raiz.className="rr-game";raiz.dataset.fase="inicio";altoLibre=0;
-    pruebaG=typeof esGonzalo==="function"&&esGonzalo();giroG=false;vozG=false;
+    pruebaG=typeof esGonzalo==="function"&&esGonzalo();vozG=false;
     if(pruebaG)raiz.classList.add("rr-gonzalo");
     raiz.innerHTML='<button type="button" class="ext-volver" id="rrVolver">⟵ Extensiones</button><div class="rr-titulo rr-titulo-arte"><h2 class="rr-logo-h"><img class="rr-logo" src="'+ARTE("logo")+'" alt="El Rosco" draggable="false"></h2><p>Una vuelta, muchas palabras nuestras.</p></div><div id="rrJuego" hidden><div class="sf-hud"><div><small>Nivel</small><b id="rrNivel"></b></div><div><small>'+ico("aciertos")+'Aciertos</small><b id="rrAciertos"></b></div><div><small>'+ico("errores")+'Errores</small><b id="rrErrores"></b></div><div><small>'+ico("reloj")+'Tiempo</small><b id="rrTiempo"></b></div></div><div class="sf-bar"><i id="rrBarra"></i></div><div class="rr-rueda"><div id="rrDisco"></div><b id="rrGrande"></b></div><div class="rr-pista" role="status" aria-live="polite"><div class="voz-fila"><span class="rr-pista-ico">'+ico("pista")+'</span><small id="rrRegla"></small><button type="button" class="voz-btn rr-escuchar" id="rrEscuchar" aria-label="Escuchar la pista">'+ico("escuchar")+'</button></div><p id="rrDefinicion"></p></div><p id="rrMensaje" class="rr-mensaje" role="status"></p><form id="rrForm" autocomplete="off"><label class="rr-sr" for="rrEntrada">Tu respuesta</label><div class="rr-fila"><input id="rrEntrada" placeholder="Tu palabra" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" enterkeyhint="send" maxlength="60"><button id="rrEnviar" type="submit">Enviar</button><button id="rrPasar" type="button">'+ico("pasapalabra")+'<span>Pasapalabra</span></button><button id="rrVoz" type="button" class="rr-microfono" aria-label="Responder hablando" aria-pressed="false" title="Responder por voz">🎙<span>Hablar</span></button></div></form></div><div id="rrPanel" class="rr-panel-capa"></div>';
     contenedor.appendChild(raiz);shell=raiz.closest(".ext-shell");shell?.classList.add("rr-abierta");
     if(pruebaG){
-      const boton=document.createElement("button");boton.id="rrGirarG";boton.type="button";boton.className="rr-girar-g";boton.textContent="↔ Horizontal";
-      raiz.insertBefore(boton,raiz.firstChild);boton.onclick=alternarGiroG;
       const teclado=document.createElement("div");teclado.id="rrTecladoG";teclado.className="rr-teclado-g";teclado.setAttribute("aria-label","Teclado propio del Rosco");
       $("#rrJuego").appendChild(teclado);tecladoG();
       const estado=document.createElement("p");estado.id="rrEstadoVozG";estado.className="rr-estado-voz-g";$("#rrJuego").appendChild(estado);
@@ -462,18 +443,19 @@ const RoscoRioplatense=(()=>{
     $("#rrEntrada").onbeforeinput=e=>{if(fase!=="resolver")e.preventDefault();};
     $("#rrEntrada").addEventListener("focus",()=>setTimeout(ajustarPantalla,350));$("#rrEntrada").addEventListener("blur",()=>setTimeout(ajustarPantalla,350));
     window.visualViewport?.addEventListener("resize",ajustarPantalla);window.visualViewport?.addEventListener("scroll",ajustarPantalla);window.addEventListener("resize",ajustarPantalla);
+    if(pruebaG)window.addEventListener("orientationchange",cambioOrientacionG);
     document.addEventListener("visibilitychange",visibilidad);ultimo=performance.now();intervalo=setInterval(tic,ROSCO_CONFIG.ticMs);iniciarMusicaJuego();
     const acciones=[["Jugar nivel "+nivel,iniciar]];if(nivel>1)acciones.push(["Practicar desde el nivel 1",()=>{nivel=1;iniciar();}]);
     acciones.push(["Jugar con un amigo 👥",iniciarDuelo]);
-    if(pruebaG)acciones.push(["↔ Probar horizontal",()=>{alternarGiroG();}]);
     panel("El Rosco Rioplatense",config.letras+" letras y "+config.segundos+" segundos. Leé cada pista y escribí la palabra: tenés un intento por letra. Pasapalabra la deja para después. El reloj se pausa al girar. Acertá al menos "+Math.ceil(config.letras*ROSCO_CONFIG.proporcionAvance)+" y respondé todas para avanzar. Jugás gratis, sin gastar vidas ni monedas. Mejor: "+datos.mejor+" puntos.",acciones,"personaje");ajustarPantalla();
   }
   function salir(){
-    if(pruebaG){pararVozG();try{screen.orientation?.unlock?.();}catch(e){}if(fullscreenG&&document.fullscreenElement){try{document.exitFullscreen().catch(()=>{});}catch(e){}}fullscreenG=false;}
+    if(pruebaG)pararVozG();
     detenerVoz();clearInterval(intervalo);intervalo=null;document.removeEventListener("visibilitychange",visibilidad);
     window.visualViewport?.removeEventListener("resize",ajustarPantalla);window.visualViewport?.removeEventListener("scroll",ajustarPantalla);window.removeEventListener("resize",ajustarPantalla);
+    window.removeEventListener("orientationchange",cambioOrientacionG);
     if(shell){shell.style.height="";shell.style.top="";shell.style.bottom="";shell.style.removeProperty("--rr-viewport-alto");}
-    shell?.classList.remove("rr-abierta","rr-teclado-abierto","rr-giro-forzado");altoLibre=0;pruebaG=false;giroG=false;vozG=false;
+    shell?.classList.remove("rr-abierta","rr-teclado-abierto");altoLibre=0;pruebaG=false;vozG=false;
     if("speechSynthesis" in window)speechSynthesis.cancel();
     if(typeof sincronizarMusica==="function")sincronizarMusica();
     detenerMusicaJuego();
