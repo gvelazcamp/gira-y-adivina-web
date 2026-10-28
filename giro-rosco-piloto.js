@@ -4,12 +4,9 @@
   "use strict";
   const BASE="presentacion-y-locucion-extensiones/Giro/";
   const ESCENA=BASE+"estudios/Giro_estudio_rosco_16x9.png";
-  // Planos oficiales: imágenes completas del programa, sin elementos añadidos.
-  const PLANOS=[
-    BASE+"escenas/Giro_presentacion_plano_general_16x9.png",
-    BASE+"escenas/Giro_presentacion_plano_medio_16x9.png",
-    BASE+"escenas/Giro_presentacion_primer_plano_16x9.png"
-  ];
+  // Un único fotograma oficial: Giro y su atril ya forman parte de la misma
+  // imagen. Nunca mezclar otras poses, tamaños o atriles en la apertura.
+  const PLANO_ESTABLE=BASE+"escenas/Giro_presentacion_plano_general_16x9.png";
   const IMAGENES={
     neutral:BASE+"opcionales/espera/Giro_espera_neutral.png",
     respira:BASE+"opcionales/espera/Giro_espera_respirando.png",
@@ -79,38 +76,32 @@
     // Construir con DOM, sin HTML dinámico ni texto de usuarios.
     const cont=document.createElement("section");cont.className="grp-contenido";
     const stage=document.createElement("div");stage.className="grp-escenario";
-    const fondo=document.createElement("img");fondo.className="grp-fondo";fondo.src=ESCENA;fondo.alt="";
-    const halo=document.createElement("div");halo.className="grp-halo";halo.setAttribute("aria-hidden","true");
-    const host=document.createElement("img");host.className="grp-giro";host.src=IMAGENES[imagen]||IMAGENES.neutral;
-    host.alt="Giro, conductor de Girá y Adiviná";
-    host.classList.add("grp-visible");
-    // Dos capas reutilizables: se mezclan con opacidad, sin saltos de src.
-    const actor=document.createElement("div");actor.className="grp-actor";
-    const hostSiguiente=document.createElement("img");
-    hostSiguiente.className="grp-giro";hostSiguiente.alt="";
-    hostSiguiente.setAttribute("aria-hidden","true");
-    actor.append(host,hostSiguiente);
     const rotulo=document.createElement("div");rotulo.className="grp-rotulo";rotulo.textContent="GIRÁ Y ADIVINÁ · EL ROSCO";
     const efecto=document.createElement("img");efecto.className="grp-efecto";
     efecto.src=BASE+"efectos/"+(tipo==="final"?"Giro_efecto_confeti_transparente.png":"Giro_efecto_destellos_transparente.png");
     efecto.alt="";efecto.setAttribute("aria-hidden","true");
-    // El estudio del Rosco ya tiene atril integrado: no superponer otro.
-    // El plano general/medio/cercano solo cubre el escenario durante la apertura.
-    // Debajo se conserva exactamente el estudio del Rosco con su Giro original.
-    let cine=null,planos=[];
     if(tipo==="inicio"){
-      cine=document.createElement("div");cine.className="grp-cine";
-      cine.setAttribute("aria-hidden","true");
-      planos=PLANOS.map((ruta,i)=>{
-        const plano=document.createElement("img");
-        plano.className="grp-cine-plano";plano.alt="";plano.decoding="async";
-        plano.onerror=()=>plano.classList.add("grp-cine-error");
-        plano.src=ruta;
-        cine.appendChild(plano);
-        return plano;
-      });
+      // El atril y Giro comparten siempre la misma escala y el mismo encuadre.
+      // Los planos son un leve movimiento de cámara sobre la imagen completa.
+      stage.classList.add("grp-escenario-estable");
+      stage.dataset.plano="general";
+      const escenaCompleta=document.createElement("img");
+      escenaCompleta.className="grp-plano-estable";escenaCompleta.src=PLANO_ESTABLE;
+      escenaCompleta.alt="Giro detrás del atril en el estudio del programa";
+      stage.append(escenaCompleta,efecto,rotulo);
+    }else{
+      // El cierre conserva exactamente la escena y el personaje preexistentes.
+      const fondo=document.createElement("img");fondo.className="grp-fondo";fondo.src=ESCENA;fondo.alt="";
+      const halo=document.createElement("div");halo.className="grp-halo";halo.setAttribute("aria-hidden","true");
+      const host=document.createElement("img");host.className="grp-giro";host.src=IMAGENES[imagen]||IMAGENES.neutral;
+      host.alt="Giro, conductor de Girá y Adiviná";
+      host.classList.add("grp-visible");
+      const actor=document.createElement("div");actor.className="grp-actor";
+      const hostSiguiente=document.createElement("img");hostSiguiente.className="grp-giro";hostSiguiente.alt="";
+      hostSiguiente.setAttribute("aria-hidden","true");
+      actor.append(host,hostSiguiente);
+      stage.append(fondo,halo,actor,efecto,rotulo);
     }
-    stage.append(fondo,halo,actor,...(cine?[cine]:[]),efecto,rotulo);
     const panel=document.createElement("div");panel.className="grp-panel";
     const etiqueta=document.createElement("p");etiqueta.className="grp-etiqueta";etiqueta.textContent="PRESENTACIÓN DE PRUEBA · GONZALO";
     const h=document.createElement("h2");h.textContent=titulo;
@@ -138,60 +129,26 @@
     cont.append(stage,panel);overlay.appendChild(cont);document.body.appendChild(overlay);
     capa=overlay;document.addEventListener("keydown",teclado);
     avanzar.focus({preventScroll:true});
-    // Movimiento suave: respiración CSS y fundido entre PNG aprobados.
-    // Los recortes de parpadeo tienen un encuadre distinto al cuerpo entero:
-    // no se mezclan aquí para evitar un salto visual.
-    if(tipo==="inicio"&&!matchMedia("(prefers-reduced-motion: reduce)").matches){
-      const ciclos=["saludo","neutral","respira","neutral","escucha","neutral","presenta","neutral","señala","neutral"];
-      let i=0,visible=host,oculto=hostSiguiente,gesto="saludo",cargando=false,camaraPaso=0;
-      const cambiarPlano=paso=>{
-        if(capa!==overlay||!activa||!cine)return;
-        cine.classList.toggle("grp-cine-fuera",paso>=PLANOS.length);
-        planos.forEach((plano,j)=>plano.classList.toggle("grp-cine-visible",paso===j));
-      };
-      const transicionar=nombre=>{
-        if(cargando||nombre===gesto||!IMAGENES[nombre]||capa!==overlay||!activa)return;
-        cargando=true;
-        const destino=oculto;
-        let atendido=false;
-        const listo=()=>{
-          if(atendido)return;atendido=true;
-          if(capa!==overlay||!activa){cargando=false;return;}
-          requestAnimationFrame(()=>{
-            if(capa!==overlay||!activa){cargando=false;return;}
-            requestAnimationFrame(()=>{
-              if(capa!==overlay||!activa){cargando=false;return;}
-              destino.classList.add("grp-visible");
-              visible.classList.remove("grp-visible");
-              const anterior=visible;visible=destino;oculto=anterior;
-              gesto=nombre;cargando=false;
-            });
-          });
-        };
-        const error=()=>{atendido=true;cargando=false;};
-        destino.onload=listo;destino.onerror=error;
-        destino.src=IMAGENES[nombre];
-        if(typeof destino.decode==="function"){
-          try{destino.decode().then(listo).catch(()=>{if(!atendido&&destino.complete&&destino.naturalWidth>0)listo();else error();});}
-          catch(e){if(destino.complete&&destino.naturalWidth>0)listo();else error();}
-        }else if(destino.complete&&destino.naturalWidth>0)listo();
-      };
-      const ciclo=()=>{
-        if(capa!==overlay||document.hidden)return;
-        // Tres planos aprobados, después regreso al estudio original.
-        if(camaraPaso<PLANOS.length)cambiarPlano(++camaraPaso);
-        if(cargando)return;
-        i=(i+1)%ciclos.length;transicionar(ciclos[i]);
-      };
+    if(tipo==="inicio"){
+      const reducido=matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const pasos=["general","medio","cercano","general"];
+      let paso=0;
       reiniciarCine=()=>{
         if(capa!==overlay||!activa)return;
-        camaraPaso=0;cambiarPlano(0);
-        clearInterval(intervalo);intervalo=setInterval(ciclo,2600);
+        clearInterval(intervalo);intervalo=null;
+        paso=0;stage.dataset.plano="general";
+        if(reducido)return;
+        // Cuatro posiciones, una sola pasada. No repetir indefinidamente.
+        intervalo=setInterval(()=>{
+          if(capa!==overlay||!activa||document.hidden)return;
+          paso++;
+          stage.dataset.plano=pasos[paso];
+          if(paso===pasos.length-1){
+            clearInterval(intervalo);intervalo=null;
+          }
+        },3000);
       };
       reiniciarCine();
-    }else if(cine){
-      // Movimiento reducido: estudio original inmóvil, con voz disponible.
-      cine.classList.add("grp-cine-fuera");
     }
     return true;
   }
