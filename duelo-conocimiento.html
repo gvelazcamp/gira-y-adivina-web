@@ -76,6 +76,7 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
 @media(max-width:500px){.category-grid label{padding:8px 6px;font-size:11px}.category-fieldset{margin:9px 0}.flag-box.photo-mode{aspect-ratio:1.25}}
 .dc-setup-logo{display:block;width:min(265px,65vw);height:auto;max-height:230px;object-fit:contain;margin:0 auto 8px;filter:drop-shadow(0 6px 16px #0007)}.dc-title-logo{display:block;width:92px;height:82px;object-fit:contain;margin:0 auto 2px;filter:drop-shadow(0 3px 9px #0009)}@media(max-width:600px){.dc-setup-logo{width:min(188px,53vw);max-height:172px}.dc-title-logo{width:70px;height:62px}}
 </style>
+<link rel="stylesheet" href="duelo-conocimiento-entrada.css?v=1" />
 </head>
 <body>
 <div class="app">
@@ -127,11 +128,11 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
  </main>
 </div>
 <div class="overlay" id="setup-overlay" role="dialog" aria-modal="true" aria-labelledby="setup-title">
- <form class="modal" id="setup-form"><img class="dc-setup-logo" src="logo-duelo-conocimiento.webp" alt="Duelo de Conocimiento"><div class="overline">Girá y Adiviná presenta</div><h2 id="setup-title">DUELO DE <span>CONOCIMIENTO</span></h2><p>Dos rivales. Dos cronómetros. Cuatro tipos de desafíos.<br />El primer reloj que llegue a cero pierde.</p>
-  <div class="form-row"><div class="field"><label for="input0">Jugador 1 · izquierda</label><input id="input0" type="text" maxlength="14" value="Andrés" required /></div><div class="field"><label for="input1">Jugador 2 · derecha</label><input id="input1" type="text" maxlength="14" value="Sofía" required /></div></div>
-  <div class="form-row field-row-2"><div class="field"><label for="time-select">Tiempo por jugador</label><select id="time-select"><option value="40" selected>40 segundos</option><option value="60">60 segundos</option><option value="90">90 segundos</option></select></div><div class="field"><label>Forma de responder</label><div class="voice-rule">🎙 Por voz o escribiendo para probar</div></div></div>
-  <fieldset class="category-fieldset"><legend>Elegí los desafíos del programa</legend><div class="category-grid"><label><input type="checkbox" name="category" value="banderas" checked/> 🌎 Banderas</label><label><input type="checkbox" name="category" value="matematica" checked/> ➕ Matemática</label><label><input type="checkbox" name="category" value="famosos" checked/> ★ Famosos</label><label><input type="checkbox" name="category" value="futbol" checked/> ⚽ Futbolistas</label></div><small>Podés elegir una o mezclar varias. Matemática aumenta la dificultad con los aciertos. Para fotos y banderas necesitás internet.</small></fieldset><div class="rules"><div><b>01</b> El juego sortea quién empieza.</div><div><b>02</b> Respondé hablando al micrófono (o escribiendo en pruebas). Si acertás, tu reloj se pausa.</div><div><b>03</b> Si fallás, tu tiempo sigue corriendo. Pierde quien llegue a cero.</div></div>
-  <button class="primary" type="submit">▶ COMENZAR PARTIDA</button><div class="modal-foot">188 banderas · 34 famosos · 32 futbolistas · Matemática progresiva</div><div class="setup-voice-error" id="setup-voice-error" role="alert"></div>
+  <form class="modal dc-setup-card" id="setup-form">
+   <div class="dc-setup-hero"><div class="dc-hero-rivals" aria-hidden="true"><img src="assets/avatars/avatar-01.webp" alt=""><span>VS</span><img src="assets/avatars/avatar-02.webp" alt=""></div><div class="dc-hero-copy"><div class="overline">Girá y Adiviná presenta</div><h2 id="setup-title">DUELO DE <span>CONOCIMIENTO</span></h2><p>Respondé bien y frená tu reloj. El primero que se quede sin tiempo pierde.</p></div></div>
+   <div class="dc-setup-body"><div class="dc-setup-main"><div id="dc-mode-slot"></div><div class="form-row dc-player-row"><div class="field"><label for="input0">Jugador 1 · vos</label><input id="input0" type="text" maxlength="14" value="" placeholder="Escribí tu nombre" autocomplete="off" required /></div><div class="field"><label for="input1" id="dc-rival-label">Rival virtual</label><input id="input1" type="text" maxlength="14" value="Sofía" required /></div></div></div>
+   <div class="dc-setup-side"><fieldset class="category-fieldset"><legend>Elegí los desafíos</legend><div class="category-grid"><label><input type="checkbox" name="category" value="banderas" checked/> 🌎 Banderas</label><label><input type="checkbox" name="category" value="matematica" checked/> ➕ Matemática</label><label><input type="checkbox" name="category" value="famosos" checked/> ★ Famosos</label><label><input type="checkbox" name="category" value="futbol" checked/> ⚽ Futbolistas</label></div></fieldset><div class="dc-options-row"><div class="field"><label for="time-select">Tiempo por jugador</label><select id="time-select"><option value="40" selected>40 segundos</option><option value="60">60 segundos</option><option value="90">90 segundos</option></select></div><div id="dc-answer-slot"></div></div><div class="dc-rules-brief">🎲 Sorteamos quién empieza · 🎙 Hablá o escribí · ⏱ Los errores consumen tiempo</div></div></div>
+   <button class="primary" type="submit">▶ EMPEZAR DUELO</button><div class="setup-voice-error" id="setup-voice-error" role="alert"></div>
  </form>
 </div>
 <div class="overlay hidden" id="roulette-overlay" role="dialog" aria-modal="true" aria-labelledby="roulette-title">
@@ -343,6 +344,6 @@ function initPreview(){players=[{name:'Andrés',ms:40000,score:0},{name:'Sofía'
 initPreview();
 </script>
 <script src="lib/mqtt.min.js?v=5.10.1"></script>
-<script src="duelo-conocimiento-modos.js?v=3"></script>
+<script src="duelo-conocimiento-modos.js?v=4"></script>
 </body>
 </html>

@@ -43,9 +43,10 @@ const server=http.createServer((req,res)=>{
         Extensiones.abrirJuego('duelo-conocimiento');
       });
       const frame=page.frameLocator('iframe[src="duelo-conocimiento.html"]');
-      await frame.locator('#dc-mode').waitFor();
-      await frame.locator('#dc-mode').selectOption(mode);
-      await frame.locator('#dc-answer').selectOption('text');
+      await frame.locator('[data-mode=bot]').waitFor();
+      await frame.locator(`[data-mode=${mode}]`).click();
+      await frame.locator('[data-answer=text]').click();
+      await frame.locator('#input0').fill(name);
       await frame.locator('#setup-form button[type=submit]').click();
       const state=await page.evaluate(()=>({
         blocked:!!document.querySelector('.fx-capa'),

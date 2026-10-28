@@ -11,8 +11,12 @@ const roomCode=()=>Array.from({length:4},()=>alphabet[Math.floor(Math.random()*a
 const place=$dc("setup-form");
 const modeBox=document.createElement("div");
 modeBox.className="dc-extra";
-modeBox.innerHTML='<div class="dc-row"><label class="dc-field">Modo de juego<select id="dc-mode"><option value="bot">Contra un BOT</option><option value="local">Dos jugadores aquí</option><option value="online">Online con un amigo</option></select></label><label class="dc-field">Cómo responder<select id="dc-answer"><option value="voice">Con el micrófono</option><option value="text">Escribiendo (prueba)</option></select></label></div><div id="dc-bot-fields"><label class="dc-field">Probabilidad de error del BOT <strong id="dc-bot-percent">30%</strong><input id="dc-bot-error" type="range" min="10" max="70" step="5" value="30"/></label><small>El BOT también consume tiempo; a mayor porcentaje, más se equivoca.</small></div><div id="dc-online-fields" hidden><div class="dc-row"><label class="dc-field">Sala online<select id="dc-room-choice"><option value="create">Crear sala</option><option value="join">Unirme a una sala</option></select></label><label class="dc-field">Código de 4 caracteres<input id="dc-room-code" placeholder="ABCD" maxlength="4" autocomplete="off" autocapitalize="characters"/></label></div><small>Cada participante usa su propio celular y autoriza su propio micrófono.</small></div><div id="dc-room-status" role="status"></div>';
-place.insertBefore(modeBox,place.querySelector(".category-fieldset"));
+modeBox.innerHTML='<span class="dc-section-label">¿Contra quién jugás?</span><div class="dc-mode-choices"><button type="button" data-mode="bot" aria-pressed="true">🤖 <b>Rival virtual</b></button><button type="button" data-mode="local" aria-pressed="false">👥 <b>Mismo celular</b></button><button type="button" data-mode="online" aria-pressed="false">🌐 <b>Con un amigo</b></button></div><select id="dc-mode" aria-label="Modo de juego" hidden><option value="bot">Contra un BOT</option><option value="local">Dos jugadores aquí</option><option value="online">Online con un amigo</option></select><div id="dc-bot-fields"><details class="dc-bot-details"><summary>⚙ Ajustar dificultad del rival <span id="dc-bot-percent">30%</span></summary><label class="dc-field" for="dc-bot-error">Probabilidad de error<input id="dc-bot-error" type="range" min="10" max="70" step="5" value="30"/></label></details></div><div id="dc-online-fields" hidden><div class="dc-row"><label class="dc-field">Sala online<select id="dc-room-choice"><option value="create">Crear sala</option><option value="join">Unirme a una sala</option></select></label><label class="dc-field">Código de 4 caracteres<input id="dc-room-code" placeholder="ABCD" maxlength="4" autocomplete="off" autocapitalize="characters"/></label></div><small>Cada participante usa su propio celular.</small></div><div id="dc-room-status" role="status"></div>';
+place.querySelector("#dc-mode-slot").append(modeBox);
+const answerBox=document.createElement("div");
+answerBox.className="dc-answer-choice";
+answerBox.innerHTML='<span class="dc-section-label">Responder</span><div class="dc-answer-buttons"><button type="button" data-answer="voice" aria-pressed="true">🎙 Voz</button><button type="button" data-answer="text" aria-pressed="false">⌨️ Escribir</button></div><select id="dc-answer" aria-label="Cómo responder" hidden><option value="voice">Con el micrófono</option><option value="text">Escribiendo</option></select>';
+place.querySelector("#dc-answer-slot").append(answerBox);
 const css=document.createElement("style");
 css.textContent=".dc-extra{border:1px solid #7353a3;border-radius:18px;padding:14px;margin:12px 0;background:#170e2b}.dc-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.dc-field{display:block;text-align:left;font-weight:850;color:#fce9c3;font-size:12px;margin-bottom:8px}.dc-field select,.dc-field input:not([type=range]){width:100%;margin-top:6px;padding:11px;border-radius:10px;border:1px solid #8967ba;color:#fff;background:#2a1848}.dc-field input[type=range]{width:100%;accent-color:#ffca37;display:block;margin-top:14px}#dc-room-status{margin-top:6px;color:#38e8d7;font-size:13px;font-weight:750;overflow-wrap:anywhere}#dc-room-status button{border:1px solid #ffc633;border-radius:12px;background:#ffc633;color:#24133c;padding:9px 15px;margin-top:8px;font-weight:900}#dc-voice{margin:8px auto 4px;display:block;background:#ffc633;color:#231137;border:0;border-radius:14px;padding:11px 16px;font-weight:950;box-shadow:0 4px #ac6a07}#dc-voice.ok{background:#32d5ba}#dc-text-option{font-size:11px;background:none;color:#d6caed;border:0;text-decoration:underline;margin:8px auto;display:block}.dc-hidden{display:none!important}@media(max-width:480px){.dc-row{grid-template-columns:1fr}.dc-extra{padding:11px}}";
 document.head.append(css);
@@ -22,20 +26,26 @@ $dc("answer-form").before(voiceBtn);$dc("answer-form").after(textBtn);
 const modeSel=$dc("dc-mode"),answerSel=$dc("dc-answer"),roomChoice=$dc("dc-room-choice"),roomInput=$dc("dc-room-code");
 function syncSetup(){
  mode=modeSel.value;
+ modeBox.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===mode)));
  $dc("dc-bot-fields").hidden=mode!=="bot";$dc("dc-online-fields").hidden=mode!=="online";
  $dc("input1").disabled=mode==="bot"||mode==="online";
- $dc("input1").value=mode==="bot"?"BOT":mode==="online"?"Amigo":($dc("input1").dataset.local||"Sofía");
+ $dc("input1").value=mode==="bot"?"Sofía":mode==="online"?"Amigo":($dc("input1").dataset.local||"Sofía");
+ $dc("dc-rival-label").textContent=mode==="bot"?"Rival virtual":mode==="online"?"Rival online":"Jugador 2";
  roomInput.disabled=roomChoice.value==="create";
- if(mode==="online"){place.querySelector(".primary[type=submit]").textContent=roomChoice.value==="create"?"CREAR SALA ONLINE":"UNIRME A SALA";}
- else place.querySelector(".primary[type=submit]").textContent="▶ COMENZAR PARTIDA";
+ if(mode==="online"){place.querySelector(".primary[type=submit]").textContent=roomChoice.value==="create"?"▶ CREAR SALA":"▶ UNIRME A SALA";}
+ else place.querySelector(".primary[type=submit]").textContent="▶ EMPEZAR DUELO";
  $dc("dc-room-status").textContent="";
 }
 modeSel.addEventListener("change",syncSetup);
+modeBox.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{modeSel.value=b.dataset.mode;syncSetup();});
+$dc("input1").addEventListener("input",()=>{if(modeSel.value==="local")$dc("input1").dataset.local=$dc("input1").value;});
 roomChoice.addEventListener("change",syncSetup);
 $dc("dc-bot-error").addEventListener("input",()=>{$dc("dc-bot-percent").textContent=$dc("dc-bot-error").value+"%"});
 answerSel.addEventListener("change",syncAnswer);
+answerBox.querySelectorAll("[data-answer]").forEach(b=>b.onclick=()=>{answerSel.value=b.dataset.answer;syncAnswer();});
 function syncAnswer(){
  const voice=answerSel.value==="voice";
+ answerBox.querySelectorAll("[data-answer]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.answer===answerSel.value)));
  voiceBtn.classList.toggle("dc-hidden",!voice);$dc("answer-form").classList.toggle("dc-hidden",voice);
  textBtn.classList.toggle("dc-hidden",!voice);
  $dc("mic-panel").setAttribute("aria-label",voice?"Responder hablando":"Responder escribiendo");
@@ -116,7 +126,7 @@ function botTurn(){
  const speed=1800+Math.floor(Math.random()*2300);
  botHandle=setTimeout(()=>{
    if(mode!=="bot"||phase!=="playing"||active!==1)return;
-   if(Math.random()*100<botError){$dc("feedback").className="feedback fail";$dc("feedback").textContent="El BOT se equivocó. Su reloj sigue corriendo.";botTurn();}
+   if(Math.random()*100<botError){$dc("feedback").className="feedback fail";$dc("feedback").textContent=players[1].name+" se equivocó. Su reloj sigue corriendo.";botTurn();}
    else rightAnswer("BOT");
  },speed);
 }
@@ -141,7 +151,7 @@ finish=function(winner,reason){
  if(mode==="online"&&online&&online.host)sendOnline("finish",{winner,reason,players:players.map(p=>({name:p.name,ms:p.ms,score:p.score}))});
 };
 const baseReset=resetToConfig;
-resetToConfig=function(){clearTimeout(botHandle);stopMic();stopOnline();baseReset();syncSetup();syncAnswer()};
+resetToConfig=function(){clearTimeout(botHandle);stopMic();stopOnline();baseReset();$dc("input0").value="";syncSetup();syncAnswer()};
 function codeValid(c){return /^[A-HJ-NP-Z2-9]{4}$/.test(c)}
 function sendOnline(type,data){
  if(!online)return;
@@ -243,7 +253,9 @@ function connectOnline(host,code){
 }
 start=function(){
  botError=Number($dc("dc-bot-error").value);
+ if(!$dc("input0").value.trim()){$dc("setup-voice-error").textContent="Escribí tu nombre para jugar.";$dc("input0").focus();return;}
  if(![...document.querySelectorAll('input[name=category]:checked')].length){$dc("setup-voice-error").textContent="Elegí al menos una categoría.";return;}
+ $dc("setup-voice-error").textContent="";
  mode=modeSel.value;
  // Solo una partida contra el BOT gasta ficha; jugar con otra persona es libre.
  // El contador y el cartel viven en la pantalla de Extensiones, fuera de este iframe.

@@ -69,7 +69,7 @@ const DueloConocimiento={
     frame.title="Duelo de Conocimiento";
     frame.allow="microphone; autoplay";
     frame.setAttribute("allowfullscreen","");
-    frame.style.cssText="display:block;width:100%;height:calc(100dvh - 82px);min-height:680px;border:0;background:#10081e;border-radius:16px";
+    frame.style.cssText="display:block;width:100%;height:calc(100dvh - 82px);min-height:min(680px,calc(100dvh - 82px));border:0;background:#10081e;border-radius:16px";
     contenedor.appendChild(frame);
     this.iframe=frame;
   },

@@ -1,0 +1,117 @@
+/* Entrada de Duelo de Conocimiento: una pantalla clara también al girar el celular. */
+#setup-overlay{padding:10px;align-items:center;overflow-y:auto;overscroll-behavior:contain}
+#setup-form.dc-setup-card{width:min(100%,630px);max-height:calc(100dvh - 20px);overflow-y:auto;overflow-x:hidden;padding:16px 18px 14px;text-align:left;border-color:#f5b301;background:radial-gradient(circle at 50% -15%,#5b2a84 0,transparent 58%),linear-gradient(155deg,#2c1749,#180d2b);box-shadow:0 20px 60px #0009,0 0 28px #f5b30130;animation:dcSetupEnter .55s cubic-bezier(.2,1.2,.25,1) both}
+@keyframes dcSetupEnter{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.dc-setup-hero{display:grid;grid-template-columns:104px minmax(0,1fr);gap:13px;align-items:center;margin-bottom:10px}
+.dc-hero-rivals{display:flex;align-items:center;justify-content:center;position:relative;height:72px}
+.dc-hero-rivals img{width:63px;height:63px;object-fit:cover;border-radius:50%;border:2px solid #ffd15b;box-shadow:0 0 0 3px #ffffff20,0 7px 14px #0008;animation:dcRivalIn .55s .1s both}
+.dc-hero-rivals img:first-child{margin-right:-19px}
+.dc-hero-rivals img:last-child{animation-delay:.2s}
+.dc-hero-rivals span{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-8deg);padding:3px 5px;border-radius:7px;background:#f5b301;color:#27133d;font-size:11px;font-weight:1000;box-shadow:0 2px 0 #944e05}
+@keyframes dcRivalIn{from{opacity:0;transform:translateY(12px) scale(.8)}to{opacity:1;transform:translateY(0) scale(1)}}
+.dc-hero-copy .overline{margin:0;font-size:9px;letter-spacing:.13em}
+.dc-hero-copy h2{font-size:clamp(19px,3vw,27px);line-height:1;margin:3px 0 4px;letter-spacing:-.04em}
+.dc-hero-copy p{margin:0;font-size:11px;line-height:1.3;color:#e2d2ef}
+.dc-section-label{display:block;font-size:11px;font-weight:900;color:#ffcf5a;margin-bottom:5px}
+#setup-form .dc-extra{background:none;border:0;padding:0;margin:0 0 8px}
+.dc-mode-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.dc-mode-choices button,.dc-answer-buttons button{border:1px solid #ffffff31;border-radius:11px;background:#36204f;color:#eee4f7;font-size:11px;font-weight:800;min-height:43px;padding:5px 3px;transition:transform .16s,background .16s,box-shadow .16s}
+.dc-mode-choices button b{display:block;font-size:10px;line-height:1.12}
+.dc-mode-choices button[aria-pressed="true"],.dc-answer-buttons button[aria-pressed="true"]{background:#5b2b72;border-color:#f5b301;color:#fff;box-shadow:inset 0 0 0 1px #f5b30180,0 3px 0 #aa6f08}
+.dc-mode-choices button:active,.dc-answer-buttons button:active{transform:translateY(2px)}
+.dc-bot-details{margin:5px 0 0;color:#bfb1d3;font-size:10px}
+.dc-bot-details summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:8px;padding:2px 4px}
+.dc-bot-details summary::-webkit-details-marker{display:none}
+.dc-bot-details summary span{color:#f5b301;font-weight:900}
+.dc-bot-details .dc-field{margin:8px 4px 5px}
+#setup-form #dc-online-fields{margin:7px 0 2px;padding:8px;border-radius:10px;background:#160d27;border:1px solid #ffffff23}
+#setup-form #dc-online-fields .dc-field{margin-bottom:0;font-size:10px}
+#setup-form #dc-online-fields .dc-field select,#setup-form #dc-online-fields .dc-field input{height:34px;padding:4px 8px;margin-top:3px}
+#setup-form #dc-online-fields .dc-row{grid-template-columns:1fr 1fr;gap:6px}
+#setup-form #dc-online-fields small{display:block;margin-top:4px;color:#bfb1d3;font-size:10px}
+#setup-form #dc-room-status{font-size:11px}
+#setup-form .dc-player-row{gap:8px;margin:0 0 7px}
+#setup-form .field label{font-size:9px;margin-bottom:3px;letter-spacing:.04em}
+#setup-form .field input,#setup-form .field select{height:39px;padding:0 10px;background:#1b0f30;border-color:#ffffff3a;font-size:13px}
+#setup-form .field input::placeholder{color:#a999bd;font-weight:600}
+#setup-form .field input:disabled{opacity:1;color:#ffd266;background:#2d1c43}
+#setup-form .category-fieldset{margin:0 0 7px;padding:6px 8px 7px;border-color:#ffffff2c;background:#130c24}
+#setup-form .category-fieldset legend{font-size:10px}
+#setup-form .category-grid{gap:5px}
+#setup-form .category-grid label{min-height:35px;padding:5px 7px;font-size:11px;border-radius:9px}
+#setup-form .category-grid input{width:15px;height:15px;flex:none}
+.dc-options-row{display:grid;grid-template-columns:1fr 1.5fr;gap:9px;align-items:end}
+.dc-answer-buttons{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.dc-answer-buttons button{min-height:39px}
+.dc-rules-brief{margin:7px 0 8px;color:#cbbddb;font-size:10px;line-height:1.25;text-align:center}
+#setup-form>.primary{font-size:15px;min-height:45px;padding:8px 12px;transition:transform .15s,filter .15s}
+#setup-form>.primary:active{transform:translateY(3px)}
+#setup-form .setup-voice-error{margin-top:4px}
+@media (max-width:420px){#setup-form.dc-setup-card{padding:12px 11px 11px}.dc-setup-hero{grid-template-columns:93px 1fr;gap:8px}.dc-hero-rivals img{width:56px;height:56px}.dc-hero-copy h2{font-size:19px}.dc-hero-copy p{font-size:10px}}
+@media (max-width:350px), (max-width:599px) and (max-height:600px){
+ #setup-form.dc-setup-card{padding:8px 9px}
+ .dc-setup-hero{grid-template-columns:70px 1fr;gap:5px;height:46px;margin-bottom:4px}
+ .dc-hero-rivals{height:43px}.dc-hero-rivals img{width:41px;height:41px}.dc-hero-rivals img:first-child{margin-right:-11px}.dc-hero-rivals span{font-size:8px}
+ .dc-hero-copy h2{font-size:16px;margin:1px 0}.dc-hero-copy p{font-size:9px;line-height:1.15}
+ .dc-section-label{font-size:10px;margin-bottom:3px}
+ #setup-form .dc-extra{margin-bottom:3px}.dc-mode-choices{gap:4px}.dc-mode-choices button{min-height:34px;font-size:10px}.dc-mode-choices button b{font-size:9px}
+ #setup-form #dc-online-fields{padding:3px 4px;margin:2px 0}
+ #setup-form #dc-online-fields .dc-field{font-size:8px}
+ #setup-form #dc-online-fields .dc-field select,#setup-form #dc-online-fields .dc-field input{height:28px;margin-top:1px;font-size:10px}
+ #setup-form #dc-online-fields small{display:none}
+ .dc-bot-details{margin-top:1px}.dc-bot-details summary{font-size:9px;padding:1px 3px}
+ #setup-form .dc-player-row{margin-bottom:3px;gap:5px}
+ #setup-form .field input,#setup-form .field select{height:32px;font-size:11px}
+ #setup-form .field label{font-size:8px;margin-bottom:2px}
+ #setup-form .category-fieldset{padding:3px 5px;margin-bottom:3px}
+ #setup-form .category-grid{gap:3px}
+ #setup-form .category-grid label{min-height:28px;padding:2px 4px;font-size:10px}
+ #setup-form .category-grid input{width:13px;height:13px}
+ .dc-answer-buttons button{min-height:32px;font-size:10px}
+ .dc-rules-brief{display:none}
+ #setup-form>.primary{min-height:37px;margin-top:5px;padding:5px;font-size:13px}
+}
+@media (max-height:650px) and (min-width:600px){
+ #setup-form.dc-setup-card{width:min(100%,800px);padding:9px 13px;max-height:calc(100dvh - 12px)}
+ .dc-setup-hero{grid-template-columns:65px 1fr;gap:10px;height:43px;margin-bottom:5px}
+ .dc-hero-rivals{height:43px}.dc-hero-rivals img{width:42px;height:42px}.dc-hero-rivals img:first-child{margin-right:-13px}.dc-hero-rivals span{font-size:8px}
+ .dc-hero-copy h2{font-size:19px;margin:1px 0}.dc-hero-copy p{font-size:10px}
+ .dc-setup-body{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+ #setup-form .dc-extra{margin-bottom:4px}.dc-mode-choices button{min-height:39px}
+ #setup-form #dc-online-fields{padding:3px 5px;margin:2px 0;border:0}
+ #setup-form #dc-online-fields .dc-field{font-size:8px}
+ #setup-form #dc-online-fields .dc-field select,#setup-form #dc-online-fields .dc-field input{height:27px;margin-top:1px;font-size:10px}
+ #setup-form #dc-online-fields small{display:none}
+ .dc-bot-details{margin-top:2px;font-size:9px}
+ #setup-form .dc-player-row{margin:4px 0 0}
+ #setup-form .category-fieldset{margin-bottom:4px;padding:4px 6px}
+ #setup-form .category-grid label{min-height:29px;padding:3px 5px}
+ .dc-options-row{gap:6px}
+ .dc-answer-buttons button{min-height:34px}
+ #setup-form .field input,#setup-form .field select{height:34px}
+ .dc-rules-brief{font-size:9px;margin:4px 0 0}
+ #setup-form>.primary{min-height:39px;font-size:13px;margin-top:5px}
+}
+@media (max-height:260px) and (min-width:600px){
+ #setup-form.dc-setup-card{padding:5px 9px}
+ .dc-setup-hero{height:31px;margin-bottom:2px;grid-template-columns:45px 1fr}
+ .dc-hero-rivals{height:30px}.dc-hero-rivals img{width:29px;height:29px}.dc-hero-rivals img:first-child{margin-right:-9px}
+ .dc-hero-copy h2{font-size:16px;margin:0}.dc-hero-copy p{display:none}
+ .dc-section-label{font-size:9px;margin-bottom:2px}
+ .dc-mode-choices{gap:4px}.dc-mode-choices button{min-height:29px;padding:2px;font-size:9px}.dc-mode-choices button b{font-size:9px}
+ .dc-bot-details summary{font-size:8px;padding:1px 2px}
+ #setup-form #dc-online-fields{padding:2px 4px;margin:1px 0}
+ #setup-form #dc-online-fields .dc-field{font-size:0;line-height:0}
+ #setup-form #dc-online-fields .dc-field select,#setup-form #dc-online-fields .dc-field input{height:24px;margin-top:0;font-size:9px;line-height:1}
+ #setup-form .dc-player-row{margin:2px 0 0}
+ #setup-form .field label{font-size:8px;margin-bottom:1px}
+ #setup-form .field input,#setup-form .field select{height:28px;font-size:11px}
+ #setup-form .category-fieldset{padding:2px 4px;margin-bottom:2px}
+ #setup-form .category-grid{gap:2px}.dc-options-row{gap:4px}
+ #setup-form .category-grid label{min-height:23px;font-size:9px;padding:1px 3px}
+ #setup-form .category-grid input{width:12px;height:12px}
+ .dc-answer-buttons button{min-height:28px;font-size:9px}
+ .dc-rules-brief{display:none}
+ #setup-form>.primary{min-height:31px;font-size:11px;margin-top:2px;padding:3px}
+}
+@media (prefers-reduced-motion:reduce){#setup-form.dc-setup-card,.dc-hero-rivals img{animation:none!important}.dc-mode-choices button,.dc-answer-buttons button{transition:none}}
