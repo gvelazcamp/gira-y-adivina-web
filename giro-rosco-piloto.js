@@ -4,7 +4,6 @@
   "use strict";
   const BASE="presentacion-y-locucion-extensiones/Giro/";
   const ESCENA=BASE+"estudios/Giro_estudio_rosco_16x9.png";
-  const ATRIL=BASE+"elementos/Giro_atril_oficial.png";
   const IMAGENES={
     neutral:BASE+"opcionales/espera/Giro_espera_neutral.png",
     respira:BASE+"opcionales/espera/Giro_espera_respirando.png",
@@ -74,12 +73,12 @@
     const halo=document.createElement("div");halo.className="grp-halo";halo.setAttribute("aria-hidden","true");
     const host=document.createElement("img");host.className="grp-giro";host.src=IMAGENES[imagen]||IMAGENES.neutral;
     host.alt="Giro, conductor de Girá y Adiviná";
-    const atril=document.createElement("img");atril.className="grp-atril";atril.src=ATRIL;atril.alt="";
     const rotulo=document.createElement("div");rotulo.className="grp-rotulo";rotulo.textContent="GIRÁ Y ADIVINÁ · EL ROSCO";
     const efecto=document.createElement("img");efecto.className="grp-efecto";
     efecto.src=BASE+"efectos/"+(tipo==="final"?"Giro_efecto_confeti_transparente.png":"Giro_efecto_destellos_transparente.png");
     efecto.alt="";efecto.setAttribute("aria-hidden","true");
-    stage.append(fondo,halo,host,atril,efecto,rotulo);
+    // El estudio del Rosco ya tiene atril integrado: no superponer otro.
+    stage.append(fondo,halo,host,efecto,rotulo);
     const panel=document.createElement("div");panel.className="grp-panel";
     const etiqueta=document.createElement("p");etiqueta.className="grp-etiqueta";etiqueta.textContent="PRESENTACIÓN DE PRUEBA · GONZALO";
     const h=document.createElement("h2");h.textContent=titulo;
