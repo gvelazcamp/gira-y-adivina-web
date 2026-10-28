@@ -1,0 +1,77 @@
+const {chromium}=require('playwright');
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),http=require('node:http'),path=require('node:path');
+const root=path.resolve(__dirname,'..');
+const server=http.createServer((req,res)=>{
+  const pathname=new URL(req.url,'http://local').pathname,file=path.join(root,pathname==='/'?'index.html':pathname);
+  if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);res.end();return;}
+  res.setHeader('Content-Type',{'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp':'image/webp'}[path.extname(file)]||'application/octet-stream');res.end(fs.readFileSync(file));
+});
+(async()=>{
+  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+  const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_EXECUTABLE||'/usr/bin/chromium'});
+  try{
+    const context=await browser.newContext({viewport:{width:844,height:390},isMobile:true,hasTouch:true,serviceWorkers:'block',reducedMotion:'reduce'});
+    const page=await context.newPage(),errors=[];
+    page.on('pageerror',e=>errors.push(e.message));
+    const base='http://127.0.0.1:'+server.address().port;
+    await page.route('**/*',route=>route.request().url().startsWith(base)?route.continue():route.fulfill({status:200,body:''}));
+    await page.addInitScript(()=>{
+      localStorage.setItem('gya_nombre','Prueba');localStorage.setItem('gya_pais','uruguay');localStorage.setItem('gya_bienvenida_vista','1');
+      window.__psMic={starts:0,stops:0,requests:0,active:null};
+      class FakeRecognition{start(){window.__psMic.starts++;window.__psMic.active=this;setTimeout(()=>this.onstart?.(),0);}abort(){this.onend?.();}}
+      window.SpeechRecognition=FakeRecognition;
+      Object.defineProperty(navigator,'mediaDevices',{configurable:true,value:{getUserMedia:async()=>{window.__psMic.requests++;return{getTracks:()=>[{stop:()=>window.__psMic.stops++}]};}}});
+    });
+    await page.goto(base);
+    await page.evaluate(()=>{document.querySelector('#splash')?.remove();document.documentElement.classList.remove('cargando');document.querySelector('#setup').style.display='none';Fichas.usar=()=>true;Extensiones.abrirJuego('palabra-secreta');});
+    await page.locator('#psAyudaPanel .sf-principal').click();
+    await page.locator('#psMicAviso').waitFor({state:'visible'});
+    let box=await page.locator('.ps-mic-aviso-caja').boundingBox();
+    assert(box.x>=0&&box.x+box.width<=844&&box.y>=0&&box.y+box.height<=390,'El aviso de voz debe entrar en horizontal');
+    await page.locator('#psVozNo').click();
+    assert.equal(await page.evaluate(()=>window.__psMic.requests),0,'Elegir teclado no debe pedir permiso');
+    let board=await page.locator('#psTablero').boundingBox(),keyboard=await page.locator('#psTeclado').boundingBox();
+    assert(board&&board.width>100&&board.x+board.width<keyboard.x,'El tablero debe verse siempre a la izquierda del teclado');
+    assert(board.y>=0&&board.y+board.height<=390,'El tablero debe entrar en la pantalla');
+    assert.equal(await page.locator('#psTablero .ps-fila').count(),6);
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),'La página no debe desbordar horizontalmente');
+    await page.setViewportSize({width:700,height:320});
+    board=await page.locator('#psTablero').boundingBox();keyboard=await page.locator('#psTeclado').boundingBox();
+    assert(board.y>=0&&board.y+board.height<=320,'El tablero debe entrar también en una pantalla baja: '+JSON.stringify({board,keyboard}));
+    assert(keyboard.x+keyboard.width<=700,'El teclado no debe salirse de una pantalla baja');
+    await page.setViewportSize({width:844,height:390});
+    await page.locator('#psMic').click();
+    await page.waitForFunction(()=>document.querySelector('#psMic')?.textContent.includes('Escuchando'));
+    const word=await page.evaluate(()=>{const p=JSON.parse(localStorage.getItem('gya_palabra_secreta')).partidaNivel;return PALABRA_SECRETAS.find(w=>w!==p.objetivo);});
+    await page.evaluate(word=>{const result=[{transcript:word.toLowerCase()}];result.isFinal=true;window.__psMic.active.onresult({resultIndex:0,results:[result]});},word);
+    assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('gya_palabra_secreta')).partidaNivel.intentos.length),1,'Una palabra hablada válida debe enviarse sola');
+    assert.equal(await page.locator('#psMic').getAttribute('aria-pressed'),'true','El micrófono debe continuar tras un intento');
+    await page.locator('#psMic').click();
+    assert.equal(await page.evaluate(()=>window.__psMic.stops),1,'Apagar el micrófono debe liberar el audio');
+    await page.locator('#psTeclado button[aria-label="Letra Q"]').click();
+    assert.equal(await page.locator('#psTablero .ps-fila').nth(1).locator('.ps-celda').first().textContent(),'Q','El teclado en pantalla debe escribir en el tablero');
+    await page.locator('#psAyuda').click();
+    assert(await page.evaluate(()=>{const el=document.querySelector('#psAyudaPanel .sf-panel');return el.scrollWidth<=el.clientWidth+1;}),'La ayuda no debe requerir scroll horizontal');
+    await page.evaluate(()=>{Extensiones.cerrar();Extensiones.abrirJuego('palabra-secreta');});
+    await page.locator('#psAyudaPanel .sf-principal').click();
+    await page.locator('#psVozSi').click();
+    await page.waitForFunction(()=>document.querySelector('#psMic')?.textContent.includes('Escuchando'));
+    assert.equal(await page.evaluate(()=>window.__psMic.requests),2,'Elegir Sí debe pedir permiso');
+    assert.equal(await page.locator('#psMic').getAttribute('aria-pressed'),'true');
+    await page.evaluate(()=>Extensiones.cerrar());
+    assert.equal(await page.evaluate(()=>window.__psMic.stops),2,'Salir del juego debe liberar el micrófono');
+    await page.evaluate(()=>Extensiones.abrirJuego('palabra-secreta'));
+    await page.locator('#psAyudaPanel .sf-principal').click();
+    await page.locator('#psVozNo').click();
+    await page.locator('#psEstadisticas').click();
+    assert(await page.evaluate(()=>{const el=document.querySelector('#psAyudaPanel .sf-panel');return el.scrollWidth<=el.clientWidth+1;}),'Las estadísticas no deben requerir scroll horizontal');
+    await page.locator('#psAyudaPanel .sf-principal').click();
+    await page.evaluate(()=>{const word=JSON.parse(localStorage.getItem('gya_palabra_secreta')).partidaNivel.objetivo;for(const letter of word)PalabraSecreta.tecla(letter);PalabraSecreta.tecla('Enter');});
+    const result=await page.locator('.ps-final-caja').boundingBox();
+    assert(result&&result.x>=0&&result.x+result.width<=844,'El popup final debe entrar en el ancho horizontal');
+    assert(await page.evaluate(()=>{const el=document.querySelector('.ps-final-caja');return el.scrollWidth<=el.clientWidth+1;}),'El popup final no debe requerir scroll horizontal');
+    assert.deepEqual(errors,[]);
+    console.log('PASS Palabra Secreta horizontal: tablero, teclado, voz y popup');
+  }finally{await browser.close();server.close();}
+})().catch(e=>{console.error(e);server.close();process.exitCode=1;});
