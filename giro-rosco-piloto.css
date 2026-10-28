@@ -12,8 +12,17 @@
 .grp-escenario{position:relative;aspect-ratio:16/9;min-height:180px;overflow:hidden;background:#04143e}
 .grp-fondo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .grp-halo{position:absolute;inset:0;background:linear-gradient(90deg,transparent 25%,rgba(17,28,78,.15) 50%,transparent 75%);pointer-events:none}
-.grp-giro{position:absolute;z-index:2;width:auto;height:80%;max-width:48%;object-fit:contain;object-position:center bottom;
-  bottom:6%;left:50%;transform:translateX(-50%);filter:drop-shadow(0 10px 12px #001a49)}
+.grp-actor{position:absolute;z-index:2;width:48%;height:80%;bottom:6%;left:50%;
+  transform:translateX(-50%);filter:drop-shadow(0 10px 12px #001a49);
+  animation:grp-respirar 3.6s ease-in-out infinite alternate;pointer-events:none}
+.grp-actor .grp-giro{position:absolute;inset:0;width:100%;height:100%;max-width:100%;
+  object-fit:contain;object-position:center bottom;opacity:0;
+  transition:opacity .8s cubic-bezier(.4,0,.2,1);will-change:opacity}
+.grp-actor .grp-giro.grp-visible{opacity:1}
+@keyframes grp-respirar{
+  from{transform:translateX(-50%) translateY(0) scale(1)}
+  to{transform:translateX(-50%) translateY(-.65%) scale(1.008)}
+}
 .grp-atril{position:absolute;z-index:3;width:37%;height:39%;object-fit:contain;object-position:center bottom;
   bottom:-2%;left:50%;transform:translateX(-50%);pointer-events:none}
 .grp-efecto{position:absolute;z-index:4;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;opacity:.72}
@@ -34,7 +43,7 @@
  .grp-contenido{max-height:calc(100dvh - 12px);border-radius:12px}
  .grp-escenario{aspect-ratio:4/3;min-height:0}
  .grp-fondo{object-fit:cover}
- .grp-giro{height:83%;max-width:65%}
+ .grp-actor{height:83%;width:65%}
  .grp-atril{width:48%;height:38%}
  .grp-panel{padding:12px}
  .grp-panel h2{font-size:clamp(20px,5.5vw,27px)}
@@ -51,4 +60,4 @@
  .grp-panel h2{font-size:22px}
  .grp-aviso{margin-top:5px}
 }
-@media(prefers-reduced-motion:reduce){.grp-overlay *{animation:none!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){.grp-overlay *{animation:none!important;transition:none!important;will-change:auto!important}}
