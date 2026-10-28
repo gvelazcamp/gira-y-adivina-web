@@ -73,12 +73,19 @@
     const halo=document.createElement("div");halo.className="grp-halo";halo.setAttribute("aria-hidden","true");
     const host=document.createElement("img");host.className="grp-giro";host.src=IMAGENES[imagen]||IMAGENES.neutral;
     host.alt="Giro, conductor de Girá y Adiviná";
+    host.classList.add("grp-visible");
+    // Dos capas reutilizables: se mezclan con opacidad, sin saltos de src.
+    const actor=document.createElement("div");actor.className="grp-actor";
+    const hostSiguiente=document.createElement("img");
+    hostSiguiente.className="grp-giro";hostSiguiente.alt="";
+    hostSiguiente.setAttribute("aria-hidden","true");
+    actor.append(host,hostSiguiente);
     const rotulo=document.createElement("div");rotulo.className="grp-rotulo";rotulo.textContent="GIRÁ Y ADIVINÁ · EL ROSCO";
     const efecto=document.createElement("img");efecto.className="grp-efecto";
     efecto.src=BASE+"efectos/"+(tipo==="final"?"Giro_efecto_confeti_transparente.png":"Giro_efecto_destellos_transparente.png");
     efecto.alt="";efecto.setAttribute("aria-hidden","true");
     // El estudio del Rosco ya tiene atril integrado: no superponer otro.
-    stage.append(fondo,halo,host,efecto,rotulo);
+    stage.append(fondo,halo,actor,efecto,rotulo);
     const panel=document.createElement("div");panel.className="grp-panel";
     const etiqueta=document.createElement("p");etiqueta.className="grp-etiqueta";etiqueta.textContent="PRESENTACIÓN DE PRUEBA · GONZALO";
     const h=document.createElement("h2");h.textContent=titulo;
@@ -95,14 +102,44 @@
     cont.append(stage,panel);overlay.appendChild(cont);document.body.appendChild(overlay);
     capa=overlay;document.addEventListener("keydown",teclado);
     avanzar.focus({preventScroll:true});
-    // Espera: cambios de imagen sutiles sin modificar el Rosco ni tapar sus controles.
+    // Movimiento suave: respiración CSS y fundido entre PNG aprobados.
+    // Los recortes de parpadeo tienen un encuadre distinto al cuerpo entero:
+    // no se mezclan aquí para evitar un salto visual.
     if(tipo==="inicio"&&!matchMedia("(prefers-reduced-motion: reduce)").matches){
-      const ciclos=["saludo","neutral","respira","escucha","neutral","presenta","señala","neutral"];
-      let i=0;
+      const ciclos=["saludo","neutral","respira","neutral","escucha","neutral","presenta","neutral","señala","neutral"];
+      let i=0,visible=host,oculto=hostSiguiente,gesto="saludo",cargando=false;
+      const transicionar=nombre=>{
+        if(cargando||nombre===gesto||!IMAGENES[nombre]||capa!==overlay||!activa)return;
+        cargando=true;
+        const destino=oculto;
+        let atendido=false;
+        const listo=()=>{
+          if(atendido)return;atendido=true;
+          if(capa!==overlay||!activa){cargando=false;return;}
+          // Dos cuadros: asegura la transición también con archivos cacheados.
+          requestAnimationFrame(()=>{
+            if(capa!==overlay||!activa){cargando=false;return;}
+            requestAnimationFrame(()=>{
+              if(capa!==overlay||!activa){cargando=false;return;}
+              destino.classList.add("grp-visible");
+              visible.classList.remove("grp-visible");
+              const anterior=visible;visible=destino;oculto=anterior;
+              gesto=nombre;cargando=false;
+            });
+          });
+        };
+        const error=()=>{atendido=true;cargando=false;};
+        destino.onload=listo;destino.onerror=error;
+        destino.src=IMAGENES[nombre];
+        if(typeof destino.decode==="function"){
+          try{destino.decode().then(listo).catch(()=>{if(!atendido&&destino.complete&&destino.naturalWidth>0)listo();else error();});}
+          catch(e){if(destino.complete&&destino.naturalWidth>0)listo();else error();}
+        }else if(destino.complete&&destino.naturalWidth>0)listo();
+      };
       intervalo=setInterval(()=>{
-        if(!capa||document.hidden)return;
-        i=(i+1)%ciclos.length;host.src=IMAGENES[ciclos[i]];
-      },2400);
+        if(capa!==overlay||document.hidden||cargando)return;
+        i=(i+1)%ciclos.length;transicionar(ciclos[i]);
+      },2600);
     }
     return true;
   }
