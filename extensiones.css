@@ -1174,3 +1174,27 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
   #extContenido .sf-game #sfPanel .sf-acciones button{flex:1 1 29%;min-width:105px;min-height:38px;padding:5px;font-size:.78rem}
   #extContenido .sf-game #sfPanel .sf-acciones button.sf-con-dibujo img{height:27px}
 }
+/* Ventanas que se crean durante la partida, incluso las agregadas al body. */
+@media (orientation:landscape) and (max-width:1024px) and (max-height:600px){
+  .pf-confirmar,.tf-pop{box-sizing:border-box;padding:6px max(8px,var(--safe-right,0px)) 6px max(8px,var(--safe-left,0px));overflow-y:auto;overflow-x:hidden}
+  .pf-confirmar .pf-caja,.tf-pop-caja{box-sizing:border-box;max-width:100%;max-height:calc(100dvh - 12px);overflow-y:auto;overflow-x:hidden;overflow-wrap:anywhere;margin:auto;padding:9px 12px}
+  .pf-confirmar .pf-caja h3{margin:0 0 5px!important;font-size:clamp(.94rem,4dvh,1.15rem)}
+  .pf-confirmar .pf-caja .imp-ayuda{margin:0 0 5px!important;font-size:.75rem;line-height:1.2}
+  .pf-confirmar .pf-caja>button{min-height:32px;margin-top:4px;padding:5px 8px;font-size:.78rem}
+  .tf-modos .pf-caja{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px 7px;width:min(100%,690px)}
+  .tf-modos .pf-caja>h3,.tf-modos .pf-caja>p,.tf-modos .pf-caja>[data-x]{grid-column:1 / -1}
+  .tf-modos .pf-caja>.tf-modo{width:100%;min-height:66px;margin:0!important;padding:6px!important;font-size:.76rem}
+  .tf-modos .pf-caja>.tf-modo b{font-size:.9rem}
+  .tf-modos .pf-caja>.tf-modo small{font-size:.68rem;line-height:1.12}
+  .tf-pop-caja{width:min(100%,470px)}
+  .tf-pop-mal{font-size:1rem;margin:3px 0}
+  .tf-pop-txt{font-size:.78rem;line-height:1.2}
+  .tf-pop-ok{min-height:32px;margin-top:6px}
+  .tf .qns-pantalla{box-sizing:border-box;padding:6px max(8px,var(--safe-right,0px)) 6px max(8px,var(--safe-left,0px))}
+  .tf .qns-pantalla>.tf-res{box-sizing:border-box;width:min(100%,900px);max-width:900px;max-height:calc(100dvh - 12px);overflow-x:hidden}
+  .tf .tf-grilla-caja{overflow-x:visible;min-width:0}
+  .tf .tf-grilla{min-width:0;width:100%;gap:3px}
+  .tf .tf-g-cat{font-size:clamp(.5rem,1.6dvh,.62rem)}
+  .tf .tf-cel{padding:4px 2px;min-width:0}
+  .tf .tf-cel .tf-w{font-size:.68rem;overflow-wrap:anywhere}
+}
