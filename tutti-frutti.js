@@ -956,11 +956,10 @@ const TuttiFrutti=(()=>{
           ${v&&!ok?(mio?`<button type="button" class="tf-apelar">🙋 Apelar</button>`:`<span class="tf-sum"><button type="button" data-d="-5" aria-label="Restar">−</button><b>0</b><button type="button" data-d="5" aria-label="Sumar">+</button></span>`):""}
           </div>`;});
       celdas+=`<div class="tf-g-tot" data-tot="${j.pid}" style="${porFilas?pos(k+2,C+2):pos(C+2,k+2)}">0</div>`;});
-    const horizontal=matchMedia("(orientation:landscape) and (max-width:1024px) and (max-height:600px)").matches;
-    const cols=porFilas?(horizontal?`minmax(54px,1.1fr) repeat(${C},minmax(0,1fr)) minmax(44px,.8fr)`:`minmax(64px,1.1fr) repeat(${C},minmax(70px,1fr)) minmax(54px,.8fr)`):`40px repeat(${P},minmax(${horizontal?0:P>3?56:72}px,1fr))`;
+    const cols=porFilas?`minmax(64px,1.1fr) repeat(${C},minmax(70px,1fr)) minmax(54px,.8fr)`:`40px repeat(${P},minmax(${P>3?56:72}px,1fr))`;
     pantalla(`<div class="mg-panel imp-panel imp-fin tf-res"><h3 id="tfTitulo" class="tf-res-tit"></h3>
       <p class="imp-ayuda tf-res-ayuda">Letra <b>${on.letra}</b> · <b>10</b> única · <b>5</b> repetida · <b>20</b> si sos el único.<br><b class="tf-amar">⚠️ amarilla</b> = vale 0, tocala para ver por qué · <b class="tf-verde">🙋 Apelar</b> la tuya ${on.bots?"y elegí sus puntos":"para que los demás decidan"} · <b>+/−</b> sumale a la de otro.</p>
-      <div class="tf-grilla-caja"><div class="tf-grilla${porFilas?"":" tf-vuelta"}${P>3?" tf-muchos":""}" id="tfGrilla" lang="es" style="grid-template-columns:${cols}">${celdas}</div></div>
+      <div class="tf-grilla-caja"><div class="tf-grilla${porFilas?"":" tf-vuelta"}${P>3?" tf-muchos":""}" id="tfGrilla" lang="es" style="--tf-categories:${C};--tf-players:${P};grid-template-columns:${cols}">${celdas}</div></div>
       <p class="tf-res-frase" id="tfFrase"></p>
       <button type="button" class="tf-anular-btn" id="tfAnular">🚫 Anular una respuesta</button>
       <div class="qs-sub">🏆 Puntos (con esta ronda)</div><ul class="imp-tabla" id="tfTabla"></ul>

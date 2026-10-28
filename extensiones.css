@@ -1194,6 +1194,8 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
   .tf .qns-pantalla>.tf-res{box-sizing:border-box;width:min(100%,900px);max-width:900px;max-height:calc(100dvh - 12px);overflow-x:hidden}
   .tf .tf-grilla-caja{overflow-x:visible;min-width:0}
   .tf .tf-grilla{min-width:0;width:100%;gap:3px}
+  .tf .tf-grilla:not(.tf-vuelta){grid-template-columns:minmax(54px,1.1fr) repeat(var(--tf-categories),minmax(0,1fr)) minmax(44px,.8fr)!important}
+  .tf .tf-grilla.tf-vuelta{grid-template-columns:40px repeat(var(--tf-players),minmax(0,1fr))!important}
   .tf .tf-g-cat{font-size:clamp(.5rem,1.6dvh,.62rem)}
   .tf .tf-cel{padding:4px 2px;min-width:0}
   .tf .tf-cel .tf-w{font-size:.68rem;overflow-wrap:anywhere}

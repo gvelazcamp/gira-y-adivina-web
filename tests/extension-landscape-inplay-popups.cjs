@@ -70,8 +70,13 @@ const fits=(box,name)=>{
       await page.locator('#tfVozNo').click();
       await page.clock.runFor(4000);
       assert(await page.locator('#tfInput').count(),`Tutti Frutti no arrancó: ${await page.locator('#extContenido').innerText()}`);
+      if(width===700)await page.setViewportSize({width:390,height:700});
       await page.clock.fastForward(110000);
       await page.locator('#tfGrilla').waitFor({state:'attached'});
+      if(width===700){
+        assert(await page.locator('#tfGrilla').evaluate(el=>el.classList.contains('tf-vuelta')),'El resultado debe haberse creado en vertical');
+        await page.setViewportSize({width,height});
+      }
       fits(await inspect(page,'.tf .tf-res'),`resultado Tutti Frutti ${width}`);
       const grid=await inspect(page,'.tf .tf-grilla-caja');
       assert(grid.scrollX<=1,`resultado Tutti Frutti ${width} requiere desplazamiento lateral: ${JSON.stringify(grid)}`);
