@@ -913,6 +913,8 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
   .ps-game .ps-tablero{width:min(100%,48dvh);max-width:none;margin:0 auto}
   .ps-game .ps-celda{font-size:clamp(.8rem,4dvh,1.2rem)}
   .ps-game .ps-entrada{display:flex;flex-direction:column;gap:3px;width:100%}
+  .ps-game .ps-entrada .ps-reto{align-self:center;max-width:100%;margin:0 auto;padding:3px 8px;text-align:center}
+  .ps-game .ps-entrada .ps-stats{width:100%;margin:0;text-align:center}
   .ps-game .ps-mensaje{min-height:16px;margin:0;font-size:.7rem}
   .ps-game .ps-mic-btn{display:block;align-self:stretch;min-height:30px;border:1px solid #37D6C088;border-radius:9px;padding:3px 6px;background:#19465C;color:#E8FFF8;font:900 .75rem Outfit,sans-serif}
   .ps-game .ps-mic-btn.ps-mic-activo{background:#0B675C;border-color:#37D6C0}

@@ -48,9 +48,19 @@ const PalabraSecreta=(()=>{
       si.disabled=false;no.disabled=false;
       if(!ok)mensaje("No se pudo activar el micrófono. Usá el teclado o tocá Activar micrófono para reintentar.");
     };
+    colocarMarcadores();
+  }
+  function colocarMarcadores(){
+    if(!raiz)return;
+    const game=raiz.querySelector(".ps-game"),play=raiz.querySelector(".ps-play"),entrada=raiz.querySelector(".ps-entrada");
+    const reto=raiz.querySelector("#psReto"),stats=raiz.querySelector("#psStats"),mensaje=raiz.querySelector("#psMensaje");
+    if(!game||!play||!entrada||!reto||!stats||!mensaje)return;
+    if(horizontal()){entrada.insertBefore(reto,mensaje);entrada.insertBefore(stats,mensaje);}
+    else{game.insertBefore(reto,play);game.insertBefore(stats,play);}
   }
   function revisarHorizontal(){
     if(!raiz)return;
+    colocarMarcadores();
     if(!horizontal()){if(micActivo||micPidiendo)pararMicrofono();return;}
     if(avisoVisto||!raiz.querySelector("#psAyudaPanel")?.hidden||partida?.terminada)return;
     avisoVisto=true;raiz.querySelector("#psMicAviso").hidden=false;
