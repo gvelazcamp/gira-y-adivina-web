@@ -14,7 +14,7 @@ assert(sw.includes('"./giro-rosco-piloto.js?v=7"'));
 assert(sw.includes('"./giro-rosco-piloto.css?v=6"'));
 assert(!/bocas-v2|grp-labios|grp-speaking|iniciarLabios|fonemaAIndice/.test(src+css),
   "No deben quedar funciones ni capas de sincronización de boca");
-assert(src.includes('voz.addEventListener("click",()=>hablar(locucion))'),
+assert(src.includes('voz.addEventListener("click",()=>{')&&src.includes('hablar(locucion);'),
   "Conservar el botón de voz");
 assert(src.includes('actor.append(host,hostSiguiente)'),
   "Conservar los gestos animados");
