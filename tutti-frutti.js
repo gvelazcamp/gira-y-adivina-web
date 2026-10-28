@@ -102,14 +102,54 @@ const TuttiFrutti=(()=>{
   }
   function estado(t){const e=raiz&&raiz.querySelector("#tfEstado");if(e)e.textContent=t;}
   function pantalla(html){raiz.innerHTML=`<div class="qns-pantalla imp-juego"><button type="button" class="pf-salir" id="tfSalir">✕ Salir</button>${html}</div>`;PantallaFija.confirmar(q("tfSalir"),configurar);actualizarChat();ajustarVV();}
-  /* La pantalla ocupa solo la parte visible (sin el teclado): en iPhone, al
-     abrirse el teclado la página se corría para arriba y el reloj quedaba
-     tapado; así arriba siempre se ve y lo de escribir queda centrado. */
+  /* En horizontal táctil usamos teclado integrado solo durante la ronda.
+     En vertical (y con teclado físico en escritorio) el input es normal. */
+  const tecladoHorizontal=()=>window.matchMedia("(orientation: landscape) and (min-width:700px) and (max-width:1024px) and (max-height:600px)").matches
+    &&(window.matchMedia("(pointer: coarse)").matches||navigator.maxTouchPoints>0);
+  function sincronizarTeclado(){
+    const pantalla=raiz?.querySelector(".qns-pantalla"),inp=raiz?.querySelector("#tfInput"),teclado=raiz?.querySelector("#tfTeclado");
+    if(!pantalla||!inp||!teclado)return;
+    const propio=tecladoHorizontal()&&!raiz.querySelector("#tfEdit")?.hidden;
+    pantalla.classList.toggle("tf-teclado-propio",propio);
+    inp.readOnly=propio;inp.inputMode=propio?"none":"text";
+    if(propio&&document.activeElement===inp)inp.blur();
+  }
+  function crearTeclado(){
+    const panel=q("tfTeclado");if(!panel)return;
+    panel.replaceChildren();
+    for(const letras of ["QWERTYUIOP","ASDFGHJKLÑ","ZXCVBNM"]){
+      const fila=document.createElement("div");fila.className="tf-teclas-fila";
+      for(const letra of letras){
+        const boton=document.createElement("button");boton.type="button";boton.className="tf-tecla";boton.textContent=letra;
+        boton.setAttribute("aria-label","Escribir "+letra);boton.onclick=()=>editarConTeclado(letra);
+        fila.appendChild(boton);
+      }
+      panel.appendChild(fila);
+    }
+    const ultima=document.createElement("div");ultima.className="tf-teclas-fila tf-teclas-acciones";
+    for(const [texto,accion,clase] of [["Espacio"," ","tf-espacio"],["⌫ Borrar","borrar","tf-borrar"]]){
+      const boton=document.createElement("button");boton.type="button";boton.className="tf-tecla "+clase;
+      boton.textContent=texto;boton.onclick=()=>editarConTeclado(accion);ultima.appendChild(boton);
+    }
+    panel.appendChild(ultima);
+  }
+  function editarConTeclado(tecla){
+    const inp=q("tfInput");if(!inp||!on||on.fase!=="jugando"||!q("tfEdit")||q("tfEdit").hidden)return;
+    let val=inp.value||"";
+    if(tecla==="borrar")val=val.slice(0,-1);
+    else if(val.length<30)val+=tecla;
+    inp.value=val;inp.dispatchEvent(new Event("input",{bubbles:true}));
+    const msg=q("tfMsg");if(msg)msg.textContent="";
+  }
+  /* El alto visible excluye el teclado nativo, por si se usa uno en vertical.
+     No se mueve el campo hacia fuera de la pantalla al girar. */
   function ajustarVV(){
-    const el=raiz&&raiz.querySelector(".qns-pantalla"),vv=window.visualViewport;if(!el||!vv)return;
-    el.style.top=Math.max(0,Math.round(vv.offsetTop))+"px";el.style.height=Math.round(vv.height)+"px";el.style.bottom="auto";
+    const el=raiz&&raiz.querySelector(".qns-pantalla"),vv=window.visualViewport;
+    if(el&&vv){el.style.top=Math.max(0,Math.round(vv.offsetTop))+"px";el.style.height=Math.round(vv.height)+"px";el.style.bottom="auto";}
+    sincronizarTeclado();
   }
   if(window.visualViewport){visualViewport.addEventListener("resize",ajustarVV);visualViewport.addEventListener("scroll",ajustarVV);}
+  window.addEventListener("resize",ajustarVV);window.addEventListener("orientationchange",ajustarVV);
   function parar(){jugando=false;clearTimeout(timer);}
   function salir(){document.querySelectorAll(".tf-modos").forEach(x=>x.remove());if(typeof cerrarApelaciones==="function")cerrarApelaciones();detenerMusica();parar();cerrarSala();if(raiz)PantallaFija.salir();if(raiz)raiz.remove();raiz=null;}
   /* ===== Control de respuestas =====
@@ -608,11 +648,13 @@ const TuttiFrutti=(()=>{
       <div class="imp-centro tf-campo"><div class="tf-ficha tf-ficha-chica"><img src="${ARTE("ficha")}" alt="" draggable="false"><div class="tf-letra tf-final tf-chica">${on.letra}</div></div>
       <div class="tf-prog" id="tfProg"></div>
       <div id="tfEdit"><div class="imp-quien" id="tfCat"></div>
-      <input id="tfInput" autocomplete="off" autocapitalize="words" enterkeyhint="next">
+      <input id="tfInput" maxlength="30" autocomplete="off" autocapitalize="words" enterkeyhint="next" aria-label="Tu palabra">
       <p class="imp-ayuda" id="tfMsg"></p>
-      <div class="mim-btns"><button type="button" class="bb-pasar imp-gris" id="tfAnt">⟵ Anterior</button><button type="button" class="bb-pasar mim-ok" id="tfSig">Siguiente ➜</button></div></div>
+      <div class="mim-btns"><button type="button" class="bb-pasar imp-gris" id="tfAnt">⟵ Anterior</button><button type="button" class="bb-pasar mim-ok" id="tfSig">Siguiente ➜</button></div>
+      <div id="tfTeclado" class="tf-teclado-digital" role="group" aria-label="Teclado para responder"></div></div>
       <div id="tfRev" class="tf-rev" hidden></div></div>`);
     const inp=q("tfInput");
+    crearTeclado();sincronizarTeclado();
     q("tfSig").onclick=confirmarCampo;
     inp.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();confirmarCampo();}});
     /* Anterior: va a la categoría de antes en el orden (vacía o completa,
@@ -628,7 +670,7 @@ const TuttiFrutti=(()=>{
      para corregir la que sea (tocándola) y recién después ¡BASTA!. */
   function revision(){
     if(!raiz||!on)return;const ed=q("tfEdit"),rv=q("tfRev");if(!ed||!rv)return;
-    ed.hidden=true;rv.hidden=false;
+    ed.hidden=true;rv.hidden=false;sincronizarTeclado();
     q("tfProg").innerHTML=on.cats.map((c,j)=>`<i class="${on.mias[j]?"ok":""}" data-i="${j}"></i>`).join("");
     rv.innerHTML='<p class="imp-ayuda">¿Todo bien? Tocá una respuesta para corregirla.</p>'+
       on.cats.map((c,j)=>`<button type="button" class="tf-rev-fila" data-i="${j}"><small>${esc(etiq(c))}</small><b>${esc(on.mias[j]||"—")}</b><span>✏️</span></button>`).join("")+
@@ -640,7 +682,8 @@ const TuttiFrutti=(()=>{
     if(!raiz||!on||!on.pend)return;if(!on.pend.length){revision();return;}const i=on.pend[0];
     {const ed=q("tfEdit"),rv=q("tfRev");if(ed)ed.hidden=false;if(rv)rv.hidden=true;}
     q("tfCat").textContent=etiq(on.cats[i]);
-    const inp=q("tfInput");inp.value=on.mias[i]||"";inp.placeholder="Empieza con "+on.letra+"…";try{inp.focus();}catch(e){}
+    const inp=q("tfInput");inp.value=on.mias[i]||"";inp.placeholder="Empieza con "+on.letra+"…";
+    sincronizarTeclado();if(!inp.readOnly)try{inp.focus();}catch(e){}
     q("tfProg").innerHTML=on.cats.map((c,j)=>`<i class="${on.mias[j]?"ok":""}${j===i?" act":""}" data-i="${j}"></i>`).join("");
     q("tfMsg").textContent="";
     const a=q("tfAnt");if(a)a.disabled=on.cats.length<2;
