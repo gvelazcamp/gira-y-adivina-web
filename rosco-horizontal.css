@@ -423,3 +423,53 @@
   .rr-game.rr-gonzalo .rr-fila #rrVoz{display:flex}
   .rr-game.rr-gonzalo[data-fase="inicio"] .rr-panel button{min-height:30px}
 }
+
+
+/* Rosco en celular vertical: botón Hablar con el mismo modo de voz que
+   funciona en horizontal, sin abrir Gboard cuando está escuchando.
+   Prueba limitada al perfil Gonzalo; no afecta a otros jugadores. */
+@media (orientation:portrait) and (max-width:700px){
+  .rr-game.rr-gonzalo #rrForm .rr-fila{
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:6px;align-items:stretch;width:100%;min-width:0;
+  }
+  .rr-game.rr-gonzalo #rrForm .rr-fila #rrEntrada{
+    grid-column:1 / -1;grid-row:1;
+    width:100%;min-width:0;min-height:43px;height:43px;
+    box-sizing:border-box;padding:8px 12px;margin:0;
+    font-size:16px;
+  }
+  .rr-game.rr-gonzalo #rrForm .rr-fila #rrEnviar,
+  .rr-game.rr-gonzalo #rrForm .rr-fila #rrPasar,
+  .rr-game.rr-gonzalo #rrForm .rr-fila #rrVoz{
+    width:100%;min-width:0;min-height:44px;height:44px;
+    box-sizing:border-box;margin:0;padding:4px 6px;
+    font-size:clamp(10px,3vw,13px);line-height:1.1;
+  }
+  .rr-game.rr-gonzalo #rrForm .rr-fila #rrEnviar{grid-column:1;grid-row:2}
+  .rr-game.rr-gonzalo #rrForm .rr-fila #rrPasar{
+    grid-column:2;grid-row:2;display:flex;flex-direction:row;
+    gap:3px;align-items:center;justify-content:center;
+  }
+  .rr-game.rr-gonzalo #rrForm .rr-fila #rrPasar .rr-ico{width:19px;height:19px}
+  .rr-game.rr-gonzalo #rrForm .rr-fila #rrVoz{
+    grid-column:3;grid-row:2;display:flex;
+    flex-direction:row;align-items:center;justify-content:center;gap:4px;
+    background:#352146;border:1px solid #F5B30188;
+    color:#F6EFE2;font-size:18px;
+  }
+  .rr-game.rr-gonzalo #rrForm .rr-fila #rrVoz span{
+    font:900 12px Outfit,system-ui,sans-serif;
+  }
+  .rr-game.rr-gonzalo #rrForm .rr-fila #rrVoz.rr-grabando{
+    background:#E5197C;border-color:#F5B301;
+    box-shadow:0 0 0 2px #F5B30155;
+  }
+  .rr-game.rr-gonzalo.rr-con-voz .rr-estado-voz-g{
+    display:block;font-size:12px;line-height:1.3;
+    text-align:center;max-width:100%;margin:5px 0 2px;
+  }
+  .rr-game.rr-gonzalo.rr-con-voz #rrEntrada{
+    opacity:.85;pointer-events:none;
+  }
+}
