@@ -27,7 +27,7 @@ En el proyecto, las entradas son el pedido de Gonzalo, el árbol del repositorio
 - Play Store (actualizado el 27/10/2026): versión 17 en producción; versión 19 con entrada celular y Android TV disponible para testers internos. La versión 18 exclusiva de TV quedó reemplazada por la 19 combinada.
 - Juego de ruleta y frases con cultura rioplatense, mapas, progreso, cosméticos, colecciones, eventos, torneos, opciones sociales y extensiones.
 - Aplicación estática de HTML, CSS y JavaScript sin framework ni compilación de producción. El núcleo sigue en `index.html`, con estilos y lógica embebidos; las extensiones tienen módulos propios.
-- PWA: `manifest.json`, `sw.js`, iconos y página principal. El manifiesto declara idioma `es-UY`, presentación `standalone`, orientación `portrait` y color `#160B24`.
+- PWA: `manifest.json`, `sw.js`, iconos y página principal. El manifiesto declara idioma `es-UY`, presentación `standalone`, orientación `any` para respetar el giro del celular y color `#160B24`.
 - Android: `.well-known/assetlinks.json` vincula `io.github.gvelazcamp.twa`. El proyecto Android y sus permisos no están en este árbol; no afirmar que un cambio del empaquetado está resuelto aquí.
 - Existe `package.json` para pruebas con Playwright. No implica un proceso de build del juego.
 
@@ -1748,4 +1748,8 @@ Fecha: 27/10/2026 — Cuenta opcional para continuar la misma partida entre Play
 
 ```text
 Fecha: 27/10/2026 — Prueba de partida horizontal al duplicar el celular en la tele, solo para el perfil Gonzalo. Menús y demás perfiles conservan su presentación. Dentro de la partida de Ruleta aparece «Probar en horizontal»: intenta pantalla completa y giro automático si el navegador lo permite; si no, indica desbloquear la rotación y girar el celular. Al volver al menú se apaga. La partida horizontal ordena tablero/jugadores y controles en dos columnas, con ruleta ajustada a la altura. Probado en Chromium móvil simulado a 390×844 y 844×390, y con perfil Vale como control. La app instalada de Play sigue limitada por su configuración Android vertical; probar desde el navegador y confirmar en celular/Apple TV reales. sw v456.
+```
+
+```text
+Fecha: 28/10/2026 — El giro horizontal pasa a ser automático para todos los perfiles al rotar el celular (hasta 1024×600), sin botón ni pantalla completa. Ruleta y extensiones usan el ancho disponible; Rosco, Ahorcado y demás juegos conservan sus controles en dos columnas o compactos. Los formularios se ajustan al área visible sobre el teclado. `manifest.json` declara `orientation: any`; versiones CSS/JS y caché actualizadas a sw v467. Pruebas de Chromium móvil: ruleta para Gonzalo y Vale, apertura de 20 extensiones sin desborde horizontal, ronda de 100 Rioplatenses con respuesta visible, Rosco con voz y teclado simulado, Ahorcado. La app de Play Store ya instalada aún necesita un AAB nuevo porque el proyecto Android externo fijaba orientación vertical; en `/workspace/gira-y-adivina-unified` quedó preparada la fuente para respetar la rotación, sin publicar una nueva versión.
 ```

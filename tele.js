@@ -607,13 +607,75 @@
       raiz.querySelectorAll("[data-decidir]").forEach(b=>b.onclick=()=>accion("decidir",{r:ronda,id:b.dataset.decidir,...(b.dataset.p!==undefined?{p:Number(b.dataset.p)}:{v:b.dataset.v==="1"})}));
       const sig=raiz.querySelector("#tlTfSiguienteRonda");if(sig)sig.onclick=()=>accion("siguiente",{r:ronda});enlazarMenu();
     }
+
+    /* Control native tvOS Ruleta: uses the current gya/tele room, preserving old Ruleta web. */
+    function pintarRuletaNativa(c,cab,soyMando,miPid){
+      const turno=c.jug?.[c.turno],miTurno=turno?.pid===miPid;
+      const velocidad=c.fase==="tossup",bonus=c.fase==="bonus_resolver",fin=c.fase==="fin";
+      const blocked=(velocidad&&(c.bloqueados||[]).includes(miPid))||
+        (bonus&&(c.bonusListos||[]).includes(miPid));
+      const puedeResponder=(velocidad||bonus)?!blocked:
+        miTurno&&["girar","consonante","vocal"].includes(c.fase);
+      const key="ruleta-nativa-"+JSON.stringify([
+        c.fase,c.turno,c.usadas,c.jug,c.r,c.valor,c.cons,c.hayVoc,c.premio,soyMando,blocked
+      ]);
+      if(pantallaPintada!==key){
+        pantallaPintada=key;
+        const teclado=["consonante","vocal"].includes(c.fase)&&miTurno?
+          [..."ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"].filter(l=>
+            c.fase==="vocal"?"AEIOU".includes(l):!"AEIOU".includes(l)).map(l=>
+            '<button type="button" data-ruleta-letra="'+l+'" '+((c.usadas||[]).includes(l)?"disabled":"")+'>'+l+'</button>').join(""):"";
+        const marcador=(c.jug||[]).map(j=>
+          '<div style="display:flex;justify-content:space-between;gap:8px;margin:7px 0"><span>'+
+          esc(j.n)+(j.pid===turno?.pid?" 🎯":"")+'</span><b>$'+(j.tot||0)+' · Ronda $'+(j.ronda||0)+'</b></div>').join("");
+        raiz.innerHTML=cab+'<div class="tl-cel-caja"><h2>'+
+          (velocidad?"⚡ Prueba de Velocidad":bonus?"⭐ Ronda Bonus":fin?"🏆 Resultado final":"🎡 La Ruleta")+
+          '</h2><p>Ronda '+(c.r||0)+'/3 · '+esc(c.cat||"")+'</p>'+
+          '<p id="tlRvEstado"></p><p id="tlRvTimer"></p><div>'+marcador+'</div>'+
+          (miTurno&&c.fase==="girar"?
+          '<button type="button" class="tl-boton tl-oro" id="tlRvGirar" '+(c.cons===0?"disabled":"")+'>Girar la ruleta</button>'+
+          '<button type="button" class="tl-boton" id="tlRvVocal" '+((turno?.ronda||0)<250||!c.hayVoc?"disabled":"")+'>Comprar vocal · $250</button>':"")+
+          (teclado?'<h3>Elegí una '+(c.fase==="vocal"?"vocal":"consonante")+'</h3><div class="tl-cel-teclado">'+teclado+'</div>':"")+
+          (puedeResponder?'<label>¿Sabés la frase?<input id="tlRvTexto" maxlength="90" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Escribí la frase completa"></label>'+
+          '<button type="button" class="tl-boton tl-oro" id="tlRvResolver">Resolver frase</button>':"")+
+          (fin&&soyMando?'<button type="button" class="tl-boton tl-oro" id="tlRvOtra">Jugar otra vez</button>':"")+
+          (soyMando?'<button type="button" class="tl-boton tl-chico" id="tlRvMenu">Volver al menú</button>':"")+
+          '</div>';
+        const girar=raiz.querySelector("#tlRvGirar"),vocal=raiz.querySelector("#tlRvVocal");
+        if(girar)girar.onclick=()=>{girar.disabled=true;accion("girar");};
+        if(vocal)vocal.onclick=()=>{vocal.disabled=true;accion("comprar_vocal");};
+        raiz.querySelectorAll("[data-ruleta-letra]").forEach(b=>b.onclick=()=>{
+          b.disabled=true;accion("letra",{l:b.dataset.ruletaLetra});
+        });
+        const input=raiz.querySelector("#tlRvTexto"),resolver=raiz.querySelector("#tlRvResolver");
+        if(input&&resolver){
+          const enviar=()=>{const txt=limpio(input.value,90);if(!txt)return;
+            resolver.disabled=true;accion("resolver",{txt});input.value="";};
+          resolver.onclick=enviar;
+          input.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();enviar();}};
+        }
+        const otra=raiz.querySelector("#tlRvOtra");
+        if(otra)otra.onclick=()=>accion("otra");
+        const menu=raiz.querySelector("#tlRvMenu");
+        if(menu)menu.onclick=()=>{
+          if(confirm("¿Volver al menú? Se termina la partida de La Ruleta."))accion("menu");
+        };
+      }
+      const estado=raiz.querySelector("#tlRvEstado"),reloj=raiz.querySelector("#tlRvTimer");
+      if(estado)estado.textContent=c.mensaje||
+        (fin?"Partida terminada":miTurno?"Es tu turno":"Esperando a "+(turno?.n||"otro jugador"));
+      if(reloj)reloj.textContent=fin?"":(
+        (velocidad||bonus||miTurno)&&Number.isFinite(Number(c.seg))?"⏱ "+c.seg+" s":"");
+    }
+
     function pintar(){
       const m=ultimo;if(!m)return;const soyMando=m.mando===yo,c=m.cel||{},clave=JSON.stringify([soyMando,c,m.jug.length]);
-      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&clave===pantallaPintada)return;
+      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&c.pantalla!=="ruleta_nativa"&&clave===pantallaPintada)return;
       const escribiendo=document.activeElement&&document.activeElement.id==="tlTexto"?document.activeElement.value:"";
-      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle")pantallaPintada=clave;
+      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&c.pantalla!=="ruleta_nativa")pantallaPintada=clave;
       const cab=`<div class="tl-cel-cab">📺 Sala ${esc(m.cod)} · ${esc(nombre)}${soyMando?" · 🎮":""}</div>`;
       if(!m.jug.some(j=>j.pid===yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Entrando…</h2></div>`;return;}
+      if(c.pantalla==="ruleta_nativa"){pintarRuletaNativa(c,cab,soyMando,yo);return;}
       if(c.pantalla==="ruleta"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎡 La Ruleta</h2><p>La Ruleta tiene su propia entrada. Cuando la tele muestre el código nuevo, tocá acá y ponelo:</p><a class="tl-boton tl-oro" href="tv.html">Entrar a la Ruleta</a></div>`;return;}
       if(c.pantalla==="tutti"){pintarTutti(c,cab,soyMando);return;}
       if(c.pantalla==="puzzle"){pintarPuzzle(c,cab,soyMando);return;}

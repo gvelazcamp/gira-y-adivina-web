@@ -91,8 +91,11 @@ document.documentElement.classList.add("cargando");setTimeout(()=>document.docum
 <!-- Hojas de estilo sin bloquear el primer dibujo (con internet lento la
      pantalla de carga quedaba oscura y vacía hasta que bajaban). El juego
      queda tapado por la pantalla de carga hasta que termina de cargar. -->
-<link rel="preload" as="style" href="extensiones.css?v=128" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="extensiones.css?v=128"></noscript>
+<link rel="preload" as="style" href="extensiones.css?v=129" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="extensiones.css?v=129"></noscript>
+<link rel="stylesheet" href="rosco-horizontal.css?v=4">
+<link rel="stylesheet" href="ruleta-horizontal.css?v=2">
+<link rel="stylesheet" href="ahorcado-horizontal.css?v=2">
 <link rel="stylesheet" href="cuenta.css?v=1">
 <!-- mqtt.js guardado en el propio juego (lib/): si unpkg anda mal, las salas igual conectan. Si el archivo local fallara, se prueba unpkg. -->
 <script src="lib/mqtt.min.js?v=5.10.1" defer onerror="(function(){var s=document.createElement('script');s.src='https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js';document.head.appendChild(s);})()"></script>
@@ -5177,31 +5180,27 @@ function puedeVerSalaTV(){
   const nombre=String(perfil&&perfil.nombre||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
   return ["andres","romina","gonzalo","vale"].includes(nombre);
 }
-function actualizarModoAdminGonzalo(){try{document.body.classList.toggle("gonzalo-admin",esGonzalo());if(!esGonzalo()&&document.body.classList.contains("modo-horizontal"))desactivarHorizontalJuego();}catch(e){}}
-let horizontalFullscreenPropio=false;
-function desactivarHorizontalJuego(){
-  document.body.classList.remove("modo-horizontal");
-  const boton=$("bHorizontalJuego");if(boton){boton.textContent="📺 Probar en horizontal";boton.setAttribute("aria-pressed","false");}
-  try{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(e){}
-  if(horizontalFullscreenPropio&&document.fullscreenElement){document.exitFullscreen().catch(()=>{});}
-  horizontalFullscreenPropio=false;
+function actualizarModoAdminGonzalo(){try{document.body.classList.toggle("gonzalo-admin",esGonzalo());sincronizarHorizontalRuletaPorGiro();}catch(e){}}
+function sincronizarHorizontalRuletaPorGiro(){
+  // La Ruleta se adapta al giro real del celular para todos los perfiles.
+  const activo=$("juego")?.style.display==="block";
+  const apaisado=matchMedia("(orientation: landscape) and (max-width:1024px) and (max-height:600px)").matches;
+  if(activo&&apaisado)document.body.classList.add("modo-horizontal");
+  else document.body.classList.remove("modo-horizontal");
+  const boton=$("bHorizontalJuego");
+  if(boton){
+    const si=document.body.classList.contains("modo-horizontal");
+    boton.textContent=si?"📺 Salir del modo horizontal":"📺 Probar en horizontal";
+    boton.setAttribute("aria-pressed",String(si));
+  }
 }
-async function activarHorizontalJuego(){
-  if(!esGonzalo())return;
-  if(document.body.classList.contains("modo-horizontal")){desactivarHorizontalJuego();return;}
-  document.body.classList.add("modo-horizontal");
-  const boton=$("bHorizontalJuego");boton.textContent="📺 Salir del modo horizontal";boton.setAttribute("aria-pressed","true");
-  /* Android puede permitir fijar horizontal en pantalla completa; iOS requiere girar el equipo a mano. */
-  try{
-    if(!document.fullscreenElement&&document.documentElement.requestFullscreen){
-      await document.documentElement.requestFullscreen();horizontalFullscreenPropio=true;
-    }
-    if(screen.orientation&&screen.orientation.lock)await screen.orientation.lock("landscape");
-  }catch(e){/* El diseño horizontal sigue listo para cuando el celular pueda girar. */}
-}
-$("bHorizontalJuego").onclick=activarHorizontalJuego;
-new MutationObserver(()=>{if($("juego").style.display==="none"&&document.body.classList.contains("modo-horizontal"))desactivarHorizontalJuego();})
-  .observe($("juego"),{attributes:true,attributeFilter:["style"]});
+const escucharGiroRuleta=matchMedia("(orientation: landscape)");
+if(escucharGiroRuleta.addEventListener)escucharGiroRuleta.addEventListener("change",sincronizarHorizontalRuletaPorGiro);
+else if(escucharGiroRuleta.addListener)escucharGiroRuleta.addListener(sincronizarHorizontalRuletaPorGiro);
+window.addEventListener("orientationchange",sincronizarHorizontalRuletaPorGiro);
+new MutationObserver(()=>{
+  sincronizarHorizontalRuletaPorGiro();
+}).observe($("juego"),{attributes:true,attributeFilter:["style"]});
 const TIENDA_REMOVIDOS_PUBLICADOS=new Set([
   /* Cuando Gonzalo decide sacar algo definitivamente, se agrega acá y se sube a Git.
      Formato: "tipo:id", por ejemplo "avatar:avatar-34" o "rueda:rueda-candy". */
@@ -11861,7 +11860,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
   armar();
 })();
 </script>
-<script src="cuenta.js?v=2"></script>
+<script src="cuenta.js?v=5"></script>
 <script src="duelo-extensiones.js?v=17"></script>
 <script src="sopa-fugaz-datos.js?v=6"></script>
 <script src="sopa-fugaz.js?v=15"></script>
@@ -11874,7 +11873,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="frases-en-giro.js?v=11"></script>
 <script src="memoria-en-giro.js?v=9"></script>
 <script src="rosco-rioplatense-datos.js?v=5"></script>
-<script src="rosco-rioplatense.js?v=18"></script>
+<script src="rosco-rioplatense.js?v=20"></script>
 <script src="silabario-rioplatense-datos.js?v=4"></script>
 <script src="silabario-rioplatense.js?v=17"></script>
 <script src="cien-rioplatenses-datos.js?v=2"></script>
@@ -11900,7 +11899,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="canta-la-cancion.js?v=13"></script>
 <script src="tutti-frutti-datos.js?v=35"></script>
 <script src="tutti-frutti.js?v=91"></script>
-<script src="extensiones.js?v=71"></script>
+<script src="extensiones.js?v=73"></script>
 <script src="sala-tv.js?v=1"></script>
 <link rel="stylesheet" href="tele.css?v=5">
 <script src="tele.js?v=7"></script>
