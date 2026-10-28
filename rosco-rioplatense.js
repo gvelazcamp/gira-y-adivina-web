@@ -16,7 +16,7 @@ const RoscoRioplatense=(()=>{
   const ARTE=n=>"assets/rosco/"+n+".webp",ico=n=>'<img class="rr-ico" src="'+ARTE(n)+'" alt="" draggable="false">';
   function iniciarMusicaJuego(){
     /* En el piloto de Giro no reproducir la música del Rosco para Gonzalo. */
-    if(pruebaG)return;
+    if(pruebaG&&window.GIRO_ROSCO_PILOTO!==false)return;
     try{
       if(typeof sonidoPermitido==="function"&&!sonidoPermitido())return;
       if(!audioMusica){audioMusica=new Audio("assets/audio/rosco-rioplatense-musica.mp3");audioMusica.loop=true;audioMusica.volume=.28;}
