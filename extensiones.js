@@ -108,6 +108,8 @@ const Fichas=(()=>{
       return !TESTERS_LIBRES.has(nombre);
     }catch(e){return true;}
   };
+  // Gonzalo conserva el indicador de tres rayitos, pero no gasta fichas ni espera recargas.
+  const creador=()=>{try{return typeof recursosInfinitosGonzalo==="function"&&recursosInfinitosGonzalo();}catch(e){return false;}};
   /* Con el Pase de extensiones (suscripción de Google Play, en index.html) no se gastan fichas. */
   const conPase=()=>{try{return typeof window.paseExtActivo==="function"&&window.paseExtActivo();}catch(e){return false;}};
   const cobra=id=>activo()&&JUEGOS.includes(id)&&!conPase();
@@ -126,7 +128,7 @@ const Fichas=(()=>{
   /* Tutti Frutti: 1 ficha por partida contra la máquina (3 rondas = 1 partida; con amigos no gasta).
      Puzzle: 1 ficha por cada puzzle nuevo que empezás solo (seguir uno guardado o armar con un amigo no gasta). */
   function usar(id,reintentar){
-    if(!cobra(id))return true;
+    if(!cobra(id)||creador())return true;
     const d=de(id);
     if(d.n>0){d.n--;if(!d.prox)d.prox=Date.now()+MS;guardar();pintarChip();
       const ch=document.getElementById("extFichas");if(ch){ch.classList.remove("gasto");void ch.offsetWidth;ch.classList.add("gasto");}
@@ -166,12 +168,13 @@ const Fichas=(()=>{
   function pintarChip(){
     const ch=document.getElementById("extFichas");if(!ch)return;
     if(!cobra(vistaActual)){ch.hidden=true;return;}
+    if(creador()){ch.hidden=false;ch.innerHTML='<span>⚡⚡⚡</span>';return;}
     const d=de(vistaActual),ms=falta(vistaActual);ch.hidden=false;
     ch.innerHTML='<span>'+"⚡".repeat(d.n)+'<i>'+"⚡".repeat(MAX-d.n)+'</i></span>'+(ms?'<small>+1 en '+reloj(ms)+'</small>':"");
   }
-  function enJuego(id){vistaActual=id||"";clearInterval(timerChip);pintarChip();if(cobra(vistaActual))timerChip=setInterval(pintarChip,1000);}
+  function enJuego(id){vistaActual=id||"";clearInterval(timerChip);pintarChip();if(cobra(vistaActual)&&!creador())timerChip=setInterval(pintarChip,1000);}
   /* Texto para la tarjeta del juego en la lista de Extensiones. */
-  function etiqueta(id){if(!cobra(id))return"";const d=de(id),ms=falta(id);return d.n>0?"⚡".repeat(d.n)+(d.n<MAX?' · +1 en '+reloj(ms):""):"⚡ 0 · vuelve en "+reloj(ms);}
+  function etiqueta(id){if(!cobra(id))return"";if(creador())return"⚡⚡⚡";const d=de(id),ms=falta(id);return d.n>0?"⚡".repeat(d.n)+(d.n<MAX?' · +1 en '+reloj(ms):""):"⚡ 0 · vuelve en "+reloj(ms);}
   return{usar,enJuego,etiqueta,cobra,de,libre:()=>!activo()};
 })();
 window.Fichas=Fichas;

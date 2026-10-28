@@ -1761,3 +1761,7 @@ Fecha: 28/10/2026 — Seguimiento del giro horizontal web: auditadas las 20 exte
 ```text
 Fecha: 28/10/2026 — Corrección urgente: la actualización web anterior había eliminado de Extensiones la petición de pantalla completa y screen.orientation.lock("landscape") al abrir un juego con el perfil Gonzalo. La captura de la app instalada mostraba el control «Horizontal: sí» de la implementación anterior. Se restauró el control y la petición de orientación para todos los juegos de Extensiones de Gonzalo, con liberación al salir. La Ruleta principal recuperó la petición al iniciar partida y su control manual de respaldo. No se modificó Android ni Play Store. Caché sw v469.
 ```
+
+```text
+Fecha: 28/10/2026 — Fichas de Extensiones para el creador Gonzalo: los tres rayitos siguen visibles en el encabezado y las tarjetas, pero no se consumen ni muestran espera. Se puede iniciar un juego aunque el almacenamiento previo tenga cero fichas. Los demás perfiles mantienen sus reglas. extensiones.js v76; sw v470.
+```
