@@ -91,8 +91,8 @@ document.documentElement.classList.add("cargando");setTimeout(()=>document.docum
 <!-- Hojas de estilo sin bloquear el primer dibujo (con internet lento la
      pantalla de carga quedaba oscura y vacía hasta que bajaban). El juego
      queda tapado por la pantalla de carga hasta que termina de cargar. -->
-<link rel="preload" as="style" href="extensiones.css?v=131" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="extensiones.css?v=131"></noscript>
+<link rel="preload" as="style" href="extensiones.css?v=132" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="extensiones.css?v=132"></noscript>
 <link rel="stylesheet" href="rosco-horizontal.css?v=8">
 <link rel="stylesheet" href="ruleta-horizontal.css?v=2">
 <link rel="stylesheet" href="ahorcado-horizontal.css?v=2">
@@ -852,7 +852,7 @@ p.sub{margin:14px 0 24px;color:#C9B8DE}
 .setup-ola .ola-blanca{margin-top:-28px}
 #codigoInput{text-transform:uppercase;letter-spacing:.2em;text-align:center}
 
-#juego{display:none;max-width:1060px;margin:0 auto}
+#juego{display:none;max-width:1060px;margin:0 auto;position:relative}
 .juego-abandonar{display:block;margin:10px auto 0;background:transparent;color:#B49FCE;
   border:1px solid #FFFFFF2A;border-radius:99px;padding:7px 16px;font-size:.75rem;font-weight:700}
 .juego-abandonar:active{opacity:.7}
@@ -1281,6 +1281,13 @@ body.tvhost #juego .ficha{width:clamp(30px,4.5vw,52px);height:clamp(42px,6vw,66p
   .reacciones{gap:5px}
   .reacciones button{width:34px;height:34px;font-size:1.05rem}
 }
+
+/* Solo Gonzalo: acceso pequeño y discreto a modo TV si Android no gira solo. */
+#bTVRuleta{display:none;position:absolute;right:7px;top:3px;z-index:3;width:35px;height:28px;
+ align-items:center;justify-content:center;border:1px solid #776C8570;border-radius:9px;
+ background:#21162DBB;color:#DDCFEC;font:800 10px system-ui,sans-serif;opacity:.8;padding:0}
+body.gonzalo-admin #bTVRuleta{display:flex}
+#bTVRuleta[aria-pressed="true"]{border-color:#37D6C0;color:#37D6C0;opacity:1}
 /* La partida se acomoda sola al girar el celular, sin activar un botón. */
 #bHorizontalJuego{display:none;margin:0 auto 8px;padding:7px 12px;border:1px solid #37D6C088;
  border-radius:99px;background:#0B3B52;color:var(--crema);font-size:.78rem;font-weight:800}
@@ -2250,7 +2257,7 @@ body:not(.tvhost) #horizontalAyuda{display:none}
     <div id="jgTorneo" style="display:none">🏆 Torneo · Racha 0</div>
   </div>
   <div class="serie" id="serie"></div>
-  
+  <button id="bTVRuleta" type="button" aria-pressed="false" aria-label="Modo TV, horizontal opcional" title="Modo TV">TV</button>
   <p id="horizontalAyuda">Desbloqueá la rotación y girá el celular para verlo ancho en la tele.</p>
   <div class="marcador-wrap">
     <button type="button" class="marcador-flecha prev" id="marcadorPrev" aria-label="Ver jugador anterior">‹</button>
@@ -5180,14 +5187,81 @@ function puedeVerSalaTV(){
   const nombre=String(perfil&&perfil.nombre||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
   return ["andres","romina","gonzalo","vale"].includes(nombre);
 }
-function actualizarModoAdminGonzalo(){try{document.body.classList.toggle("gonzalo-admin",esGonzalo());sincronizarHorizontalRuletaPorGiro();}catch(e){}}
+
+/* TV discreto y OPCIONAL para Gonzalo.
+   Por defecto no se toca la orientación. Si Android no rota solo, el botón TV
+   solicita horizontal desde un toque; salir de cada juego libera el bloqueo. */
+const GyaTV=(()=>{
+  let dueno=null,fullscreenPropio=false,bloqueada=false,token=0;
+  function pintar(){
+    for(const [id,tipo] of [["bTVRuleta","ruleta"],["extTV","ext"]]){
+      const b=document.getElementById(id);
+      if(b){const activo=dueno===tipo;b.setAttribute("aria-pressed",String(activo));
+        b.title=activo?"Salir del modo TV":"Modo TV (horizontal opcional)";
+      }
+    }
+  }
+  function soltar(tipo){
+    if(tipo&&dueno!==tipo)return;
+    token++;
+    const desbloquear=bloqueada,salirPantalla=fullscreenPropio;
+    dueno=null;bloqueada=false;fullscreenPropio=false;
+    if(desbloquear)try{screen.orientation?.unlock?.();}catch(e){}
+    if(salirPantalla&&document.fullscreenElement)
+      try{document.exitFullscreen().catch(()=>{});}catch(e){}
+    pintar();
+  }
+  async function alternar(tipo){
+    if(!esGonzalo())return;
+    if(dueno===tipo){soltar(tipo);return;}
+    if(dueno)soltar();
+    const sesion=++token;dueno=tipo;pintar();
+    let creada=false,rotada=false;
+    try{
+      /* El permiso de pantalla completa solo se pide al tocar TV; jamás al
+         entrar en una partida ni al girar físicamente el celular. */
+      if(!document.fullscreenElement&&!matchMedia("(display-mode: fullscreen)").matches&&document.documentElement.requestFullscreen){
+        await document.documentElement.requestFullscreen({navigationUI:"hide"});
+        creada=true;
+      }
+      if(sesion===token&&screen.orientation?.lock){
+        await screen.orientation.lock("landscape");
+        rotada=true;
+      }
+    }catch(e){}
+    if(sesion!==token){
+      if(rotada)try{screen.orientation?.unlock?.();}catch(e){}
+      if(creada&&document.fullscreenElement)try{document.exitFullscreen().catch(()=>{});}catch(e){}
+      return;
+    }
+    if(rotada){
+      bloqueada=true;fullscreenPropio=creada;pintar();
+      sincronizarHorizontalRuletaPorGiro();
+    }else{
+      if(creada&&document.fullscreenElement)try{document.exitFullscreen().catch(()=>{});}catch(e){}
+      dueno=null;pintar();
+      if(typeof mostrarToast==="function")mostrarToast("TV","Activá rotación automática y girá el celular.");
+    }
+  }
+  document.addEventListener("fullscreenchange",()=>{
+    if(dueno&&bloqueada&&fullscreenPropio&&!document.fullscreenElement)soltar();
+  });
+  return{alternar,soltar,activo:tipo=>dueno===tipo};
+})();
+window.GyaTV=GyaTV;
+
+function actualizarModoAdminGonzalo(){try{document.body.classList.toggle("gonzalo-admin",esGonzalo());if(!esGonzalo())GyaTV.soltar();sincronizarHorizontalRuletaPorGiro();}catch(e){}}
 /* La Ruleta solo adopta el diseño horizontal si el celular está realmente
    apaisado. No solicitar pantalla completa ni bloquear su orientación. */
 function sincronizarHorizontalRuletaPorGiro(){
   const activo=$("juego")?.style.display==="block";
+  if(!activo&&GyaTV.activo("ruleta"))GyaTV.soltar("ruleta");
   const apaisado=matchMedia("(orientation: landscape) and (max-width:1024px) and (max-height:600px)").matches;
   document.body.classList.toggle("modo-horizontal",activo&&apaisado);
+  const boton=$("bTVRuleta");
+  if(boton)boton.setAttribute("aria-pressed",String(GyaTV.activo("ruleta")));
 }
+$("bTVRuleta").onclick=()=>GyaTV.alternar("ruleta");
 const escucharGiroRuleta=matchMedia("(orientation: landscape)");
 if(escucharGiroRuleta.addEventListener)escucharGiroRuleta.addEventListener("change",sincronizarHorizontalRuletaPorGiro);
 else if(escucharGiroRuleta.addListener)escucharGiroRuleta.addListener(sincronizarHorizontalRuletaPorGiro);
@@ -11892,7 +11966,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="canta-la-cancion.js?v=13"></script>
 <script src="tutti-frutti-datos.js?v=35"></script>
 <script src="tutti-frutti.js?v=91"></script>
-<script src="extensiones.js?v=77"></script>
+<script src="extensiones.js?v=78"></script>
 <script src="sala-tv.js?v=1"></script>
 <link rel="stylesheet" href="tele.css?v=5">
 <script src="tele.js?v=7"></script>

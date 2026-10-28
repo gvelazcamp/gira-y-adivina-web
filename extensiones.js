@@ -180,9 +180,15 @@ const Fichas=(()=>{
 window.Fichas=Fichas;
 const Extensiones=(()=>{
   let shell=null,contenido=null,vista="";
-  /* La orientación de cada extensión la decide exclusivamente el giro real
-     del dispositivo y sus @media (orientation:landscape). Ningún juego
-     solicita fullscreen ni bloquea Android al abrirse. */
+  /* Por defecto cada extensión responde al giro físico. El botón TV solo
+     existe para Gonzalo y puede solicitar landscape si la app no rota sola. */
+  const modoGonzalo=()=>typeof esGonzalo==="function"&&esGonzalo();
+  function pintarTV(){
+    const boton=shell?.querySelector("#extTV");if(!boton)return;
+    boton.hidden=!modoGonzalo()||vista==="lobby";
+    boton.setAttribute("aria-pressed",String(Boolean(window.GyaTV?.activo("ext"))));
+  }
+  function salirTV(){window.GyaTV?.soltar("ext");pintarTV();}
   function ajustarTeclado(){
     if(!shell||shell.hidden||shell.classList.contains("rr-abierta"))return;
     const campo=document.activeElement;
@@ -203,7 +209,7 @@ const Extensiones=(()=>{
   function asegurar(){
     if(shell)return;
     shell=document.createElement("section");shell.id="extShell";shell.className="ext-shell";shell.hidden=true;
-    shell.innerHTML='<div class="ext-wrap"><header class="ext-header"><button class="ext-atras" id="extAtras" type="button" aria-label="Volver">‹</button><strong id="extTitulo">Extensiones</strong><span class="ext-fichas" id="extFichas" hidden></span><button class="ext-cerrar" id="extCerrar" type="button" aria-label="Cerrar">✕</button></header><div id="extContenido"></div></div>';
+    shell.innerHTML='<div class="ext-wrap"><header class="ext-header"><button class="ext-atras" id="extAtras" type="button" aria-label="Volver">‹</button><strong id="extTitulo">Extensiones</strong><span class="ext-fichas" id="extFichas" hidden></span><button class="ext-tv-mini" id="extTV" type="button" aria-label="Modo TV, horizontal opcional" title="Modo TV" aria-pressed="false" hidden>TV</button><button class="ext-cerrar" id="extCerrar" type="button" aria-label="Cerrar">✕</button></header><div id="extContenido"></div></div>';
     document.body.appendChild(shell);
     contenido=shell.querySelector("#extContenido");
     /* Todas las ventanitas de inicio/fin de los juegos llevan un "Volver"
@@ -218,6 +224,7 @@ const Extensiones=(()=>{
     }).observe(contenido,{childList:true,subtree:true});
     shell.querySelector("#extAtras").onclick=()=>vista==="lobby"?cerrar():abrirLobby();
     shell.querySelector("#extCerrar").onclick=cerrar;
+    shell.querySelector("#extTV").onclick=()=>window.GyaTV?.alternar("ext");
     shell.addEventListener("focusin",()=>{ajustarTeclado();setTimeout(ajustarTeclado,350);});
     shell.addEventListener("focusout",()=>setTimeout(ajustarTeclado,150));
     window.visualViewport?.addEventListener("resize",ajustarTeclado);
@@ -258,7 +265,7 @@ const Extensiones=(()=>{
     precargarIconos();
     if(!EXTENSIONES_HABILITADAS)return;
     salirJuego();
-    vista="lobby";mostrar();Fichas.enJuego("");
+    vista="lobby";salirTV();mostrar();pintarTV();Fichas.enJuego("");
     shell.querySelector("#extTitulo").textContent="Jugá más juegos de Girá y Adiviná";
     contenido.innerHTML='<div class="ext-hero"><span>✦ MÁS JUEGOS, MÁS DESAFÍOS</span><h2>Extensiones</h2><p>Elegí un juego del universo Girá y Adiviná. Jugá gratis, sin gastar vidas ni monedas.</p></div><h3 class="ext-seccion">🎮 Más juegos</h3><div class="ext-lista" id="extListaResto"></div><h3 class="ext-seccion">🎉 Juegos de previa</h3><div class="ext-lista" id="extListaPrevia"></div>';
     /* "Juegos de previa": los de juntarse en grupo (grupo:"previa") van en su propia sección. */
@@ -283,13 +290,13 @@ const Extensiones=(()=>{
   function abrirJuego(id){
     if(!EXTENSIONES_HABILITADAS)return;
     const ext=EXTENSIONES.find(x=>x.id===id&&x.estado==="disponible"&&extensionVisible(x));if(!ext)return;
-    mostrar();vista=id;contenido.replaceChildren();Fichas.enJuego(id);
+    mostrar();vista=id;contenido.replaceChildren();Fichas.enJuego(id);pintarTV();
     shell.querySelector("#extTitulo").textContent=ext.nombre;
     if(typeof window.anotarUltimoJuego==="function")window.anotarUltimoJuego(ext.nombre);
     ext.abrir(contenido);shell.scrollTop=0;
   }
   function salirJuego(){for(const juego of [window.SopaFugaz,window.RuedaDeLetras,window.PalabraSecreta,window.FrasesEnGiro,window.MemoriaEnGiro,window.RoscoRioplatense,window.SilabarioRioplatense,window.CienRioplatenses,window.AhorcadoRioplatense,window.ContraRelojRioplatense,window.MoonTap,window.Puzzle,window.QueNumeroSoy,window.QuienSoy,window.Bomba,window.Impostor,window.Mimica,window.CantaLaCancion,window.TuttiFrutti])if(juego)juego.salir();}
-  function cerrar(){if(!shell)return;salirJuego();Fichas.enJuego("");vista="lobby";shell.hidden=true;shell.classList.remove("ext-teclado-abierto");shell.style.top="";shell.style.height="";shell.style.bottom="";document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
+  function cerrar(){if(!shell)return;salirJuego();Fichas.enJuego("");vista="lobby";salirTV();shell.hidden=true;shell.classList.remove("ext-teclado-abierto");shell.style.top="";shell.style.height="";shell.style.bottom="";document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
   return{abrirLobby,abrirJuego,cerrar};
 })();
 window.Extensiones=Extensiones;

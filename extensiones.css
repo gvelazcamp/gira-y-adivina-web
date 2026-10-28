@@ -789,6 +789,16 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .ext-fichas span{font-size:1rem;letter-spacing:1px;filter:drop-shadow(0 0 4px #F5B30188)}.ext-fichas span i{font-style:normal;opacity:.22;filter:grayscale(1)}
 .ext-fichas small{font-size:.66rem;font-weight:800;color:#37D6C0}
 .ext-header .ext-fichas+.ext-cerrar{margin-left:8px}
+
+/* Botón pequeño para TV, visible solamente dentro de las extensiones de Gonzalo. */
+.ext-header .ext-tv-mini{
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  width:35px;height:28px;min-height:28px;padding:0;margin-left:5px;
+  border-radius:9px;border:1px solid #776C8570;background:#21162DBB;
+  color:#DDCFEC;font:800 10px system-ui,sans-serif;opacity:.8;
+}
+.ext-header .ext-tv-mini[hidden]{display:none!important}
+.ext-header .ext-tv-mini[aria-pressed="true"]{border-color:#37D6C0;color:#37D6C0;opacity:1}
 .ext-horizontal-btn{flex:0 0 auto;border:1px solid #37D6C099;border-radius:12px;background:#19465C;color:#F6EFE2;font:800 .68rem Outfit,system-ui,sans-serif;padding:7px 9px;white-space:nowrap;min-height:34px}
 .ext-horizontal-btn[hidden]{display:none!important}
 .ext-horizontal-btn[aria-pressed="true"]{background:#0B5650;color:#D8FFF4}
