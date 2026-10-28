@@ -329,7 +329,7 @@ const Extensiones=(()=>{
       const txt=document.createElement("span");txt.className="ext-tarjeta-texto";
       const nombre=document.createElement("b");nombre.textContent=ext.nombre;
       const desc=document.createElement("small");desc.textContent=ext.descripcion;
-      const record=document.createElement("em");record.textContent=ext.estado==="disponible"?"Mejor: "+ext.record():"Próximamente";
+      const record=document.createElement("em");record.textContent=ext.id==="duelo-conocimiento"?"BOT · Online · Voz":ext.estado==="disponible"?"Mejor: "+ext.record():"Próximamente";
       txt.append(nombre,desc,record);b.append(img,txt);
       if(Fichas.cobra(ext.id)){const f=document.createElement("span");f.className="ext-fichas-tarjeta";f.textContent=Fichas.etiqueta(ext.id);b.appendChild(f);}
       if(ext.insignia){const ins=document.createElement("span");ins.className="ext-insignia";ins.textContent=ext.insignia;b.appendChild(ins);}
