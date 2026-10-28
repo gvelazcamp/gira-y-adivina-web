@@ -1,5 +1,5 @@
-/* Giro — etapa 3: planos cinematográficos solo para Gonzalo.
-   Ejecutar desde la raíz: node tests/giro-rosco-cine.cjs */
+/* Giro — apertura corregida: Giro y atril siempre juntos y quietos.
+   Ejecutar: node tests/giro-rosco-cine.cjs */
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -11,90 +11,83 @@ const rosco=fs.readFileSync(path.join(root,"rosco-rioplatense.js"),"utf8");
 const index=fs.readFileSync(path.join(root,"index.html"),"utf8");
 const sw=fs.readFileSync(path.join(root,"sw.js"),"utf8");
 new Function(src);new Function(rosco);new Function(sw);
-assert(!/grp-labios|bocas-v2|fonemaAIndice|iniciarLabios/.test(src+css),"sin boca");
+assert(src.includes('const PLANO_ESTABLE=BASE+"escenas/Giro_presentacion_plano_general_16x9.png"'));
+assert(fs.existsSync(path.join(root,"presentacion-y-locucion-extensiones/Giro/escenas/Giro_presentacion_plano_general_16x9.png")));
+assert(!src.includes("Giro_presentacion_plano_medio_16x9.png"),"no cambiar ilustración");
+assert(!src.includes("Giro_presentacion_primer_plano_16x9.png"),"no cambiar ilustración");
+assert(!/grp-labios|bocas-v2|iniciarLabios/.test(src+css),"sin boca");
 assert(!src.includes("new Audio("),"sin música");
-assert(!src.includes("grp-atril"),"sin atril adicional");
-assert(src.includes('const ESCENA=BASE+"estudios/Giro_estudio_rosco_16x9.png"'),"estudio original");
-assert(css.includes(".grp-cine-plano")&&css.includes("@keyframes grp-salida"),"transiciones CSS");
-assert(index.includes("extensiones.js?v=88"),"selector Vale conservado");
-assert(index.includes("puedeModoTVExtensiones()"),"selector Vale autorizado");
-assert(rosco.includes("window.GiroRoscoPiloto.mostrarInicio()"),"acceso original");
-assert(rosco.includes("window.GiroRoscoPiloto.mostrarFinal({aciertos,total:items.length,puntos})"),"resultados originales");
-for(const p of ["Giro_presentacion_plano_general_16x9.png",
-                "Giro_presentacion_plano_medio_16x9.png",
-                "Giro_presentacion_primer_plano_16x9.png"]){
-  assert(src.includes(p),"referencia de plano "+p);
-  assert(fs.existsSync(path.join(root,"presentacion-y-locucion-extensiones/Giro/escenas",p)),
-    "archivo aprobado: "+p);
-}
-function nodo(tag){
-  const clases=new Set(),eventos={};
+assert(!src.includes("grp-atril"),"sin segundo atril");
+assert(css.includes('.grp-escenario-estable[data-plano="medio"] .grp-plano-estable{transform:scale(1.025)}'));
+assert(css.includes('.grp-escenario-estable[data-plano="cercano"] .grp-plano-estable{transform:scale(1.045)}'));
+assert(index.includes("extensiones.js?v=88")&&index.includes("puedeModoTVExtensiones()"),"Vale conserva TV");
+assert(index.includes("rosco-rioplatense.js?v=32"));
+assert(sw.includes("gya-cache-v501"));
+assert(rosco.includes("window.GiroRoscoPiloto.mostrarInicio()"));
+assert(rosco.includes("window.GiroRoscoPiloto.mostrarFinal({aciertos,total:items.length,puntos})"));
+
+function el(tag){
+  const handlers={},classes=new Set();
   return{tag,children:[],className:"",dataset:{},attributes:{},isConnected:true,
-    classList:{add:c=>clases.add(c),remove:c=>clases.delete(c),contains:c=>clases.has(c),
-      toggle(c,forzar){const valor=forzar===undefined?!clases.has(c):!!forzar;
-        if(valor)clases.add(c);else clases.delete(c);return valor;}},
-    append(...xs){this.children.push(...xs);},appendChild(x){this.children.push(x);return x;},
-    setAttribute(k,v){this.attributes[k]=v;},addEventListener(k,fn){eventos[k]=fn;},
-    disparar(k){eventos[k]?.();},focus(){},remove(){this.removed=true;},
-    querySelectorAll(){return[];},decode(){return Promise.resolve()}
+    classList:{add:x=>classes.add(x),remove:x=>classes.delete(x),contains:x=>classes.has(x)},
+    append(...xs){this.children.push(...xs);},
+    appendChild(x){this.children.push(x);return x;},
+    setAttribute(k,v){this.attributes[k]=v;},
+    addEventListener(k,fn){handlers[k]=fn;},
+    click(){handlers.click?.();},focus(){},remove(){this.removed=true;},
+    querySelectorAll(){return [];}
   };
 }
-function encontrar(n,clase){
-  if(n.className===clase)return n;
-  for(const c of n.children||[]){const r=encontrar(c,clase);if(r)return r;}
+function find(n,cls){
+  if(n.className===cls)return n;
+  for(const child of n.children||[]){const x=find(child,cls);if(x)return x;}
   return null;
 }
-function entorno(gonzalo,reducido=false){
-  const body=nodo("body"),intervalos=new Map(),demoras=new Map();let seq=0,voz=null;
-  const document={body,hidden:false,activeElement:nodo("button"),createElement:nodo,
-    addEventListener(){},removeEventListener(){}};
-  const window={speechSynthesis:{cancel(){},getVoices(){return[{lang:"es-UY"}]},speak(u){voz=u;}}};
-  vm.runInNewContext(src,{window,document,esGonzalo:()=>gonzalo,
-    matchMedia:()=>({matches:reducido}),SpeechSynthesisUtterance:function(texto){this.text=texto;},
-    setInterval:fn=>{const id=++seq;intervalos.set(id,fn);return id;},
-    clearInterval:id=>intervalos.delete(id),
-    setTimeout:fn=>{const id=++seq;demoras.set(id,fn);return id;},
-    clearTimeout:id=>demoras.delete(id),requestAnimationFrame:fn=>fn()
+function testEnvironment(user,reduced=false){
+  const body=el("body"),intervals=new Map(),timeouts=new Map();
+  let next=0,voice=null;
+  const document={body,hidden:false,activeElement:el("button"),createElement:el,addEventListener(){},removeEventListener(){}};
+  const window={speechSynthesis:{cancel(){},getVoices(){return[{lang:"es-UY"}]},speak(u){voice=u;}}};
+  vm.runInNewContext(src,{window,document,esGonzalo:()=>user,
+    matchMedia:()=>({matches:reduced}),
+    setInterval:cb=>{const id=++next;intervals.set(id,cb);return id;},
+    clearInterval:id=>intervals.delete(id),
+    setTimeout:cb=>{const id=++next;timeouts.set(id,cb);return id;},
+    clearTimeout:id=>timeouts.delete(id),
+    SpeechSynthesisUtterance:function(t){this.text=t;}
   },{filename:"giro-rosco-piloto.js"});
-  return{api:window.GiroRoscoPiloto,body,document,intervalos,demoras,voz:()=>voz,
-    avanzarTiempo(){for(const fn of [...intervalos.values()])fn();},
-    terminarSalida(){for(const fn of [...demoras.values()])fn();}};
+  return{body,document,intervals,timeouts,api:window.GiroRoscoPiloto,voice:()=>voice,
+    tick(){for(const f of [...intervals.values()])f();},
+    finish(){for(const f of [...timeouts.values()])f();}};
 }
-(async()=>{
-  const otro=entorno(false);
-  assert.equal(otro.api.mostrarInicio(),false,"otro perfil no abre");
-  assert.equal(otro.body.children.length,0);
-  const g=entorno(true);
-  assert.equal(g.api.mostrarInicio(),true);
-  const capa=g.body.children[0],cine=encontrar(capa,"grp-cine"),
-    escenario=encontrar(capa,"grp-escenario"),voz=encontrar(capa,"grp-boton grp-voz"),
-    entrar=encontrar(capa,"grp-boton grp-accion");
-  assert(cine&&escenario&&voz&&entrar);
-  assert.equal(cine.children.length,3,"tres planos oficiales");
-  assert(cine.children[0].classList.contains("grp-cine-visible"),"general inicial");
-  assert(!encontrar(capa,"grp-atril"),"sin segundo atril");
-  assert.equal(g.intervalos.size,1,"un solo ciclo");
-  g.avanzarTiempo();
-  assert(cine.children[1].classList.contains("grp-cine-visible"),"plano medio");
-  g.avanzarTiempo();
-  assert(cine.children[2].classList.contains("grp-cine-visible"),"primer plano");
-  g.avanzarTiempo();
-  assert(cine.classList.contains("grp-cine-fuera"),"regresa al estudio original");
-  voz.disparar("click");
-  assert(g.voz()?.text.includes("Rosco"),"voz sigue disponible");
-  assert(cine.children[0].classList.contains("grp-cine-visible"),"repite planos con locución");
-  assert.equal(g.intervalos.size,1,"sin duplicar intervalo");
-  entrar.disparar("click");
-  assert(capa.classList.contains("grp-saliendo"),"transición de salida");
-  assert.equal(g.demoras.size,1,"solo una salida");
-  g.terminarSalida();
-  assert(capa.removed,"overlay retirado");
-  assert.equal(g.intervalos.size,0,"intervalos limpiados");
-  const reducido=entorno(true,true);
-  assert.equal(reducido.api.mostrarInicio(),true);
-  assert(encontrar(reducido.body,"grp-cine").classList.contains("grp-cine-fuera"),
-    "movimiento reducido respeta preferencia");
-  assert.equal(reducido.intervalos.size,0);
-  reducido.api.cerrar();
-  console.log("PASS: planos, voz, salida, timers, usuario Gonzalo y selector Vale");
-})().catch(e=>{console.error(e);process.exitCode=1;});
+const other=testEnvironment(false);
+assert.equal(other.api.mostrarInicio(),false);
+assert.equal(other.body.children.length,0);
+const g=testEnvironment(true);
+assert.equal(g.api.mostrarInicio(),true);
+const overlay=g.body.children[0],stage=find(overlay,"grp-escenario"),photo=find(overlay,"grp-plano-estable");
+assert(stage&&photo,"solo un escenario oficial");
+assert(photo.src.endsWith("Giro_presentacion_plano_general_16x9.png"));
+assert(!find(overlay,"grp-actor"),"no personaje añadido en la apertura");
+assert(!find(overlay,"grp-atril"),"no atril duplicado");
+assert.equal(stage.dataset.plano,"general");
+assert.equal(g.intervals.size,1);
+g.tick();assert.equal(stage.dataset.plano,"medio");
+g.tick();assert.equal(stage.dataset.plano,"cercano");
+g.tick();assert.equal(stage.dataset.plano,"general");
+assert.equal(g.intervals.size,0,"la cámara se detiene, no repite");
+find(overlay,"grp-boton grp-voz").click();
+assert(g.voice()?.text.includes("Rosco"),"conserva locución");
+assert.equal(g.intervals.size,1,"un solo temporizador");
+g.document.hidden=true;
+const last=stage.dataset.plano;g.tick();
+assert.equal(stage.dataset.plano,last,"no avanzar con pestaña oculta");
+find(overlay,"grp-boton grp-accion").click();
+assert.equal(g.timeouts.size,1);
+g.finish();assert(overlay.removed);
+assert.equal(g.intervals.size,0);
+const reduced=testEnvironment(true,true);
+assert.equal(reduced.api.mostrarInicio(),true);
+assert.equal(reduced.intervals.size,0,"respeta reducción de movimiento");
+reduced.api.cerrar();
+console.log("PASS: Giro y atril unidos; zoom leve único, voz, Vale, usuario Gonzalo, sin boca/música");

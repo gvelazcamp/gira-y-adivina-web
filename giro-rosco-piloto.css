@@ -26,15 +26,17 @@
 .grp-atril{position:absolute;z-index:3;width:37%;height:39%;object-fit:contain;object-position:center bottom;
   bottom:-2%;left:50%;transform:translateX(-50%);pointer-events:none}
 .grp-efecto{position:absolute;z-index:4;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;opacity:.72}
-/* Cortes cinematográficos: tres planos 16:9 oficiales sobre el estudio intacto. */
-.grp-cine{position:absolute;inset:0;z-index:3;opacity:1;pointer-events:none;
-  transition:opacity .85s ease}
-.grp-cine.grp-cine-fuera{opacity:0}
-.grp-cine-plano{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  opacity:0;transform:scale(1.015);
-  transition:opacity .85s ease,transform 2.6s ease-out}
-.grp-cine-plano.grp-cine-visible{opacity:1;transform:scale(1.035)}
-.grp-cine-plano.grp-cine-error{visibility:hidden}
+/* Etapa 3 corregida: Giro y atril permanecen dentro de UN MISMO plano.
+   Solo se mueve la cámara unos puntos porcentuales; no hay recortes ni cambios
+   de imagen que puedan desalinear al conductor. */
+.grp-plano-estable{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center center;
+  transform:scale(1);transform-origin:50% 50%;
+  transition:transform 2.35s ease-in-out;pointer-events:none;
+}
+.grp-escenario-estable[data-plano="medio"] .grp-plano-estable{transform:scale(1.025)}
+.grp-escenario-estable[data-plano="cercano"] .grp-plano-estable{transform:scale(1.045)}
 .grp-overlay.grp-saliendo{animation:grp-salida .46s ease-in both;pointer-events:none}
 @keyframes grp-salida{from{opacity:1}to{opacity:0}}
 
@@ -72,4 +74,4 @@
  .grp-panel h2{font-size:22px}
  .grp-aviso{margin-top:5px}
 }
-@media(prefers-reduced-motion:reduce){.grp-overlay *{animation:none!important;transition:none!important;will-change:auto!important}}
+@media(prefers-reduced-motion:reduce){.grp-overlay *{animation:none!important;transition:none!important;will-change:auto!important}.grp-plano-estable{transform:none!important}}
