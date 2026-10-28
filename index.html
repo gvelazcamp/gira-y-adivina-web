@@ -5190,6 +5190,12 @@ $("bRanking").onclick=rkAbrir;
 /* Social muestra el avance por los mapas del juego y las partidas activas.
    Las ciudades son destinos del juego, nunca ubicaciones reales. */
 function esGonzalo(){try{return(perfil&&perfil.nombre||"").trim().toLowerCase()==="gonzalo";}catch(e){return false;}}
+/* Solo el selector Celular/TV de Extensiones, no las funciones de administrador
+   ni el botón de TV de la Ruleta principal. */
+function puedeModoTVExtensiones(){
+  try{return ["gonzalo","vale"].includes(String(perfil&&perfil.nombre||"").trim().toLowerCase());}
+  catch(e){return false;}
+}
 function puedeVerSalaTV(){
   const nombre=String(perfil&&perfil.nombre||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
   return ["andres","romina","gonzalo","vale"].includes(nombre);
@@ -5219,7 +5225,7 @@ const GyaTV=(()=>{
     pintar();
   }
   async function alternar(tipo){
-    if(!esGonzalo())return;
+    if(tipo==="ext"?!puedeModoTVExtensiones():!esGonzalo())return;
     if(dueno===tipo){soltar(tipo);return;}
     if(dueno)soltar();
     const sesion=++token;dueno=tipo;pintar();
@@ -5257,7 +5263,7 @@ const GyaTV=(()=>{
 })();
 window.GyaTV=GyaTV;
 
-function actualizarModoAdminGonzalo(){try{document.body.classList.toggle("gonzalo-admin",esGonzalo());if(!esGonzalo())GyaTV.soltar();sincronizarHorizontalRuletaPorGiro();}catch(e){}}
+function actualizarModoAdminGonzalo(){try{document.body.classList.toggle("gonzalo-admin",esGonzalo());if(!esGonzalo()&&(!GyaTV.activo("ext")||!puedeModoTVExtensiones()))GyaTV.soltar();sincronizarHorizontalRuletaPorGiro();}catch(e){}}
 /* La Ruleta solo adopta el diseño horizontal si el celular está realmente
    apaisado. No solicitar pantalla completa ni bloquear su orientación. */
 function sincronizarHorizontalRuletaPorGiro(){
@@ -11973,7 +11979,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="canta-la-cancion.js?v=13"></script>
 <script src="tutti-frutti-datos.js?v=35"></script>
 <script src="tutti-frutti.js?v=97"></script>
-<script src="extensiones.js?v=87"></script>
+<script src="extensiones.js?v=88"></script>
 <script src="sala-tv.js?v=1"></script>
 <link rel="stylesheet" href="tele.css?v=5">
 <script src="tele.js?v=7"></script>
