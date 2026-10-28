@@ -9,7 +9,7 @@ const RoscoRioplatense=(()=>{
   const CLAVE="gya_rosco_rioplatense";
   let datos=cargar(),raiz=null,shell=null,items=[],estados=[],respuestas=[],actual=-1,destino=-1,angulo=0;
   let nivel=1,config=null,fase="inicio",tiempo=0,espera=0,ultimo=0,intervalo=null,ultimoTac=0,duelo=false,usadasSesion=new Set();
-  let audioMusica=null;
+  let audioMusica=null,reconocimiento=null,escuchando=false,altoLibre=0;
   /* Dibujos en assets/rosco/ (hoja de ChatGPT recortada). */
   const ARTE=n=>"assets/rosco/"+n+".webp",ico=n=>'<img class="rr-ico" src="'+ARTE(n)+'" alt="" draggable="false">';
   function iniciarMusicaJuego(){
@@ -68,6 +68,7 @@ const RoscoRioplatense=(()=>{
     $("#rrErrores").textContent=conteo("error");$("#rrTiempo").textContent=Math.max(0,Math.ceil(tiempo/1000));
     $("#rrBarra").style.width=Math.max(0,tiempo/(config.segundos*1000)*100)+"%";
     $("#rrEnviar").disabled=fase!=="resolver";$("#rrPasar").disabled=fase!=="resolver";
+    const micro=$("#rrVoz");if(micro)micro.disabled=fase!=="resolver";
     raiz.dataset.fase=fase;
     raiz.querySelectorAll(".rr-letra").forEach((el,i)=>{
       el.className="rr-letra "+estados[i]+(i===actual?" actual":"");
@@ -92,20 +93,75 @@ const RoscoRioplatense=(()=>{
     else $("#rrEntrada").focus({preventScroll:true});
     ajustarPantalla();
   }
+  function detenerVoz(){
+    const r=reconocimiento;reconocimiento=null;escuchando=false;
+    const boton=$("#rrVoz");
+    if(boton){boton.classList.remove("rr-grabando");boton.setAttribute("aria-pressed","false");}
+    if(r){r.onend=null;r.onerror=null;r.onresult=null;try{r.abort();}catch(e){}}
+    if(raiz&&fase!=="fin")iniciarMusicaJuego();
+  }
+  function responderPorVoz(){
+    if(!raiz||fase!=="resolver")return;
+    if(escuchando){detenerVoz();return;}
+    const Recon=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!Recon){mensaje("Este navegador no admite respuestas por voz. Podés escribir la palabra.");return;}
+    try{
+      const r=new Recon();reconocimiento=r;escuchando=true;
+      r.lang="es-UY";r.continuous=false;r.interimResults=false;r.maxAlternatives=3;
+      const boton=$("#rrVoz");boton.classList.add("rr-grabando");boton.setAttribute("aria-pressed","true");
+      // Evitar que la voz de la pista o la música entren por el micrófono.
+      try{window.speechSynthesis?.cancel();}catch(e){}
+      detenerMusicaJuego();
+      $("#rrEntrada").blur();ajustarPantalla();
+      mensaje("Escuchando… decí tu respuesta.");
+      const limpiar=()=>{
+        if(reconocimiento!==r)return;
+        reconocimiento=null;escuchando=false;
+        boton.classList.remove("rr-grabando");boton.setAttribute("aria-pressed","false");
+        if(raiz&&fase!=="fin")iniciarMusicaJuego();
+      };
+      r.onresult=e=>{
+        if(reconocimiento!==r||fase!=="resolver"||actual<0)return;
+        const palabras=Array.from(e.results?.[0]||[]).map(a=>String(a.transcript||"").trim()).filter(Boolean);
+        const reconocida=palabras[0]||"";
+        if(!reconocida){mensaje("No entendí la respuesta. Tocá el micrófono y repetila.");return;}
+        // No marcar una respuesta incorrecta si Android transcribió otra palabra.
+        // La palabra queda lista: basta tocar «Enviar», sin abrir teclado.
+        $("#rrEntrada").value=reconocida.slice(0,60);
+        mensaje('Escuché «'+reconocida.slice(0,45)+'». Tocá Enviar para confirmarla.');
+      };
+      r.onerror=e=>{
+        if(reconocimiento!==r)return;
+        const nombre=String(e.error||"");
+        if(nombre==="not-allowed"||nombre==="service-not-allowed")mensaje("Permití el micrófono en el navegador para responder hablando.");
+        else if(nombre==="no-speech")mensaje("No escuché ninguna palabra. Probá otra vez.");
+        else if(nombre==="language-not-supported")mensaje("El idioma del micrófono no está disponible en este dispositivo.");
+        else if(nombre!=="aborted")mensaje("No se pudo usar el micrófono. Podés responder escribiendo.");
+      };
+      r.onend=limpiar;
+      r.start();
+    }catch(e){detenerVoz();mensaje("No se pudo iniciar el micrófono. Revisá los permisos del navegador.");}
+  }
   /* Que el teclado nunca tape donde se escribe (Android e iPhone), sin cambiar cómo se ve el juego:
      la ventana del Rosco ocupa exactamente la parte de la pantalla que queda ARRIBA del teclado
      (visualViewport) y, si el campo queda abajo, se corre solo un poquito hasta que se vea. */
   function ajustarPantalla(){
     if(!raiz||!shell)return;
     const vv=window.visualViewport,alto=Math.round(vv?vv.height:innerHeight),arriba=vv?Math.max(0,Math.round(vv.offsetTop)):0;
+    const enfocado=document.activeElement===$("#rrEntrada");
+    if(!enfocado)altoLibre=Math.max(altoLibre,alto);
+    const teclado=enfocado&&esRoscoHorizontal()&&(altoLibre-alto>90||innerHeight-alto>90);
+    shell.classList.toggle("rr-teclado-abierto",teclado);
     shell.style.height=alto+"px";shell.style.top=arriba+"px";shell.style.bottom="auto";
     shell.style.setProperty("--rr-viewport-alto",alto+"px");
-    if(document.activeElement===$("#rrEntrada")){
+    if(teclado){shell.scrollTop=0;return;}
+    if(enfocado){
       const sb=shell.getBoundingClientRect(),fb=$("#rrForm").getBoundingClientRect();
       if(fb.bottom>sb.bottom-10)shell.scrollTop+=fb.bottom-(sb.bottom-10);
     }
   }
   function siguiente(){
+    detenerVoz();
     const p=pendientes();if(!p.length){terminar();return;}
     const opciones=p.length>1?p.filter(i=>i!==actual):p;
     destino=opciones[Math.floor(Math.random()*opciones.length)];actual=-1;fase="giro";
@@ -153,6 +209,7 @@ const RoscoRioplatense=(()=>{
   }
   function enviar(){
     if(!raiz||fase!=="resolver"||document.hidden)return;
+    detenerVoz();
     tic();if(fase!=="resolver")return;
     const crudo=$("#rrEntrada").value.trim().slice(0,30);
     const valor=normalizar($("#rrEntrada").value);if(!valor){mensaje("Escribí una palabra o tocá Pasapalabra.");enfocar();return;}
@@ -166,6 +223,7 @@ const RoscoRioplatense=(()=>{
   }
   function pasar(){
     if(!raiz||fase!=="resolver"||document.hidden)return;
+    detenerVoz();
     tic();if(fase!=="resolver")return;
     $("#rrEntrada").value="";enfocar();siguiente();
   }
@@ -191,7 +249,8 @@ const RoscoRioplatense=(()=>{
     }).join("")+'</div>';
   }
   function terminar(){
-    if(fase==="fin")return;fase="fin";actual=-1;$("#rrEntrada").blur();
+    if(fase==="fin")return;
+    detenerVoz();fase="fin";actual=-1;$("#rrEntrada").blur();
     const aciertos=conteo("acierto"),errores=conteo("error"),faltan=pendientes().length;
     const bonus=faltan===0&&aciertos>0?Math.max(0,Math.ceil(tiempo/1000))*ROSCO_CONFIG.bonoSegundo:0;
     const puntos=aciertos*ROSCO_CONFIG.puntosAcierto+bonus;
@@ -245,11 +304,11 @@ const RoscoRioplatense=(()=>{
   function visibilidad(){if(document.hidden)detenerMusicaJuego();else iniciarMusicaJuego();ultimo=performance.now();}
   function abrir(contenedor){
     salir();datos=cargar();nivel=datos.nivelMax;config=configNivel(nivel);fase="inicio";usadasSesion=new Set();
-    raiz=document.createElement("div");raiz.className="rr-game";raiz.dataset.fase="inicio";
-    raiz.innerHTML='<button type="button" class="ext-volver" id="rrVolver">⟵ Extensiones</button><div class="rr-titulo rr-titulo-arte"><h2 class="rr-logo-h"><img class="rr-logo" src="'+ARTE("logo")+'" alt="El Rosco" draggable="false"></h2><p>Una vuelta, muchas palabras nuestras.</p></div><div id="rrJuego" hidden><div class="sf-hud"><div><small>Nivel</small><b id="rrNivel"></b></div><div><small>'+ico("aciertos")+'Aciertos</small><b id="rrAciertos"></b></div><div><small>'+ico("errores")+'Errores</small><b id="rrErrores"></b></div><div><small>'+ico("reloj")+'Tiempo</small><b id="rrTiempo"></b></div></div><div class="sf-bar"><i id="rrBarra"></i></div><div class="rr-rueda"><div id="rrDisco"></div><b id="rrGrande"></b></div><div class="rr-pista" role="status" aria-live="polite"><div class="voz-fila"><span class="rr-pista-ico">'+ico("pista")+'</span><small id="rrRegla"></small><button type="button" class="voz-btn rr-escuchar" id="rrEscuchar" aria-label="Escuchar la pista">'+ico("escuchar")+'</button></div><p id="rrDefinicion"></p></div><p id="rrMensaje" class="rr-mensaje" role="status"></p><form id="rrForm" autocomplete="off"><label class="rr-sr" for="rrEntrada">Tu respuesta</label><div class="rr-fila"><input id="rrEntrada" placeholder="Tu palabra" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" enterkeyhint="send" maxlength="60"><button id="rrEnviar" type="submit">Enviar</button><button id="rrPasar" type="button">'+ico("pasapalabra")+'<span>Pasapalabra</span></button></div></form></div><div id="rrPanel" class="rr-panel-capa"></div>';
+    raiz=document.createElement("div");raiz.className="rr-game";raiz.dataset.fase="inicio";altoLibre=0;
+    raiz.innerHTML='<button type="button" class="ext-volver" id="rrVolver">⟵ Extensiones</button><div class="rr-titulo rr-titulo-arte"><h2 class="rr-logo-h"><img class="rr-logo" src="'+ARTE("logo")+'" alt="El Rosco" draggable="false"></h2><p>Una vuelta, muchas palabras nuestras.</p></div><div id="rrJuego" hidden><div class="sf-hud"><div><small>Nivel</small><b id="rrNivel"></b></div><div><small>'+ico("aciertos")+'Aciertos</small><b id="rrAciertos"></b></div><div><small>'+ico("errores")+'Errores</small><b id="rrErrores"></b></div><div><small>'+ico("reloj")+'Tiempo</small><b id="rrTiempo"></b></div></div><div class="sf-bar"><i id="rrBarra"></i></div><div class="rr-rueda"><div id="rrDisco"></div><b id="rrGrande"></b></div><div class="rr-pista" role="status" aria-live="polite"><div class="voz-fila"><span class="rr-pista-ico">'+ico("pista")+'</span><small id="rrRegla"></small><button type="button" class="voz-btn rr-escuchar" id="rrEscuchar" aria-label="Escuchar la pista">'+ico("escuchar")+'</button></div><p id="rrDefinicion"></p></div><p id="rrMensaje" class="rr-mensaje" role="status"></p><form id="rrForm" autocomplete="off"><label class="rr-sr" for="rrEntrada">Tu respuesta</label><div class="rr-fila"><input id="rrEntrada" placeholder="Tu palabra" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" enterkeyhint="send" maxlength="60"><button id="rrEnviar" type="submit">Enviar</button><button id="rrPasar" type="button">'+ico("pasapalabra")+'<span>Pasapalabra</span></button><button id="rrVoz" type="button" class="rr-microfono" aria-label="Responder hablando" aria-pressed="false" title="Responder por voz">🎙<span>Hablar</span></button></div></form></div><div id="rrPanel" class="rr-panel-capa"></div>';
     contenedor.appendChild(raiz);shell=raiz.closest(".ext-shell");shell?.classList.add("rr-abierta");
     $("#rrVolver").onclick=()=>Extensiones.abrirLobby();
-    $("#rrForm").onsubmit=e=>{e.preventDefault();enviar();};$("#rrPasar").onclick=pasar;
+    $("#rrForm").onsubmit=e=>{e.preventDefault();enviar();};$("#rrPasar").onclick=pasar;$("#rrVoz").onclick=responderPorVoz;
     $("#rrEscuchar").onclick=()=>{if(actual>=0&&typeof hablar==="function")hablar(items[actual].definicion,audioMusica);};
     for(const b of raiz.querySelectorAll("#rrForm button"))b.onpointerdown=e=>e.preventDefault();
     $("#rrEntrada").onbeforeinput=e=>{if(fase!=="resolver")e.preventDefault();};
@@ -261,10 +320,10 @@ const RoscoRioplatense=(()=>{
     panel("El Rosco Rioplatense",config.letras+" letras y "+config.segundos+" segundos. Leé cada pista y escribí la palabra: tenés un intento por letra. Pasapalabra la deja para después. El reloj se pausa al girar. Acertá al menos "+Math.ceil(config.letras*ROSCO_CONFIG.proporcionAvance)+" y respondé todas para avanzar. Jugás gratis, sin gastar vidas ni monedas. Mejor: "+datos.mejor+" puntos.",acciones,"personaje");ajustarPantalla();
   }
   function salir(){
-    clearInterval(intervalo);intervalo=null;document.removeEventListener("visibilitychange",visibilidad);
+    detenerVoz();clearInterval(intervalo);intervalo=null;document.removeEventListener("visibilitychange",visibilidad);
     window.visualViewport?.removeEventListener("resize",ajustarPantalla);window.visualViewport?.removeEventListener("scroll",ajustarPantalla);window.removeEventListener("resize",ajustarPantalla);
     if(shell){shell.style.height="";shell.style.top="";shell.style.bottom="";shell.style.removeProperty("--rr-viewport-alto");}
-    shell?.classList.remove("rr-abierta");
+    shell?.classList.remove("rr-abierta","rr-teclado-abierto");altoLibre=0;
     if("speechSynthesis" in window)speechSynthesis.cancel();
     if(typeof sincronizarMusica==="function")sincronizarMusica();
     detenerMusicaJuego();
