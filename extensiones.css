@@ -1013,7 +1013,7 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
     display:grid;align-items:center;justify-content:center;justify-items:center;
     grid-template-columns:minmax(135px,.32fr) minmax(0,.68fr);
     grid-template-rows:minmax(0,1fr) auto;column-gap:14px;row-gap:5px;
-    width:100%;max-width:960px;height:100%;max-height:100%;min-height:0;
+    width:100%;max-width:960px;height:100%;max-height:100%;min-height:0;box-sizing:border-box;
     padding:32px 4px 4px!important;margin:0!important;overflow:hidden;
   }
   .tf .qns-pantalla.tf-teclado-propio>.tf-campo>.tf-ficha{
