@@ -57,6 +57,26 @@ function hablar(texto,audioExtra){
   }catch(e){}
 }
 window.hablar=hablar;
+
+/* Duelo de Conocimiento se abre aislado en su HTML; esto evita tocar
+   el estado de la ruleta y permite solicitar permiso de micrófono. */
+const DueloConocimiento={
+  iframe:null,
+  abrir(contenedor){
+    this.salir();
+    const frame=document.createElement("iframe");
+    frame.src="duelo-conocimiento.html";
+    frame.title="Duelo de Conocimiento";
+    frame.allow="microphone; autoplay";
+    frame.setAttribute("allowfullscreen","");
+    frame.style.cssText="display:block;width:100%;height:calc(100dvh - 82px);min-height:680px;border:0;background:#10081e;border-radius:16px";
+    contenedor.appendChild(frame);
+    this.iframe=frame;
+  },
+  salir(){if(this.iframe){this.iframe.remove();this.iframe=null;}}
+};
+window.DueloConocimiento=DueloConocimiento;
+
 /* Catálogo de minijuegos. Cada entrada habilitada aporta su función abrir. */
 const EXTENSIONES=[
   {id:"tutti-frutti",nombre:"Tutti Frutti",descripcion:"Cada uno con su celular: letra al azar y ¡BASTA!",icono:"logo-tutti-frutti.svg",estado:"disponible",abrir:contenedor=>TuttiFrutti.abrir(contenedor),record:()=>TuttiFrutti.partidasJugadas()+" partidas"},
@@ -78,7 +98,7 @@ const EXTENSIONES=[
   {id:"bomba",grupo:"previa",nombre:"Bomba",descripcion:"Decí una palabra y pasala antes de que explote",icono:"assets/bomba/icono.webp",estado:"disponible",abrir:contenedor=>Bomba.abrir(contenedor),record:()=>Bomba.rondasJugadas()+" rondas"},
   {id:"que-numero-soy",grupo:"previa",nombre:"¿Qué número soy?",descripcion:"Número gigante en pantalla completa, sin que se apague",icono:"assets/que-numero-soy/icono.webp",estado:"disponible",abrir:contenedor=>QueNumeroSoy.abrir(contenedor),record:()=>QueNumeroSoy.rondasJugadas()+" rondas"},
   {id:"rueda-de-letras",nombre:"Rueda de Letras",descripcion:"Completá el crucigrama uniendo letras",icono:"logo-rueda-de-letras.svg",estado:RUEDA_HABILITADA?"disponible":"proximamente",abrir:contenedor=>RuedaDeLetras.abrir(contenedor),record:()=>RuedaDeLetras.mejorPuntaje()+" puntos"},
-  {id:"moon-tap",nombre:"Moon Tap",descripcion:"Tocá justo a tiempo y pegale al punto del aro",icono:"logo-moon-tap.webp",estado:"disponible",abrir:contenedor=>MoonTap.abrir(contenedor),record:()=>MoonTap.mejorPuntaje()+" puntos"},
+  {id:"duelo-conocimiento",nombre:"Duelo de Conocimiento",descripcion:"Banderas, matemática, famosos y fútbol · Contra BOT u online con micrófono",icono:"logo-duelo-conocimiento.svg",estado:"disponible",abrir:contenedor=>DueloConocimiento.abrir(contenedor),record:()=>"BOT · Online · Voz"},
   /* Mahjong Rioplatense (mahjong-rioplatense.html) a propósito oculto del lobby:
      la pantalla de inicio no estaba lista para mostrarse a los jugadores.
      Sigue publicada y accesible por URL directa para que Gonzalo la pruebe;
@@ -330,7 +350,7 @@ const Extensiones=(()=>{
     if(typeof window.anotarUltimoJuego==="function")window.anotarUltimoJuego(ext.nombre);
     ext.abrir(contenido);shell.scrollTop=0;
   }
-  function salirJuego(){for(const juego of [window.SopaFugaz,window.RuedaDeLetras,window.PalabraSecreta,window.FrasesEnGiro,window.MemoriaEnGiro,window.RoscoRioplatense,window.SilabarioRioplatense,window.CienRioplatenses,window.AhorcadoRioplatense,window.ContraRelojRioplatense,window.MoonTap,window.Puzzle,window.QueNumeroSoy,window.QuienSoy,window.Bomba,window.Impostor,window.Mimica,window.CantaLaCancion,window.TuttiFrutti])if(juego)juego.salir();}
+  function salirJuego(){for(const juego of [window.SopaFugaz,window.RuedaDeLetras,window.PalabraSecreta,window.FrasesEnGiro,window.MemoriaEnGiro,window.RoscoRioplatense,window.SilabarioRioplatense,window.CienRioplatenses,window.AhorcadoRioplatense,window.ContraRelojRioplatense,window.MoonTap,window.DueloConocimiento,window.Puzzle,window.QueNumeroSoy,window.QuienSoy,window.Bomba,window.Impostor,window.Mimica,window.CantaLaCancion,window.TuttiFrutti])if(juego)juego.salir();}
   function cerrar(){if(!shell)return;salirJuego();Fichas.enJuego("");vista="lobby";modoTVElegido=false;versionModo++;salirTV();shell.hidden=true;shell.classList.remove("ext-teclado-abierto");shell.style.top="";shell.style.height="";shell.style.bottom="";document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
   return{abrirLobby,abrirJuego,cerrar};
 })();
