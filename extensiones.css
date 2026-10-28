@@ -1152,4 +1152,25 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
   #extContenido .ps-game #psAyudaPanel .ps-ejemplo span{width:27px;height:27px}
   #extContenido .cr-game .cr-bienv-caja{margin-top:0}
   #extContenido .cr-game .cr-bienv .cr-conductora{display:none}
+  #extContenido .tf .tf-bienv-caja{display:grid;grid-template-columns:minmax(95px,.32fr) minmax(0,.68fr);gap:4px 10px;align-items:center;width:min(100%,670px)}
+  #extContenido .tf .tf-bienv-logo{grid-column:1;grid-row:1;width:min(100%,150px);max-height:45px;object-fit:contain;margin:0 auto}
+  #extContenido .tf .tf-bienv-dibujo{grid-column:1;grid-row:2;width:100%;max-width:140px;margin:0 auto}
+  #extContenido .tf .tf-bienv-dibujo img{max-height:29dvh;object-fit:contain}
+  #extContenido .tf .tf-bienv ul{grid-column:2;grid-row:1 / span 2;gap:3px;margin:0}
+  #extContenido .tf .tf-bienv li{padding:4px 6px;font-size:clamp(.64rem,2.4dvh,.76rem);line-height:1.12}
+  #extContenido .tf .tf-bienv #tfBienvOk{grid-column:1 / -1;grid-row:3;min-height:32px;margin:0;padding:4px}
+  #extContenido .cr-game .cr-bienv-caja{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:4px 10px;align-items:center;width:min(100%,680px)}
+  #extContenido .cr-game .cr-bienv h3{grid-column:1 / -1;margin:0;font-size:clamp(.95rem,3.7dvh,1.12rem)}
+  #extContenido .cr-game .cr-bienv-intro{grid-column:1;grid-row:2;margin:0;font-size:.76rem;line-height:1.2}
+  #extContenido .cr-game .cr-bienv ul{grid-column:2;grid-row:2;gap:3px;margin:0}
+  #extContenido .cr-game .cr-bienv li{padding:4px 6px;font-size:.7rem;line-height:1.12}
+  #extContenido .cr-game .cr-bienv #crBienvOk{grid-column:1 / -1;grid-row:3;min-height:32px;margin:0;padding:4px}
+  #extContenido .pf-bienv-logo{max-height:16dvh;margin-bottom:3px}
+  #extContenido .pf-bienv ul{gap:3px;margin-bottom:6px}
+  #extContenido .pf-bienv li{padding:4px 6px;font-size:.72rem;line-height:1.15}
+  #extContenido .pf-bienv-ok{min-height:36px;padding:5px;font-size:.85rem}
+  #extContenido .sf-game #sfPanel .sf-panel{width:min(100%,620px)}
+  #extContenido .sf-game #sfPanel .sf-acciones{flex-direction:row;flex-wrap:wrap;gap:5px}
+  #extContenido .sf-game #sfPanel .sf-acciones button{flex:1 1 29%;min-width:105px;min-height:38px;padding:5px;font-size:.78rem}
+  #extContenido .sf-game #sfPanel .sf-acciones button.sf-con-dibujo img{height:27px}
 }
