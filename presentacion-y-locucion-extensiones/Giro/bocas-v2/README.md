@@ -1,6 +1,6 @@
 # Bocas v2 — Giro / Rosco
 
-**Estado:** siete PNG aprobados, **aún pendientes de importar** como binarios a esta carpeta. No borrar ni reemplazar los sprites antiguos de `../bocas/`.
+**Estado:** siete PNG aprobados, subidos a esta rama con el contenido original intacto y SHA-256 comprobados. No borrar ni reemplazar los sprites antiguos de `../bocas/`.
 
 Se esperan exactamente estos archivos PNG transparentes, de 200 × 100 píxeles:
 
@@ -14,8 +14,8 @@ Se esperan exactamente estos archivos PNG transparentes, de 200 × 100 píxeles:
 | `Giro_boca_06_lengua.png` | `1b62aa966a72cb9e784355142711ac4e858d653192344ed54b299cd02818509f` |
 | `Giro_boca_07_risa.png` | `7bfe9d4ba86f9008b25c800f2532ee8b4a3384ef8ae4b91b46d704aa88ed9623` |
 
-El paquete fuente es `Giro_bocas.zip`, generado y aprobado en esta conversación. Solo descomprimir los siete PNG directamente aquí, sin añadir otra carpeta intermedia. No subir previews ni imágenes de prueba.
+El paquete fuente es `Giro_bocas.zip`, generado y aprobado en esta conversación. Los siete archivos ya están incluidos en esta rama; no es necesario descomprimirlos nuevamente. No subir previews ni imágenes de prueba.
 
 El piloto `giro-rosco-piloto.js` detecta si están disponibles las siete bocas. Si falta alguna, desactiva el movimiento de labios de forma segura, pero la voz y el Rosco siguen funcionando.
 
-**Al subir:** comprobar URLs y SHA-256 de los siete originales; después probar con usuario `Gonzalo` en celular, sin música y sin afectar el resto de usuarios.
+**Después del merge:** probar con usuario `Gonzalo` en celular, sin música y sin afectar el resto de usuarios. La sincronización es aproximada según las señales de `speechSynthesis` del navegador.
