@@ -1,0 +1,53 @@
+/* Giro en El Rosco: escena de prueba aislada, sin estilos globales. */
+.grp-overlay{
+  position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;
+  padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right))
+    max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+  overflow:auto;background:rgba(7,9,35,.96);color:#fff;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+.grp-overlay *{box-sizing:border-box}
+.grp-contenido{width:min(1050px,100%);max-height:100%;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:0;
+  background:#071948;border:2px solid #dba73a;border-radius:18px;overflow:auto;box-shadow:0 16px 75px #000b}
+.grp-escenario{position:relative;aspect-ratio:16/9;min-height:180px;overflow:hidden;background:#04143e}
+.grp-fondo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.grp-halo{position:absolute;inset:0;background:linear-gradient(90deg,transparent 25%,rgba(17,28,78,.15) 50%,transparent 75%);pointer-events:none}
+.grp-giro{position:absolute;z-index:2;width:auto;height:80%;max-width:48%;object-fit:contain;object-position:center bottom;
+  bottom:6%;left:50%;transform:translateX(-50%);filter:drop-shadow(0 10px 12px #001a49)}
+.grp-atril{position:absolute;z-index:3;width:37%;height:39%;object-fit:contain;object-position:center bottom;
+  bottom:-2%;left:50%;transform:translateX(-50%);pointer-events:none}
+.grp-rotulo{position:absolute;z-index:4;left:12px;top:12px;background:rgba(3,16,49,.82);border:1px solid #f9d26e;
+  border-radius:50px;padding:5px 12px;color:#ffe18b;font-size:clamp(9px,1.6vw,15px);font-weight:800;letter-spacing:.06em}
+.grp-panel{padding:clamp(13px,3vw,27px);text-align:center;background:linear-gradient(160deg,#132967,#06143a)}
+.grp-etiqueta{color:#f4cb66;font-size:clamp(9px,1.25vw,12px);font-weight:800;letter-spacing:.12em;margin:0 0 6px}
+.grp-panel h2{font-size:clamp(24px,4vw,38px);margin:0 0 8px;color:#fff;line-height:1.15}
+.grp-descripcion{font-size:clamp(13px,2.2vw,17px);max-width:740px;margin:0 auto 13px;line-height:1.4}
+.grp-acciones{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.grp-boton{font:800 15px system-ui,sans-serif;cursor:pointer;border-radius:12px;min-height:44px;border:2px solid #eac251;
+  padding:10px 18px;background:#112752;color:#ffe2a0}
+.grp-boton.grp-accion{background:#eeb82e;color:#131329;border-color:#eeb82e}
+.grp-boton:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.grp-aviso{display:block;margin-top:12px;color:#c5d1ee;font-size:11px}
+@media(max-width:600px){
+ .grp-overlay{padding:6px;align-items:center}
+ .grp-contenido{max-height:calc(100dvh - 12px);border-radius:12px}
+ .grp-escenario{aspect-ratio:4/3;min-height:0}
+ .grp-fondo{object-fit:cover}
+ .grp-giro{height:83%;max-width:65%}
+ .grp-atril{width:48%;height:38%}
+ .grp-panel{padding:12px}
+ .grp-panel h2{font-size:clamp(20px,5.5vw,27px)}
+ .grp-descripcion{font-size:13px}
+ .grp-acciones{gap:8px}
+ .grp-boton{font-size:13px;padding:8px 12px}
+ .grp-aviso{font-size:10px}
+}
+@media(max-height:480px) and (orientation:landscape){
+ .grp-contenido{grid-template-columns:1.15fr 1fr;grid-template-rows:1fr;max-width:1000px;overflow:auto}
+ .grp-escenario{min-height:0;aspect-ratio:auto;height:100%}
+ .grp-panel{display:flex;flex-direction:column;justify-content:center}
+ .grp-descripcion{font-size:12px}
+ .grp-panel h2{font-size:22px}
+ .grp-aviso{margin-top:5px}
+}
+@media(prefers-reduced-motion:reduce){.grp-overlay *{animation:none!important;transition:none!important}}
