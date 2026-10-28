@@ -20,7 +20,7 @@ function elemento(tag){
   const clases=new Set();
   return {
     tag,children:[],dataset:{},attributes:{},isConnected:true,
-    classList:{add:x=>clases.add(x),remove:x=>clases.delete(x),contains:x=>clases.has(x)},
+    classList:{add:x=>clases.add(x),remove:x=>clases.delete(x),contains:x=>clases.has(x),toggle:(x,force)=>{const on=force===undefined?!clases.has(x):!!force;if(on)clases.add(x);else clases.delete(x);return on;}},
     append(...nodos){this.children.push(...nodos);},
     appendChild(nodo){this.children.push(nodo);return nodo;},
     setAttribute(k,v){this.attributes[k]=v;},
