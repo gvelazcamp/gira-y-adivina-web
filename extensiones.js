@@ -98,7 +98,7 @@ const EXTENSIONES=[
   {id:"bomba",grupo:"previa",nombre:"Bomba",descripcion:"Decí una palabra y pasala antes de que explote",icono:"assets/bomba/icono.webp",estado:"disponible",abrir:contenedor=>Bomba.abrir(contenedor),record:()=>Bomba.rondasJugadas()+" rondas"},
   {id:"que-numero-soy",grupo:"previa",nombre:"¿Qué número soy?",descripcion:"Número gigante en pantalla completa, sin que se apague",icono:"assets/que-numero-soy/icono.webp",estado:"disponible",abrir:contenedor=>QueNumeroSoy.abrir(contenedor),record:()=>QueNumeroSoy.rondasJugadas()+" rondas"},
   {id:"rueda-de-letras",nombre:"Rueda de Letras",descripcion:"Completá el crucigrama uniendo letras",icono:"logo-rueda-de-letras.svg",estado:RUEDA_HABILITADA?"disponible":"proximamente",abrir:contenedor=>RuedaDeLetras.abrir(contenedor),record:()=>RuedaDeLetras.mejorPuntaje()+" puntos"},
-  {id:"duelo-conocimiento",nombre:"Duelo de Conocimiento",descripcion:"Banderas, matemática, famosos y fútbol · Contra BOT u online con micrófono",icono:"logo-duelo-conocimiento.svg",estado:"disponible",abrir:contenedor=>DueloConocimiento.abrir(contenedor),record:()=>"BOT · Online · Voz"},
+  {id:"duelo-conocimiento",nombre:"Duelo de Conocimiento",descripcion:"Banderas, matemática, famosos y fútbol · Contra BOT u online con micrófono",icono:"logo-duelo-conocimiento.webp",estado:"disponible",abrir:contenedor=>DueloConocimiento.abrir(contenedor),record:()=>"BOT · Online · Voz"},
   /* Mahjong Rioplatense (mahjong-rioplatense.html) a propósito oculto del lobby:
      la pantalla de inicio no estaba lista para mostrarse a los jugadores.
      Sigue publicada y accesible por URL directa para que Gonzalo la pruebe;
