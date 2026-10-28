@@ -386,3 +386,99 @@
     font-size:10px;
   }
 }
+
+
+/* Prueba en el juego real: SOLO perfil Gonzalo. No modifica otros usuarios. */
+.rr-game.rr-gonzalo .rr-girar-g{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:#F5B301;color:#160B24;border:1px solid #FFE18B;border-radius:10px;
+  font:900 12px system-ui,sans-serif;padding:7px 10px;margin:2px 0 5px 8px;min-height:34px
+}
+.rr-game.rr-gonzalo .rr-teclado-g{display:none}
+.rr-game.rr-gonzalo .rr-estado-voz-g{display:none;color:#37D6C0;font-size:11px;font-weight:800;margin:2px 0 4px;min-height:14px}
+.rr-game.rr-gonzalo.rr-con-voz .rr-estado-voz-g{display:block}
+.rr-game.rr-gonzalo .rr-teclas-fila{display:flex;justify-content:center;gap:3px}
+.rr-game.rr-gonzalo .rr-tecla-g{
+  display:block;flex:1;min-width:0;min-height:28px;padding:3px 1px;
+  border-radius:6px;background:#56406D;color:#fff;border:1px solid #A58FBF66;
+  font:900 clamp(10px,1.5vw,15px) system-ui,sans-serif;
+}
+.rr-game.rr-gonzalo .rr-tecla-g:active{background:#E5197C}
+.rr-game.rr-gonzalo .rr-tecla-g.rr-tecla-accion{background:#352146}
+@media (orientation:landscape) and (min-width:700px) and (max-width:1024px) and (max-height:600px){
+  .rr-game.rr-gonzalo #rrJuego:not([hidden]){
+    grid-template-rows:32px 5px minmax(40px,max-content) minmax(15px,max-content) minmax(42px,max-content) max-content max-content;
+    gap:4px 10px;height:auto;overflow:visible;min-width:0;
+  }
+  .rr-game.rr-gonzalo #rrJuego .rr-rueda{grid-row:3 / span 5;width:min(39vh,29vw,240px)}
+  .rr-game.rr-gonzalo #rrJuego .rr-pista{grid-row:3;min-height:55px;max-height:95px;padding:6px 9px}
+  .rr-game.rr-gonzalo #rrJuego .rr-pista p{font-size:clamp(12px,3.3vh,16px);line-height:1.23}
+  .rr-game.rr-gonzalo #rrJuego #rrForm{grid-row:5}
+  .rr-game.rr-gonzalo #rrJuego .rr-mensaje{grid-row:4;font-size:12px;line-height:1.2}
+  .rr-game.rr-gonzalo #rrJuego .rr-teclado-g{
+    grid-column:2;grid-row:6;display:grid;gap:3px;margin:0;
+    padding:6px;border-radius:11px;background:#29193D;border:1px solid #F5B30155
+  }
+  .rr-game.rr-gonzalo #rrJuego .rr-estado-voz-g{grid-column:2;grid-row:7}
+  .rr-game.rr-gonzalo .rr-tecla-g{min-height:clamp(24px,6.5vh,34px)}
+  .rr-game.rr-gonzalo.rr-con-voz #rrJuego .rr-teclado-g{display:none}
+  .rr-game.rr-gonzalo .rr-fila input{height:40px;font-size:15px}
+  .rr-game.rr-gonzalo .rr-fila button{min-height:40px;padding:4px 7px}
+  .rr-game.rr-gonzalo .rr-fila #rrVoz{display:flex}
+  .rr-game.rr-gonzalo .rr-girar-g{min-height:26px;padding:4px 8px}
+  .rr-game.rr-gonzalo[data-fase="inicio"] .rr-panel button{min-height:30px}
+}
+/* Rotación alternativa dentro del Rosco si Chrome o la TWA no cambia
+   la orientación real. El resto de la app conserva su disposición. */
+@media (orientation:portrait){
+  body:not(.tvhost) .ext-shell.rr-abierta.rr-giro-forzado{
+    position:fixed!important;inset:auto!important;left:100vw!important;top:0!important;
+    width:100dvh!important;height:100vw!important;max-height:100vw!important;
+    transform:rotate(90deg);transform-origin:top left;box-sizing:border-box;
+    overflow-y:auto;overflow-x:hidden;padding:5px 9px
+  }
+  .ext-shell.rr-giro-forzado .ext-wrap{max-width:none;width:100%}
+  .ext-shell.rr-giro-forzado #extContenido{width:100%;min-width:0}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo{max-width:none;width:100%}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo .rr-titulo{display:none}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo #rrJuego:not([hidden]){
+    display:grid;grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr);
+    grid-template-rows:28px 4px max-content minmax(14px,auto) max-content max-content;
+    gap:3px 9px;height:auto;overflow:visible;align-items:start
+  }
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo #rrJuego>.sf-hud,
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo #rrJuego>.sf-bar{grid-column:1 / -1}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo #rrJuego>.sf-hud{grid-row:1;gap:3px;margin:0}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo .sf-hud>div{min-height:0;padding:2px}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo .sf-hud small{font-size:10px}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo .sf-hud b{font-size:12px}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo #rrJuego>.sf-bar{grid-row:2;height:4px;margin:0}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo #rrJuego>.rr-rueda{
+    grid-column:1;grid-row:3 / span 4;align-self:center;justify-self:center;
+    width:min(38vw,200px);margin:6px auto 0
+  }
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo #rrJuego>.rr-pista{
+    grid-column:2;grid-row:3;padding:5px 8px;min-height:54px;max-height:85px;margin:0
+  }
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo .rr-pista p{font-size:clamp(11px,3vw,15px);line-height:1.18;margin:2px 0 0}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo #rrJuego>.rr-mensaje{grid-column:2;grid-row:4;margin:0;min-height:14px;font-size:11px}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo #rrJuego>#rrForm{grid-column:2;grid-row:5;margin:0}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo .rr-fila{display:flex;gap:4px}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo .rr-fila input{min-width:0;width:0;flex:1;height:34px;padding:4px 6px;font-size:13px}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo .rr-fila button{min-height:34px;padding:3px 6px;font-size:11px}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo .rr-fila #rrVoz{display:flex;flex-direction:column;min-width:50px}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo .rr-fila #rrVoz span{font-size:10px}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo #rrTecladoG{
+    display:grid;grid-column:2;grid-row:6;gap:3px;padding:5px;
+    background:#29193D;border:1px solid #F5B30155;border-radius:10px
+  }
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo .rr-tecla-g{min-height:26px;font-size:11px}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo.rr-con-voz #rrTecladoG{display:none}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo #rrEstadoVozG{display:block;grid-column:2;grid-row:7}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo[data-fase="inicio"] .rr-panel-capa{padding:9px}
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo[data-fase="inicio"] .rr-panel{
+    width:min(100%,760px);max-height:calc(100vw - 12px);
+    padding:10px;overflow:auto
+  }
+  .ext-shell.rr-giro-forzado .rr-game.rr-gonzalo[data-fase="inicio"] .rr-panel-dibujo{max-height:18vw}
+}
