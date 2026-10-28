@@ -104,7 +104,7 @@ const TuttiFrutti=(()=>{
   function pantalla(html){raiz.innerHTML=`<div class="qns-pantalla imp-juego"><button type="button" class="pf-salir" id="tfSalir">✕ Salir</button>${html}</div>`;PantallaFija.confirmar(q("tfSalir"),configurar);actualizarChat();ajustarVV();}
   /* En horizontal táctil usamos teclado integrado solo durante la ronda.
      En vertical (y con teclado físico en escritorio) el input es normal. */
-  const tecladoHorizontal=()=>window.matchMedia("(orientation: landscape) and (min-width:700px) and (max-width:1024px) and (max-height:600px)").matches
+  const tecladoHorizontal=()=>window.matchMedia("(orientation: landscape) and (min-width:600px) and (max-width:1024px) and (max-height:600px)").matches
     &&(window.matchMedia("(pointer: coarse)").matches||navigator.maxTouchPoints>0);
   function sincronizarTeclado(){
     const pantalla=raiz?.querySelector(".qns-pantalla"),inp=raiz?.querySelector("#tfInput"),teclado=raiz?.querySelector("#tfTeclado");
