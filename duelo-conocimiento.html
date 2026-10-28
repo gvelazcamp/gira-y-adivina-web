@@ -179,17 +179,21 @@ const PEOPLE = {"famosos":[{"name":"Natalia Oreiro","title":"Natalia Oreiro","la
 const FLAG_LEVELS={easy:["uy", "ar", "br", "cl", "py", "bo", "pe", "co", "ec", "ve", "mx", "us", "es", "pt", "fr", "it", "de", "gb", "cn", "jp", "kr", "ca", "au", "nz", "in", "za", "eg", "tr", "sa", "il"],medium:["cr", "pa", "cu", "do", "ht", "jm", "gt", "hn", "sv", "ni", "bz", "bs", "tt", "gy", "sr", "gr", "ie", "be", "nl", "ch", "at", "se", "no", "dk", "fi", "is", "pl", "cz", "sk", "hu", "ro", "bg", "hr", "rs", "ba", "me", "si", "al", "gr", "ua", "ru", "by", "lt", "lv", "ee", "ge", "am", "az", "md", "ma", "dz", "tn", "ly", "ng", "gh", "sn", "cm", "ci", "ke", "et", "ug", "tz", "zw", "zm", "ao", "mz", "na", "bw", "mg", "mu", "qa", "ae", "kw", "bh", "om", "jo", "lb", "iq", "ir", "pk", "bd", "np", "lk", "th", "vn", "kh", "la", "mm", "my", "sg", "id", "ph", "tw", "mn", "kz", "uz", "kg", "tj", "af"],hard:["bn", "tl", "pg", "fj", "ws", "to", "vu", "sb", "cy", "mt", "lu", "li", "ad", "mc", "sm", "va", "mk", "fo", "gl", "bt", "mv", "sc", "rw", "bi", "so", "dj", "er", "sd", "ss", "td", "ne", "ml", "bf", "bj", "tg", "ga", "gm", "gw", "sl", "lr", "cf", "cd", "cg", "gq", "st", "cv", "km", "ls", "sz", "mw", "ye", "sy", "ps", "bb", "gd", "lc", "vc", "kn", "dm", "ag"]};
 const PHOTO_CACHE={};
 let questionGeneration=0;
+const askedQuestions=new Set();
+function questionKey(q){return q.category==='banderas'?'banderas:'+q.code:q.category==='matematica'?'matematica:'+q.math:q.category+':'+normalize(q.person.name)}
 function randomInt(min,max){return Math.floor(Math.random()*(max-min+1))+min}
 function nextTopic(p){if(!p.topicDeck.length)p.topicDeck=shuffled([...settings.categories]);return p.topicDeck.pop()}
-function nextPerson(p,category){const key=category+'Deck';if(!p[key].length)p[key]=shuffled(PEOPLE[category]);return p[key].pop()}
+function nextPerson(p,category){const key=category+'Deck';if(!p[key].length)p[key]=shuffled(PEOPLE[category]);p[key]=p[key].filter(person=>!askedQuestions.has(category+':'+normalize(person.name)));return p[key].pop()||null}
 function newFlag(p){
  const level=p.score<2?'easy':p.score<5?'medium':'hard';
  const key='flagDeck'+level;
  if(!p[key].length)p[key]=shuffled(FLAG_LEVELS[level]);
- let result=p[key].pop();if(result===p.last&&p[key].length){p[key].unshift(result);result=p[key].pop()}
- p.last=result;return {category:'banderas',code:result,answer:COUNTRY_NAMES[result],label:'¿DE QUÉ PAÍS ES ESTA BANDERA?',level:level==='easy'?1:level==='medium'?2:3}
+ p[key]=p[key].filter(code=>!askedQuestions.has('banderas:'+code));
+ const code=p[key].pop()||shuffled(allCodes.filter(code=>!askedQuestions.has('banderas:'+code))).pop();
+ if(!code)return newMath(p);
+ return {category:'banderas',code,answer:COUNTRY_NAMES[code],label:'¿DE QUÉ PAÍS ES ESTA BANDERA?',level:level==='easy'?1:level==='medium'?2:3}
 }
-function newMath(p){
+function randomMath(p){
  const level=Math.min(6,Math.floor(p.score/2)+1);
  let a,b,txt,result;
  if(level===1){a=randomInt(1,9);b=randomInt(1,9);result=a+b;txt=`${a} + ${b}`}
@@ -200,7 +204,14 @@ function newMath(p){
  else{a=randomInt(5,23);b=randomInt(2,9);const c=randomInt(3,12);result=a*b+c;txt=`(${a} × ${b}) + ${c}`}
  return {category:'matematica',answer:String(result),math:txt,label:'¿CUÁNTO DA ESTA CUENTA?',level};
 }
-function buildQuestion(p,category){if(category==='banderas')return newFlag(p);if(category==='matematica')return newMath(p);return {category,person:nextPerson(p,category),label:category==='famosos'?'¿QUIÉN ES ESTA PERSONA?':'¿QUÉ FUTBOLISTA ES?',level:null}}
+function newMath(p){
+ for(let i=0;i<300;i++){const q=randomMath(p);if(!askedQuestions.has(questionKey(q)))return q}
+ // Si se agotaron las combinaciones del nivel, una cuenta nueva mantiene el duelo sin repetir.
+ let n=askedQuestions.size+100;
+ while(askedQuestions.has('matematica:'+n+' + '+(n+1)))n++;
+ return {category:'matematica',answer:String(2*n+1),math:n+' + '+(n+1),label:'¿CUÁNTO DA ESTA CUENTA?',level:Math.min(6,Math.floor(p.score/2)+1)};
+}
+function buildQuestion(p,category){if(category==='banderas')return newFlag(p);if(category==='matematica')return newMath(p);const person=nextPerson(p,category);return person?{category,person,label:category==='famosos'?'¿QUIÉN ES ESTA PERSONA?':'¿QUÉ FUTBOLISTA ES?',level:null}:newMath(p)}
 function personAnswers(person){const n=normalize(person.name);const words=n.split(' ');const r=[n];
  if(words.length>=2){const last=words[words.length-1];const pool=[...PEOPLE.famosos,...PEOPLE.futbol];const matches=pool.filter(p=>normalize(p.name).split(' ').at(-1)===last);if(last.length>=4&&!['junior','martinez'].includes(last)&&matches.length===1)r.push(last);r.push(words.slice(-2).join(' '));}
  if(n==='lionel messi')r.push('messi','leo messi');
@@ -255,7 +266,7 @@ async function nextQuestion(){
      let loaded=false;
      for(let attempt=0;attempt<3;attempt++){
        try{q.img=await lookupPortrait(q.person);await loadImage(q.img,5500);loaded=true;break}
-       catch(e){if(attempt<2)q.person=nextPerson(p,q.category)}
+        catch(e){if(attempt<2){const person=nextPerson(p,q.category);if(!person)break;q.person=person}}
      }
      if(!loaded)throw Error('Foto no disponible');
    }
@@ -265,6 +276,7 @@ async function nextQuestion(){
   }
  }
  if(serial!==questionGeneration||phase!=='loading')return;
+  askedQuestions.add(questionKey(q));
  question={...q,answered:false};showVisual(q);
  $('question-title').textContent=q.label;
  $('question-number').textContent=`${{banderas:'BANDERAS',matematica:'MATEMÁTICA',famosos:'FAMOSOS',futbol:'FÚTBOL'}[q.category]}${q.level?' · NIVEL '+q.level:''} · Turno de ${p.name}`;
