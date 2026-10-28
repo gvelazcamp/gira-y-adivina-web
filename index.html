@@ -799,6 +799,13 @@ p.sub{margin:14px 0 24px;color:#C9B8DE}
  display:inline-grid;place-items:center;padding:0;flex:0 0 auto;color:var(--crema)}
 .cta-jugar{display:flex;align-items:center;justify-content:flex-start;gap:14px;text-align:left;
  background:linear-gradient(135deg,#FF3D94,#C21368);padding:18px 20px;box-shadow:0 6px 0 #8E0D4B}
+/* El botón «Jugá más juegos» tiene su propio degradado original.
+   Definirlo en el CSS principal evita que se vea rosado antes de que
+   termine de cargar extensiones.css (preload asíncrono). */
+#bExtensiones{margin:16px 0 6px;background:linear-gradient(135deg,#633CCB 0%,#385DC3 52%,#148C9B 100%);box-shadow:0 6px 0 #174F71}
+#bExtensiones:active{box-shadow:0 2px 0 #174F71}
+#bExtensiones .cta-play{background:#FFFFFF30;color:#F6D77A}
+#bExtensiones .cta-txt b{font-size:clamp(.96rem,4.2vw,1.2rem)}
 .cta-play{flex:0 0 auto;width:46px;height:46px;border-radius:50%;background:#FFFFFF2E;
  display:grid;place-items:center;font-size:1.15rem}
 .cta-txt{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
