@@ -14,9 +14,55 @@
     festeja:BASE+"Giro_festejando.png",
     revancha:BASE+"Giro_confundido.png"
   };
+  // Bocass v2: solo labios y mentón, sin ojos ni nariz.
+  const BOCAS=["Giro_boca_01_cerrada.png","Giro_boca_02_abierta.png",
+    "Giro_boca_03_vocal_o.png","Giro_boca_04_dientes.png",
+    "Giro_boca_05_o_pequena.png","Giro_boca_06_lengua.png",
+    "Giro_boca_07_risa.png"].map(n=>BASE+"bocas-v2/"+n);
   let capa=null, intervalo=null, frase=null, activa=false, salirDeCapa=null, anteriorFoco=null;
+  let bocaTimer=null, imagenLabios=null, actorHablando=null, labiosValidos=null, vozSecuencia=0;
+  const comprobarLabios=()=>{
+    if(labiosValidos)return labiosValidos;
+    labiosValidos=Promise.all(BOCAS.map(ruta=>new Promise((resolve,reject)=>{
+      const img=new Image();img.onload=()=>resolve();img.onerror=reject;img.src=ruta;
+    }))).then(()=>true).catch(()=>false);
+    return labiosValidos;
+  };
+  const fonemaAIndice=(texto,paso)=>{
+    const t=String(texto||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
+    if(!t.trim())return 0;
+    const letra=t[paso%t.length];
+    if(/[OU]/.test(letra))return 2;
+    if(/[AE]/.test(letra))return 1;
+    if(/[IMPB]/.test(letra))return 4;
+    if(/[FV]/.test(letra))return 3;
+    if(/[LRDNT]/.test(letra))return 5;
+    return (paso%4===0)?6:1;
+  };
+  function detenerLabios(){
+    clearInterval(bocaTimer);bocaTimer=null;
+    if(actorHablando)actorHablando.classList.remove("grp-speaking");
+    if(imagenLabios)imagenLabios.src=BOCAS[0];
+  }
+  function iniciarLabios(u,texto,token){
+    if(!actorHablando||!imagenLabios)return;
+    comprobarLabios().then(ok=>{
+      if(!ok||token!==vozSecuencia||frase!==u||!activa||!actorHablando)return;
+      actorHablando.classList.add("grp-speaking");
+      let paso=0,fraccion=texto;
+      const cambiar=()=>{
+        if(!activa||frase!==u){detenerLabios();return;}
+        imagenLabios.src=BOCAS[fonemaAIndice(fraccion,paso++)];
+      };
+      cambiar();
+      clearInterval(bocaTimer);
+      bocaTimer=setInterval(cambiar,145);
+    });
+  }
   const habilitado=()=>typeof esGonzalo==="function"&&esGonzalo()&&window.GIRO_ROSCO_PILOTO!==false;
   function cancelarVoz(){
+    ++vozSecuencia;
+    detenerLabios();
     if(frase&&"speechSynthesis" in window){
       try{window.speechSynthesis.cancel();}catch(e){}
     }
@@ -25,6 +71,7 @@
   function limpiar(){
     clearInterval(intervalo);intervalo=null;cancelarVoz();
     if(capa){capa.remove();capa=null;}
+    imagenLabios=null;actorHablando=null;
     document.removeEventListener("keydown",teclado);
     activa=false;
     const destino=anteriorFoco;anteriorFoco=null;
@@ -55,10 +102,18 @@
       const voces=window.speechSynthesis.getVoices();
       u.voice=voces.find(v=>v.lang.toLowerCase()==="es-uy")||
         voces.find(v=>v.lang.toLowerCase().startsWith("es-"))||null;
-      u.onend=()=>{if(frase===u)frase=null;};
-      u.onerror=()=>{if(frase===u)frase=null;};
+      const token=vozSecuencia;
+      u.onstart=()=>{if(frase===u)iniciarLabios(u,texto,token);};
+      u.onboundary=e=>{
+        if(frase!==u||!imagenLabios||!actorHablando?.classList.contains("grp-speaking"))return;
+        const inicio=Number(e.charIndex)||0;
+        const tramo=texto.slice(inicio,inicio+10);
+        imagenLabios.src=BOCAS[fonemaAIndice(tramo,inicio)];
+      };
+      const fin=()=>{if(frase!==u)return;detenerLabios();frase=null;};
+      u.onend=fin;u.onerror=fin;
       frase=u;window.speechSynthesis.speak(u);
-    }catch(e){frase=null;}
+    }catch(e){detenerLabios();frase=null;}
   }
   function presentar({tipo,titulo,descripcion,locucion,imagen,continuar}){
     if(!habilitado())return false;
@@ -80,6 +135,16 @@
     hostSiguiente.className="grp-giro";hostSiguiente.alt="";
     hostSiguiente.setAttribute("aria-hidden","true");
     actor.append(host,hostSiguiente);
+    // Pose frontal fija mientras la voz del navegador está activa.
+    // La boca está calibrada sobre Giro_espera_neutral.png (1024×1536).
+    const hablando=document.createElement("div");hablando.className="grp-hablando";
+    const rostro=document.createElement("div");rostro.className="grp-hablando-rostro";
+    const base=document.createElement("img");base.className="grp-hablando-base";
+    base.src=IMAGENES.neutral;base.alt="";base.setAttribute("aria-hidden","true");
+    const labios=document.createElement("img");labios.className="grp-labios";
+    labios.alt="";labios.setAttribute("aria-hidden","true");
+    rostro.append(base,labios);hablando.append(rostro);actor.appendChild(hablando);
+    imagenLabios=labios;actorHablando=actor;
     const rotulo=document.createElement("div");rotulo.className="grp-rotulo";rotulo.textContent="GIRÁ Y ADIVINÁ · EL ROSCO";
     const efecto=document.createElement("img");efecto.className="grp-efecto";
     efecto.src=BASE+"efectos/"+(tipo==="final"?"Giro_efecto_confeti_transparente.png":"Giro_efecto_destellos_transparente.png");
