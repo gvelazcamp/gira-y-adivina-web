@@ -507,6 +507,19 @@ const RoscoRioplatense=(()=>{
     acciones.forEach(([texto,accion],i)=>{const b=document.createElement("button");b.type="button";b.textContent=texto;b.className=i===0?"rr-principal":"";b.onclick=()=>accion(b);tarjeta.appendChild(b);});
     capa.appendChild(tarjeta);
   }
+  function mostrarMenu(){
+    if(!raiz)return;
+    fase="inicio";raiz.dataset.fase="inicio";raiz.classList.remove("rr-estudio");
+    $("#rrJuego").hidden=true;
+    const capa=$("#rrPanel");capa.classList.remove("rr-resultado-capa");
+    capa.removeAttribute("role");capa.removeAttribute("aria-modal");capa.removeAttribute("aria-label");
+    config=configNivel(nivel);
+    const acciones=[["Jugar nivel "+nivel,iniciar]];
+    if(nivel>1)acciones.push(["Practicar desde el nivel 1",()=>{nivel=1;iniciar();}]);
+    acciones.push(["Jugar con un amigo 👥",iniciarDuelo]);
+    panel("El Rosco Rioplatense",config.letras+" letras y "+config.segundos+" segundos. Leé cada pista y escribí la palabra: tenés un intento por letra. Pasapalabra la deja para después. El reloj se pausa al girar. Acertá al menos "+Math.ceil(config.letras*ROSCO_CONFIG.proporcionAvance)+" y respondé todas para avanzar. Jugás gratis, sin gastar vidas ni monedas. Mejor: "+datos.mejor+" puntos.",acciones,"personaje");
+    $(".rr-principal")?.focus({preventScroll:true});ajustarPantalla();
+  }
   /* Resumen final: por letra, la palabra correcta, lo que escribiste vos y
      (en duelo) lo que escribió el rival. ✓ acertó · ✕ erró · — no respondió. */
   const escH=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -539,13 +552,15 @@ const RoscoRioplatense=(()=>{
       logroDesbloquear("roscoPerfecto");if(tiempo>30000)logroDesbloquear("roscoVeloz");
     }
     hud();
-    const acciones=[];
-    if(avanzar)acciones.push(["Siguiente nivel",()=>{nivel++;iniciar();}]);
-    acciones.push(["Otra ronda · nivel "+nivel,iniciar]);
-    acciones.push(["Compartir resultado",b=>compartir(b,puntos,aciertos,errores,faltan)]);
+    const continuar=()=>{nivel=avanzar?nivel+1:nivel;mostrarMenu();};
     panel(faltan?"¡Se terminó el tiempo!":errores?"Rosco terminado":"¡Rosco perfecto!",
-      aciertos+" aciertos · "+errores+" errores · "+faltan+" sin responder. "+puntos+" puntos"+(bonus?" ("+bonus+" por tiempo)":"")+". Récord: "+datos.mejor+"."+(avanzar?" ¡Desbloqueaste el nivel "+(nivel+1)+"!":" Acertá al menos "+Math.ceil(items.length*ROSCO_CONFIG.proporcionAvance)+" y terminá la vuelta para avanzar."),acciones,faltan?"tiempo":errores?"terminado":"perfecto");
+      aciertos+" aciertos · "+errores+" errores · "+faltan+" sin responder · "+puntos+" puntos"+(bonus?" ("+bonus+" por tiempo)":"")+" · Récord: "+datos.mejor+(avanzar?" · Nivel "+(nivel+1)+" desbloqueado":""),[["Continuar",continuar]]);
+    const capa=$("#rrPanel");capa.classList.add("rr-resultado-capa");
+    capa.setAttribute("role","dialog");capa.setAttribute("aria-modal","true");capa.setAttribute("aria-label","Resultados del Rosco");
+    $(".rr-panel").classList.add("rr-resultado");
     const revision=document.createElement("div");revision.innerHTML=tablaRespuestas(respuestas,null);
+    const leyenda=document.createElement("small");leyenda.className="rr-resultado-leyenda";
+    leyenda.textContent="Letra · Respuesta correcta · Tu respuesta";revision.prepend(leyenda);
     $(".rr-panel").insertBefore(revision,$(".rr-panel button"));$(".rr-principal").focus({preventScroll:true});
     if(pruebaG&&perfilGiro()&&typeof window.GiroRoscoPiloto?.mostrarFinal==="function"){
       window.GiroRoscoPiloto.mostrarFinal({aciertos,errores,total:items.length,puntos,estudio:raiz.classList.contains("rr-estudio")});
@@ -655,9 +670,7 @@ const RoscoRioplatense=(()=>{
     window.visualViewport?.addEventListener("resize",ajustarPantalla);window.visualViewport?.addEventListener("scroll",ajustarPantalla);window.addEventListener("resize",ajustarPantalla);
     if(pruebaG)window.addEventListener("orientationchange",cambioOrientacionG);
     document.addEventListener("visibilitychange",visibilidad);ultimo=performance.now();intervalo=setInterval(tic,ROSCO_CONFIG.ticMs);iniciarMusicaJuego();
-    const acciones=[["Jugar nivel "+nivel,iniciar]];if(nivel>1)acciones.push(["Practicar desde el nivel 1",()=>{nivel=1;iniciar();}]);
-    acciones.push(["Jugar con un amigo 👥",iniciarDuelo]);
-    panel("El Rosco Rioplatense",config.letras+" letras y "+config.segundos+" segundos. Leé cada pista y escribí la palabra: tenés un intento por letra. Pasapalabra la deja para después. El reloj se pausa al girar. Acertá al menos "+Math.ceil(config.letras*ROSCO_CONFIG.proporcionAvance)+" y respondé todas para avanzar. Jugás gratis, sin gastar vidas ni monedas. Mejor: "+datos.mejor+" puntos.",acciones,"personaje");ajustarPantalla();
+    mostrarMenu();
     cargarEscenaGiroG(raiz);
   }
   function salir(){
