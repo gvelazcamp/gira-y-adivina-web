@@ -1796,3 +1796,15 @@ Decisión y motivo: quitar solo la restricción de perfil de puedeModoTVExtensio
 Comprobación realizada y resultado: revisión del catálogo y de las autorizaciones de GyaTV; validación de sintaxis JavaScript de extensiones.js, sw.js y del test modificado; cambios publicados en main. 
 Pendiente o limitación: ejecutar tests/extensiones-vale-tv.cjs y probar el bloqueo horizontal en un celular real, donde depende del navegador y de los permisos de orientación.
 ```
+
+
+```text
+Fecha: 29/10/2026
+Pedido de Gonzalo: auditar El Rosco, porque escuchaba desde lejos pero pedía decir la respuesta dos veces, a diferencia de Duelo de Conocimiento.
+Referencia/commit del cambio: f399a27e5331bd58d6e70def076fee66c84fcb8a (main); test completado en 5ab1584a2d632e88f38baefa86790c8eefb9e45b.
+Archivos y símbolos: rosco-rioplatense.js, procesarResultadoVozG(), arrancarEscuchaG(), cancelarPaseVozG(), leerPistaG(), transiciones y visibilidad; index.html (Rosco v37), sw.js (gya-cache-v525), tests/rosco-tv-voz.cjs y tests/rosco-voz-compartir.cjs.
+Comportamiento final: el acierto por voz se procesa incluso con transcripción parcial, sin Enviar; los resultados finales que NO coinciden se muestran para reintentar o confirmar manualmente, evitando penalizar errores de transcripción; «Pasapalabra» final sigue siendo instantáneo y su parcial exacto se confirma tras 500 ms si no cambia; la reconexión tras reconocimiento es más rápida (200 ms tras resultados y tope de 700 ms en reinicios sin audio) y se muestra cuando detecta habla. Continúan la lectura de pistas, el audio original, los teclados, los puntos, los tiempos, el piloto de Giro exclusivo de Gonzalo y la opción del modo TV. No se añade una segunda captura getUserMedia.
+Decisión y motivo: acercar el reconocimiento al comportamiento ya probado de Duelo de Conocimiento sin cambiar las reglas ni las demás extensiones.
+Comprobación realizada y resultado: sintaxis JavaScript validada, simulaciones directas del reconocimiento para acierto parcial, frases naturales, «Pasapalabra» final/parcial y transcripción dudosa; ambas pruebas existentes tests/rosco-voz-compartir.cjs y tests/rosco-tv-voz.cjs ejecutadas con lectura de archivos simulada: PASS. Git main actualizado.
+Pendiente o limitación: verificar la respuesta al primer intento en un celular real usando micrófono Chrome/TWA, en especial la latencia de onend/onaudiostart de la Web Speech API. No se probó un micrófono físico.
+```
