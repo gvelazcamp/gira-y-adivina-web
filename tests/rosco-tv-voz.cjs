@@ -57,7 +57,9 @@ function simulate(enabled,yes){
   }
   return {shown,calls};
 }
-assert.deepEqual(simulate(true,true).calls,["shown","removed","voice","clue"],"Sí activa la voz automáticamente");
+assert.deepEqual(simulate(true,true).calls,["shown","removed","voice"],"Sí activa el modo voz una sola vez");
+assert(js.includes('mostrarEstadoVozG("Voz activada · leyendo la pista…");\n    leerPistaG();'),
+  "Al activar el modo voz, se lee la pista una única vez desde alternarVozG");
 assert.deepEqual(simulate(true,false).calls,["shown","removed","fallback"],"No conserva lectura tradicional");
 const other=simulate(false,false);
 assert.equal(other.shown,false,"No aparece el aviso a perfiles no habilitados");
