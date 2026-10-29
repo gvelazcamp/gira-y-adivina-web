@@ -1,4 +1,4 @@
-/* Presentación de Giro para El Rosco — perfiles Vale, Grace y Gonzalo.
+/* Presentación de Giro para El Rosco — perfiles Vale y Gonzalo.
    Overlay aislado: no altera el motor del Rosco ni las salas. Sin música. */
 (function(){
   "use strict";
@@ -20,7 +20,7 @@
   let capa=null, intervalo=null, frase=null, activa=false, salirDeCapa=null, anteriorFoco=null;
   let reiniciarCine=null, salidaTimer=null;
   const habilitado=()=>{
-    try{return ["vale","grace","gonzalo"].includes(String(perfil?.nombre||"").trim().toLowerCase())&&window.GIRO_ROSCO_PILOTO!==false;}
+    try{return ["vale","gonzalo"].includes(String(perfil?.nombre||"").trim().toLowerCase())&&window.GIRO_ROSCO_PILOTO!==false;}
     catch(e){return false;}
   };
   /* Frases grabadas con voz de hombre (ElevenLabs): suenan igual en cualquier
@@ -350,7 +350,7 @@
       salidaTimer=setTimeout(cerrar,460);
     });
     acciones.append(voz,avanzar);
-    const aviso=document.createElement("small");aviso.className="grp-aviso";aviso.textContent="Prueba · Vale, Grace y Gonzalo";
+    const aviso=document.createElement("small");aviso.className="grp-aviso";aviso.textContent="Prueba · Vale y Gonzalo";
     panel.append(etiqueta,h,p,acciones,aviso);
     cont.append(stage,panel);overlay.appendChild(cont);document.body.appendChild(overlay);
     capa=overlay;document.addEventListener("keydown",teclado);

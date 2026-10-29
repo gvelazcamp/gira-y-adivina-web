@@ -11,11 +11,11 @@ const RoscoRioplatense=(()=>{
   let nivel=1,config=null,fase="inicio",tiempo=0,espera=0,ultimo=0,intervalo=null,ultimoTac=0,duelo=false,usadasSesion=new Set();
   let audioMusica=null,reconocimiento=null,escuchando=false,altoLibre=0;
   const perfilGiro=()=>{
-    try{return ["vale","grace","gonzalo"].includes(String(perfil?.nombre||"").trim().toLowerCase());}
+    try{return ["vale","gonzalo"].includes(String(perfil?.nombre||"").trim().toLowerCase());}
     catch(e){return false;}
   };
   /* Voz y teclado del Rosco para los perfiles del show. */
-  let avisoTiempoG=false,pruebaG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozMensajeG="",vozPistaG=null,vozSilenciosG=0,vozStreamG=null,vozGeneracionG=0,vozPaseTimerG=null;
+  let avisoTiempoG=false,pruebaG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozResultadoTimerG=null,vozMensajeG="",vozPistaG=null,vozSilenciosG=0,vozStreamG=null,vozGeneracionG=0,vozPaseTimerG=null;
   let vozConsultadaG=false,avisoVozG=null;
   function cerrarConsultaVozG(){if(avisoVozG){avisoVozG.remove();avisoVozG=null;}}
   /* Una única decisión en la partida: Sí activa voz sin tocar de nuevo Hablar;
@@ -210,10 +210,27 @@ const RoscoRioplatense=(()=>{
            quiere confirmar manualmente con Enviar o volver a hablar. */
         vozSilenciosG=0;$("#rrEntrada").value=opciones[0].slice(0,60);
         mostrarEstadoVozG("Oí «"+opciones[0].slice(0,45)+"» · repetí o tocá Enviar");
+        mensaje("Oí «"+opciones[0].slice(0,30)+"». No coincide con la respuesta; repetí o tocá Enviar.");
         continue;
       }
       mostrarEstadoVozG("Oí «"+opciones[0].slice(0,45)+"» · seguí hablando");
     }
+  }
+  /* Android puede detectar voz y quedarse sin entregar una transcripción.
+     Reiniciar solo ese intento; no apagar la opción Hablar ni exigir otro toque. */
+  function esperarResultadoVozG(r){
+    clearTimeout(vozResultadoTimerG);
+    vozResultadoTimerG=setTimeout(()=>{
+      vozResultadoTimerG=null;
+      if(reconocimiento!==r||!vozG||vozLeyendoG||fase!=="resolver")return;
+      mostrarEstadoVozG("No llegó la respuesta · reconectando micrófono…");
+      clearTimeout(vozTimerG);
+      vozTimerG=setTimeout(()=>{
+        if(reconocimiento!==r)return;
+        reconocimiento=null;escuchando=false;arrancarEscuchaG();
+      },1000);
+      try{r.abort();}catch(e){}
+    },6000);
   }
   function arrancarEscuchaG(){
     if(!pruebaG||!vozG||vozLeyendoG||fase!=="resolver"||document.hidden||escuchando)return;
@@ -229,10 +246,17 @@ const RoscoRioplatense=(()=>{
       if(reconocimiento!==r)return;
       if(!vozLeyendoG&&fase==="resolver")mostrarEstadoVozG("🎙 ESCUCHANDO · Respondé una sola vez");
     };
-    r.onspeechstart=()=>{if(reconocimiento===r&&!vozLeyendoG&&fase==="resolver")mostrarEstadoVozG("🎙 Te escucho · decí tu respuesta");};
-    r.onresult=e=>{if(reconocimiento===r){huboResultado=true;procesarResultadoVozG(e);}};
+    r.onspeechstart=()=>{if(reconocimiento===r&&!vozLeyendoG&&fase==="resolver"){
+      mostrarEstadoVozG("🎙 Te escucho · decí tu respuesta");esperarResultadoVozG(r);
+    }};
+    r.onresult=e=>{if(reconocimiento===r){
+      clearTimeout(vozResultadoTimerG);vozResultadoTimerG=null;
+      huboResultado=true;procesarResultadoVozG(e);
+      if(reconocimiento===r&&vozG&&fase==="resolver"&&Array.from(e.results||[]).slice(e.resultIndex||0).some(x=>x&&!x.isFinal))esperarResultadoVozG(r);
+    }};
     r.onerror=e=>{
       if(reconocimiento!==r)return;
+      clearTimeout(vozResultadoTimerG);vozResultadoTimerG=null;
       const error=String(e.error||"");
       if(["not-allowed","service-not-allowed","audio-capture","language-not-supported"].includes(error)){
         pararVozG();mensaje("No se pudo usar el micrófono ("+error+"). Revisá el permiso del navegador y si otra app lo está usando.");return;
@@ -243,6 +267,7 @@ const RoscoRioplatense=(()=>{
     };
     r.onend=()=>{
       if(reconocimiento!==r)return;
+      clearTimeout(vozResultadoTimerG);vozResultadoTimerG=null;
       reconocimiento=null;escuchando=false;
       if(vozG&&!vozLeyendoG&&fase==="resolver"&&!document.hidden){
         const duro=performance.now()-inicioIntento;
@@ -268,7 +293,7 @@ const RoscoRioplatense=(()=>{
       speechSynthesis.cancel();
       const u=new SpeechSynthesisUtterance(items[actual].definicion);
       u.lang="es-UY";u.rate=.97;vozPistaG=u;
-      /* La voz de Giro lee la pista para cualquiera de los tres perfiles. */
+      /* La voz de Giro lee la pista para Vale y Gonzalo. */
       if(perfilGiro()&&typeof obtenerVozMasculina==="function"){const vm=obtenerVozMasculina();if(vm)u.voice=vm;u.pitch=vm?.9:.75;if(typeof avisarVozGonzalo==="function")avisarVozGonzalo(vm);}
       const terminar=()=>{
         if(vozPistaG!==u)return;vozPistaG=null;vozLeyendoG=false;
@@ -324,6 +349,7 @@ const RoscoRioplatense=(()=>{
   }
   function detenerVoz(){
     cancelarPaseVozG();
+    clearTimeout(vozResultadoTimerG);vozResultadoTimerG=null;
     const r=reconocimiento;reconocimiento=null;escuchando=false;
     const boton=$("#rrVoz");
     if(boton){boton.classList.remove("rr-grabando");boton.setAttribute("aria-pressed","false");}
@@ -569,7 +595,7 @@ const RoscoRioplatense=(()=>{
     }else iniciarMusicaJuego();
     ultimo=performance.now();
   }
-  /* El módulo del estudio se carga solo para Vale, Grace o Gonzalo.
+  /* El módulo del estudio se carga solo para Vale o Gonzalo.
      Sin depender de él para iniciar ni terminar una partida normal. */
   /* Cortina negra del show: tapa el cartel de "Jugar" desde el primer
      instante hasta que arranca la apertura del show, así lo último que se ve es
@@ -598,7 +624,7 @@ const RoscoRioplatense=(()=>{
     }
     let script=document.querySelector('script[data-giro-rosco]');
     if(!script){
-      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=25";script.async=true;
+      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=26";script.async=true;
       script.dataset.giroRosco="1";script.addEventListener("load",activar,{once:true});script.addEventListener("error",()=>cortinaG(false),{once:true});
       document.head.appendChild(script);
     }else script.addEventListener("load",activar,{once:true});
