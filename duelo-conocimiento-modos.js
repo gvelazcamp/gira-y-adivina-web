@@ -3,7 +3,7 @@
 "use strict";
 const $dc=id=>document.getElementById(id);
 const originalStart=start, originalNextQuestion=nextQuestion, originalRightAnswer=rightAnswer, originalFinish=finish, originalReset=resetToConfig;
-let mode="bot", botHandle=0, botError=30, online=null, mic=null, micWanted=false, micRunning=false, micBlocked=false, micToken=0, lastSpeech="",lastSpeechAt=0, remoteState=0;
+let mode="bot", botHandle=0, botError=30, online=null, mic=null, micWanted=false, micRunning=false, micBlocked=false, micToken=0, micStartupTimer=0, lastSpeech="",lastSpeechAt=0, remoteState=0;
 const alphabet="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const uniqueId=()=>Math.random().toString(36).slice(2,10);
 const nameSafe=s=>String(s||"Jugador").trim().slice(0,14).replace(/[<>]/g,"");
@@ -55,7 +55,9 @@ textBtn.onclick=()=>{answerSel.value=answerSel.value==="voice"?"text":"voice";mi
 const micErrorText={ "not-allowed":"Permiso rechazado. Tocá el icono del candado en Chrome y permití el micrófono.", "service-not-allowed":"Chrome no permite reconocimiento de voz en este dispositivo.", "audio-capture":"No se detecta un micrófono. Revisá los permisos del teléfono.", "network":"El reconocimiento necesita conexión a internet." };
 function micNote(s){voiceBtn.textContent=s}
 function micFallback(message){
+ clearTimeout(micStartupTimer);
  answerSel.value="text";syncAnswer();
+ if(mode==="bot"&&phase==="waiting-mic"&&active===0)beginTimedTurn(false);
  $dc("feedback").className="feedback fail";$dc("feedback").textContent=message+" Podés responder escribiendo.";
  if(phase==="playing"&&canAnswer())$dc("answer-input").focus();
 }
@@ -72,7 +74,7 @@ async function startMic(){
    }
    if(!micWanted||token!==micToken)return;
    if(!mic){const Ctor=window.SpeechRecognition||window.webkitSpeechRecognition;mic=new Ctor();const instance=mic;mic.lang="es-UY";mic.continuous=true;mic.interimResults=true;mic.maxAlternatives=3;
-     mic.onstart=()=>{if(mic!==instance||token!==micToken)return;micRunning=true;voiceBtn.classList.add("ok");micNote("🎙 ESCUCHANDO");if(phase==="playing"&&canAnswer())setMicLabel("TE ESCUCHAMOS",`Respondé, ${players[active].name}`,true);};
+     mic.onstart=()=>{if(mic!==instance||token!==micToken)return;micRunning=true;voiceBtn.classList.add("ok");micNote("🎙 ESCUCHANDO");if(mode==="bot"&&phase==="waiting-mic"&&active===0){clearTimeout(micStartupTimer);beginTimedTurn(false)}if(phase==="playing"&&canAnswer())setMicLabel("TE ESCUCHAMOS",`Respondé, ${players[active].name}`,true);};
      mic.onresult=e=>{if(mic!==instance||token!==micToken||!micRunning||phase!=="playing"||!question||!canAnswer())return;
        for(let i=e.resultIndex;i<e.results.length;i++){const result=e.results[i];for(let j=0;j<result.length;j++){
          const candidate=String(result[j].transcript||"").trim();
@@ -87,13 +89,13 @@ async function startMic(){
        }
      };
      mic.onerror=e=>{if(mic!==instance||token!==micToken)return;micRunning=false;let err=e.error||"";if(["not-allowed","service-not-allowed","audio-capture","network"].includes(err)){micBlocked=true;micWanted=false;micFallback(micErrorText[err]||"Micrófono no disponible.");}else micNote("🎙 Micrófono interrumpido. Reintentar.");};
-     mic.onend=()=>{if(mic!==instance||token!==micToken)return;micRunning=false;voiceBtn.classList.remove("ok");if(micWanted&&!micBlocked)setTimeout(()=>{if(mic===instance&&token===micToken&&micWanted&&!micRunning&&canAnswer()){try{mic.start()}catch(e){}}},450);};
+     mic.onend=()=>{if(mic!==instance||token!==micToken)return;micRunning=false;voiceBtn.classList.remove("ok");if(mode==="bot"&&phase==="playing"&&active===0&&answerSel.value==="voice"&&question&&!question.answered){phase="waiting-mic";pauseClock();updatePlayers();setMicLabel("RECONECTANDO MICRÓFONO","Tu reloj está pausado.",false);const pending=question;micStartupTimer=setTimeout(()=>{if(mode==="bot"&&phase==="waiting-mic"&&question===pending)micFallback("No se pudo reconectar el micrófono.")},8000)}if(micWanted&&!micBlocked)setTimeout(()=>{if(mic===instance&&token===micToken&&micWanted&&!micRunning&&canAnswer()){try{mic.start()}catch(e){}}},450);};
    }
    if(!micRunning)try{mic.start()}catch(e){micFallback("No se pudo iniciar el micrófono.");}
  }catch(e){if(token!==micToken)return;micWanted=false;micBlocked=true;micFallback("Permiso de micrófono no habilitado.");}
 }
 voiceBtn.onclick=()=>{if(micRunning){stopMic();return;}micBlocked=false;micWanted=false;startMic()};
-function stopMic(){++micToken;micWanted=false;micRunning=false;voiceBtn.classList.remove("ok");const previous=mic;mic=null;if(previous){try{previous.abort()}catch(e){}}micNote("🎙 ACTIVAR MICRÓFONO")}
+function stopMic(){++micToken;clearTimeout(micStartupTimer);micWanted=false;micRunning=false;voiceBtn.classList.remove("ok");const previous=mic;mic=null;if(previous){try{previous.abort()}catch(e){}}micNote("🎙 ACTIVAR MICRÓFONO")}
 function canAnswer(){
  if(mode==="bot")return active===0;
  if(mode==="online"&&online)return active===(online.host?0:1);
@@ -155,13 +157,23 @@ function speak(text,maxMs=5500){
  if(!soundOn||!window.speechSynthesis||!window.SpeechSynthesisUtterance)return Promise.resolve();
  return new Promise(resolve=>{
    let done=false;const complete=()=>{if(done)return;done=true;clearTimeout(timeout);resolve()};
-   const timeout=setTimeout(complete,maxMs);
+   const timeout=setTimeout(()=>{cancelNarration();complete()},maxMs);
    try{const utterance=new SpeechSynthesisUtterance(text);utterance.lang="es-UY";utterance.rate=.9;utterance.onend=complete;utterance.onerror=complete;window.speechSynthesis.speak(utterance)}catch(e){complete()}
  });
 }
 function questionForVoice(q){
- if(q.category==="matematica")return `¿Cuánto da ${String(q.math||"").replace(/\*/g," por ").replace(/\//g," dividido ").replace(/\+/g," más ").replace(/-/g," menos ")}?`;
+ if(q.category==="matematica")return `¿Cuánto da ${String(q.math||"").replace(/[×*]/g," por ").replace(/[÷/]/g," dividido ").replace(/\+/g," más ").replace(/[−-]/g," menos ")}?`;
  return q.label;
+}
+function beginTimedTurn(bot){
+ if(mode!=="bot"||!question||question.answered||!['announcing','waiting-mic'].includes(phase))return;
+ clearTimeout(micStartupTimer);phase="playing";voiceBtn.disabled=bot;
+ $dc("answer-input").disabled=bot;$dc("answer-submit").disabled=bot;
+ $dc("feedback").textContent=bot?players[1].name+" está pensando…":"¡Respondé ahora, "+players[0].name+"!";
+ setMicLabel(bot?upper(players[1].name)+" ESTÁ PENSANDO":"TE TOCA RESPONDER",bot?"Esperá su respuesta; tu reloj está pausado.":"Ahora corre tu reloj.",!bot&&micRunning);
+ prevTick=performance.now();pauseClock();raf=requestAnimationFrame(tick);updatePlayers();
+ if(bot){micNote("🎙 PAUSADO · TURNO DE "+upper(players[1].name));botTurn();}
+ else if($dc("answer-form").offsetParent!==null)$dc("answer-input").focus();
 }
 nextQuestion=async function(){
  if(mode==="online"&&online&&!online.host)return;
@@ -180,15 +192,13 @@ nextQuestion=async function(){
    cancelNarration();
    await Promise.all([wait(2400),speak(`Turno de ${name}. ${questionForVoice(currentQuestion)}`)]);
    if(mode!=="bot"||phase!=="announcing"||question!==currentQuestion||serial!==questionGeneration)return;
-   phase="playing";
-   voiceBtn.disabled=bot;
-   $dc("answer-input").disabled=bot;$dc("answer-submit").disabled=bot;
-   $dc("feedback").textContent=bot?name+" está pensando…":"¡Respondé ahora, "+name+"!";
-   setMicLabel(bot?upper(name)+" ESTÁ PENSANDO":"TE TOCA RESPONDER",bot?"Esperá su respuesta; tu reloj está pausado.":"Ahora corre tu reloj.",false);
-   prevTick=performance.now();pauseClock();raf=requestAnimationFrame(tick);updatePlayers();
-   if(bot){micNote("🎙 PAUSADO · TURNO DE "+upper(name));botTurn();}
-   else if(answerSel.value==="voice"&&!micWanted&&!micBlocked)startMic();
-   else if($dc("answer-form").offsetParent!==null)$dc("answer-input").focus();
+   if(bot||answerSel.value==="text")beginTimedTurn(bot);
+   else{
+     phase="waiting-mic";updatePlayers();
+     setMicLabel("ACTIVANDO MICRÓFONO",`El reloj de ${name} sigue pausado.`,false);
+     micStartupTimer=setTimeout(()=>{if(mode==="bot"&&phase==="waiting-mic"&&question===currentQuestion)micFallback("El micrófono tardó demasiado en activarse.")},8000);
+     startMic();
+   }
    return;
  }
  if(mode==="online"&&online&&online.host)sendSnapshot();
@@ -215,7 +225,7 @@ finish=function(winner,reason){
  if(mode==="online"&&online&&online.host)sendOnline("finish",{winner,reason,players:players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0}))});
 };
 const baseReset=resetToConfig;
-resetToConfig=function(){clearTimeout(botHandle);cancelNarration();stopMic();stopOnline();baseReset();$dc("input0").value="";syncSetup();syncAnswer()};
+resetToConfig=function(){clearTimeout(botHandle);cancelNarration();stopMic();stopOnline();baseReset();voiceBtn.disabled=false;$dc("input0").value="";syncSetup();syncAnswer()};
 function codeValid(c){return /^[A-HJ-NP-Z2-9]{4}$/.test(c)}
 function sendOnline(type,data){
  if(!online)return;
@@ -334,7 +344,7 @@ start=function(){
    return;
  }
  originalStart();
- if(answerSel.value==="voice")startMic();
+ if(answerSel.value==="voice"&&mode!=="bot")startMic();
 };
 try{
  const c=new URLSearchParams(location.search).get("sala");

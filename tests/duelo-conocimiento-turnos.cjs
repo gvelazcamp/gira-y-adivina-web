@@ -25,7 +25,7 @@ const server=http.createServer((req,res)=>{
       window.__mics=[];window.__tones=[];window.__spoken=[];
       class FakeRecognition{
         constructor(){this.running=false;window.__mics.push(this)}
-        start(){this.running=true;this.onstart?.()}
+        start(){this.running=true;setTimeout(()=>{if(this.running)this.onstart?.()},450)}
         abort(){this.running=false;this.onend?.()}
         emit(text){this.onresult?.({resultIndex:0,results:[{0:{transcript:text},length:1,isFinal:true}]})}
       }
@@ -42,6 +42,8 @@ const server=http.createServer((req,res)=>{
       Object.defineProperty(navigator,'mediaDevices',{configurable:true,value:{getUserMedia:async()=>({getTracks:()=>[{stop(){}}]})}});
     });
     await page.goto('http://127.0.0.1:'+server.address().port+'/duelo-conocimiento.html',{waitUntil:'load'});
+    assert.equal(await page.evaluate(()=>isCorrectSpeech('Inglaterra','gb')),false,'Inglaterra no corresponde a la bandera del Reino Unido');
+    assert.equal(await page.evaluate(()=>isCorrectSpeech('Reino Unido','gb')),true);
     await page.locator('#input0').fill('Gonzalo');
     await page.locator('input[name=category]').evaluateAll(inputs=>inputs.forEach(input=>input.checked=input.value==='matematica'));
     await page.locator('#setup-form button[type=submit]').click();
@@ -51,6 +53,11 @@ const server=http.createServer((req,res)=>{
     assert.equal(await page.evaluate(()=>players[0].ms),before.ms,'el reloj espera mientras se lee la pregunta');
     assert.equal(before.button,true,'no se puede responder antes de la narración');
     assert.match(before.turn,/Gonzalo/i);
+    assert.equal(await page.evaluate(()=>window.__mics.some(m=>m.running)),false,'el micrófono aún no escucha la narración');
+    await page.waitForFunction(()=>phase==='waiting-mic'&&active===0,null,{timeout:10000});
+    const beforeMic=await page.evaluate(()=>players[0].ms);
+    await page.waitForTimeout(150);
+    assert.equal(await page.evaluate(()=>players[0].ms),beforeMic,'el reloj espera hasta que se activa el micrófono');
     await page.waitForFunction(()=>phase==='playing'&&active===0&&window.__mics.some(m=>m.running),null,{timeout:10000});
     assert((await page.evaluate(()=>window.__spoken)).some(s=>s.includes('¿Cuánto da')),'la pregunta se narra en voz alta');
     assert.equal(await page.locator('#name1').textContent(),'SOFÍA');
