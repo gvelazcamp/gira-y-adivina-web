@@ -7605,6 +7605,7 @@ activarArrastre($("duraznoViewport"),"dz-arrastrando");
 activarArrastre($("mapa"),"arrastrando");
 
 let mapaVideoObs=null;
+let mapaImagenObs=null;
 function verMundo(){
   sincronizarMundoActivo();
   $("fondoMundo").classList.remove("ver");
@@ -7615,20 +7616,30 @@ function verMundo(){
   if($("mundoTitulo"))$("mundoTitulo").textContent=mapaPaisActual==="argentina"?"ARGENTINA":"URUGUAY";
   $("subMundo").textContent="";
   actualizarBotonExpansion();
-  const m=$("mapa");m.innerHTML="";
+  const m=$("mapa");
+  if(mapaImagenObs){mapaImagenObs.disconnect();mapaImagenObs=null;}
+  if(mapaVideoObs){mapaVideoObs.disconnect();mapaVideoObs=null;}
+  m.innerHTML="";
   const tira=document.createElement("div");tira.className="tira";
   const N=MUNDO.length;
+  /* La imagen visible y sus vecinas se cargan primero. No solicitar
+     21+ paisajes a la vez apenas se toca Jugar ahora. */
+  const proxima=MUNDO.findIndex(d=>!ganados.has(d.id));
+  const actInicial=proxima<0?N-1:proxima;
 
   MUNDO.forEach((d,i)=>{
     const r=document.createElement("div");r.className="region";
     const abierto=i===0||ganados.has(MUNDO[i-1].id);
     if(!abierto&&!ganados.has(d.id))r.classList.add("gris");
-    if(d.bg)r.style.backgroundImage="url('"+fondoCiudad(d)+"')";
+    if(d.bg){
+      r.dataset.fondo=fondoCiudad(d);
+      if(Math.abs(i-actInicial)<=1)r.style.backgroundImage="url('"+r.dataset.fondo+"')";
+    }
     if(d.video){
       const v=document.createElement("video");
       v.dataset.src=d.video;
       v.muted=true;v.loop=true;v.playsInline=true;v.preload="none";
-      activarLoopSuave(v);v.poster=fondoCiudad(d);
+      activarLoopSuave(v);v.dataset.poster=fondoCiudad(d);
       r.appendChild(v);
     }
     if(d.id==="montevideo"){
@@ -7718,6 +7729,25 @@ function verMundo(){
     const nodo=m.querySelectorAll(".nodo")[act];
     if(nodo)m.scrollTop=nodo.offsetTop-m.clientHeight/2;
   },80);
+  /* Al desplazarse por el mapa, cargar cada fondo solo cuando se acerca.
+     Se conserva una pantalla de anticipación para que no se vea el vacío
+     antes de llegar a la siguiente ciudad. Las imágenes ya visitadas
+     permanecen asignadas y el service worker sigue reutilizando su caché. */
+  if("IntersectionObserver" in window){
+    mapaImagenObs=new IntersectionObserver(entries=>{
+      entries.forEach(en=>{
+        if(!en.isIntersecting)return;
+        const r=en.target,src=r.dataset.fondo;
+        if(src&&!r.style.backgroundImage)r.style.backgroundImage="url('"+src+"')";
+        mapaImagenObs?.unobserve(r);
+      });
+    },{root:m,rootMargin:"120% 0px"});
+    m.querySelectorAll(".region[data-fondo]").forEach(r=>mapaImagenObs.observe(r));
+  }else{
+    m.querySelectorAll(".region[data-fondo]").forEach(r=>{
+      if(!r.style.backgroundImage)r.style.backgroundImage="url('"+r.dataset.fondo+"')";
+    });
+  }
   /* Los videos de fondo de cada región sólo se cargan/reproducen cuando
      esa región está cerca de la pantalla (si no, con 5+ ciudades con
      video todas competían por ancho de banda y decodificación a la vez
@@ -7729,13 +7759,16 @@ function verMundo(){
     entries.forEach(en=>{
       const v=en.target;
       if(en.isIntersecting){
+        if(!v.poster)v.poster=v.dataset.poster;
         if(!v.src)v.src=v.dataset.src;
         v.play().catch(()=>{});
       }else v.pause();
     });
   },{root:m,rootMargin:"60% 0px"});
   m.querySelectorAll(".region video").forEach(v=>mapaVideoObs.observe(v));
-  precargarVideosMapa();
+  /* El observador ya pide cada video cerca del área visible.
+     No disparar además la descarga de todos los videos del país. */
+  precargarMapaActual();
 }
 /* Baja (una vez) los videos de las ciudades del mapa para que queden guardados en el
    celular (el service worker los guarda) y la próxima vez arranquen al instante. */
@@ -7746,8 +7779,17 @@ const mapaDibujosListos=[];
 function precargarMapaActual(){
   try{
     const lista=MUNDO;let act=0;while(act<lista.length&&ganados.has(lista[act].id))act++;act=Math.min(act,lista.length-1);
-    [act,act-1,act+1].forEach(i=>{const d=lista[i];if(!d||!d.bg)return;const im=new Image();im.src=fondoCiudad(d);mapaDibujosListos.push(im);if(im.decode)im.decode().catch(()=>{});});
-    const dv=lista[act];if(dv&&dv.video)fetch(dv.video).then(r=>r.blob()).catch(()=>{}); // el video de tu ciudad queda guardado
+    /* Mantener solo tres imágenes decodificadas, también al volver al mapa
+       o cambiar de país: antes la lista crecía con cada entrada. */
+    mapaDibujosListos.length=0;
+    [act,act-1,act+1].forEach(i=>{
+      const d=lista[i];if(!d||!d.bg)return;
+      const im=new Image();im.decoding="async";im.src=fondoCiudad(d);
+      mapaDibujosListos.push(im);
+      if(im.decode)im.decode().catch(()=>{});
+    });
+    /* Los videos se descargan al acercarse con mapaVideoObs, sin competir
+       con los fondos de las ciudades en el momento de entrar al mapa. */
   }catch(e){}
 }
 window.addEventListener("load",()=>setTimeout(precargarMapaActual,1500));
