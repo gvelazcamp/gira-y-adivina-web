@@ -48,7 +48,7 @@ select{padding:7px 8px}
 .win-img{display:block;width:100%;max-width:300px;margin:6px auto 10px;border-radius:14px;border:3px solid var(--acc);cursor:zoom-in;box-shadow:0 8px 24px #000a}
 #win.hide,#seguir.hide,#tuto.hide{opacity:0;pointer-events:none}
 #tuto{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:17;transition:opacity .3s;padding:16px}
-#tuto .card{max-width:400px;width:100%;text-align:left;padding:22px 20px;max-height:calc(100% - 20px);overflow-y:auto}
+#tuto .card{position:relative;max-width:400px;width:100%;text-align:left;padding:22px 20px;max-height:calc(100% - 20px);overflow-y:auto}
 #tuto h2{text-align:center;margin-top:0}
 #tuto ul{list-style:none;margin:6px 0 16px}
 #tuto li{display:flex;gap:12px;align-items:flex-start;font-size:14.5px;line-height:1.4;padding:8px 0;border-bottom:1px solid var(--line)}
@@ -57,6 +57,7 @@ select{padding:7px 8px}
 #tuto li b{color:var(--acc)}
 #tuto h2{font-size:21px}
 #tuto .card button{display:block;width:100%}
+#tuto .card .tu-cerrar{position:absolute;top:10px;right:10px;z-index:2;width:36px;height:36px;min-height:0;padding:0;border:0;border-radius:50%;background:#ffffff1a;color:#fff;font-size:22px;font-weight:700;line-height:1;box-shadow:none}
 /* segundo botón del popup: para que se vea de una que se puede armar de a dos */
 #tuto .card button.tu-pareja{margin-top:8px;background:#37D6C0;color:#160B24;box-shadow:0 4px 0 #1b8f80}
 #ayuda{font-weight:700;padding:7px 11px}
@@ -233,7 +234,7 @@ body.tv-puzzle #win .card{max-width:min(50vw,760px)}body.tv-puzzle #win h2{font-
 <div id="mini" aria-label="Ver imagen"><canvas id="mv"></canvas><span>🔍</span></div>
 <div id="prev" class="hide"><canvas id="pv"></canvas><span>Tocá para volver a armar</span></div>
 <div id="toast"></div>
-<div id="tuto" class="hide"><div class="card"><img class="tu-logo" src="assets/puzzle-arte/logo.webp" alt="Puzzle"><img class="tu-como" src="assets/puzzle-arte/como.webp" alt=""><h2>Cómo jugar</h2><ul>
+<div id="tuto" class="hide"><div class="card"><button id="tutoX" class="tu-cerrar" type="button" aria-label="Cerrar instrucciones">×</button><img class="tu-logo" src="assets/puzzle-arte/logo.webp" alt="Puzzle"><img class="tu-como" src="assets/puzzle-arte/como.webp" alt=""><h2>Cómo jugar</h2><ul>
 <li class="tu-vivo"><span><img class="tu-ico" src="assets/puzzle-arte/vivo.webp" alt=""></span><div><b>¿Con alguien?</b> Tocá <b>👥 Armar con un amigo</b> (abajo) y armen <b>el mismo puzzle en vivo</b>, cada uno en su celular.</div></li>
 <li><span>✋</span><div><b>Arrastrá</b> las piezas a su lugar y <b>tocá una</b> para girarla. Pellizcá para acercar.</div></li>
 <li><span>🧲</span><div>Cerca de su lugar o de su compañera, <b>se pega sola</b>.</div></li>
@@ -653,6 +654,7 @@ $('#winShare').onclick=async()=>{
 $('#again').onclick=()=>{if(coop){salirSala(null,true);return}$('#win').classList.add('hide');abrirElegirSolo(true)};$('#save').onclick=()=>guardar(true);
 function verTuto(){$('#tuto').classList.remove('hide')}
 $('#ayuda').onclick=verTuto;
+$('#tutoX').onclick=()=>$('#tuto').classList.add('hide');
 function verPrevia(v){$('#prev').classList.toggle('hide',!v);$('#pvBtn').classList.toggle('on',v)}
 $('#pvBtn').onclick=()=>verPrevia($('#prev').classList.contains('hide'));
 $('#prev').onclick=()=>verPrevia(false);
