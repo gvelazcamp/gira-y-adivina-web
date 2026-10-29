@@ -962,3 +962,50 @@ Concepto de contexto: una reunión o previa entre amigos, con **Giro como conduc
 
 **Decisión pendiente:** definir más adelante si se presentan por separado o como tres dinámicas dentro de una propuesta de previa con Giro. Por ahora **solo conservar las tres ideas en este documento**.
 
+---
+
+## Idea de pack: Noche de Televisión — 29/10/2026 (PENDIENTE)
+
+**Estado: idea a futuro. Nombre provisional: «Noche de Televisión».** No desarrollar, activar ni modificar el código existente sin pedido explícito.
+
+### Concepto
+
+Un **pack / programa de televisión completo dentro de Girá y Adiviná Rioplatense**, ideal para una previa, amigos o familia. En lugar de entrar y salir de cada juego por separado, los participantes juegan una **competencia continua**, como si estuvieran en un programa real.
+
+- **La TV es el estudio**: escenario, Giro como conductor, presentación de participantes, marcador general y resultados.
+- **Cada persona usa su celular como control**: responde, elige opciones o participa según la mecánica de cada desafío.
+- **Giro conduce todo el evento**: saluda a los jugadores por sus nombres, presenta los desafíos, anuncia los cambios de ronda y proclama un ganador.
+- **Sin salir del programa**: las transiciones van de un juego a otro conservando los participantes y, como idea, un puntaje acumulado.
+- **Gran final**: una última prueba de ruleta con presentación de televisión, suspenso y ganador de la noche.
+
+### Apertura imaginada
+
+El estudio se enciende. Aparece Giro y presenta a los jugadores por sus nombres:
+
+> «¡Bienvenidos a la gran noche de Girá y Adiviná! Hoy tenemos cinco desafíos y solamente un ganador».
+
+### Secuencia inicial propuesta
+
+1. **El Rosco** — primer desafío de palabras y respuestas.
+2. **Duelo de Conocimiento** — preguntas y competencia entre participantes.
+3. **100 Rioplatenses Dicen** — adivinar las respuestas del panel.
+4. **Quinto desafío / ronda adicional por definir** — la propuesta original menciona *cinco desafíos*, pero todavía no se eligió cuál será el juego restante ni su posición exacta.
+5. **Gran final: la ruleta de Girá y Adiviná** — último enfrentamiento y anuncio del ganador de la noche.
+
+**Importante:** lo anterior es un orden conceptual, no una decisión cerrada sobre reglas, cantidad exacta de participantes, puntajes ni integración técnica. Evaluar la compatibilidad de cada juego con TV y controles desde celulares cuando se decida desarrollarlo.
+
+### Qué lo haría diferente de abrir las extensiones por separado
+
+- La **misma sala y los mismos jugadores** participan durante toda la noche.
+- No se vuelve al menú entre juegos; **Giro hace las transiciones** como conductor.
+- La TV muestra el espectáculo y los celulares los controles apropiados para cada ronda.
+- El programa termina con **un único ganador general**, además de los resultados de cada desafío.
+- La idea es un **pack de experiencia**, no necesariamente un juego adicional con mecánica propia.
+
+### Relación con las otras ideas para previa
+
+Este pack es **independiente** de «La confesión anónima», «Defendé lo indefendible» y «¡Pará, que tengo algo para decir!». Más adelante podría evaluarse incluir alguna como ronda especial, pero **no están incorporadas ni decididas por ahora**.
+
+**Pendiente para una futura planificación:** nombre definitivo, duración, número de desafíos, cuál es el desafío faltante, sistema de puntuación, funcionamiento de las salas y viabilidad técnica de integrar todas las extensiones sin alterar su modo individual.
+
+**Regla:** mantener intactos el juego principal, las extensiones y la Sala TV actual hasta que exista autorización expresa para implementar este pack.
