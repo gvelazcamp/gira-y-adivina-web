@@ -191,30 +191,51 @@
     pasar:{poses:["Giro_suspenso.png"],frases:["pasar-1","pasar-2"]},
     tiempo:{poses:["Giro_sorprendido.png"],frases:["tiempo-1","tiempo-2"]}
   };
-  const ultimaFrase={};let reacAudio=null,reacTimer=null;
+  const ATRIL_REACCION=BASE+"elementos/Giro_atril_oficial_chico.webp";
+  const imagenesReaccion=new Map();
+  function cargarImagenReaccion(src){
+    if(imagenesReaccion.has(src))return imagenesReaccion.get(src);
+    const carga=new Promise(resolve=>{
+      const img=document.createElement("img");
+      img.onload=()=>resolve(img);
+      img.onerror=()=>{imagenesReaccion.delete(src);resolve(null);};
+      img.src=src;
+    });
+    imagenesReaccion.set(src,carga);
+    return carga;
+  }
+  function precargarReacciones(){
+    cargarImagenReaccion(ATRIL_REACCION);
+    Object.values(REACCIONES).forEach(r=>r.poses.forEach(p=>cargarImagenReaccion(BASE+p)));
+  }
+  const ultimaFrase={};let reacAudio=null,reacTimer=null,reacSolicitud=0;
   function reaccion(tipo){
     const r=REACCIONES[tipo];if(!r||!habilitado())return;
     const rueda=document.querySelector(".rr-game.rr-estudio .rr-rueda");if(!rueda)return;
     let opciones=r.frases.filter(f=>f!==ultimaFrase[tipo]);if(!opciones.length)opciones=r.frases;
     const frase=opciones[Math.floor(Math.random()*opciones.length)];ultimaFrase[tipo]=frase;
     rueda.querySelector(".grp-reac")?.remove();clearTimeout(reacTimer);
-    /* Giro siempre detrás de su atril (el oficial de "GIRÁ Y ADIVINÁ"), como en la presentación. */
-    const caja=document.createElement("div");caja.className="grp-reac grp-reac-"+tipo;caja.setAttribute("aria-hidden","true");
-    const giro=document.createElement("img");giro.className="grp-reac-giro";giro.alt="";giro.draggable=false;
-    giro.src=BASE+r.poses[Math.floor(Math.random()*r.poses.length)];
-    const atril=document.createElement("img");atril.className="grp-reac-atril";atril.alt="";atril.draggable=false;
-    atril.src=BASE+"elementos/Giro_atril_oficial_chico.webp";
-    caja.append(giro,atril);rueda.appendChild(caja);
-    reacTimer=setTimeout(()=>caja.remove(),1700);
+    const solicitud=++reacSolicitud;
+    const pose=BASE+r.poses[Math.floor(Math.random()*r.poses.length)];
+    /* Mostrar Giro y atril juntos. Si una imagen falla, no aparece un atril vacío. */
+    Promise.all([cargarImagenReaccion(pose),cargarImagenReaccion(ATRIL_REACCION)]).then(([giro,atril])=>{
+      if(solicitud!==reacSolicitud||!giro||!atril||!rueda.isConnected)return;
+      const caja=document.createElement("div");caja.className="grp-reac grp-reac-"+tipo;caja.setAttribute("aria-hidden","true");
+      giro.className="grp-reac-giro";giro.alt="";giro.draggable=false;
+      atril.className="grp-reac-atril";atril.alt="";atril.draggable=false;
+      caja.append(giro,atril);rueda.appendChild(caja);
+      reacTimer=setTimeout(()=>caja.remove(),1700);
+    });
     try{if(reacAudio)reacAudio.pause();reacAudio=new Audio(BASE+"voz/reacciones/giro-"+frase+".mp3");reacAudio.play().catch(()=>{});}catch(e){}
   }
   /* Las llama el Rosco al tocar Jugar (solo) — siguiente() arranca la partida. */
   function presentarSolo(siguiente){
     if(!habilitado())return false;
+    precargarReacciones();
     if(!miPersonaje()){elegirPersonaje(()=>mostrarParticipantes("solo","",siguiente));return true;}
     return mostrarParticipantes("solo","",siguiente);
   }
-  function presentarDuelo(rival,siguiente){if(!habilitado())return false;return mostrarParticipantes("duelo",rival,siguiente);}
+  function presentarDuelo(rival,siguiente){if(!habilitado())return false;precargarReacciones();return mostrarParticipantes("duelo",rival,siguiente);}
   function limpiar(){
     cortarApertura();cortarCierre();cortarEleccion();
     cortarParticipantes();
