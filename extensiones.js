@@ -307,20 +307,22 @@ const Extensiones=(()=>{
     },true);
   }
   function mostrar(){asegurar();shell.hidden=false;document.body.classList.add("ext-abierta");if(typeof detenerMusica==="function")detenerMusica();}
-  /* Los logos del lobby se bajan y se decodifican apenas carga el juego y se guardan acá
-     (si nadie los guarda, el navegador los descarta y al entrar a Extensiones tarda en dibujarlos). */
-  const iconosListos=[];
+  /* Conservar las imágenes de portada y bienvenida decodificadas para que al abrir
+     Extensiones o un popup no haya que esperar otra descarga. */
+  const iconosListos=new Map();
   function precargarIconos(){
-    if(iconosListos.length)return;
-    EXTENSIONES.forEach(x=>{if(!x.icono)return;const im=new Image();im.src=x.icono;iconosListos.push(im);if(im.decode)im.decode().catch(()=>{});});
-    /* Y los dibujos de los popups de cada juego (personajes y logos grandes del cartel de inicio),
-       un ratito después, para que al entrar a un juego el popup salga completo de arranque. */
-    setTimeout(()=>{ARTE_POPUPS.forEach(u=>{const im=new Image();im.src=u;iconosListos.push(im);if(im.decode)im.decode().catch(()=>{});});},1500);
+    for(const u of [...EXTENSIONES.map(x=>x.icono),...ARTE_POPUPS]){
+      if(!u||iconosListos.has(u))continue;
+      const im=new Image();im.decoding="async";im.src=u;iconosListos.set(u,im);
+      if(im.decode)im.decode().catch(()=>{});
+    }
   }
   const ARTE_POPUPS=["ahorcado","cien","frases-giro","memoria-giro","palabra-secreta","rosco","rueda-letras","silabario"].map(c=>"assets/"+c+"/personaje.webp")
     .concat(["ahorcado","bomba","canta","cien","frases-giro","impostor","memoria-giro","mimica","palabra-secreta","puzzle-arte","que-numero-soy","quien-soy","rosco","rueda-letras","silabario","sopa","tutti"].map(c=>"assets/"+c+"/logo.webp"))
-    .concat(["assets/tutti/como.webp","assets/tutti/ficha.webp"]);
-  addEventListener("load",()=>setTimeout(precargarIconos,1200));
+    .concat(["bomba","canta","mimica","puzzle-arte","que-numero-soy","quien-soy","tutti"].map(c=>"assets/"+c+"/como.webp"))
+    .concat(["assets/tutti/ficha.webp","assets/sopa/mascota.webp","assets/avatars/avatar-01.webp","assets/avatars/avatar-02.webp"]);
+  if(document.readyState==="complete")precargarIconos();
+  else addEventListener("load",precargarIconos,{once:true});
   function abrirLobby(){
     precargarIconos();
     if(!EXTENSIONES_HABILITADAS)return;
