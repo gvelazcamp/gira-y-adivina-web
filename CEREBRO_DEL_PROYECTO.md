@@ -1864,3 +1864,7 @@ Fecha: 29/10/2026 — Rosco show (solo Gonzalo, partida individual en el estudio
 ```text
 Fecha: 29/10/2026 — Rosco show: en las reacciones Giro aparecía flotando (Gonzalo: "no tiene atril"). Ahora sale parado detrás del atril oficial "GIRÁ Y ADIVINÁ" (Giro/elementos/Giro_atril_oficial_chico.webp, copia liviana de 360 px). giro-rosco-piloto.js v20, .css v14, rosco v50, sw v543.
 ```
+
+```text
+Fecha: 29/10/2026 — Rosco show: el cartel "Jugar nivel N" se veía antes de la apertura (Gonzalo: "arranca con el popup visible; ese popup es lo último de todo"). Pasaba porque lo de Giro (giro-rosco-piloto.js) se carga aparte y tarda un instante. Ahora, solo para Gonzalo, al abrir el Rosco se pone una cortina negra (#rrCortinaG) desde el primer instante; se saca apenas arranca la apertura (o si el archivo de Giro no carga, a los 7 s como máximo, o al salir). Orden: negro → apertura → Giro → cartel de Jugar. rosco v51, sw v544.
+```
