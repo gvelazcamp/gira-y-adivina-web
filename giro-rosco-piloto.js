@@ -124,8 +124,13 @@
     const ir=document.createElement("button");ir.type="button";ir.className="grp-boton grp-accion";ir.textContent="¡A jugar!";
     cartel.append(dice,ir);cuadro.appendChild(cartel);
     capa.appendChild(cuadro);document.body.appendChild(capa);
-    const terminar=()=>{if(!participantes||participantes.capa!==capa)return;capa.classList.add("grp-ap-fin");
-      clearTimeout(participantes.timer);participantes.timer=setTimeout(()=>{cortarParticipantes();if(typeof siguiente==="function")siguiente();},650);};
+    /* La partida se arma ATRÁS y recién después se desvanece la presentación:
+       así no se ve la pantalla del Rosco vacía en el medio. */
+    const terminar=()=>{if(!participantes||participantes.capa!==capa)return;
+      const p=participantes;participantes=null;clearTimeout(p.timer);document.removeEventListener("keydown",tecla);
+      try{p.voz.pause();}catch(e){}apagarMusica(p.musica);
+      if(typeof siguiente==="function")siguiente();
+      capa.classList.add("grp-ap-fin");setTimeout(()=>capa.remove(),700);};
     const tecla=e=>{if(e.key==="Escape"||e.key==="Enter"){e.preventDefault();terminar();}};
     /* Música de la presentación (otra parte del tema de Gonzalo) y la voz de Giro
        presentando al participante (voz/giro-rosco-participante.mp3); mientras

@@ -1888,3 +1888,7 @@ Fecha: 29/10/2026 — Rosco show: llegó la voz de Giro para el duelo (voz/giro-
 ```text
 Fecha: 29/10/2026 — Inicio: el botón "Jugá más juegos de Girá y Adiviná" (#bExtensiones) tardaba unos segundos en aparecer (Gonzalo: "que aparezca siempre como todos, sin cargar"). Arrancaba con hidden y recién lo mostraba extensiones.js, que es de los últimos scripts del index. Ahora es visible desde el arranque; si se toca antes de que cargue extensiones.js, queda anotado (data-pendiente) y el lobby se abre apenas carga. EXTENSIONES_HABILITADAS=false lo sigue ocultando. Para todos los usuarios. extensiones.js v107, sw v549.
 ```
+
+```text
+Fecha: 29/10/2026 — Rosco show, arranque de la partida (videos de Gonzalo: "hace algo raro, se achica y agranda"; el segundo video muestra cómo tiene que quedar: rosco grande, teclado cerrado). Tres arreglos (solo Gonzalo / estudio): (1) el teclado del celular ya no se abre solo al empezar (enfocar() no enfoca el cuadro si no estaba enfocado); se abre al tocar el cuadro, y si el rosco se achica lo hace suave (transición 0,3 s). (2) Después de "¡A jugar!" se veía un instante el cartel "Jugar nivel N": ahora el cartel se oculta debajo de la presentación y la partida se arma atrás antes de que la presentación se desvanezca. (3) Se retiró el aviso amarillo "Prueba de voz" (avisarVozGonzalo ya no hace nada; Giro usa grabaciones). giro-rosco-piloto.js v22, .css v16, rosco v54, extensiones.js v108, sw v550.
+```
