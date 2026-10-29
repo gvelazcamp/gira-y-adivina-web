@@ -276,8 +276,19 @@ finish=function(winner,reason){
    sendOnline("finish",{winner:resultado.winner,reason:resultado.reason,players:players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0}))});
  }
 };
+function sincronizarPantallaDuelo(jugando,solicitarTV=false){
+ try{
+   if(window.parent===window)return;
+   window.parent.DueloConocimiento?.pantalla?.(jugando);
+   if(jugando&&solicitarTV)window.parent.Extensiones?.prepararDueloTV?.();
+ }catch(e){}
+}
 const baseReset=resetToConfig;
-resetToConfig=function(){clearTimeout(botHandle);cancelNarration();stopMic();stopOnline();lastRevealTurn=-1;baseReset();voiceBtn.disabled=false;$dc("input0").value="";syncSetup();syncAnswer()};
+resetToConfig=function(){
+ clearTimeout(botHandle);cancelNarration();stopMic();stopOnline();lastRevealTurn=-1;
+ baseReset();sincronizarPantallaDuelo(false);
+ voiceBtn.disabled=false;$dc("input0").value="";syncSetup();syncAnswer();
+};
 function codeValid(c){return /^[A-HJ-NP-Z2-9]{4}$/.test(c)}
 function sendOnline(type,data){
  if(!online)return;
@@ -400,6 +411,10 @@ start=function(){
    return;
  }
  originalStart();
+ /* Se ejecuta dentro del toque Empezar, para que Android permita TV.
+    En cualquier otro caso basta girar el celular físicamente. */
+ if(!$dc("setup-overlay").classList.contains("hidden"))return;
+ sincronizarPantallaDuelo(true,true);
  if(answerSel.value==="voice"&&mode!=="bot")startMic();
 };
 try{
@@ -416,5 +431,10 @@ $dc("rematch-btn").addEventListener("click",()=>{
  if(mode==="online"){resetToConfig();$dc("dc-room-status").textContent="Para la revancha, vuelvan a crear o unirse a una sala.";}
  else start();
 });
+/* La sala online también puede empezar por un mensaje remoto: actualizar
+   solo el tamaño, sin solicitar fullscreen fuera de un toque del usuario. */
+new MutationObserver(()=>{
+ sincronizarPantallaDuelo($dc("setup-overlay").classList.contains("hidden"));
+}).observe($dc("setup-overlay"),{attributes:true,attributeFilter:["class"]});
 syncSetup();syncAnswer();
 })();

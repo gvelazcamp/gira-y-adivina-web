@@ -1227,3 +1227,34 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
     margin-right:auto;
   }
 }
+
+/* Duelo de Conocimiento: solo durante la partida horizontal.
+   El iframe ocupa todo el espacio; quedan accesibles Volver y Cerrar.
+   El formulario de nombres conserva el layout normal al inicio. */
+@media (orientation:landscape) and (max-height:760px){
+  .ext-shell.dc-partida-horizontal{
+    padding:0!important;overflow:hidden!important;
+  }
+  .ext-shell.dc-partida-horizontal>.ext-wrap{
+    width:100%!important;max-width:none!important;height:100dvh!important;
+    padding:0!important;margin:0!important;
+  }
+  .ext-shell.dc-partida-horizontal .ext-header{
+    position:absolute;top:3px;right:4px;left:auto;z-index:50;
+    width:auto;min-height:0;height:auto;margin:0;padding:0;
+    background:transparent;border:0;pointer-events:none;
+  }
+  .ext-shell.dc-partida-horizontal .ext-header>:not(#extCerrar){display:none!important}
+  .ext-shell.dc-partida-horizontal #extCerrar{
+    display:grid;place-items:center;pointer-events:auto;width:28px;height:28px;
+    min-width:28px;min-height:28px;padding:0;font-size:17px;
+    border-radius:9px;background:#160b24e8;color:#fff;opacity:.94;
+  }
+  .ext-shell.dc-partida-horizontal #extContenido{
+    box-sizing:border-box;width:100%;height:100dvh;min-height:0;overflow:hidden;
+  }
+  .ext-shell.dc-partida-horizontal .dc-marco{
+    width:100%;height:100dvh!important;min-height:0!important;
+    max-height:100dvh;border-radius:0;
+  }
+}

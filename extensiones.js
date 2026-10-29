@@ -63,6 +63,11 @@ window.hablar=hablar;
 const DueloConocimiento={
   iframe:null,
   marco:null,
+  pantalla(jugando){
+    /* Solo Duelo, en partida: la pantalla horizontal aprovecha toda el área.
+       La configuración previa conserva el espacio para el teclado nativo. */
+    this.marco?.closest(".ext-shell")?.classList.toggle("dc-partida-horizontal",Boolean(jugando));
+  },
   abrir(contenedor){
     this.salir();
     if(!document.getElementById("dc-carga-estilo")){
@@ -74,7 +79,7 @@ const DueloConocimiento={
     const carga=document.createElement("div");carga.className="dc-cargando";carga.setAttribute("role","status");
     carga.innerHTML='<img src="logo-duelo-conocimiento.webp" alt=""><b>Preparando Duelo de Conocimiento…</b><i aria-hidden="true"></i><small>En un momento empieza el desafío</small><button type="button" hidden>Reintentar</button>';
     const frame=document.createElement("iframe");
-    frame.src="duelo-conocimiento.html?v=16";
+    frame.src="duelo-conocimiento.html?v=17";
     frame.title="Duelo de Conocimiento";
     frame.allow="microphone; autoplay";
     frame.setAttribute("allowfullscreen","");
@@ -95,7 +100,10 @@ const DueloConocimiento={
     this.iframe=frame;
     this.marco=marco;
   },
-  salir(){if(this.marco){this.marco.remove();this.marco=null;this.iframe=null;}}
+  salir(){
+    this.pantalla(false);
+    if(this.marco){this.marco.remove();this.marco=null;this.iframe=null;}
+  }
 };
 window.DueloConocimiento=DueloConocimiento;
 
@@ -382,13 +390,19 @@ const Extensiones=(()=>{
     });
     shell.scrollTop=0;
   }
+  function prepararDueloTV(){
+    /* Girar únicamente después de configurar los nombres y pulsar Empezar,
+       nunca mientras el teclado de la configuración está en pantalla. */
+    if(vista!=="duelo-conocimiento"||!modoTVDisponible()||!modoTVElegido||window.GyaTV?.activo("ext"))return;
+    void window.GyaTV?.alternar("ext").then(()=>pintarTV());
+  }
   function abrirJuego(id){
     if(!EXTENSIONES_HABILITADAS)return;
     const ext=EXTENSIONES.find(x=>x.id===id&&x.estado==="disponible"&&extensionVisible(x));if(!ext)return;
     mostrar();vista=id;contenido.replaceChildren();Fichas.enJuego(id);pintarTV();
     /* Pedir orientación horizontal solo al entrar al juego y solo cuando
        Gonzalo o Vale eligieron TV, nunca al seleccionar el modo en el menú. */
-    if(modoTVDisponible()&&modoTVElegido&&!window.GyaTV?.activo("ext"))
+    if(id!=="duelo-conocimiento"&&modoTVDisponible()&&modoTVElegido&&!window.GyaTV?.activo("ext"))
       void window.GyaTV?.alternar("ext").then(()=>pintarTV());
     shell.querySelector("#extTitulo").textContent=ext.nombre;
     if(typeof window.anotarUltimoJuego==="function")window.anotarUltimoJuego(ext.nombre);
@@ -396,7 +410,7 @@ const Extensiones=(()=>{
   }
   function salirJuego(){for(const juego of [window.SopaFugaz,window.RuedaDeLetras,window.PalabraSecreta,window.FrasesEnGiro,window.MemoriaEnGiro,window.RoscoRioplatense,window.SilabarioRioplatense,window.CienRioplatenses,window.AhorcadoRioplatense,window.ContraRelojRioplatense,window.MoonTap,window.DueloConocimiento,window.Puzzle,window.QueNumeroSoy,window.QuienSoy,window.Bomba,window.Impostor,window.Mimica,window.CantaLaCancion,window.TuttiFrutti])if(juego)juego.salir();}
   function cerrar(){if(!shell)return;cerrarAvisoTV();salirJuego();Fichas.enJuego("");vista="lobby";modoTVElegido=false;versionModo++;salirTV();shell.hidden=true;shell.classList.remove("ext-teclado-abierto");shell.style.top="";shell.style.height="";shell.style.bottom="";document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
-  return{abrirLobby,abrirJuego,cerrar};
+  return{abrirLobby,abrirJuego,cerrar,prepararDueloTV};
 })();
 window.Extensiones=Extensiones;
 const botonExtensiones=document.getElementById("bExtensiones");
