@@ -196,7 +196,19 @@ const server=http.createServer((req,res)=>{
     assert.match(await categories.locator('#feedback').textContent(),/Homero Simpson/);
     assert.equal(await categories.evaluate(()=>isRightAnswer('Homero',{category:'simpsons'})),false,'no se repite el mismo personaje con otro nombre');
     assert.equal(await categories.evaluate(()=>isRightAnswer('París',{category:'ciudades'})),true,'una nueva partida limpia las respuestas usadas');
+    await categories.evaluate(()=>resetToConfig());
+    await categories.locator('#input0').fill('Gonzalo');
+    await categories.locator('input[name=category]').evaluateAll(inputs=>inputs.forEach(input=>input.checked=input.value==='videojuegos'));
+    await categories.locator('#setup-form button[type=submit]').click();
+    await categories.waitForFunction(()=>phase==='playing'&&active===0&&question.category==='videojuegos',null,{timeout:10000});
+    assert.match(await categories.locator('#question-title').textContent(),/VIDEOJUEGO/);
+    assert.equal(await categories.evaluate(()=>openAnswer('Mario Kart','videojuegos').name),'Mario Kart','se distingue Mario Kart de Super Mario');
+    await categories.locator('#answer-input').fill('Minecraft');
+    await categories.locator('#answer-submit').click();
+    await categories.waitForFunction(()=>players[0].score===1,null,{timeout:1000});
+    assert.match(await categories.locator('#feedback').textContent(),/Minecraft/);
+    assert.equal(await categories.evaluate(()=>isRightAnswer('Minecraft',{category:'videojuegos'})),false,'Minecraft no vuelve a puntuar');
     await categories.close();
-    console.log('PASS Duelo: banderas reveladas al pasar o errar, ciudades turísticas y Los Simpson sin respuestas repetidas');
+    console.log('PASS Duelo: banderas reveladas al pasar o errar; ciudades, Los Simpson y videojuegos sin repetir respuestas');
   }finally{await browser.close();server.close()}
 })().catch(error=>{console.error(error);server.close();process.exitCode=1});

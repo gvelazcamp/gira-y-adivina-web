@@ -136,7 +136,7 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
   <form class="modal dc-setup-card" id="setup-form">
    <div class="dc-setup-hero"><div class="dc-hero-rivals" aria-hidden="true"><img src="assets/avatars/avatar-01.webp" alt=""><span>VS</span><img src="assets/avatars/avatar-02.webp" alt=""></div><div class="dc-hero-copy"><div class="overline">Girá y Adiviná presenta</div><h2 id="setup-title">DUELO DE <span>CONOCIMIENTO</span></h2><p>Respondé bien y frená tu reloj. El primero que se quede sin tiempo pierde.</p></div></div>
    <div class="dc-setup-body"><div class="dc-setup-main"><div id="dc-mode-slot"></div><div class="form-row dc-player-row"><div class="field"><label for="input0">Jugador 1 · vos</label><input id="input0" type="text" maxlength="14" value="" placeholder="Escribí tu nombre" autocomplete="off" required /></div><div class="field"><label for="input1" id="dc-rival-label">Rival virtual</label><input id="input1" type="text" maxlength="14" value="Sofía" required /></div></div></div>
-   <div class="dc-setup-side"><fieldset class="category-fieldset"><legend>Elegí los desafíos</legend><div class="category-grid"><label><input type="checkbox" name="category" value="banderas" checked/> 🌎 Banderas</label><label><input type="checkbox" name="category" value="matematica" checked/> ➕ Matemática</label><label><input type="checkbox" name="category" value="famosos" checked/> ★ Famosos</label><label><input type="checkbox" name="category" value="futbol" checked/> ⚽ Futbolistas</label><label><input type="checkbox" name="category" value="ciudades"/> 🏙 Ciudades turísticas</label><label><input type="checkbox" name="category" value="simpsons"/> 🍩 Los Simpson</label></div></fieldset><div class="dc-options-row"><div class="field"><label for="time-select">Tiempo por jugador</label><select id="time-select"><option value="40" selected>40 segundos</option><option value="60">60 segundos</option><option value="90">90 segundos</option></select></div><div id="dc-answer-slot"></div></div><div class="dc-rules-brief">🎲 Sorteamos quién empieza · 🎙 Hablá o escribí · ⏱ Los errores consumen tiempo</div></div></div>
+   <div class="dc-setup-side"><fieldset class="category-fieldset"><legend>Elegí los desafíos</legend><div class="category-grid"><label><input type="checkbox" name="category" value="banderas" checked/> 🌎 Banderas</label><label><input type="checkbox" name="category" value="matematica" checked/> ➕ Matemática</label><label><input type="checkbox" name="category" value="famosos" checked/> ★ Famosos</label><label><input type="checkbox" name="category" value="futbol" checked/> ⚽ Futbolistas</label><label><input type="checkbox" name="category" value="ciudades"/> 🏙 Ciudades turísticas</label><label><input type="checkbox" name="category" value="simpsons"/> 🍩 Los Simpson</label><label><input type="checkbox" name="category" value="videojuegos"/> 🎮 Videojuegos</label></div></fieldset><div class="dc-options-row"><div class="field"><label for="time-select">Tiempo por jugador</label><select id="time-select"><option value="40" selected>40 segundos</option><option value="60">60 segundos</option><option value="90">90 segundos</option></select></div><div id="dc-answer-slot"></div></div><div class="dc-rules-brief">🎲 Sorteamos quién empieza · 🎙 Hablá o escribí · ⏱ Los errores consumen tiempo</div></div></div>
    <button class="primary" type="submit">▶ EMPEZAR DUELO</button><div class="setup-voice-error" id="setup-voice-error" role="alert"></div>
  </form>
 </div>
@@ -287,11 +287,77 @@ Hans Moleman|Hans
 Jimbo Jones|Jimbo
 Martin Prince|Martin
 Snake Jailbird|Snake
-El hombre abeja|Hombre Abeja`
+El hombre abeja|Hombre Abeja`,
+ videojuegos:`Minecraft
+Fortnite
+Roblox
+Tetris
+Pac-Man|Pacman
+Super Mario Bros.|Super Mario|Mario
+Mario Kart
+The Legend of Zelda|Zelda
+Sonic the Hedgehog|Sonic
+Pokémon GO|Pokemon Go
+Pokémon Rojo y Azul|Pokemon Rojo|Pokemon Azul
+Grand Theft Auto V|GTA V|GTA 5|GTA
+Red Dead Redemption 2|Red Dead Redemption
+EA Sports FC|FIFA
+eFootball|PES|Pro Evolution Soccer
+Rocket League
+League of Legends|LOL
+Valorant
+Counter-Strike 2|Counter Strike|CS 2
+Call of Duty|COD
+Halo
+Doom
+Los Sims|The Sims
+Animal Crossing
+Among Us
+Fall Guys
+Clash Royale
+Clash of Clans
+Brawl Stars
+Candy Crush Saga|Candy Crush
+Subway Surfers
+Plants vs. Zombies|Plantas contra Zombis
+Angry Birds
+Terraria
+Stardew Valley
+Hollow Knight
+Undertale
+Portal 2|Portal
+Half-Life|Half Life
+Resident Evil
+Silent Hill
+God of War
+The Last of Us
+Uncharted
+Assassin's Creed
+Far Cry
+Mortal Kombat
+Street Fighter
+Tekken
+Elden Ring
+Dark Souls
+Hogwarts Legacy
+Hades
+Overwatch
+Apex Legends
+PUBG
+Free Fire
+Genshin Impact
+Dota 2
+World of Warcraft|WoW
+Final Fantasy
+Kingdom Hearts
+Metroid
+Splatoon
+Just Dance
+Guitar Hero`
 };
 for(const category of Object.keys(OPEN_ANSWERS))OPEN_ANSWERS[category]=OPEN_ANSWERS[category].split('\n').map(line=>{const [name,...aliases]=line.split('|');return {name,aliases:[name,...aliases].map(normalize)}});
 const usedOpenAnswers=new Set();
-function openAnswer(value,category){const phrase=' '+normalize(value)+' ';if(!phrase.trim())return null;return OPEN_ANSWERS[category]?.find(entry=>entry.aliases.some(alias=>phrase.includes(' '+alias+' ')))||null}
+function openAnswer(value,category){const phrase=' '+normalize(value)+' ';if(!phrase.trim())return null;let match=null,longest=0;for(const entry of OPEN_ANSWERS[category]||[])for(const alias of entry.aliases)if(alias.length>longest&&phrase.includes(' '+alias+' ')){match=entry;longest=alias.length}return match}
 const PHOTO_CACHE={};
 let questionGeneration=0;
 const askedQuestions=new Set();
@@ -326,7 +392,7 @@ function newMath(p){
  while(askedQuestions.has('matematica:'+n+' + '+(n+1)))n++;
  return {category:'matematica',answer:String(2*n+1),math:n+' + '+(n+1),label:'¿CUÁNTO DA ESTA CUENTA?',level:Math.min(6,Math.floor(p.score/2)+1)};
 }
-function buildQuestion(p,category){if(category==='banderas')return newFlag(p);if(category==='matematica')return newMath(p);if(OPEN_ANSWERS[category])return OPEN_ANSWERS[category].some(entry=>!usedOpenAnswers.has(category+':'+normalize(entry.name)))?{category,label:category==='ciudades'?'NOMBRÁ UNA CIUDAD TURÍSTICA':'NOMBRÁ UN PERSONAJE DE LOS SIMPSON',level:null}:newMath(p);const person=nextPerson(p,category);return person?{category,person,label:category==='famosos'?'¿QUIÉN ES ESTA PERSONA?':'¿QUÉ FUTBOLISTA ES?',level:null}:newMath(p)}
+function buildQuestion(p,category){if(category==='banderas')return newFlag(p);if(category==='matematica')return newMath(p);if(OPEN_ANSWERS[category]){if(!OPEN_ANSWERS[category].some(entry=>!usedOpenAnswers.has(category+':'+normalize(entry.name))))return newMath(p);return {category,label:{ciudades:'NOMBRÁ UNA CIUDAD TURÍSTICA',simpsons:'NOMBRÁ UN PERSONAJE DE LOS SIMPSON',videojuegos:'NOMBRÁ UN VIDEOJUEGO'}[category],level:null}}const person=nextPerson(p,category);return person?{category,person,label:category==='famosos'?'¿QUIÉN ES ESTA PERSONA?':'¿QUÉ FUTBOLISTA ES?',level:null}:newMath(p)}
 function personAnswers(person){const n=normalize(person.name);const words=n.split(' ');const r=[n];
  if(words.length>=2){const last=words[words.length-1];const pool=[...PEOPLE.famosos,...PEOPLE.futbol];const matches=pool.filter(p=>normalize(p.name).split(' ').at(-1)===last);if(last.length>=4&&!['junior','martinez'].includes(last)&&matches.length===1)r.push(last);r.push(words.slice(-2).join(' '));}
  if(n==='lionel messi')r.push('messi','leo messi');
@@ -365,6 +431,7 @@ function showVisual(q){
  if(q.category==='matematica')$('math-visual').textContent=q.math+' = ?';
  if(q.category==='ciudades')$('math-visual').textContent='🏙\nCIUDADES TURÍSTICAS';
  if(q.category==='simpsons')$('math-visual').textContent='🍩\nLOS SIMPSON';
+ if(q.category==='videojuegos')$('math-visual').textContent='🎮\nVIDEOJUEGOS';
  if(q.category==='famosos'||q.category==='futbol'){$('portrait-img').src=q.img;$('credit-link').href=photoSource(q.person);}
  $('flag-box').classList.remove('pulse');void $('flag-box').offsetWidth;$('flag-box').classList.add('pulse');
 }
@@ -376,7 +443,7 @@ async function nextQuestion(){
  const p=players[active];if(p.ms<=0){finish(1-active,`${p.name} se quedó sin tiempo`);return}
  const serial=++questionGeneration;phase='loading';pauseClock();$('answer-input').disabled=true;$('answer-submit').disabled=true;updatePlayers();
  let q=buildQuestion(p,nextTopic(p));
- $('question-title').textContent=q.label;$('question-number').textContent=`${{banderas:'BANDERAS',matematica:'MATEMÁTICA',famosos:'FAMOSOS',futbol:'FÚTBOL',ciudades:'CIUDADES TURÍSTICAS',simpsons:'LOS SIMPSON'}[q.category]}${q.level?' · NIVEL '+q.level:''} · Turno de ${p.name}`;
+ $('question-title').textContent=q.label;$('question-number').textContent=`${{banderas:'BANDERAS',matematica:'MATEMÁTICA',famosos:'FAMOSOS',futbol:'FÚTBOL',ciudades:'CIUDADES TURÍSTICAS',simpsons:'LOS SIMPSON',videojuegos:'VIDEOJUEGOS'}[q.category]}${q.level?' · NIVEL '+q.level:''} · Turno de ${p.name}`;
  if(q.category==='banderas'||q.category==='famosos'||q.category==='futbol'){
   $('feedback').className='feedback';$('feedback').textContent='Preparando imagen…';setMicLabel('CARGANDO DESAFÍO','El cronómetro está pausado mientras carga la imagen.',false);
   try{
@@ -398,10 +465,10 @@ async function nextQuestion(){
   askedQuestions.add(questionKey(q));
  question={...q,answered:false};showVisual(q);
  $('question-title').textContent=q.label;
- $('question-number').textContent=`${{banderas:'BANDERAS',matematica:'MATEMÁTICA',famosos:'FAMOSOS',futbol:'FÚTBOL',ciudades:'CIUDADES TURÍSTICAS',simpsons:'LOS SIMPSON'}[q.category]}${q.level?' · NIVEL '+q.level:''} · Turno de ${p.name}`;
+ $('question-number').textContent=`${{banderas:'BANDERAS',matematica:'MATEMÁTICA',famosos:'FAMOSOS',futbol:'FÚTBOL',ciudades:'CIUDADES TURÍSTICAS',simpsons:'LOS SIMPSON',videojuegos:'VIDEOJUEGOS'}[q.category]}${q.level?' · NIVEL '+q.level:''} · Turno de ${p.name}`;
  $('feedback').className='feedback';$('feedback').textContent=`¡Respondé, ${p.name}!`;
   const puedeResponder=typeof window.dueloPuedeResponder==='function'?window.dueloPuedeResponder():true;
-  phase=typeof window.dueloPreparaTurno==='function'&&window.dueloPreparaTurno()?'announcing':'playing';$('answer-input').value='';$('answer-input').placeholder=q.category==='banderas'?'Escribí el país':q.category==='matematica'?'Escribí el número':q.category==='ciudades'?'Escribí una ciudad turística':q.category==='simpsons'?'Escribí un personaje':'Escribí quién es';$('answer-input').disabled=phase!=='playing'||!puedeResponder;$('answer-submit').disabled=phase!=='playing'||!puedeResponder;
+  phase=typeof window.dueloPreparaTurno==='function'&&window.dueloPreparaTurno()?'announcing':'playing';$('answer-input').value='';$('answer-input').placeholder=q.category==='banderas'?'Escribí el país':q.category==='matematica'?'Escribí el número':q.category==='ciudades'?'Escribí una ciudad turística':q.category==='simpsons'?'Escribí un personaje':q.category==='videojuegos'?'Escribí un videojuego':'Escribí quién es';$('answer-input').disabled=phase!=='playing'||!puedeResponder;$('answer-submit').disabled=phase!=='playing'||!puedeResponder;
  setMicLabel('ESCRIBÍ TU RESPUESTA',`Turno de ${p.name} · El reloj está corriendo`,false);
   if(phase==='announcing'){updatePlayers();return}
   prevTick=performance.now();pauseClock();raf=requestAnimationFrame(tick);updatePlayers();if(puedeResponder&&$('answer-form').offsetParent!==null)$('answer-input').focus();
