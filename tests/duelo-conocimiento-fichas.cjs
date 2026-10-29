@@ -25,6 +25,7 @@ const server=http.createServer((req,res)=>{
       {name:'Pepe',initial:3,mode:'bot',expectBlocked:false,expectFichas:2},
       {name:'Andrés',initial:0,mode:'bot',expectBlocked:false,expectFichas:0},
       {name:'Pepe',initial:0,mode:'local',expectBlocked:false,expectFichas:0},
+      {name:'Pepe',initial:0,mode:'online',expectBlocked:false,expectFichas:0},
     ]){
       const context=await browser.newContext({serviceWorkers:'block'});
       const page=await context.newPage();
@@ -42,7 +43,7 @@ const server=http.createServer((req,res)=>{
         document.querySelector('#setup').style.display='none';
         Extensiones.abrirJuego('duelo-conocimiento');
       });
-      const frame=page.frameLocator('iframe[src="duelo-conocimiento.html"]');
+      const frame=page.frameLocator('iframe[src^="duelo-conocimiento.html"]');
       await frame.locator('[data-mode=bot]').waitFor();
       await frame.locator(`[data-mode=${mode}]`).click();
       await frame.locator('[data-answer=text]').click();
@@ -58,13 +59,14 @@ const server=http.createServer((req,res)=>{
       assert.equal(state.fichas,expectFichas,`${name}/${mode}: fichas`);
       assert.equal(state.tester,name==='Andrés');
       assert.equal(state.chip,name==='Andrés',`${name}/${mode}: indicador`);
-      assert.equal(await frame.locator('#setup-overlay').evaluate(el=>el.classList.contains('hidden')), !expectBlocked,`${name}/${mode}: inicio`);
+      assert.equal(await frame.locator('#setup-overlay').evaluate(el=>el.classList.contains('hidden')), !expectBlocked&&mode!=='online',`${name}/${mode}: inicio`);
+      if(mode==='online')assert.equal(await frame.locator('#dc-room-lobby').isVisible(),true,'la sala online se crea sin gastar fichas');
       if(name==='Pepe'&&initial===3){
         await frame.locator('#rematch-btn').evaluate(button=>button.click());
         assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('gya_fichas_ext'))['duelo-conocimiento'].n),1,'la revancha contra BOT gasta otra ficha');
       }
       await context.close();
     }
-    console.log('PASS Duelo de Conocimiento: BOT y revancha cobran; sin fichas bloquea; tester y juego local libres');
+    console.log('PASS Duelo de Conocimiento: BOT y revancha cobran; tester, juego local y sala online libres');
   }finally{await browser.close();server.close();}
 })().catch(error=>{console.error(error);server.close();process.exitCode=1;});

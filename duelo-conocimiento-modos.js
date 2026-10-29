@@ -11,7 +11,7 @@ const roomCode=()=>Array.from({length:4},()=>alphabet[Math.floor(Math.random()*a
 const place=$dc("setup-form");
 const modeBox=document.createElement("div");
 modeBox.className="dc-extra";
-modeBox.innerHTML='<span class="dc-section-label">¿Contra quién jugás?</span><div class="dc-mode-choices"><button type="button" data-mode="bot" aria-pressed="true">🤖 <b>Rival virtual</b></button><button type="button" data-mode="local" aria-pressed="false">👥 <b>Mismo celular</b></button><button type="button" data-mode="online" aria-pressed="false">🌐 <b>Con un amigo</b></button></div><select id="dc-mode" aria-label="Modo de juego" hidden><option value="bot">Contra un BOT</option><option value="local">Dos jugadores aquí</option><option value="online">Online con un amigo</option></select><div id="dc-bot-fields"><details class="dc-bot-details"><summary>⚙ Ajustar dificultad del rival <span id="dc-bot-percent">30%</span></summary><label class="dc-field" for="dc-bot-error">Probabilidad de error<input id="dc-bot-error" type="range" min="10" max="70" step="5" value="30"/></label></details></div><div id="dc-online-fields" hidden><div class="dc-row"><label class="dc-field">Sala online<select id="dc-room-choice"><option value="create">Crear sala</option><option value="join">Unirme a una sala</option></select></label><label class="dc-field">Código de 4 caracteres<input id="dc-room-code" placeholder="ABCD" maxlength="4" autocomplete="off" autocapitalize="characters"/></label></div><small>Cada participante usa su propio celular.</small></div><div id="dc-room-status" role="status"></div>';
+modeBox.innerHTML='<span class="dc-section-label">¿Contra quién jugás?</span><div class="dc-mode-choices"><button type="button" data-mode="bot" aria-pressed="true">🤖 <b>Rival virtual</b></button><button type="button" data-mode="local" aria-pressed="false">👥 <b>Mismo celular</b></button><button type="button" data-mode="online" aria-pressed="false">🌐 <b>Con un amigo</b></button></div><select id="dc-mode" aria-label="Modo de juego" hidden><option value="bot">Contra un BOT</option><option value="local">Dos jugadores aquí</option><option value="online">Online con un amigo</option></select><div id="dc-bot-fields"><details class="dc-bot-details"><summary>⚙ Ajustar dificultad del rival <span id="dc-bot-percent">30%</span></summary><label class="dc-field" for="dc-bot-error">Probabilidad de error<input id="dc-bot-error" type="range" min="10" max="70" step="5" value="30"/></label></details></div><div id="dc-online-fields" hidden><div class="dc-room-choices"><button type="button" data-room="create" aria-pressed="true">📱 Crear sala</button><button type="button" data-room="join" aria-pressed="false">🔑 Unirme</button></div><select id="dc-room-choice" aria-label="Crear o unirse a sala" hidden><option value="create">Crear sala</option><option value="join">Unirme a una sala</option></select><label class="dc-field" id="dc-room-code-field" for="dc-room-code" hidden>Código de 4 caracteres<input id="dc-room-code" placeholder="ABCD" maxlength="4" autocomplete="off" autocapitalize="characters"/></label><small>Cada participante juega desde su celular. Se sortea quién empieza y después se turnan.</small></div><div id="dc-room-lobby" hidden><strong>Sala <span id="dc-room-code-display"></span></strong><div id="dc-room-roster"></div><div class="dc-room-actions"><button type="button" id="dc-room-copy">📋 Copiar invitación</button><button type="button" id="dc-room-whatsapp">📲 WhatsApp</button><button type="button" id="dc-room-start">🎲 Empezar duelo</button><button type="button" id="dc-room-cancel">✕ Salir</button></div><p id="dc-room-message" role="status"></p></div><div id="dc-room-status" role="status"></div>';
 place.querySelector("#dc-mode-slot").append(modeBox);
 const answerBox=document.createElement("div");
 answerBox.className="dc-answer-choice";
@@ -26,20 +26,27 @@ $dc("answer-form").before(voiceBtn);$dc("answer-form").after(textBtn);
 const modeSel=$dc("dc-mode"),answerSel=$dc("dc-answer"),roomChoice=$dc("dc-room-choice"),roomInput=$dc("dc-room-code");
 function syncSetup(){
  mode=modeSel.value;
+ if(online&&mode!=="online")stopOnline();
+ place.classList.toggle("dc-online",mode==="online");
+ place.classList.toggle("dc-online-joining",mode==="online"&&roomChoice.value==="join");
  modeBox.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===mode)));
- $dc("dc-bot-fields").hidden=mode!=="bot";$dc("dc-online-fields").hidden=mode!=="online";
+ $dc("dc-bot-fields").hidden=mode!=="bot";
  $dc("input1").disabled=mode==="bot"||mode==="online";
  $dc("input1").value=mode==="bot"?"Sofía":mode==="online"?"Amigo":($dc("input1").dataset.local||"Sofía");
  $dc("dc-rival-label").textContent=mode==="bot"?"Rival virtual":mode==="online"?"Rival online":"Jugador 2";
- roomInput.disabled=roomChoice.value==="create";
+ modeBox.querySelectorAll("[data-room]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.room===roomChoice.value)));
+ $dc("dc-room-code-field").hidden=roomChoice.value!=="join";
+ roomInput.disabled=roomChoice.value!=="join";
  if(mode==="online"){place.querySelector(".primary[type=submit]").textContent=roomChoice.value==="create"?"▶ CREAR SALA":"▶ UNIRME A SALA";}
  else place.querySelector(".primary[type=submit]").textContent="▶ EMPEZAR DUELO";
- $dc("dc-room-status").textContent="";
+ if(!online)$dc("dc-room-status").textContent="";
+ renderLobby();
 }
 modeSel.addEventListener("change",syncSetup);
 modeBox.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{modeSel.value=b.dataset.mode;syncSetup();});
 $dc("input1").addEventListener("input",()=>{if(modeSel.value==="local")$dc("input1").dataset.local=$dc("input1").value;});
 roomChoice.addEventListener("change",syncSetup);
+modeBox.querySelectorAll("[data-room]").forEach(b=>b.onclick=()=>{roomChoice.value=b.dataset.room;syncSetup();});
 $dc("dc-bot-error").addEventListener("input",()=>{$dc("dc-bot-percent").textContent=$dc("dc-bot-error").value+"%"});
 answerSel.addEventListener("change",syncAnswer);
 answerBox.querySelectorAll("[data-answer]").forEach(b=>b.onclick=()=>{answerSel.value=b.dataset.answer;syncAnswer();});
@@ -313,25 +320,78 @@ function sendOnline(type,data){
 }
 function sendSnapshot(){
  if(!online||!online.host||phase==="setup")return;
- sendOnline("state",{phase,active,turn,players:players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0})),question,selectionStarted,feedback:$dc("feedback").textContent,usedOpenAnswers:[...usedOpenAnswers],history:roundHistory});
+ sendOnline("state",{phase,active,turn,players:players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0})),question,selectionStarted,rouletteCaption:$dc("roulette-caption").textContent,roulettePicked:$dc("roulette-name0").classList.contains("picked")?0:$dc("roulette-name1").classList.contains("picked")?1:-1,feedback:$dc("feedback").textContent,usedOpenAnswers:[...usedOpenAnswers],history:roundHistory});
 }
 function onlineStatus(text){
  $dc("dc-room-status").textContent=text;
+ $dc("dc-room-message").textContent=text;
 }
+function roomInvitation(){
+ const url=new URL("/",location.origin);
+ url.searchParams.set("duelo_conocimiento",online.code);
+ return `¡Juguemos Duelo de Conocimiento en Girá y Adiviná! 🎙 ${url.href} (código ${online.code})`;
+}
+function renderLobby(){
+ const waiting=mode==="online"&&!!online,lobby=$dc("dc-room-lobby");
+ lobby.hidden=!waiting;$dc("dc-online-fields").hidden=mode!=="online"||waiting;
+ place.querySelector(".primary[type=submit]").hidden=waiting;
+ place.classList.toggle("dc-online-waiting",waiting);
+ place.classList.toggle("dc-online-guest",waiting&&!online?.host);
+ if(!waiting)return;
+ $dc("dc-room-code-display").textContent=online.code;
+ $dc("dc-room-roster").textContent=online.host?`${nameSafe($dc("input0").value)} · ${online.guestName||"Esperando rival"}`:`${online.hostName||"Anfitrión"} · ${nameSafe($dc("input0").value)}`;
+ $dc("dc-room-copy").hidden=!online.host;$dc("dc-room-whatsapp").hidden=!online.host;
+ $dc("dc-room-start").hidden=!online.host;
+ $dc("dc-room-start").disabled=!online.ready||!online.guestId||online.started;
+}
+$dc("dc-room-copy").onclick=()=>{
+ if(!online||!online.host)return;
+ const invitation=roomInvitation();
+ if(navigator.clipboard?.writeText)navigator.clipboard.writeText(invitation).then(()=>onlineStatus("Invitación copiada. Enviásela a tu rival."),()=>window.prompt("Copiá la invitación:",invitation));
+ else window.prompt("Copiá la invitación:",invitation);
+};
+$dc("dc-room-whatsapp").onclick=()=>{if(online?.host)window.open("https://wa.me/?text="+encodeURIComponent(roomInvitation()),"_blank","noopener")};
+$dc("dc-room-cancel").onclick=()=>{stopOnline();renderLobby();onlineStatus("Saliste de la sala.")};
+$dc("dc-room-start").onclick=()=>{
+ if(!online?.host||!online.ready||!online.guestId||online.started)return;
+ const guest=online.guestName;
+ $dc("input1").disabled=false;$dc("input1").value=guest;
+ const selected=[...document.querySelectorAll('input[name=category]:checked')].map(x=>x.value);
+ if(!selected.length){onlineStatus("Elegí al menos una categoría antes de empezar.");return}
+ if(selected.every(category=>IMAGE_ITEMS[category]&&imageRemaining(category)===0)){onlineStatus("Ya viste todas las imágenes de esas categorías. Elegí otra antes de empezar.");return}
+ online.started=true;
+ sendOnline("welcome",{to:online.guestId,hostName:nameSafe($dc("input0").value),guestName:guest,seconds:Number($dc("time-select").value),categories:selected});
+ originalStart();
+ sincronizarPantallaDuelo(true,true);
+ if(answerSel.value==="voice")startMic();
+};
 function onOnlineMsg(message){
  if(!online||message.from===online.id||message.code!==online.code)return;
+ if(message.data?.to&&message.data.to!==online.id)return;
  if(online.seen.has(message.id))return;
  online.seen.add(message.id);if(online.seen.size>200)online.seen.clear();
  if(message.type==="join"&&online.host){
-   if(online.started){sendOnline("welcome",{hostName:players[0].name,guestName:players[1].name,seconds:settings.seconds,categories:settings.categories});sendSnapshot();return;}
-   online.guestId=message.from;const guest=nameSafe(message.data.name);
-   $dc("input1").disabled=false;$dc("input1").value=guest;
-   sendOnline("welcome",{hostName:nameSafe($dc("input0").value),guestName:guest,seconds:Number($dc("time-select").value),categories:[...document.querySelectorAll('input[name=category]:checked')].map(x=>x.value)});
-   online.started=true;onlineStatus("¡Se unió "+guest+"! Comienza el duelo.");
-   originalStart();if(answerSel.value==="voice")startMic();
+   if(online.guestId&&online.guestId!==message.from){sendOnline("full",{to:message.from});return;}
+   if(online.started){sendOnline("welcome",{to:message.from,hostName:players[0].name,guestName:players[1].name,seconds:settings.seconds,categories:settings.categories});sendSnapshot();return;}
+   online.guestId=message.from;online.guestName=nameSafe(message.data.name);
+   sendOnline("lobby",{to:message.from,hostName:nameSafe($dc("input0").value),guestName:online.guestName});
+   onlineStatus("¡Se unió "+online.guestName+"! Ya pueden empezar.");renderLobby();
+   return;
+ }
+ if(message.type==="lobby"&&!online.host&&!online.started){
+   online.hostId=message.from;online.hostName=nameSafe(message.data.hostName);online.joined=true;
+   onlineStatus("Esperando que "+online.hostName+" empiece el duelo.");renderLobby();return;
+ }
+ if(message.type==="full"&&!online.host){onlineStatus("Esta sala ya tiene dos jugadores. Probá otro código.");return;}
+ if(message.type==="leave"){
+   if(online.host&&message.from===online.guestId&&!online.started){online.guestId=null;online.guestName="";onlineStatus("Tu rival salió. Esperando a otra persona.");renderLobby();}
+   else if(!online.host&&message.from===online.hostId){resetToConfig();modeSel.value="online";syncSetup();onlineStatus("El anfitrión cerró la sala.");}
    return;
  }
  if(message.type==="welcome"&&!online.host){
+   if(online.started)return;
+   if(online.hostId&&message.from!==online.hostId)return;
+   online.hostId=message.from;
    online.started=true;const d=message.data;
    $dc("input0").value=d.hostName;$dc("input1").disabled=false;$dc("input1").value=d.guestName;
    players=[{name:d.hostName,ms:d.seconds*1000,score:0,errors:0},{name:d.guestName,ms:d.seconds*1000,score:0,errors:0}];roundHistory=[];
@@ -343,14 +403,19 @@ function onOnlineMsg(message){
    return;
  }
  if(message.type==="state"&&!online.host){
-   if(!online.started)return;
+   if(!online.started||message.from!==online.hostId||phase==="finished"||message.time<remoteState)return;
+   remoteState=message.time;
    const d=message.data;players=d.players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0}));roundHistory=Array.isArray(d.history)?d.history:[];usedOpenAnswers.clear();(d.usedOpenAnswers||[]).forEach(answer=>usedOpenAnswers.add(answer));
    active=d.active;turn=d.turn;if(d.phase==="finished")return;
    phase=d.phase;
    const olderKey=question&&JSON.stringify([question.category,question.code,question.math,question.answer,question.person&&question.person.name]);
    const nextKey=d.question&&JSON.stringify([d.question.category,d.question.code,d.question.math,d.question.answer,d.question.person&&d.question.person.name]);
    question=d.question;
-   $dc("roulette-overlay").classList.add("hidden");
+   $dc("roulette-overlay").classList.toggle("hidden",phase!=="selecting");
+   if(phase==="selecting"){
+     $dc("roulette-caption").textContent=d.rouletteCaption||"SORTEANDO PRIMER TURNO...";
+     for(let i=0;i<2;i++)$dc("roulette-name"+i).classList.toggle("picked",d.roulettePicked===i);
+   }
    if(question&&olderKey!==nextKey){
      showVisual(question);
      $dc("question-title").textContent=question.label;
@@ -365,54 +430,58 @@ function onOnlineMsg(message){
    updatePlayers();return;
  }
  if(message.type==="guess"&&online.host&&phase==="playing"&&active===1&&question){
+   if(message.from!==online.guestId)return;
    if(isRightAnswer(message.data.guess,question))rightAnswer(message.data.guess);
    else if(question.category==="banderas"||isImageQuestion(question))passTurn(message.data.guess);
    else sendOnline("wrong",{feedback:openAnswerHint(message.data.guess,question)});
    return;
  }
- if(message.type==="pass"&&online.host&&phase==="playing"&&active===1&&question){passTurn(message.data?.wrong||"");return;}
- if(message.type==="wrong"&&!online.host){$dc("feedback").textContent=message.data.feedback||"No es correcto. Tu tiempo sigue corriendo.";return;}
+ if(message.type==="pass"&&online.host&&phase==="playing"&&active===1&&question){if(message.from===online.guestId)passTurn(message.data?.wrong||"");return;}
+ if(message.type==="wrong"&&!online.host){if(message.from===online.hostId)$dc("feedback").textContent=message.data.feedback||"No es correcto. Tu tiempo sigue corriendo.";return;}
  if(message.type==="finish"&&!online.host){
-   if(!online.started)return;
+   if(!online.started||message.from!==online.hostId)return;
    players=message.data.players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0}));roundHistory=Array.isArray(message.data.history)?message.data.history:roundHistory;
    baseFinish(message.data.winner,message.data.reason);return;
  }
 }
 function stopOnline(){
  if(!online)return;
+ sendOnline("leave",{to:online.host?online.guestId:online.hostId});
  if(online.helloTimer)clearInterval(online.helloTimer);
  if(online.syncTimer)clearInterval(online.syncTimer);
- online.clients.forEach(c=>{try{c.end(true)}catch(e){}});
+ online.clients.forEach(c=>setTimeout(()=>{try{c.end(true)}catch(e){}},150));
  online=null;
 }
 function connectOnline(host,code){
  stopOnline();
- online={id:uniqueId(),code,host,topic:"gyaduelo/conocimiento/"+code,clients:[],seen:new Set(),started:false};
+ remoteState=0;
+ online={id:uniqueId(),code,host,topic:"gyaduelo/conocimiento/"+code,clients:[],seen:new Set(),started:false,ready:false};
+ renderLobby();
  onlineStatus("Conectando a la sala "+code+"...");
  if(typeof mqtt==="undefined"){onlineStatus("No se cargó la conexión online. Revisá internet.");return;}
- let ready=false,timeout=setTimeout(()=>{if(!ready)onlineStatus("No hay conexión con las salas. Probá desde otra red.");},13000);
+ const room=online;let ready=false,timeout=setTimeout(()=>{if(online===room&&!ready)onlineStatus("No hay conexión con las salas. Probá con otra red.");},13000);
  const brokers=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt","wss://test.mosquitto.org:8081/mqtt"];
  brokers.forEach(url=>{
    let c;try{c=mqtt.connect(url,{clientId:"gyadc"+uniqueId(),connectTimeout:7500,reconnectPeriod:4000,clean:true})}catch(e){return;}
-   online.clients.push(c);
-   c.on("connect",()=>{c.subscribe(online.topic);if(!ready){ready=true;clearTimeout(timeout);
-     if(host){onlineStatus("SALA "+code+" LISTA — Esperando al otro jugador...");
-       const status=$dc("dc-room-status"),button=document.createElement("button");button.type="button";button.textContent="COPIAR INVITACIÓN";
-       button.onclick=()=>{navigator.clipboard.writeText(location.origin+location.pathname+"?sala="+code).then(()=>{button.textContent="ENLACE COPIADO"}).catch(()=>{button.textContent="Código: "+code})};status.append(document.createElement("br"),button);
-     }else {onlineStatus("Buscando sala "+code+"...");
-       const sayJoin=()=>{if(online&&!online.started)sendOnline("join",{name:nameSafe($dc("input0").value)})};sayJoin();online.helloTimer=setInterval(sayJoin,1600);
+   room.clients.push(c);
+   c.on("connect",()=>{if(online!==room)return;c.subscribe(room.topic);if(!ready){ready=true;room.ready=true;clearTimeout(timeout);renderLobby();
+     if(host)onlineStatus("Sala lista. Compartí el código y esperá a tu rival.");
+     else {onlineStatus("Buscando sala "+code+"...");
+       const sayJoin=()=>{if(online===room&&!room.started)sendOnline("join",{name:nameSafe($dc("input0").value)})};sayJoin();room.helloTimer=setInterval(sayJoin,1600);
      }
    }});
-   c.on("message",(topic,data)=>{if(!online||topic!==online.topic)return;let m;try{m=JSON.parse(String(data))}catch(e){return;}onOnlineMsg(m)});
+   c.on("message",(topic,data)=>{if(online!==room||topic!==room.topic)return;let m;try{m=JSON.parse(String(data))}catch(e){return;}onOnlineMsg(m)});
  });
- if(host)online.syncTimer=setInterval(()=>{if(online&&online.started&&online.host)sendSnapshot()},350);
+ if(host)room.syncTimer=setInterval(()=>{if(online===room&&room.started)sendSnapshot()},350);
 }
 start=function(){
  botError=Number($dc("dc-bot-error").value);
  if(!$dc("input0").value.trim()){$dc("setup-voice-error").textContent="Escribí tu nombre para jugar.";$dc("input0").focus();return;}
  const selectedCategories=[...document.querySelectorAll('input[name=category]:checked')].map(input=>input.value);
- if(!selectedCategories.length){$dc("setup-voice-error").textContent="Elegí al menos una categoría.";return;}
- if(selectedCategories.every(category=>IMAGE_ITEMS[category]&&imageRemaining(category)===0)){$dc("setup-voice-error").textContent="Ya viste todas las imágenes nuevas de esas categorías en este celular. Elegí otra categoría.";return;}
+ if(!(modeSel.value==="online"&&roomChoice.value==="join")){
+   if(!selectedCategories.length){$dc("setup-voice-error").textContent="Elegí al menos una categoría.";return;}
+   if(selectedCategories.every(category=>IMAGE_ITEMS[category]&&imageRemaining(category)===0)){$dc("setup-voice-error").textContent="Ya viste todas las imágenes nuevas de esas categorías en este celular. Elegí otra categoría.";return;}
+ }
  $dc("setup-voice-error").textContent="";
  mode=modeSel.value;
  // Solo una partida contra el BOT gasta ficha; jugar con otra persona es libre.

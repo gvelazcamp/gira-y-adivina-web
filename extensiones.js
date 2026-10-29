@@ -79,7 +79,8 @@ const DueloConocimiento={
     const carga=document.createElement("div");carga.className="dc-cargando";carga.setAttribute("role","status");
     carga.innerHTML='<img src="logo-duelo-conocimiento.webp" alt=""><b>Preparando Duelo de Conocimiento…</b><i aria-hidden="true"></i><small>En un momento empieza el desafío</small><button type="button" hidden>Reintentar</button>';
     const frame=document.createElement("iframe");
-    frame.src="duelo-conocimiento.html?v=20";
+    const invitacion=new URLSearchParams(location.search).get("duelo_conocimiento");
+    frame.src="duelo-conocimiento.html?v=21"+(/^[A-HJ-NP-Z2-9]{4}$/i.test(invitacion||"")?"&sala="+invitacion.toUpperCase():"");
     frame.title="Duelo de Conocimiento";
     frame.allow="microphone; autoplay";
     frame.setAttribute("allowfullscreen","");
@@ -420,20 +421,20 @@ if(EXTENSIONES_HABILITADAS&&botonExtensiones){botonExtensiones.hidden=false;boto
 /* Lo mismo para los duelos 1 vs 1 (?duelo=<juego>&sala=XXXX). Si el
    invitado todavía no tiene perfil, se espera a que lo cree. */
 try{
-  const q=new URLSearchParams(location.search),hayDuelo=!!q.get("duelo"),haySala=/^[A-Za-z0-9]{4}$/.test(q.get("sala")||"");
+  const q=new URLSearchParams(location.search),hayDuelo=!!q.get("duelo"),haySala=/^[A-Za-z0-9]{4}$/.test(q.get("sala")||""),salaDuelo=(q.get("duelo_conocimiento")||"").toUpperCase(),haySalaDuelo=/^[A-HJ-NP-Z2-9]{4}$/.test(salaDuelo);
   /* Invitación simple a un juego (?ext=<id>), sin sala. */
   /* Sala de Tutti Frutti (?tutti=XXXX&de=<nombre>). */
   const salaTutti=(q.get("tutti")||"").toUpperCase(),hayTutti=/^[A-HJ-NP-Z2-9]{4}$/.test(salaTutti),deTutti=(q.get("de")||"").replace(/[^\p{L}\p{N} ]/gu,"").trim().slice(0,14);
   /* Sala del Puzzle en pareja (?puzzle=XXXXX&de=<nombre>). */
   const salaPuzzle=(q.get("puzzle")||"").toUpperCase(),hayPuzzle=/^[A-HJ-NP-Z2-9]{5}$/.test(salaPuzzle);
   const extDirecta=!haySala&&/^[a-z-]{3,40}$/.test(q.get("ext")||"")?q.get("ext"):"";
-  if(EXTENSIONES_HABILITADAS&&(haySala||extDirecta||hayTutti||hayPuzzle)){
+  if(EXTENSIONES_HABILITADAS&&(haySala||extDirecta||hayTutti||hayPuzzle||haySalaDuelo)){
     let intentos=0;
     const t=setInterval(()=>{
       if(++intentos>80){clearInterval(t);return;}
       if(document.readyState!=="complete"||typeof perfil==="undefined"||!perfil||!perfil.nombre)return;
       clearInterval(t);
-      setTimeout(()=>{try{if(hayPuzzle){try{history.replaceState(null,"",location.pathname);}catch(e){}window.gyaPuzzleInvitacion=salaPuzzle;Extensiones.abrirJuego("puzzle");}else if(hayTutti){try{history.replaceState(null,"",location.pathname);}catch(e){}if(window.TuttiFrutti)TuttiFrutti.abrirInvitacion(salaTutti,deTutti);}else if(extDirecta){try{history.replaceState(null,"",location.pathname);}catch(e){}Extensiones.abrirJuego(extDirecta);}else if(hayDuelo){if(window.Duelo)Duelo.abrirInvitacion();}else Extensiones.abrirJuego("contra-reloj-rioplatense");}catch(e){}},1200);
+      setTimeout(()=>{try{if(haySalaDuelo){Extensiones.abrirJuego("duelo-conocimiento");}else if(hayPuzzle){try{history.replaceState(null,"",location.pathname);}catch(e){}window.gyaPuzzleInvitacion=salaPuzzle;Extensiones.abrirJuego("puzzle");}else if(hayTutti){try{history.replaceState(null,"",location.pathname);}catch(e){}if(window.TuttiFrutti)TuttiFrutti.abrirInvitacion(salaTutti,deTutti);}else if(extDirecta){try{history.replaceState(null,"",location.pathname);}catch(e){}Extensiones.abrirJuego(extDirecta);}else if(hayDuelo){if(window.Duelo)Duelo.abrirInvitacion();}else Extensiones.abrirJuego("contra-reloj-rioplatense");}catch(e){}},1200);
     },1500);
   }
 }catch(e){}
