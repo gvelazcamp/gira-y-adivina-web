@@ -312,6 +312,9 @@ const RoscoRioplatense=(()=>{
     if(!raiz||document.hidden)return;
     /* En voz no abrir el teclado Android: la palabra entra por el micrófono. */
     if((pruebaG&&vozG)||esRoscoHorizontal())$("#rrEntrada").blur();
+    /* Estudio (Gonzalo): no abrir el teclado del celular solo; se abre al tocar el cuadro
+       (si ya está abierto, se mantiene). Así el rosco arranca grande y no salta. */
+    else if(raiz.classList.contains("rr-estudio")&&document.activeElement!==$("#rrEntrada")){}
     else $("#rrEntrada").focus({preventScroll:true});
     ajustarPantalla();
   }
@@ -413,7 +416,9 @@ const RoscoRioplatense=(()=>{
   function iniciar(){if(window.Fichas&&!Fichas.usar("rosco-rioplatense",iniciar))return;
     /* Solo Gonzalo (piloto de Giro): antes de arrancar, la presentación del participante en su atril. */
     const empezar=()=>{if(!raiz)return;duelo=false;config=configNivel(nivel);items=armarRonda();guardar();arrancarRonda();};
-    if(pruebaG&&typeof esGonzalo==="function"&&esGonzalo()&&window.GiroRoscoPiloto?.presentarSolo?.(()=>{if(raiz){raiz.classList.add("rr-estudio");const sp=$("#rrPasar span");if(sp)sp.textContent="Pasar";}empezar();}))return;
+    if(pruebaG&&typeof esGonzalo==="function"&&esGonzalo()&&window.GiroRoscoPiloto?.presentarSolo?.(()=>{if(raiz){raiz.classList.add("rr-estudio");const sp=$("#rrPasar span");if(sp)sp.textContent="Pasar";}empezar();})){
+      /* El cartel de Jugar queda oculto debajo de la presentación (si no, se veía al desvanecerse). */
+      $("#rrPanel").hidden=true;return;}
     empezar();}
   function arrancarRonda(){
     estados=items.map(()=>"pendiente");respuestas=items.map(()=>"");
@@ -585,12 +590,12 @@ const RoscoRioplatense=(()=>{
     };
     if(window.GiroRoscoPiloto){activar();return;}
     if(!document.querySelector('link[data-giro-rosco]')){
-      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=15";
+      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=16";
       estilo.dataset.giroRosco="1";document.head.appendChild(estilo);
     }
     let script=document.querySelector('script[data-giro-rosco]');
     if(!script){
-      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=21";script.async=true;
+      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=22";script.async=true;
       script.dataset.giroRosco="1";script.addEventListener("load",activar,{once:true});script.addEventListener("error",()=>cortinaG(false),{once:true});
       document.head.appendChild(script);
     }else script.addEventListener("load",activar,{once:true});

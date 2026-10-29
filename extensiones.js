@@ -66,6 +66,7 @@ window.hablar=hablar;
    avisa qué voz eligió el juego, para saber qué ofrece su celular. */
 let vozAvisadaGonzalo=false;
 function avisarVozGonzalo(voz){
+  return; /* Retirado: Giro usa grabaciones; el aviso amarillo "Prueba de voz" ya no hace falta. */
   if(vozAvisadaGonzalo||typeof esGonzalo!=="function"||!esGonzalo()||typeof mostrarToast!=="function")return;
   vozAvisadaGonzalo=true;
   mostrarToast("🔊",voz?"Voz de hombre: "+voz.name:"Este celular no le ofrece al juego una voz de hombre: se usa la común, más grave.","Prueba de voz");
