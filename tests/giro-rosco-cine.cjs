@@ -20,9 +20,9 @@ assert(!src.includes("new Audio("),"sin música");
 assert(!src.includes("grp-atril"),"sin segundo atril");
 assert(css.includes('.grp-escenario-estable[data-plano="medio"] .grp-plano-estable{transform:scale(1.025)}'));
 assert(css.includes('.grp-escenario-estable[data-plano="cercano"] .grp-plano-estable{transform:scale(1.045)}'));
-assert(index.includes("extensiones.js?v=88")&&index.includes("puedeModoTVExtensiones()"),"Vale conserva TV");
-assert(index.includes("rosco-rioplatense.js?v=32"));
-assert(sw.includes("gya-cache-v501"));
+assert(index.includes("extensiones.js?v=98")&&index.includes("puedeModoTVExtensiones()"),"Vale conserva TV");
+assert(index.includes("rosco-rioplatense.js?v=33"));
+assert(sw.includes("gya-cache-v516"));
 assert(rosco.includes("window.GiroRoscoPiloto.mostrarInicio()"));
 assert(rosco.includes("window.GiroRoscoPiloto.mostrarFinal({aciertos,total:items.length,puntos})"));
 

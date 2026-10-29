@@ -229,6 +229,7 @@ const Extensiones=(()=>{
   const modoTVDisponible=()=>typeof puedeModoTVExtensiones==="function"&&puedeModoTVExtensiones();
   function pintarTV(){
     const boton=shell?.querySelector("#extTV");if(!boton)return;
+    shell.classList.toggle("ext-tv-activo",Boolean(window.GyaTV?.activo("ext")));
     boton.hidden=!modoTVDisponible()||vista==="lobby";
     boton.setAttribute("aria-pressed",String(Boolean(window.GyaTV?.activo("ext"))));
   }

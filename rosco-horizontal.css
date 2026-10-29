@@ -388,7 +388,7 @@
 }
 
 
-/* Prueba en el juego real: SOLO perfil Gonzalo. No modifica otros usuarios. */
+/* Selector de prueba heredado: Gonzalo y Vale al utilizar TV horizontal. */
 .rr-game.rr-gonzalo .rr-teclado-g{display:none}
 .rr-game.rr-gonzalo .rr-estado-voz-g{display:none;color:#37D6C0;font-size:11px;font-weight:800;margin:2px 0 4px;min-height:14px}
 .rr-game.rr-gonzalo.rr-con-voz .rr-estado-voz-g{display:block}
@@ -472,4 +472,28 @@
   .rr-game.rr-gonzalo.rr-con-voz #rrEntrada{
     opacity:.85;pointer-events:none;
   }
+}
+
+/* Activación opcional de voz en Rosco horizontal; no se muestra a otros perfiles. */
+.rr-game .rr-voz-consulta{
+  position:fixed;inset:0;z-index:110;display:grid;place-items:center;
+  background:#0b061bdc;padding:12px max(12px,env(safe-area-inset-right,0px)) 12px max(12px,env(safe-area-inset-left,0px));
+}
+.rr-game .rr-voz-consulta-caja{
+  box-sizing:border-box;width:min(100%,440px);max-height:calc(100dvh - 24px);overflow:auto;
+  padding:15px 17px;border:2px solid #37D6C0;border-radius:16px;
+  background:#29193d;color:#f6efe2;text-align:center;box-shadow:0 12px 32px #0009;
+}
+.rr-game .rr-voz-consulta h3{font-size:clamp(16px,4dvh,22px);color:#f5b301;margin:0 0 8px}
+.rr-game .rr-voz-consulta p{font-size:clamp(12px,3dvh,15px);line-height:1.3;margin:0 0 12px}
+.rr-game .rr-voz-consulta-acciones{display:flex;gap:8px}
+.rr-game .rr-voz-consulta-acciones button{
+  flex:1;min-width:0;border:1px solid #796a99;border-radius:10px;
+  background:#3d2b55;color:white;min-height:40px;padding:8px;font-weight:900;
+}
+.rr-game .rr-voz-consulta-acciones [data-voz="si"]{background:#116c62;border-color:#37d6c0}
+@media (orientation:landscape) and (max-height:350px){
+  .rr-game .rr-voz-consulta-caja{padding:8px 12px}
+  .rr-game .rr-voz-consulta p{margin-bottom:6px}
+  .rr-game .rr-voz-consulta-acciones button{min-height:32px}
 }

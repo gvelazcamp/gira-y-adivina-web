@@ -10,8 +10,31 @@ const RoscoRioplatense=(()=>{
   let datos=cargar(),raiz=null,shell=null,items=[],estados=[],respuestas=[],actual=-1,destino=-1,angulo=0;
   let nivel=1,config=null,fase="inicio",tiempo=0,espera=0,ultimo=0,intervalo=null,ultimoTac=0,duelo=false,usadasSesion=new Set();
   let audioMusica=null,reconocimiento=null,escuchando=false,altoLibre=0;
-  /* Opciones experimentales solo para el perfil Gonzalo. */
+  /* Voz/teclado de prueba en Gonzalo y Vale (Vale solo en modo TV). */
   let pruebaG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozMensajeG="",vozPistaG=null,vozSilenciosG=0,vozStreamG=null,vozGeneracionG=0;
+  let vozConsultadaG=false,avisoVozG=null;
+  function cerrarConsultaVozG(){if(avisoVozG){avisoVozG.remove();avisoVozG=null;}}
+  /* Una única decisión en la partida: Sí activa voz sin tocar de nuevo Hablar;
+     No mantiene exactamente el manejo previo con teclado. */
+  function mostrarConsultaVozG(){
+    if(!pruebaG||vozConsultadaG||avisoVozG||!horizontalG()||!window.GyaTV?.activo?.("ext"))return false;
+    vozConsultadaG=true;vozLeyendoG=true;ultimo=performance.now();
+    const capa=document.createElement("div");capa.className="rr-voz-consulta";
+    capa.setAttribute("role","dialog");capa.setAttribute("aria-modal","true");
+    capa.setAttribute("aria-label","Activar respuestas por voz");
+    capa.innerHTML='<div class="rr-voz-consulta-caja"><h3>¿Querés jugar con el micrófono?</h3><p>Respondé hablando o decí «Pasapalabra», sin tocar Enviar.</p><div class="rr-voz-consulta-acciones"><button type="button" data-voz="no">No, escribir</button><button type="button" data-voz="si">Sí, activar voz</button></div></div>';
+    capa.addEventListener("click",e=>{
+      const boton=e.target.closest("button[data-voz]");if(!boton)return;
+      const activar=boton.dataset.voz==="si";
+      cerrarConsultaVozG();vozLeyendoG=false;ultimo=performance.now();
+      if(!raiz||fase!=="resolver"||document.hidden)return;
+      if(activar){alternarVozG();if(vozG)leerPistaG();}
+      else if(typeof hablar==="function")hablar(items[actual].definicion,audioMusica);
+    });
+    raiz.appendChild(capa);avisoVozG=capa;
+    capa.querySelector('[data-voz="si"]').focus({preventScroll:true});
+    return true;
+  }
   /* Dibujos en assets/rosco/ (hoja de ChatGPT recortada). */
   const ARTE=n=>"assets/rosco/"+n+".webp",ico=n=>'<img class="rr-ico" src="'+ARTE(n)+'" alt="" draggable="false">';
   function iniciarMusicaJuego(){
@@ -337,6 +360,7 @@ const RoscoRioplatense=(()=>{
     actual=destino;fase="resolver";const d=items[actual];
     $("#rrGrande").textContent=d.letra;$("#rrRegla").textContent=(d.contiene?"Contiene la ":"Empieza con ")+d.letra;
     $("#rrDefinicion").textContent=d.definicion;hud();enfocar();
+    if(mostrarConsultaVozG())return;
     if(pruebaG&&vozG)leerPistaG();
     else if(typeof hablar==="function")hablar(d.definicion,audioMusica);
   }
@@ -466,7 +490,7 @@ const RoscoRioplatense=(()=>{
   /* El módulo del estudio se carga solamente si el Rosco lo abre Gonzalo.
      Sin depender de él para iniciar ni terminar una partida normal. */
   function cargarEscenaGiroG(referencia){
-    if(!pruebaG||window.GIRO_ROSCO_PILOTO===false)return;
+    if(!pruebaG||!(typeof esGonzalo==="function"&&esGonzalo())||window.GIRO_ROSCO_PILOTO===false)return;
     const activar=()=>{
       if(raiz===referencia&&raiz.isConnected&&fase==="inicio"&&typeof window.GiroRoscoPiloto?.mostrarInicio==="function"){
         window.GiroRoscoPiloto.mostrarInicio();
@@ -487,7 +511,9 @@ const RoscoRioplatense=(()=>{
   function abrir(contenedor){
     salir();datos=cargar();nivel=datos.nivelMax;config=configNivel(nivel);fase="inicio";usadasSesion=new Set();
     raiz=document.createElement("div");raiz.className="rr-game";raiz.dataset.fase="inicio";altoLibre=0;
-    pruebaG=typeof esGonzalo==="function"&&esGonzalo();vozG=false;
+    const valeEnTV=String((typeof perfil!=="undefined"&&perfil?.nombre)||"").trim().toLowerCase()==="vale"&&!!window.GyaTV?.activo?.("ext");
+    pruebaG=(typeof esGonzalo==="function"&&esGonzalo())||valeEnTV;
+    vozG=false;vozConsultadaG=false;cerrarConsultaVozG();
     if(pruebaG)raiz.classList.add("rr-gonzalo");
     raiz.innerHTML='<button type="button" class="ext-volver" id="rrVolver">⟵ Extensiones</button><div class="rr-titulo rr-titulo-arte"><h2 class="rr-logo-h"><img class="rr-logo" src="'+ARTE("logo")+'" alt="El Rosco" draggable="false"></h2><p>Una vuelta, muchas palabras nuestras.</p></div><div id="rrJuego" hidden><div class="sf-hud"><div><small>Nivel</small><b id="rrNivel"></b></div><div><small>'+ico("aciertos")+'Aciertos</small><b id="rrAciertos"></b></div><div><small>'+ico("errores")+'Errores</small><b id="rrErrores"></b></div><div><small>'+ico("reloj")+'Tiempo</small><b id="rrTiempo"></b></div></div><div class="sf-bar"><i id="rrBarra"></i></div><div class="rr-rueda"><div id="rrDisco"></div><b id="rrGrande"></b></div><div class="rr-pista" role="status" aria-live="polite"><div class="voz-fila"><span class="rr-pista-ico">'+ico("pista")+'</span><small id="rrRegla"></small><button type="button" class="voz-btn rr-escuchar" id="rrEscuchar" aria-label="Escuchar la pista">'+ico("escuchar")+'</button></div><p id="rrDefinicion"></p></div><p id="rrMensaje" class="rr-mensaje" role="status"></p><form id="rrForm" autocomplete="off"><label class="rr-sr" for="rrEntrada">Tu respuesta</label><div class="rr-fila"><input id="rrEntrada" placeholder="Tu palabra" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" enterkeyhint="send" maxlength="60"><button id="rrEnviar" type="submit">Enviar</button><button id="rrPasar" type="button">'+ico("pasapalabra")+'<span>Pasapalabra</span></button><button id="rrVoz" type="button" class="rr-microfono" aria-label="Responder hablando" aria-pressed="false" title="Responder por voz">🎙<span>Hablar</span></button></div></form></div><div id="rrPanel" class="rr-panel-capa"></div>';
     contenedor.appendChild(raiz);shell=raiz.closest(".ext-shell");shell?.classList.add("rr-abierta");
@@ -512,6 +538,7 @@ const RoscoRioplatense=(()=>{
     cargarEscenaGiroG(raiz);
   }
   function salir(){
+    cerrarConsultaVozG();vozConsultadaG=false;
     if(window.GiroRoscoPiloto)window.GiroRoscoPiloto.cerrar();
     if(pruebaG)pararVozG();
     detenerVoz();clearInterval(intervalo);intervalo=null;document.removeEventListener("visibilitychange",visibilidad);
