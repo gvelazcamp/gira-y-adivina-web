@@ -13,6 +13,7 @@ function simulate(words,final,expected,sharing){
  const events=[],input={value:""};
  const env={
    vozG:true,vozLeyendoG:false,fase:"resolver",actual:0,vozSilenciosG:0,
+   cancelarPaseVozG(){},
    items:[{palabra:"MANZANA",definicion:"Fruta de un árbol que puede ser roja o verde"}],
    normalizar:t=>t.toUpperCase().replace(/\s+/g,""),vale:(q,t)=>q.palabra===t,
    $:()=>input,mostrarEstadoVozG:msg=>events.push("estado:"+msg),
@@ -34,7 +35,7 @@ for(const sharing of [false,true]){
  simulate("pasapalabra",true,"paso",sharing);
  simulate("pasa palabra",true,"paso",sharing);
  simulate("pasapalabra",false,"estado:Oí «Pasapalabra» · confirmando…",sharing);
- simulate("ciruela",true,"respuesta:ciruela",sharing);
+ simulate("ciruela",true,"estado:Oí «ciruela» · repetí o tocá Enviar",sharing);
  simulate("ciruela",false,"estado:Oí «ciruela» · seguí hablando",sharing);
 }
 for(const name of ["siguiente","enviar","pasar"]){
@@ -49,6 +50,6 @@ assert(source.includes('vozTimerG=setTimeout(arrancarEscuchaG,450);'),"Reconecta
 assert(source.includes("Micrófono en pausa · se reanuda al volver."),"Modo voz activo al duplicar pantalla");
 const index=fs.readFileSync(path.join(__dirname,"..","index.html"),"utf8");
 const sw=fs.readFileSync(path.join(__dirname,"..","sw.js"),"utf8");
-assert(index.includes("rosco-rioplatense.js?v=36"));
-assert(sw.includes("rosco-rioplatense.js?v=36")&&sw.includes("gya-cache-v523"));
+assert(index.includes("rosco-rioplatense.js?v=37"));
+assert(sw.includes("rosco-rioplatense.js?v=37")&&sw.includes("gya-cache-v525"));
 console.log("PASS: voz y Pasapalabra, con y sin pantalla compartida, respuestas parciales, retorno y caché");

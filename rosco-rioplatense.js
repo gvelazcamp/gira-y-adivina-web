@@ -11,7 +11,7 @@ const RoscoRioplatense=(()=>{
   let nivel=1,config=null,fase="inicio",tiempo=0,espera=0,ultimo=0,intervalo=null,ultimoTac=0,duelo=false,usadasSesion=new Set();
   let audioMusica=null,reconocimiento=null,escuchando=false,altoLibre=0;
   /* Voz/teclado de prueba en Gonzalo y Vale (Vale solo en modo TV). */
-  let pruebaG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozMensajeG="",vozPistaG=null,vozSilenciosG=0,vozStreamG=null,vozGeneracionG=0;
+  let pruebaG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozMensajeG="",vozPistaG=null,vozSilenciosG=0,vozStreamG=null,vozGeneracionG=0,vozPaseTimerG=null;
   let vozConsultadaG=false,avisoVozG=null;
   function cerrarConsultaVozG(){if(avisoVozG){avisoVozG.remove();avisoVozG=null;}}
   /* Una única decisión en la partida: Sí activa voz sin tocar de nuevo Hablar;
@@ -149,7 +149,9 @@ const RoscoRioplatense=(()=>{
     const stream=vozStreamG;vozStreamG=null;
     if(stream)for(const track of stream.getTracks())try{track.stop();}catch(e){}
   }
+  function cancelarPaseVozG(){clearTimeout(vozPaseTimerG);vozPaseTimerG=null;}
   function pararVozG(){
+    cancelarPaseVozG();
     ++vozGeneracionG;
     vozG=false;vozLeyendoG=false;vozSilenciosG=0;clearTimeout(vozTimerG);vozTimerG=null;
     if(vozPistaG){try{speechSynthesis.cancel();}catch(e){}vozPistaG=null;}
@@ -162,6 +164,7 @@ const RoscoRioplatense=(()=>{
   function procesarResultadoVozG(e){
     if(!vozG||vozLeyendoG||fase!=="resolver"||actual<0)return;
     const resultados=e.results||[];
+    cancelarPaseVozG();
     for(let i=Math.max(0,e.resultIndex||0);i<resultados.length;i++){
       const resultado=resultados[i];if(!resultado)continue;
       const opciones=Array.from(resultado).map(x=>String(x.transcript||"").trim().replace(/[¿¡!?,.;:]+$/g,"")).filter(Boolean);
@@ -170,6 +173,15 @@ const RoscoRioplatense=(()=>{
       if(pasa){
         mostrarEstadoVozG(resultado.isFinal?"Pasapalabra reconocido":"Oí «Pasapalabra» · confirmando…");
         if(resultado.isFinal){vozSilenciosG=0;pasar();return;}
+        /* Chrome puede quedarse en resultado parcial: una sola vez basta
+           para Pasapalabra, siempre que no cambie la transcripción. */
+        if(opciones.some(t=>normalizar(t)==="PASAPALABRA")){
+          const letra=actual,generacion=vozGeneracionG;
+          vozPaseTimerG=setTimeout(()=>{
+            vozPaseTimerG=null;
+            if(vozG&&!vozLeyendoG&&fase==="resolver"&&actual===letra&&vozGeneracionG===generacion)pasar();
+          },500);
+        }
         continue;
       }
       /* Aceptar una sola frase natural, por ejemplo "la respuesta es acuario". */
@@ -189,8 +201,12 @@ const RoscoRioplatense=(()=>{
       });
       if(eco)continue;
       if(resultado.isFinal){
+        /* Como en Duelo, no penalizar una palabra mal transcrita: la voz
+           correcta sigue enviándose sola; esta queda visible por si se
+           quiere confirmar manualmente con Enviar o volver a hablar. */
         vozSilenciosG=0;$("#rrEntrada").value=opciones[0].slice(0,60);
-        enviar();return;
+        mostrarEstadoVozG("Oí «"+opciones[0].slice(0,45)+"» · repetí o tocá Enviar");
+        continue;
       }
       mostrarEstadoVozG("Oí «"+opciones[0].slice(0,45)+"» · seguí hablando");
     }
@@ -201,7 +217,7 @@ const RoscoRioplatense=(()=>{
     if(!Recon){pararVozG();mensaje("El navegador no permite reconocer voz. Probá abrir girayadivina.com desde Chrome.");return;}
     const r=new Recon();reconocimiento=r;escuchando=true;
     r.lang="es-UY";r.continuous=true;r.interimResults=true;r.maxAlternatives=5;
-    let inicioIntento=performance.now();
+    let inicioIntento=performance.now(),huboResultado=false;
     detenerMusicaJuego();
     mostrarEstadoVozG("Conectando micrófono…");
     r.onstart=()=>{if(reconocimiento===r&&!vozLeyendoG)mostrarEstadoVozG("Micrófono conectado · preparando audio…");};
@@ -209,7 +225,8 @@ const RoscoRioplatense=(()=>{
       if(reconocimiento!==r)return;
       if(!vozLeyendoG&&fase==="resolver")mostrarEstadoVozG("🎙 ESCUCHANDO · Respondé una sola vez");
     };
-    r.onresult=e=>{if(reconocimiento===r)procesarResultadoVozG(e);};
+    r.onspeechstart=()=>{if(reconocimiento===r&&!vozLeyendoG&&fase==="resolver")mostrarEstadoVozG("🎙 Te escucho · decí tu respuesta");};
+    r.onresult=e=>{if(reconocimiento===r){huboResultado=true;procesarResultadoVozG(e);}};
     r.onerror=e=>{
       if(reconocimiento!==r)return;
       const error=String(e.error||"");
@@ -225,8 +242,10 @@ const RoscoRioplatense=(()=>{
       reconocimiento=null;escuchando=false;
       if(vozG&&!vozLeyendoG&&fase==="resolver"&&!document.hidden){
         const duro=performance.now()-inicioIntento;
-        vozSilenciosG=duro<1200?Math.min(vozSilenciosG+1,3):0;
-        const pausa=vozSilenciosG?500+vozSilenciosG*350:450;
+        vozSilenciosG=huboResultado?0:duro<800?Math.min(vozSilenciosG+1,3):0;
+        /* Reabrir pronto tras una respuesta, como Duelo; los cierres
+           repetidos sin audio conservan un pequeño freno anti-bucle. */
+        const pausa=huboResultado?200:Math.min(700,350+vozSilenciosG*100);
         clearTimeout(vozTimerG);vozTimerG=setTimeout(arrancarEscuchaG,pausa);
       }
     };
@@ -235,6 +254,7 @@ const RoscoRioplatense=(()=>{
   }
   function leerPistaG(){
     if(!pruebaG||!vozG||fase!=="resolver"||actual<0)return;
+    cancelarPaseVozG();
     /* Igual que Duelo: durante la pregunta hablada el micrófono
        no compite con el altavoz. Volvemos a escuchar al terminar. */
     detenerVoz();detenerMusicaJuego();vozLeyendoG=true;
@@ -294,6 +314,7 @@ const RoscoRioplatense=(()=>{
     ajustarPantalla();
   }
   function detenerVoz(){
+    cancelarPaseVozG();
     const r=reconocimiento;reconocimiento=null;escuchando=false;
     const boton=$("#rrVoz");
     if(boton){boton.classList.remove("rr-grabando");boton.setAttribute("aria-pressed","false");}
@@ -363,6 +384,7 @@ const RoscoRioplatense=(()=>{
     }
   }
   function siguiente(){
+    cancelarPaseVozG();
     if(!(pruebaG&&vozG))detenerVoz();
     const p=pendientes();if(!p.length){terminar();return;}
     const opciones=p.length>1?p.filter(i=>i!==actual):p;
@@ -413,6 +435,7 @@ const RoscoRioplatense=(()=>{
   }
   function enviar(){
     if(!raiz||fase!=="resolver"||document.hidden)return;
+    cancelarPaseVozG();
     if(!(pruebaG&&vozG))detenerVoz();
     tic();if(fase!=="resolver")return;
     const crudo=$("#rrEntrada").value.trim().slice(0,30);
@@ -427,6 +450,7 @@ const RoscoRioplatense=(()=>{
   }
   function pasar(){
     if(!raiz||fase!=="resolver"||document.hidden)return;
+    cancelarPaseVozG();
     if(!(pruebaG&&vozG))detenerVoz();
     tic();if(fase!=="resolver")return;
     $("#rrEntrada").value="";enfocar();siguiente();
@@ -510,6 +534,7 @@ const RoscoRioplatense=(()=>{
   }
   function visibilidad(){
     if(document.hidden){
+      cancelarPaseVozG();
       detenerMusicaJuego();
       if(pruebaG&&vozG){
         clearTimeout(vozTimerG);vozTimerG=null;
