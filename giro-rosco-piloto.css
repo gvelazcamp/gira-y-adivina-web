@@ -125,3 +125,7 @@
   .grp-part-cartel p{font-size:16px;text-align:center}
   .grp-part-cartel .grp-boton{width:100%}
 }
+/* Modo solo: un atril en el centro. */
+.grp-part-persona.grp-part-centro{left:48.6%;width:19.5%;bottom:28.3%}
+.grp-part-frente.grp-part-centro{clip-path:inset(71% 41.1% 5% 37.9%)}
+.grp-part-nombre.grp-part-centro{left:48.6%;top:74.1%;width:10.9%;height:13.3%}
