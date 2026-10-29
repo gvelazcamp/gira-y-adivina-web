@@ -12,12 +12,12 @@ const ext=fs.readFileSync(path.join(root,"extensiones.js"),"utf8");
 const sw=fs.readFileSync(path.join(root,"sw.js"),"utf8");
 const index=fs.readFileSync(path.join(root,"index.html"),"utf8");
 new Function(source);new Function(ext);new Function(sw);
-assert(html.includes('duelo-conocimiento-modos.js?v=11'));
-assert(ext.includes('duelo-conocimiento.html?v=12'));
-assert(index.includes('extensiones.js?v=93'));
-assert(sw.includes('gya-cache-v511'));
-assert(sw.includes('duelo-conocimiento-modos.js?v=11'));
-assert(sw.includes('duelo-conocimiento.html?v=12'));
+const modVersion=html.match(/duelo-conocimiento-modos\.js\?v=\d+/)?.[0];
+const htmlVersion=ext.match(/duelo-conocimiento\.html\?v=\d+/)?.[0];
+const extVersion=index.match(/<script src="(extensiones\.js\?v=\d+)"/g)?.at(-1)?.match(/extensiones\.js\?v=\d+/)?.[0];
+assert(modVersion&&htmlVersion&&extVersion);
+assert(sw.includes(modVersion));assert(sw.includes(htmlVersion));assert(sw.includes(extVersion));
+assert.match(sw,/gya-cache-v\d+/);
 const start=source.indexOf("function avanzarDespuesDeRespuestaBot(");
 const end=source.indexOf("const baseFinish=finish;",start);
 assert(start>=0&&end>start,"Localizar adaptador existente de respuestas");
@@ -26,7 +26,7 @@ function create(mode="bot",jugador=1){
  const timers=new Map(),clears=[],feedback={textContent:"",className:""};
  let nextId=0,resolveNarration=null,answerCount=0,passCount=0,questions=0,micStops=0;
  const context={
-   mode,active:jugador,phase:"playing",question:{answered:false,answer:"Uruguay"},
+   mode,active:jugador,phase:"playing",question:{answered:false,answer:"Uruguay"},OPEN_ANSWERS:{},usedOpenAnswers:new Set(),normalize:s=>s,
    players:[{name:"Vale",score:0,errors:0},{name:"BOT",score:0,errors:0}],
    botHandle:0,transitionTimeout:0,turn:1,
    $dc(id){if(id==="feedback")return feedback;return{textContent:"",className:""}},
@@ -75,7 +75,7 @@ function create(mode="bot",jugador=1){
  p.context.passTurn();
  assert.equal(p.passCount(),1,"Una sola penalización");
  assert.equal(p.context.players[0].errors,1,"Penalización original conservada");
- assert(p.feedback.textContent.includes("Respuesta correcta: Uruguay"),"Solución de PASO visible");
+ assert(p.feedback.textContent.includes("Uruguay"),"Solución de PASO visible");
  assert.equal(p.timers.size,0,"PASO espera el audio antes de avanzar");
  p.completeSpeech();await Promise.resolve();await Promise.resolve();
  assert.equal(p.advance(),4500,"Lectura de solución 4.5s DESPUÉS de la voz");

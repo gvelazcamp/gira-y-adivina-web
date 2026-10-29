@@ -86,9 +86,12 @@ const server=http.createServer((req,res)=>{
     assert((await page.evaluate(()=>window.__spoken)).some(s=>s.includes('Sofía responde:')),'el bot dice su respuesta');
     await page.evaluate(()=>window.__mics[0].emit(question.answer));
     assert.equal(await page.evaluate(()=>players[0].score),1,'audio del turno anterior no responde la pregunta nueva');
+    await page.evaluate(()=>{question={...question,category:'banderas',code:'pt',answer:'Portugal'}});
     await page.evaluate(()=>window.__mics.at(-1).emit('paso'));
     await page.waitForFunction(()=>phase==='transition'&&players[0].errors===1,null,{timeout:1000});
     assert.match(await page.locator('#score0').textContent(),/1 error/);
+    assert.match(await page.locator('#feedback').textContent(),/Era Portugal/);
+    assert((await page.evaluate(()=>window.__spoken)).some(s=>s.includes('La bandera era Portugal')),'al pasar se dice el país correcto');
     await page.close();
 
     const second=await browser.newPage({reducedMotion:'reduce',serviceWorkers:'block'});
@@ -130,10 +133,70 @@ const server=http.createServer((req,res)=>{
     await textPass.locator('[data-answer=text]').click();
     await textPass.locator('#setup-form button[type=submit]').click();
     await textPass.waitForFunction(()=>phase==='playing'&&active===0,null,{timeout:10000});
-    await textPass.locator('#answer-input').fill('paso');
+    await textPass.evaluate(()=>{question={...question,category:'banderas',code:'pt',answer:'Portugal'}});
+    await textPass.locator('#answer-input').fill('Argentina');
     await textPass.locator('#answer-submit').click();
     await textPass.waitForFunction(()=>phase==='transition'&&players[0].errors===1,null,{timeout:1000});
+    assert.match(await textPass.locator('#feedback').textContent(),/Era Portugal/);
+    assert.match(await textPass.locator('#mic-heard').textContent(),/Portugal/);
     await textPass.close();
-    console.log('PASS Duelo: narración y reloj pausado, alternancia BOT/humano, respuesta hablada, paso por voz y texto, sin micrófono');
+    const wrongVoice=await browser.newPage({reducedMotion:'reduce',serviceWorkers:'block'});
+    await wrongVoice.route('**/*',route=>route.request().url().startsWith('http://127.0.0.1:')?route.continue():route.fulfill({status:200,body:''}));
+    await wrongVoice.addInitScript(()=>{
+      Math.random=()=>.1;window.__mics=[];
+      class FakeRecognition{
+        constructor(){this.running=false;window.__mics.push(this)}
+        start(){this.running=true;setTimeout(()=>{if(this.running)this.onstart?.()},20);setTimeout(()=>{if(this.running)this.onaudiostart?.()},40)}
+        abort(){this.running=false;this.onend?.()}
+        emit(text){this.onresult?.({resultIndex:0,results:[{0:{transcript:text},length:1,isFinal:true}]})}
+      }
+      window.SpeechRecognition=FakeRecognition;window.webkitSpeechRecognition=FakeRecognition;
+      window.SpeechSynthesisUtterance=class{constructor(text){this.text=text}};
+      Object.defineProperty(window,'speechSynthesis',{configurable:true,value:{speak(u){setTimeout(()=>u.onend?.(),20)},cancel(){}}});
+    });
+    await wrongVoice.goto('http://127.0.0.1:'+server.address().port+'/duelo-conocimiento.html',{waitUntil:'load'});
+    await wrongVoice.locator('#input0').fill('Gonzalo');
+    await wrongVoice.locator('input[name=category]').evaluateAll(inputs=>inputs.forEach(input=>input.checked=input.value==='banderas'));
+    await wrongVoice.locator('#setup-form button[type=submit]').click();
+    await wrongVoice.waitForFunction(()=>phase==='playing'&&active===0&&window.__mics.some(m=>m.running),null,{timeout:10000});
+    await wrongVoice.evaluate(()=>{question={...question,category:'banderas',code:'pt',answer:'Portugal'};window.__mics.at(-1).emit('ruido')});
+    assert.equal(await wrongVoice.evaluate(()=>players[0].errors),0,'un ruido del micrófono no cuenta como respuesta');
+    await wrongVoice.evaluate(()=>window.__mics.at(-1).emit('Argentina'));
+    await wrongVoice.waitForFunction(()=>phase==='transition'&&players[0].errors===1,null,{timeout:1000});
+    assert.match(await wrongVoice.locator('#feedback').textContent(),/Era Portugal/);
+    await wrongVoice.close();
+    const categories=await browser.newPage({reducedMotion:'reduce',serviceWorkers:'block'});
+    await categories.route('**/*',route=>route.request().url().startsWith('http://127.0.0.1:')?route.continue():route.fulfill({status:200,body:''}));
+    await categories.addInitScript(()=>{Math.random=()=>.1;window.SpeechRecognition=undefined;window.webkitSpeechRecognition=undefined});
+    await categories.goto('http://127.0.0.1:'+server.address().port+'/duelo-conocimiento.html',{waitUntil:'load'});
+    assert.equal(await categories.locator('input[value=ciudades]').count(),1);
+    assert.equal(await categories.locator('input[value=simpsons]').count(),1);
+    await categories.locator('#input0').fill('Gonzalo');
+    await categories.locator('input[name=category]').evaluateAll(inputs=>inputs.forEach(input=>input.checked=input.value==='ciudades'));
+    await categories.locator('[data-answer=text]').click();
+    await categories.locator('#setup-form button[type=submit]').click();
+    await categories.waitForFunction(()=>phase==='playing'&&active===0&&question.category==='ciudades',null,{timeout:10000});
+    assert.match(await categories.locator('#question-title').textContent(),/CIUDAD TURÍSTICA/);
+    await categories.locator('#answer-input').fill('París');
+    await categories.locator('#answer-submit').click();
+    await categories.waitForFunction(()=>players[0].score===1,null,{timeout:1000});
+    assert.match(await categories.locator('#feedback').textContent(),/París/);
+    assert.equal(await categories.evaluate(()=>isRightAnswer('Paris',{category:'ciudades'})),false,'no se repite una ciudad ya nombrada');
+    assert.match(await categories.evaluate(()=>openAnswerHint('Paris',{category:'ciudades'})),/ya se dijo/);
+    await categories.waitForFunction(()=>players[1].score===1,null,{timeout:16000});
+    assert.equal(await categories.evaluate(()=>usedOpenAnswers.size),2,'el bot también usa una ciudad distinta');
+    await categories.evaluate(()=>resetToConfig());
+    await categories.locator('#input0').fill('Gonzalo');
+    await categories.locator('input[name=category]').evaluateAll(inputs=>inputs.forEach(input=>input.checked=input.value==='simpsons'));
+    await categories.locator('#setup-form button[type=submit]').click();
+    await categories.waitForFunction(()=>phase==='playing'&&active===0&&question.category==='simpsons',null,{timeout:10000});
+    await categories.locator('#answer-input').fill('Homer');
+    await categories.locator('#answer-submit').click();
+    await categories.waitForFunction(()=>players[0].score===1,null,{timeout:1000});
+    assert.match(await categories.locator('#feedback').textContent(),/Homero Simpson/);
+    assert.equal(await categories.evaluate(()=>isRightAnswer('Homero',{category:'simpsons'})),false,'no se repite el mismo personaje con otro nombre');
+    assert.equal(await categories.evaluate(()=>isRightAnswer('París',{category:'ciudades'})),true,'una nueva partida limpia las respuestas usadas');
+    await categories.close();
+    console.log('PASS Duelo: banderas reveladas al pasar o errar, ciudades turísticas y Los Simpson sin respuestas repetidas');
   }finally{await browser.close();server.close()}
 })().catch(error=>{console.error(error);server.close();process.exitCode=1});

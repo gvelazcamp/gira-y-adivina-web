@@ -3,7 +3,7 @@
 "use strict";
 const $dc=id=>document.getElementById(id);
 const originalStart=start, originalNextQuestion=nextQuestion, originalRightAnswer=rightAnswer, originalFinish=finish, originalReset=resetToConfig;
-let mode="bot", botHandle=0, botError=30, online=null, mic=null, micWanted=false, micRunning=false, micBlocked=false, micToken=0, micStartupTimer=0, micAudioTimer=0, lastSpeech="",lastSpeechAt=0, remoteState=0;
+let mode="bot", botHandle=0, botError=30, online=null, mic=null, micWanted=false, micRunning=false, micBlocked=false, micToken=0, micStartupTimer=0, micAudioTimer=0, lastSpeech="",lastSpeechAt=0, remoteState=0, lastFlagRevealTurn=-1;
 const alphabet="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const uniqueId=()=>Math.random().toString(36).slice(2,10);
 const nameSafe=s=>String(s||"Jugador").trim().slice(0,14).replace(/[<>]/g,"");
@@ -76,17 +76,20 @@ async function startMic(){
      mic.onresult=e=>{if(mic!==instance||token!==micToken||!micWanted||!question||!canAnswer())return;
        if(mode==="bot"&&phase==="waiting-mic"&&active===0){micRunning=true;clearTimeout(micAudioTimer);beginTimedTurn(false)}
        if(phase!=="playing")return;
+       let wrongFlag="";
        for(let i=e.resultIndex;i<e.results.length;i++){const result=e.results[i];for(let j=0;j<result.length;j++){
          const candidate=String(result[j].transcript||"").trim();
          if(!candidate)continue;
          if(result.isFinal&&normalize(candidate)==="paso"){passTurn();return;}
+         if(result.isFinal&&question.category==="banderas"&&!wrongFlag&&(countriesSpoken(candidate).length||normalize(candidate).includes("inglaterra")))wrongFlag=candidate;
          if(!isRightAnswer(candidate,question))continue;
          const key=candidate.toLocaleLowerCase('es-UY'),now=Date.now();if(key===lastSpeech&&now-lastSpeechAt<1500)return;
          lastSpeech=key;lastSpeechAt=now;applyAnswer(candidate);return;
        }
        const heard=String(result[0]?.transcript||"").trim();
-       if(heard){setMicLabel("TE ESCUCHAMOS","Oí: «"+heard+"»",true);if(result.isFinal){$dc("feedback").className="feedback fail";$dc("feedback").textContent="No es correcto. Probá otra vez.";playTone(210,.08,'triangle');}}
+       if(heard){setMicLabel("TE ESCUCHAMOS","Oí: «"+heard+"»",true);if(result.isFinal&&!wrongFlag){$dc("feedback").className="feedback fail";$dc("feedback").textContent=question.category==="banderas"?"No entendí un país. Repetí tu respuesta.":openAnswerHint(heard,question)||"No es correcto. Probá otra vez.";playTone(210,.08,'triangle');}}
        }
+       if(wrongFlag)passTurn(wrongFlag);
      };
      mic.onerror=e=>{if(mic!==instance||token!==micToken)return;micRunning=false;clearTimeout(micAudioTimer);let err=e.error||"";if(["not-allowed","service-not-allowed","audio-capture","network"].includes(err)){micBlocked=true;micWanted=false;micFallback(micErrorText[err]||"Micrófono no disponible.");}else micNote("🎙 Micrófono interrumpido. Reintentar.");};
      mic.onend=()=>{if(mic!==instance||token!==micToken)return;micRunning=false;clearTimeout(micAudioTimer);voiceBtn.classList.remove("ok");if(mode==="bot"&&phase==="playing"&&active===0&&answerSel.value==="voice"&&question&&!question.answered){phase="waiting-mic";pauseClock();updatePlayers();setMicLabel("RECONECTANDO MICRÓFONO","Tu reloj está pausado.",false);const pending=question;micStartupTimer=setTimeout(()=>{if(mode==="bot"&&phase==="waiting-mic"&&question===pending)micFallback("No se pudo reconectar el micrófono.")},8000)}if(micWanted&&!micBlocked)setTimeout(()=>{if(mic===instance&&token===micToken&&micWanted&&!micRunning&&canAnswer()){try{mic.start()}catch(e){}}},450);};
@@ -126,7 +129,7 @@ isRightAnswer=function(v,q){
 };
 function applyAnswer(value){
  if(phase!=="playing"||!question||!canAnswer())return;
- if(!isRightAnswer(value,question)){$dc("feedback").textContent="No es correcto. Seguí intentando.";return;}
+ if(!isRightAnswer(value,question)){if(question.category==="banderas")passTurn(value);else $dc("feedback").textContent=openAnswerHint(value,question)||"No es correcto. Seguí intentando.";return;}
  if(mode==="online"&&online&&!online.host){sendOnline("guess",{guess:value});$dc("feedback").textContent="Respuesta enviada. Esperando validación...";return;}
  rightAnswer(value);
 }
@@ -141,7 +144,8 @@ function botTurn(retries=0){
  const speed=retries?1400+Math.floor(Math.random()*700):2700+Math.floor(Math.random()*1000);
  botHandle=setTimeout(()=>{
    if(mode!=="bot"||phase!=="playing"||active!==1||question!==currentQuestion)return;
-   if(!retries&&Math.random()*100<botError){$dc("feedback").className="feedback fail";$dc("feedback").textContent=players[1].name+" se equivocó. Su reloj sigue corriendo.";botTurn(1);}
+   if(!retries&&Math.random()*100<botError){if(question.category==="banderas"){const wrongCode=allCodes.find(code=>code!==question.code);passTurn(COUNTRY_NAMES[wrongCode]);}else{$dc("feedback").className="feedback fail";$dc("feedback").textContent=players[1].name+" se equivocó. Su reloj sigue corriendo.";botTurn(1);}}
+   else if(OPEN_ANSWERS[question.category]){const options=OPEN_ANSWERS[question.category].filter(entry=>!usedOpenAnswers.has(question.category+':'+normalize(entry.name)));if(options.length)rightAnswer(options[Math.floor(Math.random()*options.length)].name);else passTurn();}
    else rightAnswer("BOT");
  },speed);
 }
@@ -238,24 +242,31 @@ rightAnswer=function(value){
  if(mode==="online"&&online&&online.host)sendSnapshot();
 };
 const basePass=passTurn;
-passTurn=function(){
- if(mode==="online"&&online&&!online.host){sendOnline("pass",{});$dc("feedback").textContent="Paso enviado. Esperando el siguiente turno…";stopMic();return;}
- const mostrarSolucion=mode==="bot"&&phase==="playing"&&question&&!question.answered;
+passTurn=function(wrongValue=''){
  const preguntaActual=question,jugadorActual=active,nombre=players[active]?.name;
- if(mode==="bot")stopMic();
- basePass();
+ const bandera=preguntaActual?.category==="banderas";
+ const solucion=bandera?getCorrectAnswer(preguntaActual):OPEN_ANSWERS[preguntaActual?.category]
+   ?OPEN_ANSWERS[preguntaActual.category].find(entry=>!usedOpenAnswers.has(preguntaActual.category+':'+normalize(entry.name)))?.name
+   :preguntaActual?getCorrectAnswer(preguntaActual):'';
+ if(mode==="online"&&online&&!online.host){
+   sendOnline("pass",{wrong:wrongValue});
+   $dc("feedback").textContent=bandera?`✗ Era ${solucion}. Sigue ${players[0].name}.`:"Paso enviado. Esperando el siguiente turno…";
+   stopMic();if(bandera){lastFlagRevealTurn=turn;speak(`La bandera era ${solucion}.`,2800)}return;
+ }
+ const mostrarSolucion=mode==="bot"&&phase==="playing"&&preguntaActual&&!preguntaActual.answered;
+ if(mode==="bot"||bandera)stopMic();
+ basePass(wrongValue);
  if(mostrarSolucion&&phase==="transition"&&question===preguntaActual){
    clearTimeout(transitionTimeout);transitionTimeout=0;
-   const solucion=getCorrectAnswer(preguntaActual);
+   const frase=bandera?`La bandera era ${solucion}.`:OPEN_ANSWERS[preguntaActual.category]?`Podías decir ${solucion}.`:`La respuesta correcta era: ${solucion}.`;
    $dc("feedback").className="feedback fail";
-   $dc("feedback").textContent=`Paso de ${nombre}: 1 error. Respuesta correcta: ${solucion}.`;
-   setMicLabel("RESPUESTA CORRECTA",solucion+" · La siguiente pregunta aparece en unos segundos.",false);
-   // Giro dice la respuesta correcta completa antes de cambiar de turno.
-   speak(`Paso de ${nombre}. La respuesta correcta era: ${solucion}.`,30000).then(()=>{
+   $dc("feedback").textContent=bandera?`✗ Era ${solucion}. Sigue ${players[1-active].name}.`:`Paso de ${nombre}: 1 error. ${frase}`;
+   setMicLabel(bandera?"RESPUESTA CORRECTA":"PASO",frase+" La siguiente pregunta aparece en unos segundos.",false);
+   speak(frase,30000).then(()=>{
      if(mode!=="bot"||phase!=="transition"||question!==preguntaActual||active!==jugadorActual)return;
      avanzarDespuesDeRespuestaBot(preguntaActual,jugadorActual,4500);
    });
- }
+ }else if(bandera&&phase==="transition")speak(`La bandera era ${solucion}.`,2800);
  if(mode==="online"&&online&&online.host)sendSnapshot();
 };
 const baseFinish=finish;
@@ -267,7 +278,7 @@ finish=function(winner,reason){
  }
 };
 const baseReset=resetToConfig;
-resetToConfig=function(){clearTimeout(botHandle);cancelNarration();stopMic();stopOnline();baseReset();voiceBtn.disabled=false;$dc("input0").value="";syncSetup();syncAnswer()};
+resetToConfig=function(){clearTimeout(botHandle);cancelNarration();stopMic();stopOnline();lastFlagRevealTurn=-1;baseReset();voiceBtn.disabled=false;$dc("input0").value="";syncSetup();syncAnswer()};
 function codeValid(c){return /^[A-HJ-NP-Z2-9]{4}$/.test(c)}
 function sendOnline(type,data){
  if(!online)return;
@@ -276,7 +287,7 @@ function sendOnline(type,data){
 }
 function sendSnapshot(){
  if(!online||!online.host||phase==="setup")return;
- sendOnline("state",{phase,active,turn,players:players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0})),question,selectionStarted});
+ sendOnline("state",{phase,active,turn,players:players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0})),question,selectionStarted,feedback:$dc("feedback").textContent,usedOpenAnswers:[...usedOpenAnswers]});
 }
 function onlineStatus(text){
  $dc("dc-room-status").textContent=text;
@@ -307,7 +318,7 @@ function onOnlineMsg(message){
  }
  if(message.type==="state"&&!online.host){
    if(!online.started)return;
-   const d=message.data;players=d.players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0}));
+   const d=message.data;players=d.players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0}));usedOpenAnswers.clear();(d.usedOpenAnswers||[]).forEach(answer=>usedOpenAnswers.add(answer));
    active=d.active;turn=d.turn;if(d.phase==="finished")return;
    phase=d.phase;
    const olderKey=question&&JSON.stringify([question.category,question.code,question.math,question.person&&question.person.name]);
@@ -322,17 +333,19 @@ function onOnlineMsg(message){
    }
    $dc("answer-input").disabled=!(phase==="playing"&&active===1);
    $dc("answer-submit").disabled=!(phase==="playing"&&active===1);
+   if(phase==="transition"&&d.feedback){$dc("feedback").className="feedback fail";$dc("feedback").textContent=d.feedback;if(question?.category==="banderas"&&d.feedback.includes("Era ")){const answer=getCorrectAnswer(question);setMicLabel(`BANDERA DE ${upper(answer)}`,`Sigue ${players[1-active].name}`,false);if(lastFlagRevealTurn!==turn){lastFlagRevealTurn=turn;speak(`La bandera era ${answer}.`,2800)}}}
    if(phase==="playing"){$dc("feedback").textContent=active===1?"¡Es tu turno!":"Esperá el turno de "+players[0].name;
     setMicLabel(active===1?"TE TOCA RESPONDER":"RIVAL JUGANDO",active===1?"Respondé por voz o escribiendo":"Tu reloj está pausado",active===1&&micRunning);}
    updatePlayers();return;
  }
  if(message.type==="guess"&&online.host&&phase==="playing"&&active===1&&question){
    if(isRightAnswer(message.data.guess,question))rightAnswer(message.data.guess);
-   else sendOnline("wrong",{});
+   else if(question.category==="banderas")passTurn(message.data.guess);
+   else sendOnline("wrong",{feedback:openAnswerHint(message.data.guess,question)});
    return;
  }
- if(message.type==="pass"&&online.host&&phase==="playing"&&active===1&&question){passTurn();return;}
- if(message.type==="wrong"&&!online.host){$dc("feedback").textContent="No es correcto. Tu tiempo sigue corriendo.";return;}
+ if(message.type==="pass"&&online.host&&phase==="playing"&&active===1&&question){passTurn(message.data?.wrong||"");return;}
+ if(message.type==="wrong"&&!online.host){$dc("feedback").textContent=message.data.feedback||"No es correcto. Tu tiempo sigue corriendo.";return;}
  if(message.type==="finish"&&!online.host){
    if(!online.started)return;
    players=message.data.players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0}));
@@ -378,7 +391,7 @@ start=function(){
  // El contador y el cartel viven en la pantalla de Extensiones, fuera de este iframe.
  if(mode==="bot"&&window.parent!==window&&window.parent.Fichas&&
     !window.parent.Fichas.usar("duelo-conocimiento",()=>{if(document.contains(place))start();}))return;
- clearTimeout(botHandle);stopOnline();
+ clearTimeout(botHandle);stopOnline();lastFlagRevealTurn=-1;
  if(mode==="bot"){$dc("input1").disabled=false;$dc("input1").value="Sofía";}
  if(mode==="online"){
    if(roomChoice.value==="join"){const c=roomInput.value.trim().toUpperCase();if(!codeValid(c)){onlineStatus("Ingresá un código válido de 4 caracteres.");return;}connectOnline(false,c);}
