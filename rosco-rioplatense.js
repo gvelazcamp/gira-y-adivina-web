@@ -585,7 +585,7 @@ const RoscoRioplatense=(()=>{
     };
     if(window.GiroRoscoPiloto){activar();return;}
     if(!document.querySelector('link[data-giro-rosco]')){
-      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=14";
+      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=15";
       estilo.dataset.giroRosco="1";document.head.appendChild(estilo);
     }
     let script=document.querySelector('script[data-giro-rosco]');

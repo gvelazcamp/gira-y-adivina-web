@@ -1872,3 +1872,7 @@ Fecha: 29/10/2026 — Rosco show: el cartel "Jugar nivel N" se veía antes de la
 ```text
 Fecha: 29/10/2026 — Rosco show: la presentación del participante ("¡Hoy juega Gonzalo!") estaba en silencio (Gonzalo: "no hay música ni presentación"). Ahora suena música: otra parte del mismo tema de Gonzalo (9,2–26,5 s, en loop, voz/giro-participantes-musica.mp3) que baja de a poco al tocar "¡A jugar!". Queda conectada la voz de Giro presentando (a los 1,5 s, con la música más baja mientras habla): voz/giro-rosco-participante.mp3 (solo) y voz/giro-rosco-duelo.mp3 (duelo). PENDIENTE: que Gonzalo las grabe en ElevenLabs con la voz Cesar Rodriguez; mientras no existan, solo suena la música. giro-rosco-piloto.js v21, rosco v52, sw v545.
 ```
+
+```text
+Fecha: 29/10/2026 — Rosco show: en el video de Gonzalo (Redmi) el cartel "Jugar" se transparentaba en el primer instante de la apertura: la capa negra (.grp-apertura) entraba con fundido desde transparente. Ahora el fondo negro aparece entero de una y lo que entra con fundido es el contenido (.grp-ap-cuadro). Vale también para la presentación de participantes y el cierre. giro-rosco-piloto.css v15, rosco v53, sw v546.
+```
