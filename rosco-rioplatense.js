@@ -11,7 +11,7 @@ const RoscoRioplatense=(()=>{
   let nivel=1,config=null,fase="inicio",tiempo=0,espera=0,ultimo=0,intervalo=null,ultimoTac=0,duelo=false,usadasSesion=new Set();
   let audioMusica=null,reconocimiento=null,escuchando=false,altoLibre=0;
   /* Voz/teclado de prueba en Gonzalo y Vale (Vale solo en modo TV). */
-  let pruebaG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozMensajeG="",vozPistaG=null,vozSilenciosG=0,vozStreamG=null,vozGeneracionG=0,vozPaseTimerG=null;
+  let avisoTiempoG=false,pruebaG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozMensajeG="",vozPistaG=null,vozSilenciosG=0,vozStreamG=null,vozGeneracionG=0,vozPaseTimerG=null;
   let vozConsultadaG=false,avisoVozG=null;
   function cerrarConsultaVozG(){if(avisoVozG){avisoVozG.remove();avisoVozG=null;}}
   /* Una única decisión en la partida: Sí activa voz sin tocar de nuevo Hablar;
@@ -417,7 +417,7 @@ const RoscoRioplatense=(()=>{
     empezar();}
   function arrancarRonda(){
     estados=items.map(()=>"pendiente");respuestas=items.map(()=>"");
-    actual=-1;destino=-1;angulo=0;tiempo=config.segundos*1000;ultimo=performance.now();
+    actual=-1;destino=-1;angulo=0;tiempo=config.segundos*1000;ultimo=performance.now();avisoTiempoG=false;
     $("#rrPanel").hidden=true;$("#rrEntrada").value="";$("#rrJuego").hidden=false;requestAnimationFrame(ajustarPantalla);
     const disco=$("#rrDisco");disco.replaceChildren();disco.style.transition="none";disco.style.transform="rotate(0deg)";
     items.forEach((d,i)=>{
@@ -451,6 +451,7 @@ const RoscoRioplatense=(()=>{
     const valor=normalizar($("#rrEntrada").value);if(!valor){mensaje("Escribí una palabra o tocá Pasapalabra.");enfocar();return;}
     const d=items[actual],ok=vale(d,valor);
     estados[actual]=ok?"acierto":"error";respuestas[actual]=crudo;fase="respuesta";espera=ROSCO_CONFIG.pausaMs;
+    if(raiz.classList.contains("rr-estudio"))window.GiroRoscoPiloto?.reaccion?.(ok?"acierto":"error");
     $("#rrEntrada").value="";sonido(ok);mensaje(ok?"¡Bien! +100 puntos · "+d.palabra:"Era "+d.palabra,ok?"acierto":"error");
     if(typeof objSumar==="function")objSumar("roscoLetras",1);
     if(ok&&typeof logroDesbloquear==="function")logroDesbloquear("roscoPrimera");
@@ -462,6 +463,7 @@ const RoscoRioplatense=(()=>{
     cancelarPaseVozG();
     if(!(pruebaG&&vozG))detenerVoz();
     tic();if(fase!=="resolver")return;
+    if(raiz.classList.contains("rr-estudio"))window.GiroRoscoPiloto?.reaccion?.("pasar");
     $("#rrEntrada").value="";enfocar();siguiente();
   }
   function panel(titulo,detalle,acciones,dibujo){
@@ -513,7 +515,7 @@ const RoscoRioplatense=(()=>{
     const revision=document.createElement("div");revision.innerHTML=tablaRespuestas(respuestas,null);
     $(".rr-panel").insertBefore(revision,$(".rr-panel button"));$(".rr-principal").focus({preventScroll:true});
     if(pruebaG&&typeof esGonzalo==="function"&&esGonzalo()&&typeof window.GiroRoscoPiloto?.mostrarFinal==="function"){
-      window.GiroRoscoPiloto.mostrarFinal({aciertos,total:items.length,puntos});
+      window.GiroRoscoPiloto.mostrarFinal({aciertos,errores,total:items.length,puntos,estudio:raiz.classList.contains("rr-estudio")});
     }
   }
   function compartir(b,puntos,aciertos,errores,faltan){
@@ -539,6 +541,8 @@ const RoscoRioplatense=(()=>{
       if(ultimoTac>110+(1-Math.max(0,espera)/ROSCO_CONFIG.giroMs)*230){if(typeof tac==="function")tac();ultimoTac=0;}
       if(espera<=0)detenerGiro();
     }else if(fase==="respuesta"){espera-=dt;if(espera<=0)siguiente();}
+    /* Estudio (Gonzalo): a los 10 segundos finales Giro avisa una vez, sin pisar la lectura de la pista. */
+    if(!avisoTiempoG&&tiempo<=10000&&(fase==="respuesta"||fase==="giro")&&raiz.classList.contains("rr-estudio")){avisoTiempoG=true;window.GiroRoscoPiloto?.reaccion?.("tiempo");}
     hud();
   }
   function visibilidad(){
@@ -568,12 +572,12 @@ const RoscoRioplatense=(()=>{
     };
     if(window.GiroRoscoPiloto){activar();return;}
     if(!document.querySelector('link[data-giro-rosco]')){
-      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=12";
+      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=13";
       estilo.dataset.giroRosco="1";document.head.appendChild(estilo);
     }
     let script=document.querySelector('script[data-giro-rosco]');
     if(!script){
-      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=18";script.async=true;
+      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=19";script.async=true;
       script.dataset.giroRosco="1";script.addEventListener("load",activar,{once:true});
       document.head.appendChild(script);
     }else script.addEventListener("load",activar,{once:true});
