@@ -62,7 +62,7 @@ const server=http.createServer((req,res)=>{
     assert((await page.evaluate(()=>window.__spoken)).some(s=>s.includes('¿Cuánto da')),'la pregunta se narra en voz alta');
     assert.equal(await page.locator('#name1').textContent(),'SOFÍA');
     assert.equal(await page.locator('#sound-text').textContent(),'ON');
-    await page.evaluate(()=>{question={...question,category:'banderas',code:'pt',answer:'Portugal'};window.__mics.at(-1).emit('Portugal')});
+    await page.evaluate(()=>{Math.random=()=>.9;question={...question,category:'banderas',code:'pt',answer:'Portugal'};window.__mics.at(-1).emit('Portugal')});
     await page.waitForFunction(()=>phase==='playing'&&active===1,null,{timeout:12000});
     const bot=await page.evaluate(()=>({
       name:players[1].name,score:players[0].score,disabled:document.querySelector('#answer-input').disabled,
@@ -110,6 +110,28 @@ const server=http.createServer((req,res)=>{
     await second.locator('#answer-submit').click();
     await second.waitForFunction(()=>players[0].score===1,null,{timeout:1000});
     await second.close();
+
+    const botMiss=await browser.newPage({reducedMotion:'reduce',serviceWorkers:'block'});
+    await botMiss.route('**/*',route=>route.request().url().startsWith('http://127.0.0.1:')?route.continue():route.fulfill({status:200,body:''}));
+    await botMiss.addInitScript(()=>{Math.random=()=>.1});
+    await botMiss.goto('http://127.0.0.1:'+server.address().port+'/duelo-conocimiento.html',{waitUntil:'load'});
+    await botMiss.locator('#input0').fill('Gonzalo');
+    await botMiss.locator('input[name=category]').evaluateAll(inputs=>inputs.forEach(input=>input.checked=input.value==='matematica'));
+    await botMiss.locator('[data-answer=text]').click();
+    await botMiss.locator('#setup-form button[type=submit]').click();
+    await botMiss.waitForFunction(()=>phase==='playing'&&active===0,null,{timeout:10000});
+    await botMiss.locator('#answer-input').fill(await botMiss.evaluate(()=>question.answer));
+    await botMiss.locator('#answer-submit').click();
+    await botMiss.waitForFunction(()=>phase==='playing'&&active===1,null,{timeout:12000});
+    const botClock=await botMiss.evaluate(()=>players[1].ms);
+    await botMiss.waitForFunction(()=>phase==='transition'&&active===1&&players[1].errors===1,null,{timeout:10000});
+    const missed=await botMiss.evaluate(()=>({score:players[1].score,spent:40000-players[1].ms,entry:roundHistory.at(-1)}));
+    assert.equal(missed.score,0,'si el bot falla no recibe el acierto después');
+    assert.equal(missed.entry.result,'error','el fallo del bot termina el turno');
+    assert.notEqual(missed.entry.given,missed.entry.correct,'el bot muestra una respuesta errónea real');
+    assert(missed.spent>=600&&missed.spent<1700,'el bot también puede responder rápido: '+JSON.stringify(missed));
+    assert(botClock<=40000&&botClock>=39800,'la lectura de la pregunta no consume el tiempo del bot');
+    await botMiss.close();
 
     const noVoice=await browser.newPage({reducedMotion:'reduce',serviceWorkers:'block'});
     await noVoice.route('**/*',route=>route.request().url().startsWith('http://127.0.0.1:')?route.continue():route.fulfill({status:200,body:''}));

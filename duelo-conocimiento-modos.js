@@ -137,14 +137,30 @@ const originalForm=$dc("answer-form");
 originalForm.addEventListener("submit",e=>{
  if(mode==="online"&&online&&!online.host&&phase==="playing"){e.stopImmediatePropagation();e.preventDefault();const v=$dc("answer-input").value.trim();if(normalize(v)==="paso")passTurn();else if(v)applyAnswer(v);}
 },true);
-function botTurn(retries=0){
+function botWrongAnswer(q){
+ if(q.category==="matematica")return String(Number(q.answer)+(Math.random()<.5?-1:1)*(1+Math.floor(Math.random()*3)));
+ if(q.category==="banderas"){
+   const choices=allCodes.filter(code=>code!==q.code);
+   return COUNTRY_NAMES[choices[Math.floor(Math.random()*choices.length)]];
+ }
+ if(isImageQuestion(q)){
+   const choices=IMAGE_ITEMS[q.category].filter(item=>item.answer!==q.answer&&item.atlasIndex===q.atlasIndex);
+   const alternatives=choices.length?choices:IMAGE_ITEMS[q.category].filter(item=>item.answer!==q.answer);
+   return alternatives[Math.floor(Math.random()*alternatives.length)]?.answer;
+ }
+ const choices=PEOPLE[q.category].filter(person=>normalize(person.name)!==normalize(q.person.name));
+ return choices[Math.floor(Math.random()*choices.length)]?.name;
+}
+function botTurn(){
  clearTimeout(botHandle);
  if(mode!=="bot"||phase!=="playing"||active!==1||!question)return;
  const currentQuestion=question;
- const speed=retries?1400+Math.floor(Math.random()*700):2700+Math.floor(Math.random()*1000);
+ const pace=Math.random();
+ const speed=pace<.3?650+Math.floor(Math.random()*750):pace<.8?1500+Math.floor(Math.random()*1400):3000+Math.floor(Math.random()*1600);
+ const mistake=Math.random()*100<botError;
  botHandle=setTimeout(()=>{
    if(mode!=="bot"||phase!=="playing"||active!==1||question!==currentQuestion)return;
-   if(!retries&&Math.random()*100<botError){if(question.category==="banderas"){const wrongCode=allCodes.find(code=>code!==question.code);passTurn(COUNTRY_NAMES[wrongCode]);}else if(isImageQuestion(question)){const wrong=IMAGE_ITEMS[question.category].find(item=>item.answer!==question.answer)?.answer;passTurn(wrong);}else{$dc("feedback").className="feedback fail";$dc("feedback").textContent=players[1].name+" se equivocó. Su reloj sigue corriendo.";botTurn(1);}}
+   if(mistake){passTurn(botWrongAnswer(currentQuestion));}
    else if(isImageQuestion(question))rightAnswer(question.answer);
    else rightAnswer("BOT");
  },speed);
