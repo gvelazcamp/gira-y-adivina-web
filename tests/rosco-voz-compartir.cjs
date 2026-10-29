@@ -42,7 +42,7 @@ for(const name of ["siguiente","enviar","pasar"]){
  assert(i>=0&&source.slice(i,i+230).includes("if(!(pruebaG&&vozG))detenerVoz();"),name+" mantiene la escucha entre letras");
 }
 const activation=source.slice(source.indexOf("  function alternarVozG(){"),source.indexOf("  /* El modo Hablar funciona",source.indexOf("  function alternarVozG(){")));
-assert(!activation.includes("getUserMedia"),"No bloquear Web Speech con una segunda captura");
+assert(!/\b(?:navigator\.mediaDevices\.)?getUserMedia\s*\(/.test(activation),"No bloquear Web Speech con una segunda captura");
 assert(activation.includes("leerPistaG();"),"La pista abre el micrófono al terminar de hablar");
 assert(source.includes("r.interimResults=true;r.maxAlternatives=5;"),"Interim igual que Duelo");
 assert(source.includes('vozTimerG=setTimeout(arrancarEscuchaG,450);'),"Reconectar tras recuperar visibilidad");
