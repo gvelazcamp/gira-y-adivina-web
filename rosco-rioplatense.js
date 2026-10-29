@@ -428,9 +428,6 @@ const RoscoRioplatense=(()=>{
     items.forEach((d,i)=>{
       const el=document.createElement("div"),span=document.createElement("span"),a=i*2*Math.PI/items.length;
       el.className="rr-letra";el.style.left=(50+42*Math.sin(a))+"%";el.style.top=(50-42*Math.cos(a))+"%";
-      /* Modo estudio (solo Gonzalo): cada letra va en su círculo del rosco del estudio. */
-      const pe=raiz.classList.contains("rr-estudio")&&window.GiroRoscoPiloto?.posLetra?.(d.letra);
-      if(pe){el.style.left=pe[0]+"%";el.style.top=pe[1]+"%";el.style.setProperty("--i",i);}
       span.textContent=d.letra;el.appendChild(span);disco.appendChild(el);
     });
     void disco.offsetWidth;disco.style.transition="";enfocar();siguiente();
@@ -590,7 +587,7 @@ const RoscoRioplatense=(()=>{
     };
     if(window.GiroRoscoPiloto){activar();return;}
     if(!document.querySelector('link[data-giro-rosco]')){
-      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=16";
+      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=17";
       estilo.dataset.giroRosco="1";document.head.appendChild(estilo);
     }
     let script=document.querySelector('script[data-giro-rosco]');
