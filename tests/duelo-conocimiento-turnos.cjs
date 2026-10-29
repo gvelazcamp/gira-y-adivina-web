@@ -25,7 +25,7 @@ const server=http.createServer((req,res)=>{
       window.__mics=[];window.__tones=[];window.__spoken=[];
       class FakeRecognition{
         constructor(){this.running=false;window.__mics.push(this)}
-        start(){this.running=true;setTimeout(()=>{if(this.running)this.onstart?.()},450)}
+        start(){this.running=true;setTimeout(()=>{if(this.running)this.onstart?.()},100);setTimeout(()=>{if(this.running)this.onaudiostart?.()},450)}
         abort(){this.running=false;this.onend?.()}
         emit(text){this.onresult?.({resultIndex:0,results:[{0:{transcript:text},length:1,isFinal:true}]})}
       }
@@ -62,7 +62,7 @@ const server=http.createServer((req,res)=>{
     assert((await page.evaluate(()=>window.__spoken)).some(s=>s.includes('¿Cuánto da')),'la pregunta se narra en voz alta');
     assert.equal(await page.locator('#name1').textContent(),'SOFÍA');
     assert.equal(await page.locator('#sound-text').textContent(),'ON');
-    await page.evaluate(()=>window.__mics.at(-1).emit(question.answer));
+    await page.evaluate(()=>{question={...question,category:'banderas',code:'pt',answer:'Portugal'};window.__mics.at(-1).emit('Portugal')});
     await page.waitForFunction(()=>phase==='playing'&&active===1,null,{timeout:12000});
     const bot=await page.evaluate(()=>({
       name:players[1].name,score:players[0].score,disabled:document.querySelector('#answer-input').disabled,

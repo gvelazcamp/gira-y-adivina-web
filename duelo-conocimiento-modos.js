@@ -3,7 +3,7 @@
 "use strict";
 const $dc=id=>document.getElementById(id);
 const originalStart=start, originalNextQuestion=nextQuestion, originalRightAnswer=rightAnswer, originalFinish=finish, originalReset=resetToConfig;
-let mode="bot", botHandle=0, botError=30, online=null, mic=null, micWanted=false, micRunning=false, micBlocked=false, micToken=0, micStartupTimer=0, lastSpeech="",lastSpeechAt=0, remoteState=0;
+let mode="bot", botHandle=0, botError=30, online=null, mic=null, micWanted=false, micRunning=false, micBlocked=false, micToken=0, micStartupTimer=0, micAudioTimer=0, lastSpeech="",lastSpeechAt=0, remoteState=0;
 const alphabet="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const uniqueId=()=>Math.random().toString(36).slice(2,10);
 const nameSafe=s=>String(s||"Jugador").trim().slice(0,14).replace(/[<>]/g,"");
@@ -67,15 +67,15 @@ async function startMic(){
  if(!window.isSecureContext){micFallback("El micrófono necesita HTTPS.");return;}
  const token=++micToken;
  micWanted=true;micBlocked=false;
- micNote("🎙 SOLICITANDO PERMISO...");
+ micNote("🎙 CONECTANDO AUDIO...");
  try{
-   if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
-     const stream=await navigator.mediaDevices.getUserMedia({audio:true});stream.getTracks().forEach(t=>t.stop());
-   }
    if(!micWanted||token!==micToken)return;
-   if(!mic){const Ctor=window.SpeechRecognition||window.webkitSpeechRecognition;mic=new Ctor();const instance=mic;mic.lang="es-UY";mic.continuous=true;mic.interimResults=true;mic.maxAlternatives=3;
-     mic.onstart=()=>{if(mic!==instance||token!==micToken)return;micRunning=true;voiceBtn.classList.add("ok");micNote("🎙 ESCUCHANDO");if(mode==="bot"&&phase==="waiting-mic"&&active===0){clearTimeout(micStartupTimer);beginTimedTurn(false)}if(phase==="playing"&&canAnswer())setMicLabel("TE ESCUCHAMOS",`Respondé, ${players[active].name}`,true);};
-     mic.onresult=e=>{if(mic!==instance||token!==micToken||!micRunning||phase!=="playing"||!question||!canAnswer())return;
+   if(!mic){const Ctor=window.SpeechRecognition||window.webkitSpeechRecognition;mic=new Ctor();const instance=mic;mic.lang="es-UY";mic.continuous=true;mic.interimResults=true;mic.maxAlternatives=5;
+     mic.onstart=()=>{if(mic!==instance||token!==micToken)return;micRunning=true;micNote("🎙 CONECTANDO AUDIO...");clearTimeout(micAudioTimer);micAudioTimer=setTimeout(()=>{if(mic===instance&&token===micToken&&phase==="waiting-mic"&&canAnswer())beginTimedTurn(false)},1800);};
+     mic.onaudiostart=()=>{if(mic!==instance||token!==micToken)return;micRunning=true;clearTimeout(micAudioTimer);voiceBtn.classList.add("ok");micNote("🎙 ESCUCHANDO");if(mode==="bot"&&phase==="waiting-mic"&&active===0)beginTimedTurn(false);if(phase==="playing"&&canAnswer())setMicLabel("TE ESCUCHAMOS",`Respondé, ${players[active].name}`,true);};
+     mic.onresult=e=>{if(mic!==instance||token!==micToken||!micWanted||!question||!canAnswer())return;
+       if(mode==="bot"&&phase==="waiting-mic"&&active===0){micRunning=true;clearTimeout(micAudioTimer);beginTimedTurn(false)}
+       if(phase!=="playing")return;
        for(let i=e.resultIndex;i<e.results.length;i++){const result=e.results[i];for(let j=0;j<result.length;j++){
          const candidate=String(result[j].transcript||"").trim();
          if(!candidate)continue;
@@ -88,14 +88,14 @@ async function startMic(){
        if(heard){setMicLabel("TE ESCUCHAMOS","Oí: «"+heard+"»",true);if(result.isFinal){$dc("feedback").className="feedback fail";$dc("feedback").textContent="No es correcto. Probá otra vez.";playTone(210,.08,'triangle');}}
        }
      };
-     mic.onerror=e=>{if(mic!==instance||token!==micToken)return;micRunning=false;let err=e.error||"";if(["not-allowed","service-not-allowed","audio-capture","network"].includes(err)){micBlocked=true;micWanted=false;micFallback(micErrorText[err]||"Micrófono no disponible.");}else micNote("🎙 Micrófono interrumpido. Reintentar.");};
-     mic.onend=()=>{if(mic!==instance||token!==micToken)return;micRunning=false;voiceBtn.classList.remove("ok");if(mode==="bot"&&phase==="playing"&&active===0&&answerSel.value==="voice"&&question&&!question.answered){phase="waiting-mic";pauseClock();updatePlayers();setMicLabel("RECONECTANDO MICRÓFONO","Tu reloj está pausado.",false);const pending=question;micStartupTimer=setTimeout(()=>{if(mode==="bot"&&phase==="waiting-mic"&&question===pending)micFallback("No se pudo reconectar el micrófono.")},8000)}if(micWanted&&!micBlocked)setTimeout(()=>{if(mic===instance&&token===micToken&&micWanted&&!micRunning&&canAnswer()){try{mic.start()}catch(e){}}},450);};
+     mic.onerror=e=>{if(mic!==instance||token!==micToken)return;micRunning=false;clearTimeout(micAudioTimer);let err=e.error||"";if(["not-allowed","service-not-allowed","audio-capture","network"].includes(err)){micBlocked=true;micWanted=false;micFallback(micErrorText[err]||"Micrófono no disponible.");}else micNote("🎙 Micrófono interrumpido. Reintentar.");};
+     mic.onend=()=>{if(mic!==instance||token!==micToken)return;micRunning=false;clearTimeout(micAudioTimer);voiceBtn.classList.remove("ok");if(mode==="bot"&&phase==="playing"&&active===0&&answerSel.value==="voice"&&question&&!question.answered){phase="waiting-mic";pauseClock();updatePlayers();setMicLabel("RECONECTANDO MICRÓFONO","Tu reloj está pausado.",false);const pending=question;micStartupTimer=setTimeout(()=>{if(mode==="bot"&&phase==="waiting-mic"&&question===pending)micFallback("No se pudo reconectar el micrófono.")},8000)}if(micWanted&&!micBlocked)setTimeout(()=>{if(mic===instance&&token===micToken&&micWanted&&!micRunning&&canAnswer()){try{mic.start()}catch(e){}}},450);};
    }
    if(!micRunning)try{mic.start()}catch(e){micFallback("No se pudo iniciar el micrófono.");}
  }catch(e){if(token!==micToken)return;micWanted=false;micBlocked=true;micFallback("Permiso de micrófono no habilitado.");}
 }
 voiceBtn.onclick=()=>{if(micRunning){stopMic();return;}micBlocked=false;micWanted=false;startMic()};
-function stopMic(){++micToken;clearTimeout(micStartupTimer);micWanted=false;micRunning=false;voiceBtn.classList.remove("ok");const previous=mic;mic=null;if(previous){try{previous.abort()}catch(e){}}micNote("🎙 ACTIVAR MICRÓFONO")}
+function stopMic(){++micToken;clearTimeout(micStartupTimer);clearTimeout(micAudioTimer);micWanted=false;micRunning=false;voiceBtn.classList.remove("ok");const previous=mic;mic=null;if(previous){try{previous.abort()}catch(e){}}micNote("🎙 ACTIVAR MICRÓFONO")}
 function canAnswer(){
  if(mode==="bot")return active===0;
  if(mode==="online"&&online)return active===(online.host?0:1);
