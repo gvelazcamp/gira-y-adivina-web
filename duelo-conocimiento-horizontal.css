@@ -43,7 +43,10 @@
   body:has(#setup-overlay.hidden) .player-meta{
     margin-top:2px;gap:2px;font-size:clamp(8px,1.9dvh,10px);
   }
-  body:has(#setup-overlay.hidden) .dot{width:7px;height:6px}
+  body:has(#setup-overlay.hidden) .dots .dot{
+    box-sizing:border-box;flex:0 0 auto;width:clamp(12px,3dvh,15px);
+    height:clamp(12px,3dvh,15px);font-size:10px;line-height:1;overflow:hidden;
+  }
   body:has(#setup-overlay.hidden) .char-zone{
     order:1;flex:1;min-height:0!important;max-height:none!important;width:100%;
     display:flex;align-items:end;justify-content:center;

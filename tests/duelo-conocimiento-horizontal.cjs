@@ -16,7 +16,7 @@ assert(outer.includes(".ext-shell.dc-partida-horizontal"),"El marco de partida o
 assert(ext.includes('if(id!=="duelo-conocimiento"'),"No girar el celular para escribir nombres");
 assert(modes.includes("sincronizarPantallaDuelo(true,true)"),"Giro solo luego de comenzar");
 assert(modes.includes("sincronizarPantallaDuelo(false)"),"Volver al formulario");
-assert(html.includes('duelo-conocimiento-horizontal.css?v=1'),"CSS enlazado");
+assert(html.includes('duelo-conocimiento-horizontal.css?v=2'),"CSS enlazado");
 assert(html.includes('Primero configurá los nombres con el celular vertical.'),"Ayuda de entrada");
 const server=http.createServer((req,res)=>{
   const pathname=new URL(req.url,"http://test").pathname;
@@ -43,6 +43,7 @@ const server=http.createServer((req,res)=>{
        document.querySelector("#setup-overlay").classList.add("hidden");
        document.querySelector("#roulette-overlay").classList.add("hidden");
        document.querySelector("#result-overlay").classList.add("hidden");
+       document.querySelector("#dots0").innerHTML='<span class="dot miss">✕</span>';
      });
      const bounds=await page.evaluate(()=>{
        const get=sel=>{const el=document.querySelector(sel),r=el.getBoundingClientRect();
@@ -51,6 +52,7 @@ const server=http.createServer((req,res)=>{
          scrollX:document.documentElement.scrollWidth-document.documentElement.clientWidth,
          scrollY:document.documentElement.scrollHeight-document.documentElement.clientHeight,
          stage:get("#stage"),question:get(".question-frame"),answer:get("#answer-form"),pass:get("#pass-button"),
+         errorDot:get("#dots0 .dot.miss"),errorDotFont:parseFloat(getComputedStyle(document.querySelector("#dots0 .dot.miss")).fontSize),
          areas:getComputedStyle(document.querySelector(".stage-grid")).gridTemplateAreas,
          media:matchMedia("(orientation:landscape) and (max-height:760px)").matches
        };
@@ -59,6 +61,8 @@ const server=http.createServer((req,res)=>{
        assert(bounds.media,"Prueba horizontal activa");
        assert(bounds.areas.includes("left")&&bounds.areas.includes("right"),"Tres columnas: jugador, pregunta, rival");
        assert(bounds.scrollX<=2&&bounds.scrollY<=2,"Partida sin scroll "+width+"x"+height+": "+JSON.stringify(bounds));
+       assert(bounds.errorDot.width>=12&&bounds.errorDot.height>=12&&bounds.errorDotFont<=bounds.errorDot.height,
+         "La cruz debe entrar en el marcador rojo: "+JSON.stringify(bounds.errorDot));
        for(const [label,b] of [["pregunta",bounds.question],["respuesta",bounds.answer],["paso",bounds.pass]]){
          assert(b.x>=-2&&b.right<=width+2&&b.y>=-2&&b.bottom<=height+2,
            label+" fuera de "+width+"x"+height+": "+JSON.stringify(b));
