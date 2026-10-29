@@ -20,7 +20,7 @@ function probar(a,b,esperado,motivo){
    players:[{name:'Gonzalo',...a},{name:'Sofía',...b}],
    phase:'playing',questionGeneration:0,question:{},transitionTimeout:0,rouletteTimer:0,
    $,upper:s=>s.toUpperCase(),fmt:ms=>(ms/1000).toFixed(1)+' s',
-   pauseClock(){},stopVoice(){},updatePlayers(){},clearTimeout(){},playTone(){},setTimeout(){}
+   pauseClock(){},stopVoice(){},updatePlayers(){},renderReview(){},clearTimeout(){},playTone(){},setTimeout(){}
  };
  vm.runInNewContext(segment,context);
  const outcome=vm.runInNewContext('decidirResultadoDuelo()',context);

@@ -207,6 +207,7 @@ const server=http.createServer((req,res)=>{
     await categories.locator('#answer-submit').click();
     await categories.waitForFunction(()=>players[0].score===1,null,{timeout:1000});
     assert((await categories.locator('#feedback').textContent()).includes(cityAnswer));
+    assert.equal(await categories.locator('#dots0 .dot.on').count(),1,'el acierto deja un ✓ en la tanda');
     assert.equal(await categories.evaluate(()=>isRightAnswer('Londres',{category:'ciudades',answer:'París'})),false,'la foto de París no acepta otra ciudad');
     await categories.waitForFunction(()=>players[1].score===1||players[1].errors===1,null,{timeout:16000});
     assert.equal(await categories.evaluate(()=>[...askedQuestions].filter(key=>key.startsWith('ciudades:')).length),2,'el bot recibe otra imagen');
@@ -232,6 +233,12 @@ const server=http.createServer((req,res)=>{
     await categories.locator('#answer-submit').click();
     await categories.waitForFunction(()=>phase==='transition'&&players[0].errors===1,null,{timeout:1000});
     assert((await categories.locator('#feedback').textContent()).includes(videoAnswer),'un error revela el videojuego correcto');
+    assert.match(await categories.locator('#feedback').textContent(),/RESPUESTA ERRÓNEA/);
+    assert.equal(await categories.locator('#dots0 .dot.miss').count(),1,'el error deja una ✕ roja');
+    await categories.evaluate(()=>finish(1,'Prueba de resultados'));
+    assert.equal(await categories.locator('#result-review .review-row.miss').count(),1);
+    assert((await categories.locator('#result-review').textContent()).includes(videoAnswer),'el resultado muestra la respuesta correcta');
+    assert((await categories.locator('#result-review').textContent()).includes(wrongVideo),'el resultado muestra la respuesta dada');
     await categories.close();
     const exhausted=await browser.newPage({reducedMotion:'reduce',serviceWorkers:'block'});
     await exhausted.route('**/*',route=>route.request().url().startsWith('http://127.0.0.1:')?route.continue():route.fulfill({status:200,body:''}));
@@ -244,6 +251,21 @@ const server=http.createServer((req,res)=>{
     await exhausted.locator('#setup-form button[type=submit]').click();
     assert.match(await exhausted.locator('#setup-voice-error').textContent(),/Elegí otra categoría/,'no inicia si solo quedan imágenes vistas');
     await exhausted.close();
+    const passCase=await browser.newPage({reducedMotion:'reduce',serviceWorkers:'block'});
+    await passCase.route('**/*',route=>route.request().url().startsWith('http://127.0.0.1:')?route.continue():route.fulfill({status:200,body:''}));
+    await passCase.addInitScript(()=>{Math.random=()=>.1;window.SpeechRecognition=undefined;window.webkitSpeechRecognition=undefined});
+    await passCase.goto('http://127.0.0.1:'+server.address().port+'/duelo-conocimiento.html',{waitUntil:'load'});
+    await passCase.locator('#input0').fill('Gonzalo');
+    await passCase.locator('input[name=category]').evaluateAll(inputs=>inputs.forEach(input=>input.checked=input.value==='ciudades'));
+    await passCase.locator('#setup-form button[type=submit]').click();
+    await passCase.waitForFunction(()=>phase==='playing'&&active===0&&question.category==='ciudades',null,{timeout:10000});
+    const passedAnswer=await passCase.evaluate(()=>question.answer);
+    await passCase.locator('#pass-button').click();
+    assert.equal(await passCase.locator('#dots0 .dot.miss').count(),1,'Pasapalabra deja una ✕');
+    await passCase.evaluate(()=>finish(1,'Prueba de resumen'));
+    assert.match(await passCase.locator('#result-review').textContent(),/Pasapalabra/);
+    assert((await passCase.locator('#result-review').textContent()).includes(passedAnswer),'el pase conserva la solución para el resumen');
+    await passCase.close();
     console.log('PASS Duelo: 64 ciudades, 62 videojuegos; sin Simpson ni repeticiones entre partidas');
   }finally{await browser.close();server.close()}
 })().catch(error=>{console.error(error);server.close();process.exitCode=1});

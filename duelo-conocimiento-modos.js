@@ -244,12 +244,12 @@ rightAnswer=function(value){
 const basePass=passTurn;
 function revealPhrase(q){const answer=getCorrectAnswer(q);return q.category==="banderas"?`La bandera era ${answer}.`:q.category==="ciudades"?`La ciudad era ${answer}.`:q.category==="videojuegos"?`El videojuego era ${answer}.`:`La respuesta correcta era: ${answer}.`}
 passTurn=function(wrongValue=''){
- const preguntaActual=question,jugadorActual=active,nombre=players[active]?.name;
+ const preguntaActual=question,jugadorActual=active;
  const revelar=preguntaActual?.category==="banderas"||isImageQuestion(preguntaActual);
  const solucion=preguntaActual?getCorrectAnswer(preguntaActual):'';
  if(mode==="online"&&online&&!online.host){
    sendOnline("pass",{wrong:wrongValue});
-   $dc("feedback").textContent=revelar?`✗ Era ${solucion}. Sigue ${players[0].name}.`:"Paso enviado. Esperando el siguiente turno…";
+   $dc("feedback").className="feedback fail";$dc("feedback").textContent=`✕ ${wrongValue?'RESPUESTA ERRÓNEA':'PASAPALABRA'} · Era ${solucion}. Sigue ${players[0].name}.`;
    stopMic();if(revelar){lastRevealTurn=turn;speak(revealPhrase(preguntaActual),2800)}return;
  }
  const mostrarSolucion=mode==="bot"&&phase==="playing"&&preguntaActual&&!preguntaActual.answered;
@@ -259,8 +259,8 @@ passTurn=function(wrongValue=''){
    clearTimeout(transitionTimeout);transitionTimeout=0;
    const frase=revealPhrase(preguntaActual);
    $dc("feedback").className="feedback fail";
-   $dc("feedback").textContent=revelar?`✗ Era ${solucion}. Sigue ${players[1-active].name}.`:`Paso de ${nombre}: 1 error. ${frase}`;
-   setMicLabel(revelar?"RESPUESTA CORRECTA":"PASO",frase+" La siguiente pregunta aparece en unos segundos.",false);
+   $dc("feedback").textContent=`✕ ${wrongValue?'RESPUESTA ERRÓNEA':'PASAPALABRA'} · Era ${solucion}. Sigue ${players[1-active].name}.`;
+   setMicLabel(wrongValue?"RESPUESTA ERRÓNEA":"PASAPALABRA",frase+" La siguiente pregunta aparece en unos segundos.",false);
    speak(frase,30000).then(()=>{
      if(mode!=="bot"||phase!=="transition"||question!==preguntaActual||active!==jugadorActual)return;
      avanzarDespuesDeRespuestaBot(preguntaActual,jugadorActual,4500);
@@ -273,7 +273,7 @@ finish=function(winner,reason){
  clearTimeout(botHandle);cancelNarration();baseFinish(winner,reason);
  if(mode==="online"&&online&&online.host){
    const resultado=decidirResultadoDuelo();
-   sendOnline("finish",{winner:resultado.winner,reason:resultado.reason,players:players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0}))});
+   sendOnline("finish",{winner:resultado.winner,reason:resultado.reason,players:players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0})),history:roundHistory});
  }
 };
 function sincronizarPantallaDuelo(jugando,solicitarTV=false){
@@ -297,7 +297,7 @@ function sendOnline(type,data){
 }
 function sendSnapshot(){
  if(!online||!online.host||phase==="setup")return;
- sendOnline("state",{phase,active,turn,players:players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0})),question,selectionStarted,feedback:$dc("feedback").textContent,usedOpenAnswers:[...usedOpenAnswers]});
+ sendOnline("state",{phase,active,turn,players:players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0})),question,selectionStarted,feedback:$dc("feedback").textContent,usedOpenAnswers:[...usedOpenAnswers],history:roundHistory});
 }
 function onlineStatus(text){
  $dc("dc-room-status").textContent=text;
@@ -318,7 +318,7 @@ function onOnlineMsg(message){
  if(message.type==="welcome"&&!online.host){
    online.started=true;const d=message.data;
    $dc("input0").value=d.hostName;$dc("input1").disabled=false;$dc("input1").value=d.guestName;
-   players=[{name:d.hostName,ms:d.seconds*1000,score:0,errors:0},{name:d.guestName,ms:d.seconds*1000,score:0,errors:0}];
+   players=[{name:d.hostName,ms:d.seconds*1000,score:0,errors:0},{name:d.guestName,ms:d.seconds*1000,score:0,errors:0}];roundHistory=[];
    active=0;turn=1;phase="loading";question=null;
    $dc("setup-overlay").classList.add("hidden");$dc("roulette-overlay").classList.remove("hidden");$dc("roulette-name0").textContent=upper(d.hostName);$dc("roulette-name1").textContent=upper(d.guestName);
    $dc("roulette-caption").textContent="Esperando que empiece el desafío...";
@@ -328,7 +328,7 @@ function onOnlineMsg(message){
  }
  if(message.type==="state"&&!online.host){
    if(!online.started)return;
-   const d=message.data;players=d.players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0}));usedOpenAnswers.clear();(d.usedOpenAnswers||[]).forEach(answer=>usedOpenAnswers.add(answer));
+   const d=message.data;players=d.players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0}));roundHistory=Array.isArray(d.history)?d.history:[];usedOpenAnswers.clear();(d.usedOpenAnswers||[]).forEach(answer=>usedOpenAnswers.add(answer));
    active=d.active;turn=d.turn;if(d.phase==="finished")return;
    phase=d.phase;
    const olderKey=question&&JSON.stringify([question.category,question.code,question.math,question.answer,question.person&&question.person.name]);
@@ -343,7 +343,7 @@ function onOnlineMsg(message){
    }
    $dc("answer-input").disabled=!(phase==="playing"&&active===1);
    $dc("answer-submit").disabled=!(phase==="playing"&&active===1);
-   if(phase==="transition"&&d.feedback){$dc("feedback").className="feedback fail";$dc("feedback").textContent=d.feedback;if((question?.category==="banderas"||isImageQuestion(question))&&d.feedback.includes("Era ")){const answer=getCorrectAnswer(question);setMicLabel(`ERA ${upper(answer)}`,`Sigue ${players[1-active].name}`,false);if(lastRevealTurn!==turn){lastRevealTurn=turn;speak(revealPhrase(question),2800)}}}
+   if(phase==="transition"&&d.feedback){$dc("feedback").className=d.feedback.startsWith('✓')?'feedback success':'feedback fail';$dc("feedback").textContent=d.feedback;if((question?.category==="banderas"||isImageQuestion(question))&&d.feedback.includes("Era ")){const answer=getCorrectAnswer(question),paso=d.feedback.includes('PASAPALABRA');setMicLabel(`${paso?'PASAPALABRA':'RESPUESTA ERRÓNEA'} · ERA ${upper(answer)}`,`Sigue ${players[1-active].name}`,false);if(lastRevealTurn!==turn){lastRevealTurn=turn;speak(revealPhrase(question),2800)}}}
    if(phase==="playing"){$dc("feedback").textContent=active===1?"¡Es tu turno!":"Esperá el turno de "+players[0].name;
     setMicLabel(active===1?"TE TOCA RESPONDER":"RIVAL JUGANDO",active===1?"Respondé por voz o escribiendo":"Tu reloj está pausado",active===1&&micRunning);}
    updatePlayers();return;
@@ -358,7 +358,7 @@ function onOnlineMsg(message){
  if(message.type==="wrong"&&!online.host){$dc("feedback").textContent=message.data.feedback||"No es correcto. Tu tiempo sigue corriendo.";return;}
  if(message.type==="finish"&&!online.host){
    if(!online.started)return;
-   players=message.data.players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0}));
+   players=message.data.players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0}));roundHistory=Array.isArray(message.data.history)?message.data.history:roundHistory;
    baseFinish(message.data.winner,message.data.reason);return;
  }
 }
