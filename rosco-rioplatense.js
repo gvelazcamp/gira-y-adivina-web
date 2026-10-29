@@ -413,7 +413,7 @@ const RoscoRioplatense=(()=>{
   function iniciar(){if(window.Fichas&&!Fichas.usar("rosco-rioplatense",iniciar))return;
     /* Solo Gonzalo (piloto de Giro): antes de arrancar, la presentación del participante en su atril. */
     const empezar=()=>{if(!raiz)return;duelo=false;config=configNivel(nivel);items=armarRonda();guardar();arrancarRonda();};
-    if(pruebaG&&typeof esGonzalo==="function"&&esGonzalo()&&window.GiroRoscoPiloto?.presentarSolo?.(empezar))return;
+    if(pruebaG&&typeof esGonzalo==="function"&&esGonzalo()&&window.GiroRoscoPiloto?.presentarSolo?.(()=>{if(raiz){raiz.classList.add("rr-estudio");const sp=$("#rrPasar span");if(sp)sp.textContent="Pasar";}empezar();}))return;
     empezar();}
   function arrancarRonda(){
     estados=items.map(()=>"pendiente");respuestas=items.map(()=>"");
@@ -423,6 +423,9 @@ const RoscoRioplatense=(()=>{
     items.forEach((d,i)=>{
       const el=document.createElement("div"),span=document.createElement("span"),a=i*2*Math.PI/items.length;
       el.className="rr-letra";el.style.left=(50+42*Math.sin(a))+"%";el.style.top=(50-42*Math.cos(a))+"%";
+      /* Modo estudio (solo Gonzalo): cada letra va en su círculo del rosco del estudio. */
+      const pe=raiz.classList.contains("rr-estudio")&&window.GiroRoscoPiloto?.posLetra?.(d.letra);
+      if(pe){el.style.left=pe[0]+"%";el.style.top=pe[1]+"%";el.style.setProperty("--i",i);}
       span.textContent=d.letra;el.appendChild(span);disco.appendChild(el);
     });
     void disco.offsetWidth;disco.style.transition="";enfocar();siguiente();
@@ -434,7 +437,7 @@ const RoscoRioplatense=(()=>{
   function iniciarDuelo(){
     if(typeof Duelo==="undefined")return;
     Duelo.mostrarLobby("El Rosco","rosco",{onListo:(soyHost)=>{
-      duelo=true;
+      duelo=true;raiz?.classList.remove("rr-estudio");
       if(soyHost){config=configNivel(nivel);items=armarRonda();guardar();Duelo.enviarRonda({items,config});arrancarRonda();}
       else Duelo.onRondaRecibida(datos=>{config=datos.config;items=datos.items;arrancarRonda();});
     }});
@@ -565,12 +568,12 @@ const RoscoRioplatense=(()=>{
     };
     if(window.GiroRoscoPiloto){activar();return;}
     if(!document.querySelector('link[data-giro-rosco]')){
-      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=11";
+      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=12";
       estilo.dataset.giroRosco="1";document.head.appendChild(estilo);
     }
     let script=document.querySelector('script[data-giro-rosco]');
     if(!script){
-      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=17";script.async=true;
+      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=18";script.async=true;
       script.dataset.giroRosco="1";script.addEventListener("load",activar,{once:true});
       document.head.appendChild(script);
     }else script.addEventListener("load",activar,{once:true});

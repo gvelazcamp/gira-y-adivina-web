@@ -129,6 +129,11 @@
     ir.focus({preventScroll:true});
     return true;
   }
+  /* Modo estudio durante la partida: la rueda del Rosco es el rosco del estudio
+     (Giro_rosco_juego_rueda.webp, recorte de Giro_estudio_rosco_juego_16x9.webp)
+     y cada letra va en su círculo. Posiciones en % del recorte. */
+  const RUEDA_JUEGO=[[50.12,11.16],[59.01,12.49],[67.22,16.12],[74.48,21.74],[79.89,29.39],[83.71,38.44],[85.17,48.45],[83.89,58.47],[80.35,67.68],[74.79,75.47],[67.43,81.61],[59.01,85.45],[50.14,87.32],[41.09,85.96],[32.68,82.32],[25.27,76.76],[19.42,68.86],[15.65,59.24],[14.39,48.82],[15.91,38.48],[19.86,29.42],[25.34,21.64],[32.73,15.99],[41.11,12.45]];
+  function posLetra(letra){const i=LETRAS_ROSCO.indexOf(String(letra||"").toUpperCase());return i>=0?RUEDA_JUEGO[i]:null;}
   /* Las llama el Rosco al tocar Jugar (solo) — siguiente() arranca la partida. */
   function presentarSolo(siguiente){if(!habilitado())return false;return mostrarParticipantes("solo","",siguiente);}
   function presentarDuelo(rival,siguiente){if(!habilitado())return false;return mostrarParticipantes("duelo",rival,siguiente);}
@@ -301,5 +306,5 @@
       imagen:perfecto?"festeja":ok?"presenta":"revancha"
     });
   }
-  window.GiroRoscoPiloto={mostrarInicio,mostrarFinal,presentarSolo,presentarDuelo,cerrar,habilitado};
+  window.GiroRoscoPiloto={mostrarInicio,mostrarFinal,presentarSolo,presentarDuelo,posLetra,cerrar,habilitado};
 })();
