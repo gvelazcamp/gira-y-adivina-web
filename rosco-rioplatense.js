@@ -48,7 +48,7 @@ const RoscoRioplatense=(()=>{
   }
   function detenerMusicaJuego(){try{if(audioMusica&&!audioMusica.paused)audioMusica.pause();}catch(e){}}
   const $=s=>raiz?.querySelector(s);
-  const normalizar=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/\s+/g,"");
+  const normalizar=s=>String(s??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]/g,"");
   /* Vale la palabra, sus alternativas, y también la palabra con un complemento corto "de/del…"
      (ej. "pronóstico del tiempo" para PRONOSTICO): reclamos de jugadores, 22/10/2026. */
   function vale(d,valor){
@@ -56,6 +56,21 @@ const RoscoRioplatense=(()=>{
     if(opciones.includes(valor))return true;
     const base=normalizar(d.palabra),resto=valor.startsWith(base)?valor.slice(base.length):"";
     return resto.length>0&&resto.length<=12&&/^(DEL?|DELA|DELOS|DELAS)[A-Z]{3,}$/.test(resto);
+  }
+  /* En voz, Chrome puede elegir otra grafía del mismo sonido rioplatense
+     (s/z, b/v, ll/y, qu/k, h muda). No aplicar esta tolerancia al teclado. */
+  function sonidoEspanol(s){
+    return normalizar(s).replace(/CH/g,"@").replace(/LL/g,"Y")
+      .replace(/GU(?=[EI])/g,"#").replace(/QU(?=[EI])/g,"K")
+      .replace(/G(?=[EI])/g,"J").replace(/C(?=[EI])/g,"S")
+      .replace(/C/g,"K").replace(/Z/g,"S").replace(/V/g,"B")
+      .replace(/H/g,"").replace(/@/g,"CH").replace(/#/g,"G");
+  }
+  function valeVoz(d,valor){
+    const limpio=normalizar(valor);
+    if(vale(d,limpio))return true;
+    const sonido=sonidoEspanol(limpio);
+    return sonido.length>=3&&[d.palabra,...(d.alternativas||[])].some(x=>sonidoEspanol(x)===sonido);
   }
   const numero=(v,base=0)=>Number.isFinite(v)&&v>=0?v:base;
   function cargar(){
@@ -199,11 +214,11 @@ const RoscoRioplatense=(()=>{
       }
       /* Aceptar una sola frase natural, por ejemplo "la respuesta es acuario". */
       const opcionesRespuesta=opciones.flatMap(texto=>{
-        const sinIntro=texto.replace(/^(?:(?:(?:la|mi)\s+)?respuesta\s+(?:es|ser[ií]a)|(?:yo\s+)?(?:creo|pienso)\s+que\s+es|(?:yo\s+)?digo|(?:es|ser[ií]a))\s+/i,"");
+        const sinIntro=texto.replace(/^(?:(?:(?:la|mi)\s+)?(?:respuesta|palabra)\s+(?:es|ser[ií]a)|(?:yo\s+)?(?:creo|pienso)\s+que\s+es|(?:yo\s+)?digo|se\s+llama|(?:es|ser[ií]a))\s+/i,"");
         const sinArticulo=sinIntro.replace(/^(?:el|la|los|las|un|una)\s+/i,"");
         return [texto,sinIntro,sinArticulo];
       });
-      const correcta=opcionesRespuesta.find(t=>vale(items[actual],normalizar(t)));
+      const correcta=opcionesRespuesta.find(t=>valeVoz(items[actual],t));
       if(correcta){
         cancelarErrorVozG();
         vozSilenciosG=0;$("#rrEntrada").value=items[actual].palabra;

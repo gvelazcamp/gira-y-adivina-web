@@ -41,9 +41,9 @@ const server=http.createServer((req,res)=>{
     await page.evaluate(()=>{
       document.querySelector("#splash")?.remove();document.documentElement.classList.remove("cargando");
       Fichas.usar=()=>true;
-      ROSCO_CONFIG.letras="CLUY";ROSCO_CONFIG.niveles[1].letras=4;ROSCO_CONFIG.segundosPorLetra=30;ROSCO_CONFIG.giroMs=0;
-      const casos=ROSCO_DATOS.filter(d=>["CHIVITO","LOMITO","UNTAR","YUYO"].includes(d.palabra));
-      if(casos.length!==4)throw Error("Faltan las palabras del caso real");
+      ROSCO_CONFIG.letras="CKLUYZ";ROSCO_CONFIG.niveles[1].letras=6;ROSCO_CONFIG.segundosPorLetra=30;ROSCO_CONFIG.giroMs=0;
+      const casos=ROSCO_DATOS.filter(d=>["CHIVITO","KAKI","LOMITO","UNTAR","YUYO","ZAMBA"].includes(d.palabra));
+      if(casos.length!==6)throw Error("Faltan las palabras del caso real");
       ROSCO_DATOS.splice(0,ROSCO_DATOS.length,...casos);
       Extensiones.abrirJuego("rosco-rioplatense");
       document.querySelector("#rrPanel .rr-principal").click();
@@ -51,11 +51,11 @@ const server=http.createServer((req,res)=>{
     await page.waitForFunction(()=>document.querySelector("#rrEnviar")?.disabled===false);
     await page.locator("#rrVoz").click();
     let aciertos=0;
-    for(let n=0;n<4;n++){
+    for(let n=0;n<6;n++){
       await page.waitForFunction(i=>window.__roscoReconocimientos.length>i,n);
       await page.waitForFunction(()=>document.querySelector("#rrEstadoVozG")?.textContent.includes("ESCUCHANDO"));
       const letra=await page.locator("#rrGrande").textContent();
-      const palabra={C:"COTORRA",L:"LOMO",U:"UNTAR",Y:"YUYO"}[letra];
+      const palabra={C:"COTORRA",K:"CAQUI",L:"LOMO",U:"UNTAR",Y:"YUYO",Z:"SAMBA"}[letra];
       assert(palabra,"letra inesperada: "+letra);
       await page.evaluate(({i,palabra,incorrecta})=>{
         const r=window.__roscoReconocimientos[i];
@@ -68,9 +68,9 @@ const server=http.createServer((req,res)=>{
         await page.waitForFunction(i=>document.querySelector("#rrAciertos")?.textContent.startsWith(i+"/"),aciertos);
       }
     }
-    assert.equal(await page.locator("#rrAciertos").textContent(),"3/4");
+    assert.equal(await page.locator("#rrAciertos").textContent(),"5/6");
     assert.equal(await page.locator("#rrErrores").textContent(),"1");
     await context.close();
-    console.log("PASS: LOMO, UNTAR y YUYO acertados; COTORRA cuenta error sin espera infinita");
+    console.log("PASS: LOMO, CAQUI, UNTAR, YUYO y SAMBA/ZAMBA; COTORRA cuenta error sin espera infinita");
   }finally{await browser.close();server.close();}
 })().catch(error=>{console.error(error);server.close();process.exitCode=1;});

@@ -16,7 +16,7 @@ function simulate(words,final,expected,sharing){
    cancelarPaseVozG(){},vozGeneracionG:0,vozPaseTimerG:null,vozErrorTimerG:null,vozErrorPendienteG:null,
    setTimeout(fn,ms){const id=++nextTimer;timers.set(id,{fn,ms});return id;},clearTimeout(id){timers.delete(id);},
    items:[{palabra:"MANZANA",definicion:"Fruta de un árbol que puede ser roja o verde"}],
-   normalizar:t=>t.toUpperCase().replace(/\s+/g,""),vale:(q,t)=>q.palabra===t,
+   normalizar:t=>t.toUpperCase().replace(/\s+/g,""),valeVoz:(q,t)=>q.palabra===t.toUpperCase().replace(/\s+/g,""),
    $:()=>input,mostrarEstadoVozG:msg=>events.push("estado:"+msg),
    mensaje:msg=>events.push("mensaje:"+msg),
    pasar:()=>events.push("paso"),enviar:()=>events.push("respuesta:"+input.value)
@@ -41,7 +41,7 @@ function simulate(words,final,expected,sharing){
    cancelarPaseVozG(){},vozGeneracionG:0,vozPaseTimerG:null,vozErrorTimerG:null,vozErrorPendienteG:null,
    setTimeout(fn,ms){const id=++nextTimer;timers.set(id,{fn,ms});return id;},clearTimeout(id){timers.delete(id);},
    items:[{palabra:"UNTAR",definicion:"Pasar manteca por la tostada"}],
-   normalizar:t=>t.toUpperCase().replace(/\s+/g,""),vale:(q,t)=>q.palabra===t,
+   normalizar:t=>t.toUpperCase().replace(/\s+/g,""),valeVoz:(q,t)=>q.palabra===t.toUpperCase().replace(/\s+/g,""),
    $:()=>input,mostrarEstadoVozG:msg=>events.push("estado:"+msg),
    pasar:()=>events.push("paso"),enviar:()=>events.push("respuesta:"+input.value)
  };
@@ -122,7 +122,7 @@ assert(source.includes('vozTimerG=setTimeout(arrancarEscuchaG,450);'),"Reconecta
 assert(source.includes("Micrófono en pausa · se reanuda al volver."),"Modo voz activo al duplicar pantalla");
 const index=fs.readFileSync(path.join(__dirname,"..","index.html"),"utf8");
 const sw=fs.readFileSync(path.join(__dirname,"..","sw.js"),"utf8");
-assert(index.includes("rosco-rioplatense.js?v=67"));
-assert(index.includes("rosco-rioplatense-datos.js?v=6"));
-assert(sw.includes("rosco-rioplatense.js?v=67")&&sw.includes("rosco-rioplatense-datos.js?v=6")&&sw.includes("gya-cache-v563"));
+assert(index.includes("rosco-rioplatense.js?v=68"));
+assert(index.includes("rosco-rioplatense-datos.js?v=7"));
+assert(sw.includes("rosco-rioplatense.js?v=68")&&sw.includes("rosco-rioplatense-datos.js?v=7")&&sw.includes("gya-cache-v564"));
 console.log("PASS: voz y Pasapalabra, con y sin pantalla compartida, respuestas parciales, retorno y caché");
