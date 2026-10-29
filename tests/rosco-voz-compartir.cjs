@@ -22,8 +22,8 @@ function simulate(words,final,expected,sharing){
  assert(events.includes(expected),(sharing?"Compartiendo":"Directo")+": "+words+" => "+events);
 }
 for(const sharing of [false,true]){
- simulate("manzana",false,"respuesta:manzana",sharing);
- simulate("manzana",true,"respuesta:manzana",sharing);
+ simulate("manzana",false,"respuesta:MANZANA",sharing);
+ simulate("manzana",true,"respuesta:MANZANA",sharing);
  simulate("es manzana",true,"respuesta:MANZANA",sharing);
  simulate("la respuesta es manzana",false,"respuesta:MANZANA",sharing);
  simulate("creo que es manzana",true,"respuesta:MANZANA",sharing);
