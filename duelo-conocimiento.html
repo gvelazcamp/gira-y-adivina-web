@@ -85,7 +85,7 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
     <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#342052" stroke="#fff3d0" stroke-width="2"/><path d="M24 4v40M4 24h40M10 10l28 28M38 10L10 38" stroke="#ffb82d" stroke-width="3"/><circle cx="24" cy="24" r="7" fill="#f92b83" stroke="#fff3d0" stroke-width="2"/></svg></span>
     <span class="brand-copy"><strong>GIRÁ Y ADIVINÁ</strong><small>RIOPLATENSE</small></span>
    </div>
-   <div class="nav-actions"><span class="eyebrow-chip">EDICIÓN SHOW TV</span><button class="tool-btn" id="sound-btn" title="Activar o silenciar efectos" aria-label="Sonido">♪ <span id="sound-text">OFF</span></button><button class="tool-btn" id="new-btn" title="Volver a configurar">↻ <span class="new-label">Nuevo duelo</span></button></div>
+   <div class="nav-actions"><span class="eyebrow-chip">EDICIÓN SHOW TV</span><button class="tool-btn" id="sound-btn" title="Activar o silenciar efectos" aria-label="Sonido">♪ <span id="sound-text">ON</span></button><button class="tool-btn" id="new-btn" title="Volver a configurar">↻ <span class="new-label">Nuevo duelo</span></button></div>
  </header>
  <div class="title-wrap"><img class="dc-title-logo" src="logo-duelo-conocimiento.webp" alt="" aria-hidden="true"><div class="sup-title">El duelo de los segundos</div><h1 class="game-title">DUELO DE <em>CONOCIMIENTO</em></h1><p class="title-sub">Dos jugadores · Desafíos distintos · Un solo ganador</p></div>
  <main class="stage-wrap">
@@ -156,7 +156,7 @@ const COUNTRY_NAMES = {"uy":"Uruguay","ar":"Argentina","br":"Brasil","cl":"Chile
 const $ = id=>document.getElementById(id);
 const allCodes=Object.keys(COUNTRY_NAMES),prefersReduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SpeechAPI=window.SpeechRecognition || window.webkitSpeechRecognition;
-let phase='setup',settings={names:['Andrés','Sofía'],seconds:40},players=[],active=0,turn=1,question=null,raf=0,prevTick=0,transitionTimeout=0,rouletteTimer=0,animTimer=0,animFrame=1,soundOn=false,audioCtx=null,toastTimer=0;
+let phase='setup',settings={names:['Andrés','Sofía'],seconds:40},players=[],active=0,turn=1,question=null,raf=0,prevTick=0,transitionTimeout=0,rouletteTimer=0,animTimer=0,animFrame=1,soundOn=true,audioCtx=null,toastTimer=0;
 let recognition=null,micActive=false,micRequested=false,micBlocked=false,restartTimer=0,micStartTimer=0,lastMicError='',ignoreSpeechUntil=0,selectionStarted=false;
 const shuffled=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b};
 const upper=s=>(s||'').toLocaleUpperCase('es-UY');
@@ -281,11 +281,12 @@ async function nextQuestion(){
  $('question-title').textContent=q.label;
  $('question-number').textContent=`${{banderas:'BANDERAS',matematica:'MATEMÁTICA',famosos:'FAMOSOS',futbol:'FÚTBOL'}[q.category]}${q.level?' · NIVEL '+q.level:''} · Turno de ${p.name}`;
  $('feedback').className='feedback';$('feedback').textContent=`¡Respondé, ${p.name}!`;
- phase='playing';$('answer-input').value='';$('answer-input').placeholder=q.category==='banderas'?'Escribí el país':q.category==='matematica'?'Escribí el número':'Escribí quién es';$('answer-input').disabled=false;$('answer-submit').disabled=false;
+  const puedeResponder=typeof window.dueloPuedeResponder==='function'?window.dueloPuedeResponder():true;
+  phase='playing';$('answer-input').value='';$('answer-input').placeholder=q.category==='banderas'?'Escribí el país':q.category==='matematica'?'Escribí el número':'Escribí quién es';$('answer-input').disabled=!puedeResponder;$('answer-submit').disabled=!puedeResponder;
  setMicLabel('ESCRIBÍ TU RESPUESTA',`Turno de ${p.name} · El reloj está corriendo`,false);
- prevTick=performance.now();pauseClock();raf=requestAnimationFrame(tick);updatePlayers();$('answer-input').focus();
+  prevTick=performance.now();pauseClock();raf=requestAnimationFrame(tick);updatePlayers();if(puedeResponder&&$('answer-form').offsetParent!==null)$('answer-input').focus();
 }
-function rightAnswer(transcript){if(phase!=='playing'||!question||question.answered)return;question.answered=true;pauseClock();$('answer-input').disabled=true;$('answer-submit').disabled=true;const p=players[active];p.score++;$('feedback').className='feedback success';$('feedback').textContent=`✓ ¡Correcto, ${p.name}! ${getCorrectAnswer(question)}`;setMicLabel('¡CORRECTO!',`${getCorrectAnswer(question)} · ${p.name} conserva ${fmt(p.ms)}`,false);phase='transition';updatePlayers();playTone(730,.095);setTimeout(()=>playTone(990,.15),100);transitionTimeout=setTimeout(()=>{if(phase!=='transition')return;active=1-active;turn++;nextQuestion()},820)}
+function rightAnswer(transcript){if(phase!=='playing'||!question||question.answered)return;question.answered=true;pauseClock();$('answer-input').disabled=true;$('answer-submit').disabled=true;const p=players[active];p.score++;$('feedback').className='feedback success';$('feedback').textContent=`✓ ¡Correcto, ${p.name}! ${getCorrectAnswer(question)}`;setMicLabel('¡CORRECTO!',`${getCorrectAnswer(question)} · ${p.name} conserva ${fmt(p.ms)}`,false);phase='transition';updatePlayers();playTone(730,.095);setTimeout(()=>playTone(990,.15),100);transitionTimeout=setTimeout(()=>{if(phase!=='transition')return;active=1-active;turn++;nextQuestion()},active===1?1500:1000)}
 function consumeSpeech(txt,isFinal){if(phase!=='playing'||!question||question.answered||performance.now()<ignoreSpeechUntil)return;const heard=normalize(txt);if(!heard)return;setMicLabel('TE ESCUCHAMOS',`Se escuchó: «${txt}»`,true);if(isCorrectSpeech(txt,question.code)){rightAnswer(txt);return}if(isFinal){$('feedback').className='feedback fail';$('feedback').textContent='No es correcto. ¡Probá otra vez!';playTone(210,.08,'triangle');}}
 function localAudioLimitation(){return !window.isSecureContext&&!['file:','content:'].includes(location.protocol)}
 function localAudioMessage(){return 'Archivo abierto desde Descargas: podés intentar activar el micrófono en Chrome, pero Android podría bloquear el reconocimiento de voz. Si no funciona, tendrás que abrir el juego desde una página HTTPS.'}
@@ -318,7 +319,7 @@ function requestMicrophone(){
 function stopVoice(){micRequested=false;clearTimeout(restartTimer);clearMicStartTimer();micBlocked=false;if(recognition){try{recognition.abort()}catch(e){}}micActive=false}
 function runRoulette(){if(selectionStarted||phase!=='selecting')return;selectionStarted=true;const target=Math.floor(Math.random()*2);let n=0,total=prefersReduced?8:19;$('roulette-overlay').classList.remove('hidden');$('roulette-caption').textContent='SORTEANDO PRIMER TURNO...';const step=()=>{if(phase!=='selecting')return;let k=n<total-1?n%2:target;$('roulette-name0').classList.toggle('picked',k===0);$('roulette-name1').classList.toggle('picked',k===1);if(n===total-1){$('roulette-caption').textContent=`¡ARRANCA ${upper(players[target].name)}!`;active=target;playTone(760,.2);rouletteTimer=setTimeout(()=>{if(phase!=='selecting')return;$('roulette-overlay').classList.add('hidden');turn=1;nextQuestion()},650);return}n++;playTone(n%2?460:540,.05,'sine',.025);rouletteTimer=setTimeout(step,prefersReduced?50:115)};step()}
 function start(){
- clearTimeout(transitionTimeout);clearTimeout(rouletteTimer);pauseClock();stopVoice();
+  clearTimeout(transitionTimeout);clearTimeout(rouletteTimer);pauseClock();stopVoice();if(soundOn)playTone(620,.06);
  $('setup-voice-error').textContent='';
  settings={names:[$('input0').value.trim().slice(0,14)||'Andrés',$('input1').value.trim().slice(0,14)||'Sofía'],seconds:Number($('time-select').value),categories:[...document.querySelectorAll('input[name=category]:checked')].map(x=>x.value)};if(!settings.categories.length){$('setup-voice-error').textContent='Elegí al menos una categoría para jugar.';return}
  players=settings.names.map(name=>({name,ms:settings.seconds*1000,score:0,deck:shuffled(allCodes),last:null,topicDeck:[],flagDeckeasy:[],flagDeckmedium:[],flagDeckhard:[],famososDeck:[],futbolDeck:[]}));
@@ -356,6 +357,6 @@ function initPreview(){players=[{name:'Andrés',ms:40000,score:0},{name:'Sofía'
 initPreview();
 </script>
 <script src="lib/mqtt.min.js?v=5.10.1"></script>
-<script src="duelo-conocimiento-modos.js?v=4"></script>
+<script src="duelo-conocimiento-modos.js?v=5"></script>
 </body>
 </html>

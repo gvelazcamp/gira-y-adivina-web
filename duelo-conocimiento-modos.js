@@ -3,7 +3,7 @@
 "use strict";
 const $dc=id=>document.getElementById(id);
 const originalStart=start, originalNextQuestion=nextQuestion, originalRightAnswer=rightAnswer, originalFinish=finish, originalReset=resetToConfig;
-let mode="bot", botHandle=0, botError=30, online=null, mic=null, micWanted=false, micRunning=false, micBlocked=false, lastSpeech="",lastSpeechAt=0, remoteState=0;
+let mode="bot", botHandle=0, botError=30, online=null, mic=null, micWanted=false, micRunning=false, micBlocked=false, micToken=0, lastSpeech="",lastSpeechAt=0, remoteState=0;
 const alphabet="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const uniqueId=()=>Math.random().toString(36).slice(2,10);
 const nameSafe=s=>String(s||"Jugador").trim().slice(0,14).replace(/[<>]/g,"");
@@ -47,51 +47,61 @@ function syncAnswer(){
  const voice=answerSel.value==="voice";
  answerBox.querySelectorAll("[data-answer]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.answer===answerSel.value)));
  voiceBtn.classList.toggle("dc-hidden",!voice);$dc("answer-form").classList.toggle("dc-hidden",voice);
- textBtn.classList.toggle("dc-hidden",!voice);
+ textBtn.textContent=voice?"⌨️ Responder escribiendo":"🎙 Probar micrófono";
  $dc("mic-panel").setAttribute("aria-label",voice?"Responder hablando":"Responder escribiendo");
- if(!voice)stopMic();else if(phase==="playing"||phase==="loading"||phase==="selecting")startMic();
+ if(!voice)stopMic();else if((phase==="playing"&&canAnswer())||phase==="selecting")startMic();
 }
-textBtn.onclick=()=>{answerSel.value="text";syncAnswer();if(phase==="playing")$dc("answer-input").focus()};
+textBtn.onclick=()=>{answerSel.value=answerSel.value==="voice"?"text":"voice";micBlocked=false;syncAnswer();if(answerSel.value==="text"&&phase==="playing"&&canAnswer())$dc("answer-input").focus()};
 const micErrorText={ "not-allowed":"Permiso rechazado. Tocá el icono del candado en Chrome y permití el micrófono.", "service-not-allowed":"Chrome no permite reconocimiento de voz en este dispositivo.", "audio-capture":"No se detecta un micrófono. Revisá los permisos del teléfono.", "network":"El reconocimiento necesita conexión a internet." };
 function micNote(s){voiceBtn.textContent=s}
+function micFallback(message){
+ answerSel.value="text";syncAnswer();
+ $dc("feedback").className="feedback fail";$dc("feedback").textContent=message+" Podés responder escribiendo.";
+ if(phase==="playing"&&canAnswer())$dc("answer-input").focus();
+}
 async function startMic(){
- if(answerSel.value!=="voice"||micWanted||micBlocked)return;
- if(!window.SpeechRecognition&&!window.webkitSpeechRecognition){micNote("Sin reconocimiento de voz en este navegador");return;}
- if(!window.isSecureContext){micNote("Necesita HTTPS para usar el micrófono");return;}
+ if(answerSel.value!=="voice"||micWanted||micBlocked||(phase==="playing"&&!canAnswer()))return;
+ if(!window.SpeechRecognition&&!window.webkitSpeechRecognition){micFallback("Este navegador no tiene reconocimiento de voz.");return;}
+ if(!window.isSecureContext){micFallback("El micrófono necesita HTTPS.");return;}
+ const token=++micToken;
  micWanted=true;micBlocked=false;
  micNote("🎙 SOLICITANDO PERMISO...");
  try{
    if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
      const stream=await navigator.mediaDevices.getUserMedia({audio:true});stream.getTracks().forEach(t=>t.stop());
    }
-   if(!micWanted)return;
-   if(!mic){const Ctor=window.SpeechRecognition||window.webkitSpeechRecognition;mic=new Ctor();mic.lang="es-UY";mic.continuous=true;mic.interimResults=true;mic.maxAlternatives=3;
-     mic.onstart=()=>{micRunning=true;voiceBtn.classList.add("ok");micNote("🎙 ESCUCHANDO");};
-     mic.onresult=e=>{if(phase!=="playing"||!question||!canAnswer())return;
+   if(!micWanted||token!==micToken)return;
+   if(!mic){const Ctor=window.SpeechRecognition||window.webkitSpeechRecognition;mic=new Ctor();const instance=mic;mic.lang="es-UY";mic.continuous=true;mic.interimResults=true;mic.maxAlternatives=3;
+     mic.onstart=()=>{if(mic!==instance||token!==micToken)return;micRunning=true;voiceBtn.classList.add("ok");micNote("🎙 ESCUCHANDO");if(phase==="playing"&&canAnswer())setMicLabel("TE ESCUCHAMOS",`Respondé, ${players[active].name}`,true);};
+     mic.onresult=e=>{if(mic!==instance||token!==micToken||!micRunning||phase!=="playing"||!question||!canAnswer())return;
        for(let i=e.resultIndex;i<e.results.length;i++){const result=e.results[i];for(let j=0;j<result.length;j++){
          const candidate=String(result[j].transcript||"").trim();
          if(!candidate||!isRightAnswer(candidate,question))continue;
-         const key=normalize(candidate),now=Date.now();if(key===lastSpeech&&now-lastSpeechAt<1500)return;
+         const key=candidate.toLocaleLowerCase('es-UY'),now=Date.now();if(key===lastSpeech&&now-lastSpeechAt<1500)return;
          lastSpeech=key;lastSpeechAt=now;applyAnswer(candidate);return;
-       }}
+       }
+       const heard=String(result[0]?.transcript||"").trim();
+       if(heard){setMicLabel("TE ESCUCHAMOS","Oí: «"+heard+"»",true);if(result.isFinal){$dc("feedback").className="feedback fail";$dc("feedback").textContent="No es correcto. Probá otra vez.";playTone(210,.08,'triangle');}}
+       }
      };
-     mic.onerror=e=>{micRunning=false;let err=e.error||"";if(["not-allowed","service-not-allowed","audio-capture"].includes(err)){micBlocked=true;micWanted=false;}micNote(micErrorText[err]||"🎙 Micrófono interrumpido. Reintentar.");};
-     mic.onend=()=>{micRunning=false;voiceBtn.classList.remove("ok");if(micWanted&&!micBlocked)setTimeout(()=>{if(micWanted&&!micRunning){try{mic.start()}catch(e){}}},450);};
+     mic.onerror=e=>{if(mic!==instance||token!==micToken)return;micRunning=false;let err=e.error||"";if(["not-allowed","service-not-allowed","audio-capture","network"].includes(err)){micBlocked=true;micWanted=false;micFallback(micErrorText[err]||"Micrófono no disponible.");}else micNote("🎙 Micrófono interrumpido. Reintentar.");};
+     mic.onend=()=>{if(mic!==instance||token!==micToken)return;micRunning=false;voiceBtn.classList.remove("ok");if(micWanted&&!micBlocked)setTimeout(()=>{if(mic===instance&&token===micToken&&micWanted&&!micRunning&&canAnswer()){try{mic.start()}catch(e){}}},450);};
    }
-   if(!micRunning)try{mic.start()}catch(e){micNote("Tocá para reactivar micrófono");}
- }catch(e){micWanted=false;micBlocked=true;micNote("Permiso de micrófono no habilitado. Tocá para reintentar.");}
+   if(!micRunning)try{mic.start()}catch(e){micFallback("No se pudo iniciar el micrófono.");}
+ }catch(e){if(token!==micToken)return;micWanted=false;micBlocked=true;micFallback("Permiso de micrófono no habilitado.");}
 }
-voiceBtn.onclick=()=>{if(micRunning){micWanted=false;mic.abort();micNote("🎙 ACTIVAR MICRÓFONO");return;}micBlocked=false;micWanted=false;startMic()};
-function stopMic(){micWanted=false;micRunning=false;voiceBtn.classList.remove("ok");if(mic){try{mic.abort()}catch(e){}}micNote("🎙 ACTIVAR MICRÓFONO")}
+voiceBtn.onclick=()=>{if(micRunning){stopMic();return;}micBlocked=false;micWanted=false;startMic()};
+function stopMic(){++micToken;micWanted=false;micRunning=false;voiceBtn.classList.remove("ok");const previous=mic;mic=null;if(previous){try{previous.abort()}catch(e){}}micNote("🎙 ACTIVAR MICRÓFONO")}
 function canAnswer(){
  if(mode==="bot")return active===0;
  if(mode==="online"&&online)return active===(online.host?0:1);
  return true;
 }
+window.dueloPuedeResponder=canAnswer;
 /* El reconocimiento de voz puede devolver "treinta y dos" en vez de "32". */
 const numberWords={cero:0,un:1,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10,once:11,doce:12,trece:13,catorce:14,quince:15,dieciseis:16,diecisiete:17,dieciocho:18,diecinueve:19,veinte:20,veintiuno:21,veintiun:21,veintidos:22,veintitres:23,veinticuatro:24,veinticinco:25,veintiseis:26,veintisiete:27,veintiocho:28,veintinueve:29,treinta:30,cuarenta:40,cincuenta:50,sesenta:60,setenta:70,ochenta:80,noventa:90,cien:100,ciento:100,doscientos:200,trescientos:300,cuatrocientos:400,quinientos:500,seiscientos:600,setecientos:700,ochocientos:800,novecientos:900,mil:1000};
 function spokenNumber(text){
- let raw=normalize(text).replace(/^(la respuesta es|el resultado es|es|son|igual a)\s+/g,"").trim();
+ let raw=String(text||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/−/g,"-").replace(/[^a-z0-9ñ -]/g," ").replace(/\s+/g," ").trim().replace(/^(la respuesta es|el resultado es|es|son|igual a)\s+/g,"").trim();
  if(/^-?\d+$/.test(raw))return Number(raw);
  let negative=false;if(raw.startsWith("menos ")){negative=true;raw=raw.slice(6)}
  let result=0,current=0,valid=false;
@@ -120,29 +130,44 @@ const originalForm=$dc("answer-form");
 originalForm.addEventListener("submit",e=>{
  if(mode==="online"&&online&&!online.host&&phase==="playing"){e.stopImmediatePropagation();e.preventDefault();const v=$dc("answer-input").value.trim();if(v)applyAnswer(v);}
 },true);
-function botTurn(){
+function botTurn(retries=0){
  clearTimeout(botHandle);
  if(mode!=="bot"||phase!=="playing"||active!==1||!question)return;
- const speed=1800+Math.floor(Math.random()*2300);
+ const currentQuestion=question;
+ const speed=retries?900+Math.floor(Math.random()*500):1800+Math.floor(Math.random()*1200);
  botHandle=setTimeout(()=>{
-   if(mode!=="bot"||phase!=="playing"||active!==1)return;
-   if(Math.random()*100<botError){$dc("feedback").className="feedback fail";$dc("feedback").textContent=players[1].name+" se equivocó. Su reloj sigue corriendo.";botTurn();}
+   if(mode!=="bot"||phase!=="playing"||active!==1||question!==currentQuestion)return;
+   if(!retries&&Math.random()*100<botError){$dc("feedback").className="feedback fail";$dc("feedback").textContent=players[1].name+" se equivocó. Su reloj sigue corriendo.";botTurn(1);}
    else rightAnswer("BOT");
  },speed);
+}
+function turnCue(bot){
+ playTone(bot?440:740,.12,'sine',.055);
+ setTimeout(()=>{if(phase==="playing"&&active===(bot?1:0))playTone(bot?330:940,.16,'sine',.055)},130);
 }
 const baseNext=nextQuestion;
 nextQuestion=async function(){
  if(mode==="online"&&online&&!online.host)return;
  await baseNext();
  if(phase!=="playing")return;
- if(mode==="bot"&&active===1){$dc("answer-input").disabled=true;$dc("answer-submit").disabled=true;botTurn();}
+ if(mode==="bot"){
+   const bot=active===1,name=players[active].name;
+   $dc("turn-stats").textContent="TURNO "+turn+" · "+upper(name);
+   $dc("feedback").className="feedback";
+   $dc("feedback").textContent=bot?name+" está pensando…":"¡Te toca, "+name+"!";
+   voiceBtn.disabled=bot;
+   if(bot){stopMic();micNote("🎙 PAUSADO · TURNO DE "+upper(name));setMicLabel(upper(name)+" ESTÁ PENSANDO","Esperá su respuesta; tu reloj está pausado.",false);botTurn();}
+   else if(answerSel.value==="voice"&&!micWanted&&!micBlocked)startMic();
+ }
+ if(mode==="bot")turnCue(active===1);
  if(mode==="online"&&online&&online.host)sendSnapshot();
- if(answerSel.value==="voice"&&canAnswer()&&!micWanted&&!micBlocked)startMic();
+ if(mode!=="bot"&&answerSel.value==="voice"&&canAnswer()&&!micWanted&&!micBlocked)startMic();
 };
 const baseRight=rightAnswer;
 rightAnswer=function(value){
  clearTimeout(botHandle);if(mode==="online"&&online&&!online.host){applyAnswer(value);return;}
  baseRight(value);
+ if(mode==="bot"&&active===0&&phase==="transition")stopMic();
  if(mode==="online"&&online&&online.host)sendSnapshot();
 };
 const baseFinish=finish;
@@ -262,7 +287,7 @@ start=function(){
  if(mode==="bot"&&window.parent!==window&&window.parent.Fichas&&
     !window.parent.Fichas.usar("duelo-conocimiento",()=>{if(document.contains(place))start();}))return;
  clearTimeout(botHandle);stopOnline();
- if(mode==="bot"){$dc("input1").disabled=false;$dc("input1").value="BOT";}
+ if(mode==="bot"){$dc("input1").disabled=false;$dc("input1").value="Sofía";}
  if(mode==="online"){
    if(roomChoice.value==="join"){const c=roomInput.value.trim().toUpperCase();if(!codeValid(c)){onlineStatus("Ingresá un código válido de 4 caracteres.");return;}connectOnline(false,c);}
    else connectOnline(true,roomCode());
