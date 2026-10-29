@@ -13,7 +13,7 @@ function simulate(words,final,expected,sharing){
  const events=[],input={value:""};
  const env={
    vozG:true,vozLeyendoG:false,fase:"resolver",actual:0,vozSilenciosG:0,
-   items:[{palabra:"MANZANA"}],
+   items:[{palabra:"MANZANA",definicion:"Fruta de un árbol que puede ser roja o verde"}],
    normalizar:t=>t.toUpperCase().replace(/\s+/g,""),vale:(q,t)=>q.palabra===t,
    $:()=>input,mostrarEstadoVozG:msg=>events.push("estado:"+msg),
    pasar:()=>events.push("paso"),enviar:()=>events.push("respuesta:"+input.value)
@@ -24,6 +24,10 @@ function simulate(words,final,expected,sharing){
 for(const sharing of [false,true]){
  simulate("manzana",false,"respuesta:manzana",sharing);
  simulate("manzana",true,"respuesta:manzana",sharing);
+ simulate("es manzana",true,"respuesta:MANZANA",sharing);
+ simulate("la respuesta es manzana",false,"respuesta:MANZANA",sharing);
+ simulate("creo que es manzana",true,"respuesta:MANZANA",sharing);
+ simulate("Fruta de un árbol",true,"",sharing);
  simulate("pasapalabra",true,"paso",sharing);
  simulate("pasa palabra",true,"paso",sharing);
  simulate("pasapalabra",false,"estado:Oí «Pasapalabra» · confirmando…",sharing);
