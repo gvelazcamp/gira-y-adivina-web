@@ -1381,7 +1381,9 @@ body:not(.tvhost) #horizontalAyuda{display:none}
     <button class="menu-card mc-naranja" id="bTorneos"><span class="mc-ico">🏆</span><span class="mc-txt"><span class="mc-tit">Torneos</span><span class="mc-sub">Competí contra otros jugadores</span></span><span class="mc-flecha">›</span><span id="bTorneosBadge" class="rw-badge torneo-badge"></span></button>
     <button class="menu-card mc-celeste" id="bMenuEventosPrueba"><span class="mc-ico"><img src="assets/eventos/icono-evento.webp" alt="" style="width:100%;height:100%;object-fit:contain"></span><span class="mc-txt"><span class="mc-tit">Eventos</span><span class="mc-sub">Volvé cada día por algo nuevo</span></span><span class="mc-flecha">›</span></button>
   </div>
-  <button class="btn-grande cta-jugar ext-cta" id="bExtensiones" type="button" hidden>
+  <!-- Visible desde el arranque (antes esperaba a extensiones.js, que carga al final, y tardaba unos segundos en aparecer).
+       Si se toca antes de que cargue, queda anotado y extensiones.js lo abre apenas está listo. -->
+  <button class="btn-grande cta-jugar ext-cta" id="bExtensiones" type="button" onclick="if(window.Extensiones)Extensiones.abrirLobby();else this.dataset.pendiente='1'">
     <span class="cta-play">✦</span>
     <span class="cta-txt"><b>Jugá más juegos de Girá y Adiviná</b><small>Más juegos para descubrir</small></span>
   </button>
@@ -12017,7 +12019,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="canta-la-cancion.js?v=13"></script>
 <script src="tutti-frutti-datos.js?v=35"></script>
 <script src="tutti-frutti.js?v=97"></script>
-<script src="extensiones.js?v=106"></script>
+<script src="extensiones.js?v=107"></script>
 <script src="sala-tv.js?v=1"></script>
 <link rel="stylesheet" href="tele.css?v=5">
 <script src="tele.js?v=7"></script>
