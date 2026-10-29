@@ -86,7 +86,7 @@ const envWatchdog={
  setTimeout(fn,ms){const id=++proximaTarea;tareas.set(id,{fn,ms});return id;},
  clearTimeout(id){tareas.delete(id);},
  detenerMusicaJuego(){},mostrarEstadoVozG(texto){estados.push(texto);},
- procesarResultadoVozG(){},programarErrorVozG(ms){envWatchdog.ultimaEsperaError=ms;},pararVozG(){throw Error("no debe apagar Hablar");},mensaje(){},
+ procesarResultadoVozG(){},pararVozG(){throw Error("no debe apagar Hablar");},mensaje(){},
  window:{SpeechRecognition:class{
    start(){instancias.push(this);}
    abort(){this.onend?.();}
@@ -105,9 +105,10 @@ assert(reabrir,"se reabre después de abortar el intento trabado");
 reabrir.fn();
 assert.equal(instancias.length,2,"Hablar sigue activo sin tocar el botón de nuevo");
 envWatchdog.vozErrorPendienteG={letra:0,texto:"un tal",generacion:0};
+const errorPendiente=envWatchdog.setTimeout(()=>{},3000);
 instancias[1].onspeechstart();
 assert([...tareas.values()].some(t=>t.ms===6000),"si detecta voz, espera la transcripción y reconecta si no llega");
-assert.equal(envWatchdog.ultimaEsperaError,6500,"un segundo intento no descarta la respuesta pendiente");
+assert(tareas.has(errorPendiente),"hablar otra vez no alarga el error pendiente indefinidamente");
 assert(envWatchdog.vozErrorPendienteG,"la corrección pendiente sigue disponible");
 for(const name of ["siguiente","enviar","pasar"]){
  const i=source.indexOf("  function "+name+"(){");
@@ -121,6 +122,7 @@ assert(source.includes('vozTimerG=setTimeout(arrancarEscuchaG,450);'),"Reconecta
 assert(source.includes("Micrófono en pausa · se reanuda al volver."),"Modo voz activo al duplicar pantalla");
 const index=fs.readFileSync(path.join(__dirname,"..","index.html"),"utf8");
 const sw=fs.readFileSync(path.join(__dirname,"..","sw.js"),"utf8");
-assert(index.includes("rosco-rioplatense.js?v=66"));
-assert(sw.includes("rosco-rioplatense.js?v=66")&&sw.includes("gya-cache-v562"));
+assert(index.includes("rosco-rioplatense.js?v=67"));
+assert(index.includes("rosco-rioplatense-datos.js?v=6"));
+assert(sw.includes("rosco-rioplatense.js?v=67")&&sw.includes("rosco-rioplatense-datos.js?v=6")&&sw.includes("gya-cache-v563"));
 console.log("PASS: voz y Pasapalabra, con y sin pantalla compartida, respuestas parciales, retorno y caché");

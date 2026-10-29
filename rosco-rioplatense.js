@@ -254,21 +254,21 @@ const RoscoRioplatense=(()=>{
     r.lang="es-UY";r.continuous=true;r.interimResults=true;r.maxAlternatives=5;
     let inicioIntento=performance.now(),huboResultado=false;
     detenerMusicaJuego();
-    mostrarEstadoVozG("Conectando micrófono…");
-    r.onstart=()=>{if(reconocimiento===r&&!vozLeyendoG)mostrarEstadoVozG("Micrófono conectado · preparando audio…");};
+    if(!vozErrorPendienteG)mostrarEstadoVozG("Conectando micrófono…");
+    r.onstart=()=>{if(reconocimiento===r&&!vozLeyendoG&&!vozErrorPendienteG)mostrarEstadoVozG("Micrófono conectado · preparando audio…");};
     r.onaudiostart=()=>{
       if(reconocimiento!==r)return;
       if(!vozLeyendoG&&fase==="resolver"){
-        mostrarEstadoVozG("🎙 ESCUCHANDO · Respondé una sola vez");
+        if(!vozErrorPendienteG)mostrarEstadoVozG("🎙 ESCUCHANDO · Respondé una sola vez");
         /* Algunos Android entregan audio pero nunca disparan speechstart. */
         esperarResultadoVozG(r,9000);
       }
     };
     r.onspeechstart=()=>{if(reconocimiento===r&&!vozLeyendoG&&fase==="resolver"){
-      /* Una nueva respuesta comenzó: esperar su transcripción antes de
-         confirmar el error anterior. */
-      if(vozErrorPendienteG)programarErrorVozG(6500);
-      mostrarEstadoVozG("🎙 Te escucho · decí tu respuesta");esperarResultadoVozG(r);
+      /* No alargar el error pendiente cada vez que Android detecta voz:
+         con ruido de fondo podía quedarse para siempre en esta letra. */
+      if(!vozErrorPendienteG)mostrarEstadoVozG("🎙 Te escucho · decí tu respuesta");
+      esperarResultadoVozG(r);
     }};
     r.onresult=e=>{if(reconocimiento===r){
       clearTimeout(vozResultadoTimerG);vozResultadoTimerG=null;

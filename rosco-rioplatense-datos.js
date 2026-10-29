@@ -366,7 +366,7 @@ const ROSCO_DATOS=[
   ["L","LUCIERNAGA","Bicho que brilla en las noches de verano.","naturaleza",2],
   ["L","LOCOMOTORA","Parte del tren que tira de los vagones.","costumbres",2],
   ["L","LIBRETA","Cuaderno chico; en la escuela, el boletín de calificaciones.","costumbres",2],
-  ["L","LOMITO","Sándwich de carne vacuna tierna.","comida",2],
+  ["L","LOMITO","Sándwich de carne vacuna tierna.","comida",2,["LOMO"]],
   ["L","LIEBRE","Parecida al conejo, pero más grande y rápida.","naturaleza",2],
   ["L","LAZO","Soga del gaucho para enlazar animales.","costumbres",3],
   ["L","LAPACHO","Árbol de flores rosadas o amarillas.","naturaleza",3],

@@ -41,28 +41,36 @@ const server=http.createServer((req,res)=>{
     await page.evaluate(()=>{
       document.querySelector("#splash")?.remove();document.documentElement.classList.remove("cargando");
       Fichas.usar=()=>true;
-      ROSCO_CONFIG.letras="UY";ROSCO_CONFIG.niveles[1].letras=2;ROSCO_CONFIG.segundosPorLetra=30;ROSCO_CONFIG.giroMs=0;
-      ROSCO_DATOS.splice(0,ROSCO_DATOS.length,
-        {letra:"U",palabra:"UNTAR",definicion:"Pasar manteca por la tostada.",categoria:"comida",nivel:1,alternativas:[]},
-        {letra:"Y",palabra:"YUYO",definicion:"Nombre popular para una hierba silvestre.",categoria:"naturaleza",nivel:1,alternativas:[]});
+      ROSCO_CONFIG.letras="CLUY";ROSCO_CONFIG.niveles[1].letras=4;ROSCO_CONFIG.segundosPorLetra=30;ROSCO_CONFIG.giroMs=0;
+      const casos=ROSCO_DATOS.filter(d=>["CHIVITO","LOMITO","UNTAR","YUYO"].includes(d.palabra));
+      if(casos.length!==4)throw Error("Faltan las palabras del caso real");
+      ROSCO_DATOS.splice(0,ROSCO_DATOS.length,...casos);
       Extensiones.abrirJuego("rosco-rioplatense");
       document.querySelector("#rrPanel .rr-principal").click();
     });
     await page.waitForFunction(()=>document.querySelector("#rrEnviar")?.disabled===false);
     await page.locator("#rrVoz").click();
-    for(let n=0;n<2;n++){
+    let aciertos=0;
+    for(let n=0;n<4;n++){
       await page.waitForFunction(i=>window.__roscoReconocimientos.length>i,n);
       await page.waitForFunction(()=>document.querySelector("#rrEstadoVozG")?.textContent.includes("ESCUCHANDO"));
-      const palabra=await page.locator("#rrGrande").textContent()==="U"?"UNTAR":"YUYO";
-      await page.evaluate(({i,palabra})=>{
+      const letra=await page.locator("#rrGrande").textContent();
+      const palabra={C:"COTORRA",L:"LOMO",U:"UNTAR",Y:"YUYO"}[letra];
+      assert(palabra,"letra inesperada: "+letra);
+      await page.evaluate(({i,palabra,incorrecta})=>{
         const r=window.__roscoReconocimientos[i];
-        r.onresult({resultIndex:0,results:[{0:{transcript:palabra,confidence:.9},length:1,isFinal:false}]});
-      },{i:n,palabra});
-      await page.waitForFunction(i=>document.querySelector("#rrAciertos")?.textContent.startsWith((i+1)+"/"),n);
+        r.onresult({resultIndex:0,results:[{0:{transcript:palabra,confidence:.9},length:1,isFinal:incorrecta}]});
+        if(incorrecta)setTimeout(()=>r.onspeechstart?.(),1000);
+      },{i:n,palabra,incorrecta:letra==="C"});
+      if(letra==="C")await page.waitForFunction(()=>document.querySelector("#rrErrores")?.textContent==="1",null,{timeout:6000});
+      else{
+        aciertos++;
+        await page.waitForFunction(i=>document.querySelector("#rrAciertos")?.textContent.startsWith(i+"/"),aciertos);
+      }
     }
-    assert.equal(await page.locator("#rrAciertos").textContent(),"2/2");
-    assert.equal(await page.locator("#rrErrores").textContent(),"0");
+    assert.equal(await page.locator("#rrAciertos").textContent(),"3/4");
+    assert.equal(await page.locator("#rrErrores").textContent(),"1");
     await context.close();
-    console.log("PASS: El Rosco acepta UNTAR y YUYO por voz en dos letras seguidas");
+    console.log("PASS: LOMO, UNTAR y YUYO acertados; COTORRA cuenta error sin espera infinita");
   }finally{await browser.close();server.close();}
 })().catch(error=>{console.error(error);server.close();process.exitCode=1;});
