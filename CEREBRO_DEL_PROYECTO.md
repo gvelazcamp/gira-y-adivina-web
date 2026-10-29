@@ -1848,3 +1848,7 @@ Fecha: 29/10/2026 — Rosco show (solo Gonzalo): SOLO = UN ATRIL (Gonzalo: "cuan
 ```text
 Fecha: 29/10/2026 — Rosco show: letras centradas (Gonzalo: "algunas letras quedaron corridas"). Las posiciones salían de una detección aproximada de círculos; ahora se miden sobre el relleno azul de cada círculo (centroide), en los dos estudios (un atril y dos atriles). En el de un atril, L-M-N quedan atrás del atril/personaje y conservan la posición estimada. giro-rosco-piloto.js v16, rosco v46, sw v539.
 ```
+
+```text
+Fecha: 29/10/2026 — Rosco show, dos correcciones (Gonzalo: "al pasar de la apertura a Giro se ve el popup del juego" y "que Giro ya hable, sin tocar Escuchar a Giro"). (1) Al terminar la apertura, primero se arma Giro atrás y recién después la apertura se desvanece (0,65 s, la música baja de a poco): nunca queda a la vista la pantalla del Rosco en el medio. El fondo de la presentación de Giro ahora es opaco (antes 96%, se transparentaba el juego). (2) Giro habla solo apenas aparece (la grabación, también en el final); el botón pasó a "🔊 Repetir". Si el celular no deja reproducir sola la grabación, no cae a la voz femenina del celular: queda el botón. giro-rosco-piloto.js v17, .css v11, rosco v47, sw v540.
+```

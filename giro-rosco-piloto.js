@@ -50,8 +50,14 @@
     const saltar=document.createElement("button");saltar.type="button";saltar.className="grp-ap-saltar";saltar.textContent="Saltar ⏭";
     capa.append(cuadro,saltar);document.body.appendChild(capa);
     const musica=new Audio(BASE+"voz/giro-apertura-musica.mp3");
-    const terminar=()=>{if(!apertura||apertura.capa!==capa)return;capa.classList.add("grp-ap-fin");
-      clearTimeout(apertura.timer);apertura.timer=setTimeout(()=>{cortarApertura();siguiente();},650);};
+    /* Al terminar, Giro se arma ATRÁS de la apertura y recién después la apertura
+       se desvanece: así nunca se ve la pantalla del Rosco en el medio. */
+    const terminar=()=>{if(!apertura||apertura.capa!==capa)return;
+      const a=apertura;apertura=null;clearTimeout(a.timer);document.removeEventListener("keydown",tecla);
+      siguiente();
+      capa.classList.add("grp-ap-fin");
+      const v0=musica.volume;let paso=0;const baja=setInterval(()=>{paso++;try{musica.volume=Math.max(0,v0*(1-paso/8));}catch(e){}if(paso>=8){clearInterval(baja);try{musica.pause();}catch(e){}}},80);
+      setTimeout(()=>capa.remove(),700);};
     const tecla=e=>{if(e.key==="Escape"||e.key==="Enter"){e.preventDefault();terminar();}};
     apertura={capa,musica,tecla,timer:setTimeout(terminar,15400)};
     saltar.addEventListener("click",terminar);document.addEventListener("keydown",tecla);
@@ -155,12 +161,12 @@
     limpiar();
     if(typeof siguiente==="function")siguiente();
   }
-  function hablar(texto,audio){
+  function hablar(texto,audio,sinRespaldo){
     if(!activa)return;
     if(audio){
       cancelarVoz();
       const a=new Audio(audio);grabacion=a;
-      const fallo=()=>{if(grabacion!==a)return;grabacion=null;hablar(texto);};
+      const fallo=()=>{if(grabacion!==a)return;grabacion=null;if(!sinRespaldo)hablar(texto);};
       a.onended=()=>{if(grabacion===a)grabacion=null;};a.onerror=fallo;
       a.play().catch(fallo);return;
     }
@@ -220,7 +226,7 @@
     const h=document.createElement("h2");h.textContent=titulo;
     const p=document.createElement("p");p.className="grp-descripcion";p.textContent=descripcion;
     const acciones=document.createElement("div");acciones.className="grp-acciones";
-    const voz=document.createElement("button");voz.type="button";voz.className="grp-boton grp-voz";voz.textContent="🔊 Escuchar a Giro";
+    const voz=document.createElement("button");voz.type="button";voz.className="grp-boton grp-voz";voz.textContent="🔊 Repetir";
     voz.addEventListener("click",()=>{
       // Una acción directa del usuario permite iniciar la voz en Android.
       // Reiniciamos los planos para que acompañen la presentación hablada.
@@ -242,6 +248,8 @@
     cont.append(stage,panel);overlay.appendChild(cont);document.body.appendChild(overlay);
     capa=overlay;document.addEventListener("keydown",teclado);
     avanzar.focus({preventScroll:true});
+    /* Giro habla solo apenas aparece (la grabación); el botón es para repetir. */
+    if(audio)setTimeout(()=>{if(capa===overlay&&activa)hablar(locucion,audio,true);},350);
     if(tipo==="inicio"){
       const reducido=matchMedia("(prefers-reduced-motion: reduce)").matches;
       const pasos=["general","medio","cercano","general"];
