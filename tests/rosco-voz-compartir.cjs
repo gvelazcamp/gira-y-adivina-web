@@ -4,7 +4,7 @@ const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
 const source=fs.readFileSync(path.join(__dirname,"..","rosco-rioplatense.js"),"utf8");
-const a=source.indexOf("  function procesarResultadoVozG(e){");
+const a=source.indexOf("  function cancelarErrorVozG(){");
 const b=source.indexOf("  function arrancarEscuchaG(){",a);
 assert(a>=0&&b>a,"La función real de voz existe");
 const fragment=source.slice(a,b);
@@ -74,7 +74,7 @@ for(const sharing of [false,true]){
  simulate("ciruela",false,"estado:Oí «ciruela» · seguí hablando",sharing);
 }
 /* Si Android detecta voz pero no entrega texto, el intento se reinicia solo. */
-const inicioWatchdog=source.indexOf("  function esperarResultadoVozG(r){");
+const inicioWatchdog=source.indexOf("  function esperarResultadoVozG(r,ms=6000){");
 const finWatchdog=source.indexOf("  function leerPistaG(){",inicioWatchdog);
 assert(inicioWatchdog>=0&&finWatchdog>inicioWatchdog);
 const tareas=new Map(),instancias=[],estados=[];
@@ -86,7 +86,7 @@ const envWatchdog={
  setTimeout(fn,ms){const id=++proximaTarea;tareas.set(id,{fn,ms});return id;},
  clearTimeout(id){tareas.delete(id);},
  detenerMusicaJuego(){},mostrarEstadoVozG(texto){estados.push(texto);},
- procesarResultadoVozG(){},cancelarErrorVozG(){},pararVozG(){throw Error("no debe apagar Hablar");},mensaje(){},
+ procesarResultadoVozG(){},programarErrorVozG(ms){envWatchdog.ultimaEsperaError=ms;},pararVozG(){throw Error("no debe apagar Hablar");},mensaje(){},
  window:{SpeechRecognition:class{
    start(){instancias.push(this);}
    abort(){this.onend?.();}
@@ -95,15 +95,20 @@ const envWatchdog={
 const iniciarWatchdog=new Function("env","with(env){"+source.slice(inicioWatchdog,finWatchdog)+"return arrancarEscuchaG}")(envWatchdog);
 iniciarWatchdog();
 assert.equal(instancias.length,1);
-instancias[0].onspeechstart();
-const sinTexto=[...tareas.values()].find(t=>t.ms===6000);
-assert(sinTexto,"el intento sin transcripción tiene límite");
+instancias[0].onaudiostart();
+const sinTexto=[...tareas.values()].find(t=>t.ms===9000);
+assert(sinTexto,"escuchando sin speechstart también tiene límite");
 sinTexto.fn();
 assert(estados.some(x=>x.includes("reconectando micrófono")));
 const reabrir=[...tareas.values()].find(t=>t.ms>=350&&t.ms<=700);
 assert(reabrir,"se reabre después de abortar el intento trabado");
 reabrir.fn();
 assert.equal(instancias.length,2,"Hablar sigue activo sin tocar el botón de nuevo");
+envWatchdog.vozErrorPendienteG={letra:0,texto:"un tal",generacion:0};
+instancias[1].onspeechstart();
+assert([...tareas.values()].some(t=>t.ms===6000),"si detecta voz, espera la transcripción y reconecta si no llega");
+assert.equal(envWatchdog.ultimaEsperaError,6500,"un segundo intento no descarta la respuesta pendiente");
+assert(envWatchdog.vozErrorPendienteG,"la corrección pendiente sigue disponible");
 for(const name of ["siguiente","enviar","pasar"]){
  const i=source.indexOf("  function "+name+"(){");
  assert(i>=0&&source.slice(i,i+230).includes("if(!(pruebaG&&vozG))detenerVoz();"),name+" mantiene la escucha entre letras");
@@ -116,6 +121,6 @@ assert(source.includes('vozTimerG=setTimeout(arrancarEscuchaG,450);'),"Reconecta
 assert(source.includes("Micrófono en pausa · se reanuda al volver."),"Modo voz activo al duplicar pantalla");
 const index=fs.readFileSync(path.join(__dirname,"..","index.html"),"utf8");
 const sw=fs.readFileSync(path.join(__dirname,"..","sw.js"),"utf8");
-assert(index.includes("rosco-rioplatense.js?v=65"));
-assert(sw.includes("rosco-rioplatense.js?v=65")&&sw.includes("gya-cache-v561"));
+assert(index.includes("rosco-rioplatense.js?v=66"));
+assert(sw.includes("rosco-rioplatense.js?v=66")&&sw.includes("gya-cache-v562"));
 console.log("PASS: voz y Pasapalabra, con y sin pantalla compartida, respuestas parciales, retorno y caché");

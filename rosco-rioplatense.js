@@ -151,6 +151,17 @@ const RoscoRioplatense=(()=>{
   }
   function cancelarPaseVozG(){clearTimeout(vozPaseTimerG);vozPaseTimerG=null;}
   function cancelarErrorVozG(){clearTimeout(vozErrorTimerG);vozErrorTimerG=null;vozErrorPendienteG=null;}
+  function programarErrorVozG(ms){
+    clearTimeout(vozErrorTimerG);
+    const pendiente=vozErrorPendienteG;if(!pendiente)return;
+    vozErrorTimerG=setTimeout(()=>{
+      vozErrorTimerG=null;
+      if(vozErrorPendienteG!==pendiente||!vozG||vozLeyendoG||fase!=="resolver"||actual!==pendiente.letra||vozGeneracionG!==pendiente.generacion)return;
+      vozErrorPendienteG=null;
+      if($("#rrEntrada").value.trim())return; // El jugador está corrigiendo con teclado.
+      $("#rrEntrada").value=pendiente.texto;enviar();
+    },ms);
+  }
   function pararVozG(){
     cancelarPaseVozG();cancelarErrorVozG();
     ++vozGeneracionG;
@@ -211,15 +222,9 @@ const RoscoRioplatense=(()=>{
         const texto=opciones[0].slice(0,60),letra=actual,generacion=vozGeneracionG;
         if(vozErrorPendienteG?.letra===letra&&vozErrorPendienteG.texto===texto)continue;
         cancelarErrorVozG();vozSilenciosG=0;
-        vozErrorPendienteG={letra,texto};
+        vozErrorPendienteG={letra,texto,generacion};
         mostrarEstadoVozG("Oí «"+texto.slice(0,30)+"» · si entendí mal, repetí ahora");
-        vozErrorTimerG=setTimeout(()=>{
-          vozErrorTimerG=null;
-          if(!vozG||vozLeyendoG||fase!=="resolver"||actual!==letra||vozGeneracionG!==generacion)return;
-          vozErrorPendienteG=null;
-          if($("#rrEntrada").value.trim())return; // El jugador está corrigiendo con teclado.
-          $("#rrEntrada").value=texto;enviar();
-        },3000);
+        programarErrorVozG(3000);
         continue;
       }
       mostrarEstadoVozG("Oí «"+opciones[0].slice(0,45)+"» · seguí hablando");
@@ -227,7 +232,7 @@ const RoscoRioplatense=(()=>{
   }
   /* Android puede detectar voz y quedarse sin entregar una transcripción.
      Reiniciar solo ese intento; no apagar la opción Hablar ni exigir otro toque. */
-  function esperarResultadoVozG(r){
+  function esperarResultadoVozG(r,ms=6000){
     clearTimeout(vozResultadoTimerG);
     vozResultadoTimerG=setTimeout(()=>{
       vozResultadoTimerG=null;
@@ -239,7 +244,7 @@ const RoscoRioplatense=(()=>{
         reconocimiento=null;escuchando=false;arrancarEscuchaG();
       },1000);
       try{r.abort();}catch(e){}
-    },6000);
+    },ms);
   }
   function arrancarEscuchaG(){
     if(!pruebaG||!vozG||vozLeyendoG||fase!=="resolver"||document.hidden||escuchando)return;
@@ -253,18 +258,24 @@ const RoscoRioplatense=(()=>{
     r.onstart=()=>{if(reconocimiento===r&&!vozLeyendoG)mostrarEstadoVozG("Micrófono conectado · preparando audio…");};
     r.onaudiostart=()=>{
       if(reconocimiento!==r)return;
-      if(!vozLeyendoG&&fase==="resolver")mostrarEstadoVozG("🎙 ESCUCHANDO · Respondé una sola vez");
+      if(!vozLeyendoG&&fase==="resolver"){
+        mostrarEstadoVozG("🎙 ESCUCHANDO · Respondé una sola vez");
+        /* Algunos Android entregan audio pero nunca disparan speechstart. */
+        esperarResultadoVozG(r,9000);
+      }
     };
     r.onspeechstart=()=>{if(reconocimiento===r&&!vozLeyendoG&&fase==="resolver"){
       /* Una nueva respuesta comenzó: esperar su transcripción antes de
          confirmar el error anterior. */
-      if(vozErrorPendienteG)cancelarErrorVozG();
+      if(vozErrorPendienteG)programarErrorVozG(6500);
       mostrarEstadoVozG("🎙 Te escucho · decí tu respuesta");esperarResultadoVozG(r);
     }};
     r.onresult=e=>{if(reconocimiento===r){
       clearTimeout(vozResultadoTimerG);vozResultadoTimerG=null;
-      huboResultado=true;procesarResultadoVozG(e);
-      if(reconocimiento===r&&vozG&&fase==="resolver"&&Array.from(e.results||[]).slice(e.resultIndex||0).some(x=>x&&!x.isFinal))esperarResultadoVozG(r);
+      const nuevos=Array.from(e.results||[]).slice(e.resultIndex||0);
+      huboResultado=nuevos.some(x=>x&&Array.from(x).some(a=>String(a.transcript||"").trim()));
+      procesarResultadoVozG(e);
+      if(reconocimiento===r&&vozG&&fase==="resolver"&&(!huboResultado||nuevos.some(x=>x&&!x.isFinal)))esperarResultadoVozG(r);
     }};
     r.onerror=e=>{
       if(reconocimiento!==r)return;
@@ -276,6 +287,7 @@ const RoscoRioplatense=(()=>{
       if(error==="network")mostrarEstadoVozG("Sin conexión para reconocer voz · reintentando…");
       else if(error==="no-speech")mostrarEstadoVozG("No se escuchó voz · vuelvo a escuchar…");
       else if(error!=="aborted")mostrarEstadoVozG("Micrófono interrumpido · reintentando…");
+      if(error!=="aborted")esperarResultadoVozG(r,1500);
     };
     r.onend=()=>{
       if(reconocimiento!==r)return;
@@ -290,7 +302,7 @@ const RoscoRioplatense=(()=>{
         clearTimeout(vozTimerG);vozTimerG=setTimeout(arrancarEscuchaG,pausa);
       }
     };
-    try{r.start();inicioIntento=performance.now();}
+    try{r.start();inicioIntento=performance.now();esperarResultadoVozG(r,8000);}
     catch(err){reconocimiento=null;escuchando=false;mostrarEstadoVozG("El micrófono no inició · reintentando…");clearTimeout(vozTimerG);vozTimerG=setTimeout(arrancarEscuchaG,950);}
   }
   function leerPistaG(){
@@ -312,7 +324,8 @@ const RoscoRioplatense=(()=>{
         ultimo=performance.now();
         if(vozG&&fase==="resolver"&&!document.hidden){
           mostrarEstadoVozG("Conectando micrófono…");
-          arrancarEscuchaG();
+          /* Dejar que Android libere el audio de la locución antes de grabar. */
+          clearTimeout(vozTimerG);vozTimerG=setTimeout(arrancarEscuchaG,300);
         }
       };
       u.onend=terminar;u.onerror=terminar;
