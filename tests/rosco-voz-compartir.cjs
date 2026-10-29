@@ -49,6 +49,6 @@ assert(source.includes('vozTimerG=setTimeout(arrancarEscuchaG,450);'),"Reconecta
 assert(source.includes("Micrófono en pausa · se reanuda al volver."),"Modo voz activo al duplicar pantalla");
 const index=fs.readFileSync(path.join(__dirname,"..","index.html"),"utf8");
 const sw=fs.readFileSync(path.join(__dirname,"..","sw.js"),"utf8");
-assert(index.includes("rosco-rioplatense.js?v=35"));
-assert(sw.includes("rosco-rioplatense.js?v=35")&&sw.includes("gya-cache-v521"));
+assert(index.includes("rosco-rioplatense.js?v=36"));
+assert(sw.includes("rosco-rioplatense.js?v=36")&&sw.includes("gya-cache-v523"));
 console.log("PASS: voz y Pasapalabra, con y sin pantalla compartida, respuestas parciales, retorno y caché");

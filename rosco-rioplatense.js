@@ -235,8 +235,9 @@ const RoscoRioplatense=(()=>{
   }
   function leerPistaG(){
     if(!pruebaG||!vozG||fase!=="resolver"||actual<0)return;
-    /* Mantener la escucha entre letras para evitar el segundo intento. */
-    detenerMusicaJuego();vozLeyendoG=true;
+    /* Igual que Duelo: durante la pregunta hablada el micrófono
+       no compite con el altavoz. Volvemos a escuchar al terminar. */
+    detenerVoz();detenerMusicaJuego();vozLeyendoG=true;
     mostrarEstadoVozG("Leyendo la pista…");
     try{
       if(!("speechSynthesis" in window))throw Error("Sin lectura de voz");
@@ -246,9 +247,9 @@ const RoscoRioplatense=(()=>{
       const terminar=()=>{
         if(vozPistaG!==u)return;vozPistaG=null;vozLeyendoG=false;
         ultimo=performance.now();
-        if(vozG&&fase==="resolver"){
-          if(escuchando)mostrarEstadoVozG("🎙 ESCUCHANDO · Respondé una sola vez");
-          else {mostrarEstadoVozG("Conectando micrófono…");arrancarEscuchaG();}
+        if(vozG&&fase==="resolver"&&!document.hidden){
+          mostrarEstadoVozG("Conectando micrófono…");
+          arrancarEscuchaG();
         }
       };
       u.onend=terminar;u.onerror=terminar;
