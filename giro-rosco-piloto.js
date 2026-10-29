@@ -62,7 +62,12 @@
   /* Presentación de participantes (después de Giro): el estudio del Rosco con
      dos atriles (Giro_estudio_rosco_atriles_16x9.webp, círculos vacíos) y las
      24 letras del Rosco puestas encima de cada círculo. Atril izquierdo: el
-     jugador (su avatar y su nombre); derecho: el reloj. */
+     jugador (personaje hombre y su nombre); derecho: la rival bot (personaje
+     mujer, nombre inventado que cambia en cada partida). Los personajes van
+     ATRÁS de los atriles: encima se vuelve a dibujar el frente de cada atril. */
+  const RIVALES=["Martina","Sofía","Valentina","Camila","Lucía","Florencia","Agustina","Micaela","Carolina","Victoria","Josefina","Paula","Romina","Daniela","Natalia","Belén","Julieta","Lorena","Ximena","Rocío"];
+  let rivalBot="";
+  const PERSONAJES={hombre:BASE+"participantes/participante_hombre.webp",mujer:BASE+"participantes/participante_mujer.webp"};
   const CIRCULOS=[[48.56,8.50],[52.51,9.35],[55.74,12.75],[58.73,17.00],[60.41,22.95],[62.20,29.54],[62.08,37.19],[61.84,44.85],[60.53,51.65],[58.49,57.39],[55.26,62.06],[51.91,65.04],[48.21,66.31],[44.38,65.25],[41.51,62.06],[38.16,57.39],[36.36,51.65],[34.69,44.63],[34.45,36.77],[34.81,29.54],[36.24,22.74],[39.00,17.00],[41.87,12.33],[45.10,9.78]];
   const LETRAS_ROSCO="ABCDEFGHIJKLMNOPQRSTUVYZ";
   let participantes=null;
@@ -72,9 +77,9 @@
   }
   function mostrarParticipantes(siguiente){
     cortarParticipantes();
-    let nombre="Vos",avatar="avatar-01";
-    try{if(typeof perfil!=="undefined"&&perfil){nombre=String(perfil.nombre||"Vos").trim().slice(0,14)||"Vos";avatar=perfil.avatar||"avatar-01";}}catch(e){}
-    if(!/^[\w-]{1,40}$/.test(avatar))avatar="avatar-01";
+    let nombre="Vos";
+    try{if(typeof perfil!=="undefined"&&perfil)nombre=String(perfil.nombre||"Vos").trim().slice(0,14)||"Vos";}catch(e){}
+    rivalBot=RIVALES[Math.floor(Math.random()*RIVALES.length)];
     const capa=document.createElement("div");capa.className="grp-apertura grp-part";
     capa.setAttribute("role","dialog");capa.setAttribute("aria-modal","true");capa.setAttribute("aria-label","Presentación de los participantes");
     const cuadro=document.createElement("div");cuadro.className="grp-ap-cuadro";
@@ -83,14 +88,16 @@
     CIRCULOS.forEach(([x,y],i)=>{const l=document.createElement("b");l.className="grp-part-letra";l.textContent=LETRAS_ROSCO[i];
       l.style.left=x+"%";l.style.top=y+"%";l.style.animationDelay=(.3+i*.06)+"s";cuadro.appendChild(l);});
     const jugador=(lado,foto,texto,demora)=>{
-      const f=document.createElement("img");f.className="grp-part-foto grp-part-"+lado;f.src=foto;f.alt="";f.style.animationDelay=demora+"s";
+      const f=document.createElement("img");f.className="grp-part-persona grp-part-"+lado;f.src=foto;f.alt="";f.style.animationDelay=demora+"s";
+      f.addEventListener("error",()=>f.remove(),{once:true});
+      const frente=document.createElement("img");frente.className="grp-part-frente grp-part-"+lado;frente.src=fondo.src;frente.alt="";frente.setAttribute("aria-hidden","true");
       const n=document.createElement("div");n.className="grp-part-nombre grp-part-"+lado;n.style.animationDelay=(demora+.25)+"s";
-      const t=document.createElement("span");t.textContent=texto;t.style.setProperty("--k",Math.min(2.2,13/Math.max(1,texto.length)));n.appendChild(t);cuadro.append(f,n);
+      const t=document.createElement("span");t.textContent=texto;t.style.setProperty("--k",Math.min(2.2,13/Math.max(1,texto.length)));n.appendChild(t);cuadro.append(f,frente,n);
     };
-    jugador("izq","assets/avatars/"+avatar+".webp",nombre,1.9);
-    jugador("der","assets/rosco/reloj.webp","El reloj",2.7);
+    jugador("izq",PERSONAJES.hombre,nombre,1.9);
+    jugador("der",PERSONAJES.mujer,rivalBot,2.7);
     const cartel=document.createElement("div");cartel.className="grp-part-cartel";
-    const dice=document.createElement("p");dice.textContent="🎙 Giro: ¡Hoy juega "+nombre+" contra el reloj! 24 letras, una vuelta. ¿Se anima?";
+    const dice=document.createElement("p");dice.textContent="🎙 Giro: ¡Hoy se enfrentan "+nombre+" y "+rivalBot+"! 24 letras, una vuelta. ¿Quién gana?";
     const ir=document.createElement("button");ir.type="button";ir.className="grp-boton grp-accion";ir.textContent="¡A jugar!";
     cartel.append(dice,ir);cuadro.appendChild(cartel);
     capa.appendChild(cuadro);document.body.appendChild(capa);
@@ -260,10 +267,16 @@
     const total=Number(resultado&&resultado.total)||0;
     const puntos=Number(resultado&&resultado.puntos)||0;
     const perfecto=total>0&&ok===total;
-    const titulo=perfecto?"¡Rosco perfecto!":ok?"¡Terminaste el Rosco!":"¡Vamos por la revancha!";
+    let titulo=perfecto?"¡Rosco perfecto!":ok?"¡Terminaste el Rosco!":"¡Vamos por la revancha!",contra="";
+    /* La rival bot de la presentación: hace entre 45% y 85% de aciertos. */
+    if(rivalBot&&total>0){
+      const bot=Math.round(total*(.45+Math.random()*.4));
+      contra=" · "+rivalBot+": "+bot+" aciertos";
+      if(!perfecto)titulo=ok>bot?"¡Le ganaste a "+rivalBot+"!":ok<bot?"¡Ganó "+rivalBot+"!":"¡Empate con "+rivalBot+"!";
+    }
     return presentar({
       tipo:"final",titulo,
-      descripcion:ok+" de "+total+" aciertos · "+puntos+" puntos. El detalle y las opciones para continuar están en el resultado original del Rosco.",
+      descripcion:ok+" de "+total+" aciertos · "+puntos+" puntos"+contra+". El detalle y las opciones para continuar están en el resultado original del Rosco.",
       locucion:perfecto?"¡Espectacular! ¡Completaste el Rosco sin errores!":ok?"¡Muy buena partida! Lograste "+ok+" aciertos. ¡Vamos por más!":"¡No pasa nada! Una nueva vuelta nos espera. ¡Vamos por la revancha!",
       audio:perfecto?BASE+"voz/giro-rosco-perfecto.mp3":ok?BASE+"voz/giro-rosco-buena.mp3":BASE+"voz/giro-rosco-revancha.mp3",
       imagen:perfecto?"festeja":ok?"presenta":"revancha"
