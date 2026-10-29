@@ -135,35 +135,19 @@
    La rueda es el rosco del estudio; el fondo de la pantalla, el estudio oscurecido;
    la pista, una pantalla de tele. No toca el deslizado de la página. */
 .ext-shell.rr-abierta:has(.rr-game.rr-estudio){background:#050818 url("presentacion-y-locucion-extensiones/Giro/estudios/Giro_estudio_rosco_juego_fondo.webp") center/cover no-repeat}
-body .rr-game.rr-estudio .rr-rueda{aspect-ratio:652/781!important;border-radius:0!important;box-shadow:none!important;
-  background:url("presentacion-y-locucion-extensiones/Giro/estudios/Giro_rosco_juego_rueda.webp") center/100% 100% no-repeat!important;
-  width:min(80vw,330px,calc((var(--rr-viewport-alto,100dvh) - 300px)*.835))!important;min-width:150px;transition:width .3s ease}
+/* En la partida va el rosco de siempre (gira y se arma con las letras del nivel; así lo
+   prefiere Gonzalo); el rosco del estudio queda para la presentación. Solo un poco más grande. */
+@media (orientation:portrait){body .rr-game.rr-estudio .rr-rueda{width:min(82vw,320px,calc(var(--rr-viewport-alto,100dvh) - 340px));min-width:150px;transition:width .3s ease}}
 /* Jugando en el estudio no hace falta el logo grande de arriba: más lugar para el rosco. */
 body .rr-game.rr-estudio:not([data-fase="inicio"]) .rr-titulo{display:none}
-body .rr-game.rr-estudio .rr-rueda:before{display:none}
-body .rr-game.rr-estudio #rrDisco{transform:none!important;transition:none!important}
-body .rr-game.rr-estudio .rr-letra span{transform:none!important;transition:none!important}
-body .rr-game.rr-estudio .rr-letra{width:9.4%;background:transparent;color:#fff;outline:0;border-radius:50%;
-  font-family:"Archivo Black",system-ui,sans-serif;text-shadow:0 0 4px #ffd23f,0 1px 2px #000;transition:background .25s,box-shadow .25s}
-body .rr-game.rr-estudio .rr-letra.acierto{background:radial-gradient(circle,#4CF08F,#13A65A);color:#062a14;text-shadow:none;box-shadow:0 0 10px #4CF08F}
-body .rr-game.rr-estudio .rr-letra.error{background:radial-gradient(circle,#FF7E8B,#D61F3A);color:#fff;text-shadow:none;box-shadow:0 0 10px #FF4D63}
-body .rr-game.rr-estudio .rr-letra.actual{background:radial-gradient(circle,#FFE27A,#F5B301);color:#1a0f00;text-shadow:none;outline:0;
-  box-shadow:0 0 0 2px #fff,0 0 16px 4px #ffd23f;animation:rrEstudioLatido .9s ease-in-out infinite alternate}
-@keyframes rrEstudioLatido{to{transform:translate(-50%,-50%) scale(1.14)}}
-/* Mientras "gira": las luces del rosco corren en ronda (no hay giro de rueda en el estudio). */
-body .rr-game.rr-estudio[data-fase="giro"] .rr-letra.pendiente{animation:rrEstudioRonda 1.2s linear infinite;animation-delay:calc(var(--i,0)*50ms)}
-@keyframes rrEstudioRonda{0%,70%,100%{box-shadow:none}10%{box-shadow:0 0 12px 3px #ffd23f;background:#ffd23f55}}
 body .rr-game.rr-estudio #rrGrande{color:#FFD23F;text-shadow:0 0 18px #ffd23f99,0 3px 6px #000;font-size:clamp(34px,13vw,64px)}
 /* La pista, como pantalla de tele del estudio. */
 body .rr-game.rr-estudio .rr-pista{background:linear-gradient(#0b2a8a,#071948);border:2px solid #dba73a;box-shadow:0 0 14px #ffb70055,inset 0 0 18px #0008;color:#fff}
 body .rr-game.rr-estudio .rr-pista small{color:#FFD23F}
 body .rr-game.rr-estudio .sf-hud>div{background:#071948cc;border:1px solid #dba73a88}
 @media (orientation:landscape) and (min-width:700px) and (max-width:1024px) and (max-height:600px){
-  body .rr-game.rr-estudio .rr-rueda{width:min(36vw,calc((var(--rr-viewport-alto,100dvh) - 70px)*.835),420px)!important}
-  body .rr-game.rr-gonzalo.rr-estudio #rrJuego .rr-rueda{width:min(calc(78vh*.835),30vw,250px)!important}
   body .rr-game.rr-estudio #rrGrande{font-size:clamp(30px,11vh,64px)}
 }
-@media (prefers-reduced-motion:reduce){body .rr-game.rr-estudio .rr-letra{animation:none!important}}
 /* Reacción de Giro: sube desde abajo del rosco, dice su frase y se va. */
 body .rr-game.rr-estudio .rr-rueda .grp-reac{position:absolute;left:50%;bottom:3%;width:44%;aspect-ratio:1/1.2;z-index:3;pointer-events:none;
   filter:drop-shadow(0 4px 10px #000a);transform-origin:50% 100%;animation:grpReac 1.7s cubic-bezier(.2,1.3,.4,1) both}
