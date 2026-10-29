@@ -382,6 +382,8 @@ const RoscoRioplatense=(()=>{
     shell.classList.toggle("rr-teclado-abierto",teclado);
     shell.style.height=alto+"px";shell.style.top=arriba+"px";shell.style.bottom="auto";
     shell.style.setProperty("--rr-viewport-alto",alto+"px");
+    /* Alto SIN teclado (el mayor visto sin el cuadro enfocado): el rosco del estudio usa este, así no se achica al responder. */
+    shell.style.setProperty("--rr-alto-libre",Math.max(altoLibre,alto)+"px");
     if(teclado){shell.scrollTop=0;return;}
     if(enfocado){
       const sb=shell.getBoundingClientRect(),fb=$("#rrForm").getBoundingClientRect();
@@ -587,7 +589,7 @@ const RoscoRioplatense=(()=>{
     };
     if(window.GiroRoscoPiloto){activar();return;}
     if(!document.querySelector('link[data-giro-rosco]')){
-      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=17";
+      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=18";
       estilo.dataset.giroRosco="1";document.head.appendChild(estilo);
     }
     let script=document.querySelector('script[data-giro-rosco]');

@@ -1896,3 +1896,7 @@ Fecha: 29/10/2026 — Rosco show, arranque de la partida (videos de Gonzalo: "ha
 ```text
 Fecha: 29/10/2026 — Rosco show: DECISIÓN de Gonzalo: en la PARTIDA vuelve el rosco de siempre (gira y se arma con las letras del nivel: 12, 20…), porque el rosco del estudio tiene 24 círculos fijos y en niveles con menos letras quedaban círculos vacíos ("me gustaba más el rosco anterior; el del estudio para la presentación"). El rosco del estudio (con letras) queda solo en la presentación de participantes. En la partida se mantienen: fondo del estudio, pista estilo pantalla de tele, reacciones de Giro con atril, botón "Pasar", sin logo arriba y el rosco un poco más grande con el celular parado. Se sacó posLetra() del armado de la rueda. giro-rosco-piloto.css v17, rosco v55, sw v551.
 ```
+
+```text
+Fecha: 29/10/2026 — Rosco show: al ir a responder (se abre el teclado del celular) el rosco se achicaba (Gonzalo: "que se mantenga igual como siempre"). El ancho del rosco en el estudio dependía del alto visible, que baja con el teclado. Ahora usa --rr-alto-libre (alto de la pantalla SIN teclado, lo pone ajustarPantalla() del Rosco): mismo tamaño con teclado abierto o cerrado; el Rosco ya corre la pantalla para que se vea el cuadro de escribir, como antes. giro-rosco-piloto.css v18, rosco v57, sw v553.
+```
