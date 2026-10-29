@@ -93,3 +93,31 @@
 @keyframes grpApFlota{from{transform:translate(-50%,-50%) scale(1)}to{transform:translate(-50%,-52%) scale(1.04)}}
 @keyframes grpApSale{to{opacity:0}}
 @media (prefers-reduced-motion:reduce){.grp-ap-luces,.grp-ap-destellos{animation:none;opacity:.5}.grp-ap-logo{animation:grpApLogo .01s 1s forwards}}
+/* Presentación de participantes: estudio con dos atriles y las 24 letras encima de los círculos. */
+.grp-part .grp-part-fondo{animation-delay:.1s}
+.grp-part-letra{position:absolute;width:3.7%;aspect-ratio:1;transform:translate(-50%,-50%) scale(.3);display:grid;place-items:center;border-radius:50%;
+  font:900 clamp(9px,2.5vmin,28px)/1 "Archivo Black",system-ui,sans-serif;color:#fff;text-shadow:0 0 .6vmin #ffd23f,0 1px 2px #000;opacity:0;
+  animation:grpLetra .45s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes grpLetra{to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.grp-part-foto{position:absolute;bottom:34.5%;width:9.6%;aspect-ratio:1;object-fit:cover;border-radius:50%;border:.35vmin solid #ffd23f;
+  box-shadow:0 0 2.5vmin rgba(255,210,63,.6);background:#0b1f63;opacity:0;transform:translate(-50%,30%) scale(.6);animation:grpEntra .6s cubic-bezier(.2,1.5,.4,1) forwards}
+.grp-part-foto.grp-part-izq{left:33.8%}.grp-part-foto.grp-part-der{left:63.6%}
+.grp-part-nombre{position:absolute;top:71%;width:10.4%;height:11.8%;display:grid;place-items:center;text-align:center;opacity:0;
+  transform:translate(-50%,0) scale(.8);animation:grpEntra .5s ease-out forwards}
+.grp-part-nombre.grp-part-izq{left:34.27%}.grp-part-nombre.grp-part-der{left:63.52%}
+.grp-part-nombre span{font:900 clamp(6px,calc(var(--k,2)*1vmin),24px)/1.05 "Archivo Black",system-ui,sans-serif;color:#ffd23f;text-shadow:0 0 1vmin rgba(255,210,63,.7);
+  text-transform:uppercase;white-space:nowrap;padding:0 4%}
+@keyframes grpEntra{to{opacity:1;transform:translate(-50%,0) scale(1)}}
+.grp-part-foto{animation-name:grpEntraFoto}
+@keyframes grpEntraFoto{to{opacity:1;transform:translate(-50%,0) scale(1)}}
+.grp-part-cartel{position:absolute;left:50%;bottom:2.5%;transform:translateX(-50%);width:min(92%,880px);display:flex;align-items:center;gap:2%;
+  background:rgba(3,16,49,.86);border:1px solid #f9d26e;border-radius:1.6vmin;padding:1.2vmin 1.6vmin;opacity:0;animation:grpApNegro .5s ease 3.2s forwards}
+.grp-part-cartel p{margin:0;flex:1;color:#fff;font:700 clamp(11px,2.2vmin,22px)/1.25 system-ui,sans-serif}
+.grp-part-cartel .grp-boton{white-space:nowrap}
+/* Celular parado: el cartel va abajo del estudio (en la franja negra) para no tapar los atriles. */
+@media (orientation:portrait){
+  .grp-part .grp-ap-cuadro{overflow:visible}
+  .grp-part-cartel{top:calc(100% + 2.5vh);bottom:auto;width:94%;flex-direction:column;gap:1.4vh;padding:2vh 3vw}
+  .grp-part-cartel p{font-size:16px;text-align:center}
+  .grp-part-cartel .grp-boton{width:100%}
+}
