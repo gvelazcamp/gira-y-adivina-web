@@ -13,7 +13,8 @@ function simulate(words,final,expected,sharing){
  const events=[],input={value:""};
  const env={
    vozG:true,vozLeyendoG:false,fase:"resolver",actual:0,vozSilenciosG:0,
-   cancelarPaseVozG(){},
+   cancelarPaseVozG(){},vozGeneracionG:0,vozPaseTimerG:null,
+   setTimeout:()=>1,clearTimeout:()=>{},
    items:[{palabra:"MANZANA",definicion:"Fruta de un árbol que puede ser roja o verde"}],
    normalizar:t=>t.toUpperCase().replace(/\s+/g,""),vale:(q,t)=>q.palabra===t,
    $:()=>input,mostrarEstadoVozG:msg=>events.push("estado:"+msg),
