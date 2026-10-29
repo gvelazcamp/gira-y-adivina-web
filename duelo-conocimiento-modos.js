@@ -144,7 +144,7 @@ function botTurn(retries=0){
  const speed=retries?1400+Math.floor(Math.random()*700):2700+Math.floor(Math.random()*1000);
  botHandle=setTimeout(()=>{
    if(mode!=="bot"||phase!=="playing"||active!==1||question!==currentQuestion)return;
-   if(!retries&&Math.random()*100<botError){if(question.category==="banderas"){const wrongCode=allCodes.find(code=>code!==question.code);passTurn(COUNTRY_NAMES[wrongCode]);}else if(isImageQuestion(question)){const wrong=IMAGE_QUESTIONS[question.category].names.find(name=>name!==question.answer);passTurn(wrong);}else{$dc("feedback").className="feedback fail";$dc("feedback").textContent=players[1].name+" se equivocó. Su reloj sigue corriendo.";botTurn(1);}}
+   if(!retries&&Math.random()*100<botError){if(question.category==="banderas"){const wrongCode=allCodes.find(code=>code!==question.code);passTurn(COUNTRY_NAMES[wrongCode]);}else if(isImageQuestion(question)){const wrong=IMAGE_ITEMS[question.category].find(item=>item.answer!==question.answer)?.answer;passTurn(wrong);}else{$dc("feedback").className="feedback fail";$dc("feedback").textContent=players[1].name+" se equivocó. Su reloj sigue corriendo.";botTurn(1);}}
    else if(isImageQuestion(question))rightAnswer(question.answer);
    else rightAnswer("BOT");
  },speed);
@@ -242,7 +242,7 @@ rightAnswer=function(value){
  if(mode==="online"&&online&&online.host)sendSnapshot();
 };
 const basePass=passTurn;
-function revealPhrase(q){const answer=getCorrectAnswer(q);return q.category==="banderas"?`La bandera era ${answer}.`:q.category==="ciudades"?`La ciudad era ${answer}.`:q.category==="simpsons"?`El personaje era ${answer}.`:q.category==="videojuegos"?`El videojuego era ${answer}.`:`La respuesta correcta era: ${answer}.`}
+function revealPhrase(q){const answer=getCorrectAnswer(q);return q.category==="banderas"?`La bandera era ${answer}.`:q.category==="ciudades"?`La ciudad era ${answer}.`:q.category==="videojuegos"?`El videojuego era ${answer}.`:`La respuesta correcta era: ${answer}.`}
 passTurn=function(wrongValue=''){
  const preguntaActual=question,jugadorActual=active,nombre=players[active]?.name;
  const revelar=preguntaActual?.category==="banderas"||isImageQuestion(preguntaActual);
@@ -383,7 +383,9 @@ function connectOnline(host,code){
 start=function(){
  botError=Number($dc("dc-bot-error").value);
  if(!$dc("input0").value.trim()){$dc("setup-voice-error").textContent="Escribí tu nombre para jugar.";$dc("input0").focus();return;}
- if(![...document.querySelectorAll('input[name=category]:checked')].length){$dc("setup-voice-error").textContent="Elegí al menos una categoría.";return;}
+ const selectedCategories=[...document.querySelectorAll('input[name=category]:checked')].map(input=>input.value);
+ if(!selectedCategories.length){$dc("setup-voice-error").textContent="Elegí al menos una categoría.";return;}
+ if(selectedCategories.every(category=>IMAGE_ITEMS[category]&&imageRemaining(category)===0)){$dc("setup-voice-error").textContent="Ya viste todas las imágenes nuevas de esas categorías en este celular. Elegí otra categoría.";return;}
  $dc("setup-voice-error").textContent="";
  mode=modeSel.value;
  // Solo una partida contra el BOT gasta ficha; jugar con otra persona es libre.

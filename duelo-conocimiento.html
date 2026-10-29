@@ -136,7 +136,7 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
   <form class="modal dc-setup-card" id="setup-form">
    <div class="dc-setup-hero"><div class="dc-hero-rivals" aria-hidden="true"><img src="assets/avatars/avatar-01.webp" alt=""><span>VS</span><img src="assets/avatars/avatar-02.webp" alt=""></div><div class="dc-hero-copy"><div class="overline">Girá y Adiviná presenta</div><h2 id="setup-title">DUELO DE <span>CONOCIMIENTO</span></h2><p>Respondé bien y frená tu reloj. El primero que se quede sin tiempo pierde.</p></div></div>
    <div class="dc-setup-body"><div class="dc-setup-main"><div id="dc-mode-slot"></div><div class="form-row dc-player-row"><div class="field"><label for="input0">Jugador 1 · vos</label><input id="input0" type="text" maxlength="14" value="" placeholder="Escribí tu nombre" autocomplete="off" required /></div><div class="field"><label for="input1" id="dc-rival-label">Rival virtual</label><input id="input1" type="text" maxlength="14" value="Sofía" required /></div></div></div>
-   <div class="dc-setup-side"><fieldset class="category-fieldset"><legend>Elegí los desafíos</legend><div class="category-grid"><label><input type="checkbox" name="category" value="banderas" checked/> 🌎 Banderas</label><label><input type="checkbox" name="category" value="matematica" checked/> ➕ Matemática</label><label><input type="checkbox" name="category" value="famosos" checked/> ★ Famosos</label><label><input type="checkbox" name="category" value="futbol" checked/> ⚽ Futbolistas</label><label><input type="checkbox" name="category" value="ciudades"/> 🏙 Ciudades turísticas</label><label><input type="checkbox" name="category" value="simpsons"/> 🍩 Los Simpson</label><label><input type="checkbox" name="category" value="videojuegos"/> 🎮 Videojuegos</label></div></fieldset><div class="dc-options-row"><div class="field"><label for="time-select">Tiempo por jugador</label><select id="time-select"><option value="40" selected>40 segundos</option><option value="60">60 segundos</option><option value="90">90 segundos</option></select></div><div id="dc-answer-slot"></div></div><div class="dc-rules-brief">🎲 Sorteamos quién empieza · 🎙 Hablá o escribí · ⏱ Los errores consumen tiempo</div></div></div>
+   <div class="dc-setup-side"><fieldset class="category-fieldset"><legend>Elegí los desafíos</legend><div class="category-grid"><label><input type="checkbox" name="category" value="banderas" checked/> 🌎 Banderas</label><label><input type="checkbox" name="category" value="matematica" checked/> ➕ Matemática</label><label><input type="checkbox" name="category" value="famosos" checked/> ★ Famosos</label><label><input type="checkbox" name="category" value="futbol" checked/> ⚽ Futbolistas</label><label><input type="checkbox" name="category" value="ciudades"/> 🏙 Ciudades turísticas</label><label><input type="checkbox" name="category" value="videojuegos"/> 🎮 Videojuegos</label></div><small id="image-pool-status" aria-live="polite"></small></fieldset><div class="dc-options-row"><div class="field"><label for="time-select">Tiempo por jugador</label><select id="time-select"><option value="40" selected>40 segundos</option><option value="60">60 segundos</option><option value="90">90 segundos</option></select></div><div id="dc-answer-slot"></div></div><div class="dc-rules-brief">🎲 Sorteamos quién empieza · 🎙 Hablá o escribí · ⏱ Los errores consumen tiempo</div></div></div>
    <button class="primary" type="submit">▶ EMPEZAR DUELO</button><div class="setup-voice-error" id="setup-voice-error" role="alert"></div>
  </form>
 </div>
@@ -246,48 +246,10 @@ Bogotá
 Cartagena de Indias|Cartagena
 Quito
 Asunción
-La Paz`,
- simpsons:`Homero Simpson|Homero|Homer Simpson|Homer
-Marge Simpson|Marge
-Bart Simpson|Bart
-Lisa Simpson|Lisa
-Maggie Simpson|Maggie
-Abraham Simpson|Abuelo Simpson|Abraham
-Ned Flanders|Ned
-Maude Flanders|Maude
-Rod Flanders|Rod
-Todd Flanders|Todd
-Milhouse Van Houten|Milhouse
-Nelson Muntz|Nelson
-Ralph Wiggum|Ralph
-Jefe Gorgory|Clancy Wiggum|Gorgory
-Moe Szyslak|Moe
-Barney Gumble|Barney Gómez|Barney
-Apu Nahasapeemapetilon|Apu
-Seymour Skinner|Director Skinner|Skinner
-Edna Krabappel|Edna
-Montgomery Burns|Señor Burns|Señor Barns|Burns
-Waylon Smithers|Smithers
-Krusty el Payaso|Krusty
-Bob Patiño|Sideshow Bob
-Otto Mann|Otto
-Willie|Jardinero Willie
-Patty Bouvier|Patty
-Selma Bouvier|Selma
-Lenny Leonard|Lenny
-Carl Carlson|Carl
-Profesor Frink|Frink
-Doctor Hibbert|Julius Hibbert|Hibbert
-Doctor Nick|Nick Riviera
-El vendedor de historietas|Comic Book Guy
-Troy McClure|Troy
-Disco Stu
-Kent Brockman|Kent
-Hans Moleman|Hans
-Jimbo Jones|Jimbo
-Martin Prince|Martin
-Snake Jailbird|Snake
-El hombre abeja|Hombre Abeja`,
+La Paz
+Valparaíso
+Puerto Iguazú
+El Calafate`,
  videojuegos:`Minecraft
 Fortnite
 Roblox
@@ -359,17 +321,32 @@ for(const category of Object.keys(OPEN_ANSWERS))OPEN_ANSWERS[category]=OPEN_ANSW
 const usedOpenAnswers=new Set();
 function openAnswer(value,category){const phrase=' '+normalize(value)+' ';if(!phrase.trim())return null;let match=null,longest=0;for(const entry of OPEN_ANSWERS[category]||[])for(const alias of entry.aliases)if(alias.length>longest&&phrase.includes(' '+alias+' ')){match=entry;longest=alias.length}return match}
 const IMAGE_QUESTIONS={
- ciudades:{atlas:'assets/duelo/ciudades-atlas.png',grid:4,names:['París','Nueva York','Roma','Londres','Tokio','Río de Janeiro','Sídney','Dubái','Venecia','Barcelona','San Francisco','El Cairo','Buenos Aires','Montevideo','Punta del Este','Berlín'],label:'¿QUÉ CIUDAD ES?'},
- simpsons:{atlas:'assets/duelo/simpsons-atlas.svg',grid:3,names:['Homero Simpson','Marge Simpson','Bart Simpson','Lisa Simpson','Maggie Simpson','Ned Flanders','Montgomery Burns','Moe Szyslak','Krusty el Payaso'],label:'¿QUÉ PERSONAJE DE LOS SIMPSON ES?'},
- videojuegos:{atlas:'assets/duelo/videojuegos-atlas.png',grid:4,names:['Minecraft','Fortnite','Roblox','Tetris','Pac-Man','Super Mario Bros.','Mario Kart','The Legend of Zelda','Sonic the Hedgehog','Pokémon GO','Grand Theft Auto V','Among Us','Angry Birds','Plants vs. Zombies','Rocket League','Candy Crush Saga'],label:'¿QUÉ VIDEOJUEGO ES?'}
+ ciudades:{grid:4,label:'¿QUÉ CIUDAD ES?',atlases:[
+  {src:'assets/duelo/ciudades-atlas.png',names:'París|Nueva York|Roma|Londres|Tokio|Río de Janeiro|Sídney|Dubái|Venecia|Barcelona|San Francisco|El Cairo|Buenos Aires|Montevideo|Punta del Este|Berlín'.split('|')},
+  {src:'assets/duelo/ciudades-atlas-2.png',names:'Las Vegas|Miami|Orlando|Toronto|Vancouver|Seúl|Pekín|Shanghái|Bangkok|Singapur|Estambul|Atenas|Praga|Viena|Ámsterdam|Lisboa'.split('|')},
+  {src:'assets/duelo/ciudades-atlas-3.png',names:'Milán|Florencia|Oporto|Bruselas|Budapest|Marrakech|Ciudad del Cabo|Lima|Cusco|Santiago de Chile|Bogotá|Cartagena de Indias|Quito|Asunción|La Paz|Bariloche'.split('|')},
+  {src:'assets/duelo/ciudades-atlas-4.png',names:'Kioto|Osaka|Melbourne|Ciudad de México|Cancún|San Pablo|Ushuaia|Mar del Plata|Mendoza|Salta|Córdoba|Rosario|Colonia del Sacramento|Valparaíso|Puerto Iguazú|El Calafate'.split('|')}
+ ]},
+ videojuegos:{grid:4,label:'¿QUÉ VIDEOJUEGO ES?',atlases:[
+  {src:'assets/duelo/videojuegos-atlas.png',names:'Minecraft|Fortnite|Roblox|Tetris|Pac-Man|Super Mario Bros.|Mario Kart|The Legend of Zelda|Sonic the Hedgehog|Pokémon GO|Grand Theft Auto V|Among Us|Angry Birds|Plants vs. Zombies|Rocket League|Candy Crush Saga'.split('|')},
+  {src:'assets/duelo/videojuegos-atlas-2.png',names:'Halo|Doom|Los Sims|Animal Crossing|Fall Guys|Clash Royale|Brawl Stars|Subway Surfers|Terraria|Stardew Valley|Hollow Knight|Undertale|Portal 2|Resident Evil|God of War|Elden Ring'.split('|')},
+  {src:'assets/duelo/videojuegos-atlas-3.png',names:'Valorant|League of Legends|Counter-Strike 2|Call of Duty|Red Dead Redemption 2|||Overwatch|Apex Legends|PUBG|Free Fire|Genshin Impact|Dota 2|World of Warcraft|Final Fantasy|Kingdom Hearts'.split('|')},
+  {src:'assets/duelo/videojuegos-atlas-4.png',names:'Silent Hill|The Last of Us|Uncharted|Assassin\'s Creed|Far Cry|Mortal Kombat|Street Fighter|Tekken|Dark Souls|Hogwarts Legacy|Hades|Metroid|Splatoon|Just Dance|Guitar Hero|Half-Life'.split('|')}
+ ]}
 };
+const IMAGE_ITEMS=Object.fromEntries(Object.entries(IMAGE_QUESTIONS).map(([category,set])=>[category,set.atlases.flatMap((atlas,atlasIndex)=>atlas.names.map((answer,cell)=>answer?{category,answer,img:atlas.src,atlasIndex,cell,grid:set.grid,label:set.label}:null).filter(Boolean))]));
 function isImageQuestion(q){return !!IMAGE_QUESTIONS[q?.category]}
 const PHOTO_CACHE={};
 let questionGeneration=0;
-const askedQuestions=new Set();
+const IMAGE_HISTORY_KEY='gya-duelo-imagenes-v1';
+function loadImageHistory(){try{const data=JSON.parse(localStorage.getItem(IMAGE_HISTORY_KEY)||'[]');return Array.isArray(data)?data.filter(key=>typeof key==='string'&&Object.keys(IMAGE_ITEMS).some(category=>key.startsWith(category+':'))):[]}catch(e){return []}}
+const askedQuestions=new Set(loadImageHistory());
+function imageRemaining(category){return (IMAGE_ITEMS[category]||[]).filter(item=>!askedQuestions.has(category+':'+normalize(item.answer))).length}
+function updateImagePoolStatus(){const el=$('image-pool-status');if(el)el.textContent=`Imágenes nuevas en este celular: Ciudades ${imageRemaining('ciudades')}/${IMAGE_ITEMS.ciudades.length} · Videojuegos ${imageRemaining('videojuegos')}/${IMAGE_ITEMS.videojuegos.length}. No se repiten entre partidas.`}
+function rememberImageQuestion(q){const key=questionKey(q);askedQuestions.add(key);if(isImageQuestion(q)){try{localStorage.setItem(IMAGE_HISTORY_KEY,JSON.stringify([...askedQuestions].filter(k=>Object.keys(IMAGE_ITEMS).some(category=>k.startsWith(category+':')))))}catch(e){}updateImagePoolStatus()}}
 function questionKey(q){return q.category==='banderas'?'banderas:'+q.code:q.category==='matematica'?'matematica:'+q.math:isImageQuestion(q)?q.category+':'+normalize(q.answer):q.category+':'+normalize(q.person.name)}
 function randomInt(min,max){return Math.floor(Math.random()*(max-min+1))+min}
-function nextTopic(p){if(!p.topicDeck.length)p.topicDeck=shuffled([...settings.categories]);return p.topicDeck.pop()}
+function nextTopic(p){const available=category=>!IMAGE_ITEMS[category]||imageRemaining(category)>0;p.topicDeck=p.topicDeck.filter(available);if(!p.topicDeck.length)p.topicDeck=shuffled(settings.categories.filter(available));return p.topicDeck.pop()||null}
 function nextPerson(p,category){const key=category+'Deck';if(!p[key].length)p[key]=shuffled(PEOPLE[category]);p[key]=p[key].filter(person=>!askedQuestions.has(category+':'+normalize(person.name)));return p[key].pop()||null}
 function newFlag(p){
  const level=p.score<2?'easy':p.score<5?'medium':'hard';
@@ -398,7 +375,7 @@ function newMath(p){
  while(askedQuestions.has('matematica:'+n+' + '+(n+1)))n++;
  return {category:'matematica',answer:String(2*n+1),math:n+' + '+(n+1),label:'¿CUÁNTO DA ESTA CUENTA?',level:Math.min(6,Math.floor(p.score/2)+1)};
 }
-function buildQuestion(p,category){if(category==='banderas')return newFlag(p);if(category==='matematica')return newMath(p);if(IMAGE_QUESTIONS[category]){const set=IMAGE_QUESTIONS[category],choices=set.names.map((answer,cell)=>({answer,cell})).filter(item=>!askedQuestions.has(category+':'+normalize(item.answer)));if(!choices.length)return newMath(p);const pick=shuffled(choices).pop();return {category,answer:pick.answer,img:set.atlas,cell:pick.cell,grid:set.grid,label:set.label,level:null}}const person=nextPerson(p,category);return person?{category,person,label:category==='famosos'?'¿QUIÉN ES ESTA PERSONA?':'¿QUÉ FUTBOLISTA ES?',level:null}:newMath(p)}
+function buildQuestion(p,category){if(category==='banderas')return newFlag(p);if(category==='matematica')return newMath(p);if(IMAGE_ITEMS[category]){const choices=IMAGE_ITEMS[category].filter(item=>!askedQuestions.has(category+':'+normalize(item.answer)));if(!choices.length)return null;const firstAtlas=choices[0].atlasIndex;return {...shuffled(choices.filter(item=>item.atlasIndex===firstAtlas)).pop(),level:null}}const person=nextPerson(p,category);return person?{category,person,label:category==='famosos'?'¿QUIÉN ES ESTA PERSONA?':'¿QUÉ FUTBOLISTA ES?',level:null}:newMath(p)}
 function personAnswers(person){const n=normalize(person.name);const words=n.split(' ');const r=[n];
  if(words.length>=2){const last=words[words.length-1];const pool=[...PEOPLE.famosos,...PEOPLE.futbol];const matches=pool.filter(p=>normalize(p.name).split(' ').at(-1)===last);if(last.length>=4&&!['junior','martinez'].includes(last)&&matches.length===1)r.push(last);r.push(words.slice(-2).join(' '));}
  if(n==='lionel messi')r.push('messi','leo messi');
@@ -446,8 +423,9 @@ async function nextQuestion(){
  if(phase==='finished'||phase==='setup')return;
  const p=players[active];if(p.ms<=0){finish(1-active,`${p.name} se quedó sin tiempo`);return}
  const serial=++questionGeneration;phase='loading';pauseClock();$('answer-input').disabled=true;$('answer-submit').disabled=true;updatePlayers();
- let q=buildQuestion(p,nextTopic(p));
- $('question-title').textContent=q.label;$('question-number').textContent=`${{banderas:'BANDERAS',matematica:'MATEMÁTICA',famosos:'FAMOSOS',futbol:'FÚTBOL',ciudades:'CIUDADES TURÍSTICAS',simpsons:'LOS SIMPSON',videojuegos:'VIDEOJUEGOS'}[q.category]}${q.level?' · NIVEL '+q.level:''} · Turno de ${p.name}`;
+ const topic=nextTopic(p);if(!topic){finish(active,'Se terminaron las imágenes nuevas');return}
+ let q=buildQuestion(p,topic);if(!q){finish(active,'Se terminaron las imágenes nuevas');return}
+ $('question-title').textContent=q.label;$('question-number').textContent=`${{banderas:'BANDERAS',matematica:'MATEMÁTICA',famosos:'FAMOSOS',futbol:'FÚTBOL',ciudades:'CIUDADES TURÍSTICAS',videojuegos:'VIDEOJUEGOS'}[q.category]}${q.level?' · NIVEL '+q.level:''} · Turno de ${p.name}`;
  if(q.category==='banderas'||q.category==='famosos'||q.category==='futbol'||isImageQuestion(q)){
   $('feedback').className='feedback';$('feedback').textContent='Preparando imagen…';setMicLabel('CARGANDO DESAFÍO','El cronómetro está pausado mientras carga la imagen.',false);
   try{
@@ -463,17 +441,18 @@ async function nextQuestion(){
    }
   }catch(e){
    if(serial!==questionGeneration||phase!=='loading')return;
+   if(isImageQuestion(q)){finish(active,'No se pudo cargar la imagen. Probá de nuevo cuando vuelva la conexión.');return}
    q=newMath(p);showToast('No se pudo cargar la imagen; sigue una cuenta matemática.');
   }
  }
  if(serial!==questionGeneration||phase!=='loading')return;
-  askedQuestions.add(questionKey(q));
+  rememberImageQuestion(q);
  question={...q,answered:false};showVisual(q);
  $('question-title').textContent=q.label;
- $('question-number').textContent=`${{banderas:'BANDERAS',matematica:'MATEMÁTICA',famosos:'FAMOSOS',futbol:'FÚTBOL',ciudades:'CIUDADES TURÍSTICAS',simpsons:'LOS SIMPSON',videojuegos:'VIDEOJUEGOS'}[q.category]}${q.level?' · NIVEL '+q.level:''} · Turno de ${p.name}`;
+ $('question-number').textContent=`${{banderas:'BANDERAS',matematica:'MATEMÁTICA',famosos:'FAMOSOS',futbol:'FÚTBOL',ciudades:'CIUDADES TURÍSTICAS',videojuegos:'VIDEOJUEGOS'}[q.category]}${q.level?' · NIVEL '+q.level:''} · Turno de ${p.name}`;
  $('feedback').className='feedback';$('feedback').textContent=`¡Respondé, ${p.name}!`;
   const puedeResponder=typeof window.dueloPuedeResponder==='function'?window.dueloPuedeResponder():true;
-  phase=typeof window.dueloPreparaTurno==='function'&&window.dueloPreparaTurno()?'announcing':'playing';$('answer-input').value='';$('answer-input').placeholder=q.category==='banderas'?'Escribí el país':q.category==='matematica'?'Escribí el número':q.category==='ciudades'?'Escribí una ciudad turística':q.category==='simpsons'?'Escribí un personaje':q.category==='videojuegos'?'Escribí un videojuego':'Escribí quién es';$('answer-input').disabled=phase!=='playing'||!puedeResponder;$('answer-submit').disabled=phase!=='playing'||!puedeResponder;
+  phase=typeof window.dueloPreparaTurno==='function'&&window.dueloPreparaTurno()?'announcing':'playing';$('answer-input').value='';$('answer-input').placeholder=q.category==='banderas'?'Escribí el país':q.category==='matematica'?'Escribí el número':q.category==='ciudades'?'Escribí una ciudad turística':q.category==='videojuegos'?'Escribí un videojuego':'Escribí quién es';$('answer-input').disabled=phase!=='playing'||!puedeResponder;$('answer-submit').disabled=phase!=='playing'||!puedeResponder;
  setMicLabel('ESCRIBÍ TU RESPUESTA',`Turno de ${p.name} · El reloj está corriendo`,false);
   if(phase==='announcing'){updatePlayers();return}
   prevTick=performance.now();pauseClock();raf=requestAnimationFrame(tick);updatePlayers();if(puedeResponder&&$('answer-form').offsetParent!==null)$('answer-input').focus();
@@ -552,7 +531,7 @@ function finish(winner,reason){
  clearTimeout(transitionTimeout);clearTimeout(rouletteTimer);question=null;stopVoice();updatePlayers();
  const p=resultado.winner===null?null:players[resultado.winner];
  $('winner-name').textContent=p?upper(p.name):'EMPATE';
- $('win-reason').textContent=p?`${p.name} ganó: ${resultado.reason}.`:`Empate: ${resultado.reason}.`;
+ $('win-reason').textContent=(reason==='Se terminaron las imágenes nuevas'?`${reason}. Elegí otra categoría para seguir jugando. `:reason?.startsWith('No se pudo cargar la imagen')?`${reason} `:'')+(p?`${p.name} ganó: ${resultado.reason}.`:`Empate: ${resultado.reason}.`);
  $('result0').textContent=`${players[0].score} aciertos · ${players[0].errors||0} errores`;
  $('result1').textContent=`${players[1].score} aciertos · ${players[1].errors||0} errores`;
  $('result-label0').textContent=`${players[0].name} · ${fmt(players[0].ms)} restantes`;
@@ -560,7 +539,7 @@ function finish(winner,reason){
  $('result-overlay').classList.remove('hidden');$('mic-overlay').classList.add('hidden');$('roulette-overlay').classList.add('hidden');
  playTone(660,.18);setTimeout(()=>playTone(880,.2),170);setTimeout(()=>playTone(1130,.25),350);
 }
-function resetToConfig(){questionGeneration++;clearTimeout(transitionTimeout);clearTimeout(rouletteTimer);pauseClock();stopVoice();phase='setup';question=null;selectionStarted=false;$('result-overlay').classList.add('hidden');$('roulette-overlay').classList.add('hidden');$('mic-overlay').classList.add('hidden');$('setup-overlay').classList.remove('hidden');$('feedback').textContent='Respondé escribiendo y pulsando Enter';$('feedback').className='feedback';initAnimation()}
+function resetToConfig(){questionGeneration++;clearTimeout(transitionTimeout);clearTimeout(rouletteTimer);pauseClock();stopVoice();phase='setup';question=null;selectionStarted=false;$('result-overlay').classList.add('hidden');$('roulette-overlay').classList.add('hidden');$('mic-overlay').classList.add('hidden');$('setup-overlay').classList.remove('hidden');$('feedback').textContent='Respondé escribiendo y pulsando Enter';$('feedback').className='feedback';updateImagePoolStatus();initAnimation()}
 function showToast(s){const t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2600)}
 $('setup-form').addEventListener('submit',e=>{e.preventDefault();start()});$('new-btn').addEventListener('click',resetToConfig);$('configure-again').addEventListener('click',resetToConfig);$('rematch-btn').addEventListener('click',start);
 $('retry-mic').addEventListener('click',()=>{micBlocked=false;micRequested=true;$('mic-overlay').classList.add('hidden');requestMicrophone()});$('back-from-mic').addEventListener('click',resetToConfig);
@@ -583,10 +562,10 @@ $('answer-form').addEventListener('submit',e=>{
  }
 });
 $('pass-button').addEventListener('click',()=>{if(phase==='playing'&&(typeof window.dueloPuedeResponder!=='function'||window.dueloPuedeResponder()))passTurn()});
-function initPreview(){players=[{name:'Andrés',ms:40000,score:0},{name:'Sofía',ms:40000,score:0}];phase='setup';active=0;updatePlayers();$('flag-img').src=IMAGES.flags.uy;setMicLabel('MODO DE PRUEBA','Escribí la respuesta y pulsá Enter',false);$('answer-input').disabled=true;$('answer-submit').disabled=true;initAnimation()}
+function initPreview(){players=[{name:'Andrés',ms:40000,score:0},{name:'Sofía',ms:40000,score:0}];phase='setup';active=0;updatePlayers();$('flag-img').src=IMAGES.flags.uy;setMicLabel('MODO DE PRUEBA','Escribí la respuesta y pulsá Enter',false);$('answer-input').disabled=true;$('answer-submit').disabled=true;updateImagePoolStatus();initAnimation()}
 initPreview();
 </script>
 <script src="lib/mqtt.min.js?v=5.10.1"></script>
-<script src="duelo-conocimiento-modos.js?v=13"></script>
+<script src="duelo-conocimiento-modos.js?v=14"></script>
 </body>
 </html>
