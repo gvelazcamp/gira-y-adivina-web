@@ -261,7 +261,10 @@ passTurn=function(){
 const baseFinish=finish;
 finish=function(winner,reason){
  clearTimeout(botHandle);cancelNarration();baseFinish(winner,reason);
- if(mode==="online"&&online&&online.host)sendOnline("finish",{winner,reason,players:players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0}))});
+ if(mode==="online"&&online&&online.host){
+   const resultado=decidirResultadoDuelo();
+   sendOnline("finish",{winner:resultado.winner,reason:resultado.reason,players:players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0}))});
+ }
 };
 const baseReset=resetToConfig;
 resetToConfig=function(){clearTimeout(botHandle);cancelNarration();stopMic();stopOnline();baseReset();voiceBtn.disabled=false;$dc("input0").value="";syncSetup();syncAnswer()};

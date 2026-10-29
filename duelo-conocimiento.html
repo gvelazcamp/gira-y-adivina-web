@@ -167,7 +167,7 @@ const upper=s=>(s||'').toLocaleUpperCase('es-UY');
 function playTone(freq=600,dur=.09,type='sine',volume=.07){if(!soundOn)return;try{audioCtx ||= new (window.AudioContext||window.webkitAudioContext)();let osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type=type;osc.frequency.value=freq;gain.gain.setValueAtTime(volume,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);osc.connect(gain);gain.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+dur)}catch(e){}}
 function fmt(ms){ms=Math.max(0,ms);let sec=Math.floor(ms/1000),tenths=Math.floor((ms%1000)/100);return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}.${tenths}`}
 function makeDots(count){return Array.from({length:10},(_,i)=>`<span class="dot ${i<count%11?'on':''}" aria-hidden="true"></span>`).join('')}
-function updatePlayers(){players.forEach((p,i)=>{$(`name${i}`).textContent=upper(p.name);$(`clock${i}`).textContent=fmt(p.ms);$(`score${i}`).textContent=`${p.score} ${p.score===1?'acierto':'aciertos'} · ${p.errors||0} ${(p.errors||0)===1?'error':'errores'}`;$(`dots${i}`).innerHTML=makeDots(p.score);const card=$(`p${i}`);card.classList.toggle('active',i===active&&(phase==='playing'||phase==='announcing'||phase==='waiting-mic'));card.classList.toggle('inactive',i!==active||!['playing','announcing','waiting-mic'].includes(phase));card.classList.toggle('danger',p.ms<10000&&phase==='playing'&&i===active);$(`turn${i}`).querySelector('.turn-caption').textContent=phase==='selecting'?'EN SORTEO':(phase==='playing'||phase==='transition'||phase==='waiting-mic'||phase==='announcing')?(i===active?(phase==='playing'?'ES SU TURNO':phase==='announcing'?'PREGUNTA EN VOZ ALTA':'PREPARANDO'):'EN ESPERA'):(phase==='loading'&&i===active?'CARGANDO':'EN ESPERA')});$('turn-stats').textContent=phase==='selecting'?'SORTEANDO EL PRIMER TURNO':`TURNO ${turn}`;$('goal-stats').textContent='Pierde quien llegue a 00:00';const banner=$('active-turn-banner');banner.hidden=!players.length||!['playing','announcing','waiting-mic','transition','loading'].includes(phase);if(!banner.hidden){banner.textContent=phase==='announcing'?`🎙 Pregunta para ${players[active].name} · reloj pausado`:phase==='waiting-mic'?`🎙 Activando micrófono para ${players[active].name} · reloj pausado`:phase==='playing'?`▶ RESPONDE ${upper(players[active].name)}`:phase==='transition'?`✓ Terminó el turno de ${players[active].name}`:`Preparando turno de ${players[active].name}`;banner.classList.toggle('preparing',phase!=='playing')}$('pass-button').disabled=phase!=='playing'||!!question?.answered||(typeof window.dueloPuedeResponder==='function'&&!window.dueloPuedeResponder())}
+function updatePlayers(){players.forEach((p,i)=>{$(`name${i}`).textContent=upper(p.name);$(`clock${i}`).textContent=fmt(p.ms);$(`score${i}`).textContent=`${p.score} ${p.score===1?'acierto':'aciertos'} · ${p.errors||0} ${(p.errors||0)===1?'error':'errores'}`;$(`dots${i}`).innerHTML=makeDots(p.score);const card=$(`p${i}`);card.classList.toggle('active',i===active&&(phase==='playing'||phase==='announcing'||phase==='waiting-mic'));card.classList.toggle('inactive',i!==active||!['playing','announcing','waiting-mic'].includes(phase));card.classList.toggle('danger',p.ms<10000&&phase==='playing'&&i===active);$(`turn${i}`).querySelector('.turn-caption').textContent=phase==='selecting'?'EN SORTEO':(phase==='playing'||phase==='transition'||phase==='waiting-mic'||phase==='announcing')?(i===active?(phase==='playing'?'ES SU TURNO':phase==='announcing'?'PREGUNTA EN VOZ ALTA':'PREPARANDO'):'EN ESPERA'):(phase==='loading'&&i===active?'CARGANDO':'EN ESPERA')});$('turn-stats').textContent=phase==='selecting'?'SORTEANDO EL PRIMER TURNO':`TURNO ${turn}`;$('goal-stats').textContent='Gana quien tenga más aciertos · Errores desempatan';const banner=$('active-turn-banner');banner.hidden=!players.length||!['playing','announcing','waiting-mic','transition','loading'].includes(phase);if(!banner.hidden){banner.textContent=phase==='announcing'?`🎙 Pregunta para ${players[active].name} · reloj pausado`:phase==='waiting-mic'?`🎙 Activando micrófono para ${players[active].name} · reloj pausado`:phase==='playing'?`▶ RESPONDE ${upper(players[active].name)}`:phase==='transition'?`✓ Terminó el turno de ${players[active].name}`:`Preparando turno de ${players[active].name}`;banner.classList.toggle('preparing',phase!=='playing')}$('pass-button').disabled=phase!=='playing'||!!question?.answered||(typeof window.dueloPuedeResponder==='function'&&!window.dueloPuedeResponder())}
 function animate(){const f=n=>String(n).padStart(2,'0');$('char0').src=IMAGES.characters[`andres_${f(animFrame)}`];$('char1').src=IMAGES.characters[`sofia_${f((animFrame+4-1)%10+1)}`];$('host-img').src=IMAGES.characters[`conductor_${f((Math.floor(animFrame/2)*2)%10+1)}`];animFrame=animFrame%10+1}
 function initAnimation(){clearInterval(animTimer);animate();if(!prefersReduced)animTimer=setInterval(animate,850)}
 function setMicLabel(main,detail='',listening=false){$('mic-main').textContent=main;$('mic-heard').textContent=detail;$('mic-panel').classList.toggle('listening',listening);$('mic-panel').classList.toggle('offline',!listening)}
@@ -338,7 +338,41 @@ function start(){
  updatePlayers();initAnimation();setMicLabel('PREPARANDO PARTIDA','Sorteando quién comienza...',false);
  runRoulette();
 }
-function finish(winner,reason){if(phase==='finished')return;questionGeneration++;phase='finished';pauseClock();$('answer-input').disabled=true;$('answer-submit').disabled=true;clearTimeout(transitionTimeout);clearTimeout(rouletteTimer);question=null;stopVoice();updatePlayers();let p=players[winner];$('winner-name').textContent=upper(p.name);$('win-reason').textContent=`${p.name} ganó: ${reason}.`;$('result0').textContent=`${players[0].score} aciertos · ${players[0].errors||0} errores`;$('result1').textContent=`${players[1].score} aciertos · ${players[1].errors||0} errores`;$('result-label0').textContent=`${players[0].name} · ${fmt(players[0].ms)} restantes`;$('result-label1').textContent=`${players[1].name} · ${fmt(players[1].ms)} restantes`;$('result-overlay').classList.remove('hidden');$('mic-overlay').classList.add('hidden');$('roulette-overlay').classList.add('hidden');playTone(660,.18);setTimeout(()=>playTone(880,.2),170);setTimeout(()=>playTone(1130,.25),350)}
+/* El cronómetro determina cuándo termina el duelo, NO quién gana.
+   Al finalizar se comparan aciertos, luego errores (incluido PASO)
+   y por último el tiempo que cada jugador conservó. */
+function decidirResultadoDuelo(){
+ const [a,b]=players;
+ if(a.score!==b.score){
+   const winner=a.score>b.score?0:1;
+   return {winner,reason:`consiguió más aciertos (${players[winner].score} frente a ${players[1-winner].score})`};
+ }
+ if((a.errors||0)!==(b.errors||0)){
+   const winner=(a.errors||0)<(b.errors||0)?0:1;
+   return {winner,reason:`cometió menos errores (${players[winner].errors||0} frente a ${players[1-winner].errors||0})`};
+ }
+ if(a.ms!==b.ms){
+   const winner=a.ms>b.ms?0:1;
+   return {winner,reason:`conservó más tiempo (${fmt(players[winner].ms)} frente a ${fmt(players[1-winner].ms)})`};
+ }
+ return {winner:null,reason:"igualaron en aciertos, errores y tiempo"};
+}
+function finish(winner,reason){
+ if(phase==='finished')return;
+ const resultado=decidirResultadoDuelo();
+ questionGeneration++;phase='finished';pauseClock();
+ $('answer-input').disabled=true;$('answer-submit').disabled=true;
+ clearTimeout(transitionTimeout);clearTimeout(rouletteTimer);question=null;stopVoice();updatePlayers();
+ const p=resultado.winner===null?null:players[resultado.winner];
+ $('winner-name').textContent=p?upper(p.name):'EMPATE';
+ $('win-reason').textContent=p?`${p.name} ganó: ${resultado.reason}.`:`Empate: ${resultado.reason}.`;
+ $('result0').textContent=`${players[0].score} aciertos · ${players[0].errors||0} errores`;
+ $('result1').textContent=`${players[1].score} aciertos · ${players[1].errors||0} errores`;
+ $('result-label0').textContent=`${players[0].name} · ${fmt(players[0].ms)} restantes`;
+ $('result-label1').textContent=`${players[1].name} · ${fmt(players[1].ms)} restantes`;
+ $('result-overlay').classList.remove('hidden');$('mic-overlay').classList.add('hidden');$('roulette-overlay').classList.add('hidden');
+ playTone(660,.18);setTimeout(()=>playTone(880,.2),170);setTimeout(()=>playTone(1130,.25),350);
+}
 function resetToConfig(){questionGeneration++;clearTimeout(transitionTimeout);clearTimeout(rouletteTimer);pauseClock();stopVoice();phase='setup';question=null;selectionStarted=false;$('result-overlay').classList.add('hidden');$('roulette-overlay').classList.add('hidden');$('mic-overlay').classList.add('hidden');$('setup-overlay').classList.remove('hidden');$('feedback').textContent='Respondé escribiendo y pulsando Enter';$('feedback').className='feedback';initAnimation()}
 function showToast(s){const t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2600)}
 $('setup-form').addEventListener('submit',e=>{e.preventDefault();start()});$('new-btn').addEventListener('click',resetToConfig);$('configure-again').addEventListener('click',resetToConfig);$('rematch-btn').addEventListener('click',start);
@@ -365,6 +399,6 @@ function initPreview(){players=[{name:'Andrés',ms:40000,score:0},{name:'Sofía'
 initPreview();
 </script>
 <script src="lib/mqtt.min.js?v=5.10.1"></script>
-<script src="duelo-conocimiento-modos.js?v=10"></script>
+<script src="duelo-conocimiento-modos.js?v=11"></script>
 </body>
 </html>
