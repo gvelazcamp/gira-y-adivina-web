@@ -1820,3 +1820,7 @@ Fecha: 29/10/2026 — Giro (piloto del Rosco, solo Gonzalo) habla con voz de hom
 ```text
 Fecha: 29/10/2026 — Giro: tercera frase grabada (Cesar Rodriguez, ElevenLabs): giro-rosco-buena.mp3, "¡Muy buena partida! ¡Vamos por más!" (2,6 s), suena al terminar el Rosco con aciertos pero no perfecto. Queda con voz del celular solo la de revancha (0 aciertos): falta grabar "¡No pasa nada! Una nueva vuelta nos espera. ¡Vamos por la revancha!". giro-rosco-piloto v10, rosco v40, sw v533.
 ```
+
+```text
+Fecha: 29/10/2026 — Giro: cuarta y última frase grabada (Cesar Rodriguez): giro-rosco-revancha.mp3, "¡No pasa nada! Una nueva vuelta nos espera. ¡Vamos por la revancha!" (0 aciertos). Ahora las 4 frases de Giro en el Rosco suenan con voz de hombre grabada; la voz del celular queda solo de respaldo si el audio no carga. giro-rosco-piloto v11, rosco v41, sw v534.
+```

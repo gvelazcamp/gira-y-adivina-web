@@ -187,7 +187,7 @@
       tipo:"final",titulo,
       descripcion:ok+" de "+total+" aciertos · "+puntos+" puntos. El detalle y las opciones para continuar están en el resultado original del Rosco.",
       locucion:perfecto?"¡Espectacular! ¡Completaste el Rosco sin errores!":ok?"¡Muy buena partida! Lograste "+ok+" aciertos. ¡Vamos por más!":"¡No pasa nada! Una nueva vuelta nos espera. ¡Vamos por la revancha!",
-      audio:perfecto?BASE+"voz/giro-rosco-perfecto.mp3":ok?BASE+"voz/giro-rosco-buena.mp3":"",
+      audio:perfecto?BASE+"voz/giro-rosco-perfecto.mp3":ok?BASE+"voz/giro-rosco-buena.mp3":BASE+"voz/giro-rosco-revancha.mp3",
       imagen:perfecto?"festeja":ok?"presenta":"revancha"
     });
   }
