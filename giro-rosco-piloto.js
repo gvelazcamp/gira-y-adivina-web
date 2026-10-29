@@ -85,7 +85,10 @@
   function cortarParticipantes(){
     if(!participantes)return;const p=participantes;participantes=null;
     clearTimeout(p.timer);p.capa.remove();document.removeEventListener("keydown",p.tecla);
+    try{p.voz.pause();}catch(e){}apagarMusica(p.musica);
   }
+  /* La música baja de a poco en vez de cortarse de golpe. */
+  function apagarMusica(m){if(!m)return;const v0=m.volume;let k=0;const t=setInterval(()=>{k++;try{m.volume=Math.max(0,v0*(1-k/8));}catch(e){}if(k>=8){clearInterval(t);try{m.pause();}catch(e){}}},70);}
   function miNombre(){
     try{if(typeof perfil!=="undefined"&&perfil)return String(perfil.nombre||"Vos").trim().slice(0,14)||"Vos";}catch(e){}
     return "Vos";
@@ -124,7 +127,16 @@
     const terminar=()=>{if(!participantes||participantes.capa!==capa)return;capa.classList.add("grp-ap-fin");
       clearTimeout(participantes.timer);participantes.timer=setTimeout(()=>{cortarParticipantes();if(typeof siguiente==="function")siguiente();},650);};
     const tecla=e=>{if(e.key==="Escape"||e.key==="Enter"){e.preventDefault();terminar();}};
-    participantes={capa,tecla,timer:null};
+    /* Música de la presentación (otra parte del tema de Gonzalo) y la voz de Giro
+       presentando al participante (voz/giro-rosco-participante.mp3); mientras
+       Giro habla, la música baja. */
+    const musica=new Audio(BASE+"voz/giro-participantes-musica.mp3");musica.loop=true;musica.volume=.6;
+    const voz=new Audio(BASE+"voz/giro-rosco-"+(modo==="duelo"?"duelo":"participante")+".mp3");
+    voz.addEventListener("play",()=>{musica.volume=.22;});
+    const subir=()=>{musica.volume=.6;};voz.addEventListener("ended",subir);voz.addEventListener("error",subir);
+    musica.play().catch(()=>{});
+    participantes={capa,tecla,timer:null,musica,voz};
+    setTimeout(()=>{if(participantes&&participantes.capa===capa)voz.play().catch(()=>{});},1500);
     ir.addEventListener("click",terminar);document.addEventListener("keydown",tecla);
     ir.focus({preventScroll:true});
     return true;

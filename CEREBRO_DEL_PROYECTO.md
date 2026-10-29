@@ -1868,3 +1868,7 @@ Fecha: 29/10/2026 — Rosco show: en las reacciones Giro aparecía flotando (Gon
 ```text
 Fecha: 29/10/2026 — Rosco show: el cartel "Jugar nivel N" se veía antes de la apertura (Gonzalo: "arranca con el popup visible; ese popup es lo último de todo"). Pasaba porque lo de Giro (giro-rosco-piloto.js) se carga aparte y tarda un instante. Ahora, solo para Gonzalo, al abrir el Rosco se pone una cortina negra (#rrCortinaG) desde el primer instante; se saca apenas arranca la apertura (o si el archivo de Giro no carga, a los 7 s como máximo, o al salir). Orden: negro → apertura → Giro → cartel de Jugar. rosco v51, sw v544.
 ```
+
+```text
+Fecha: 29/10/2026 — Rosco show: la presentación del participante ("¡Hoy juega Gonzalo!") estaba en silencio (Gonzalo: "no hay música ni presentación"). Ahora suena música: otra parte del mismo tema de Gonzalo (9,2–26,5 s, en loop, voz/giro-participantes-musica.mp3) que baja de a poco al tocar "¡A jugar!". Queda conectada la voz de Giro presentando (a los 1,5 s, con la música más baja mientras habla): voz/giro-rosco-participante.mp3 (solo) y voz/giro-rosco-duelo.mp3 (duelo). PENDIENTE: que Gonzalo las grabe en ElevenLabs con la voz Cesar Rodriguez; mientras no existan, solo suena la música. giro-rosco-piloto.js v21, rosco v52, sw v545.
+```
