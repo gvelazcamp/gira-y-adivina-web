@@ -62,18 +62,40 @@ window.hablar=hablar;
    el estado de la ruleta y permite solicitar permiso de micrófono. */
 const DueloConocimiento={
   iframe:null,
+  marco:null,
   abrir(contenedor){
     this.salir();
+    if(!document.getElementById("dc-carga-estilo")){
+      const estilo=document.createElement("style");estilo.id="dc-carga-estilo";
+      estilo.textContent=".dc-marco{position:relative;width:100%;height:calc(100dvh - 82px);min-height:min(680px,calc(100dvh - 82px));border-radius:16px;overflow:hidden;background:radial-gradient(circle at 50% 38%,#38205e,#160b27 72%)}.dc-marco iframe{display:block;width:100%;height:100%;border:0;background:#160b27;opacity:0;transition:opacity .25s}.dc-marco iframe.dc-listo{opacity:1}.dc-cargando{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;padding:24px;text-align:center;color:#fff5dc;font:800 17px system-ui,sans-serif}.dc-cargando img{width:min(45vw,165px);max-height:30vh;object-fit:contain;filter:drop-shadow(0 12px 24px #0008)}.dc-cargando small{font-size:13px;font-weight:600;color:#d7c6ed}.dc-cargando i{display:block;width:110px;height:5px;border-radius:8px;background:linear-gradient(90deg,#ffcb41,#38dac7);animation:dc-carga-pulso 1.2s ease-in-out infinite alternate}.dc-cargando button{border:1px solid #ffcd45;border-radius:10px;padding:9px 16px;background:#f7bd35;color:#241339;font-weight:900}@keyframes dc-carga-pulso{from{opacity:.35;transform:scaleX(.55)}to{opacity:1;transform:scaleX(1)}}";
+      document.head.appendChild(estilo);
+    }
+    const marco=document.createElement("div");marco.className="dc-marco";
+    const carga=document.createElement("div");carga.className="dc-cargando";carga.setAttribute("role","status");
+    carga.innerHTML='<img src="logo-duelo-conocimiento.webp" alt=""><b>Preparando Duelo de Conocimiento…</b><i aria-hidden="true"></i><small>En un momento empieza el desafío</small><button type="button" hidden>Reintentar</button>';
     const frame=document.createElement("iframe");
-    frame.src="duelo-conocimiento.html";
+    frame.src="duelo-conocimiento.html?v=9";
     frame.title="Duelo de Conocimiento";
     frame.allow="microphone; autoplay";
     frame.setAttribute("allowfullscreen","");
-    frame.style.cssText="display:block;width:100%;height:calc(100dvh - 82px);min-height:min(680px,calc(100dvh - 82px));border:0;background:#10081e;border-radius:16px";
-    contenedor.appendChild(frame);
+    const lento=setTimeout(()=>{if(this.iframe===frame&&carga.isConnected){carga.querySelector("small").textContent="Está tardando más de lo habitual";carga.querySelector("button").hidden=false}},8500);
+    carga.querySelector("button").onclick=()=>{carga.querySelector("button").hidden=true;carga.querySelector("small").textContent="Volviendo a cargar…";frame.src=frame.src};
+    frame.onload=async()=>{
+      try{
+        const doc=frame.contentDocument;
+        if(!doc?.querySelector("#setup-overlay")){carga.querySelector("small").textContent="No se pudo abrir el Duelo";carga.querySelector("button").hidden=false;return}
+        const imagenes=[...doc.querySelectorAll("#char0,#char1,#host-img,#flag-img,.dc-setup-hero img")];
+        await Promise.race([Promise.all(imagenes.map(im=>im.decode?im.decode().catch(()=>{}):Promise.resolve())),new Promise(r=>setTimeout(r,6000))]);
+        if(frame.contentDocument!==doc)return;
+      }catch(e){}
+      if(this.iframe!==frame)return;
+      clearTimeout(lento);frame.classList.add("dc-listo");carga.remove();
+    };
+    marco.append(frame,carga);contenedor.appendChild(marco);
     this.iframe=frame;
+    this.marco=marco;
   },
-  salir(){if(this.iframe){this.iframe.remove();this.iframe=null;}}
+  salir(){if(this.marco){this.marco.remove();this.marco=null;this.iframe=null;}}
 };
 window.DueloConocimiento=DueloConocimiento;
 
