@@ -81,7 +81,7 @@ const server=http.createServer((req,res)=>{
     assert.equal(await page.evaluate(()=>players[0].score),1,'audio del turno anterior no responde la pregunta nueva');
     await page.evaluate(()=>window.__mics.at(-1).emit('paso'));
     await page.waitForFunction(()=>phase==='transition'&&players[0].errors===1,null,{timeout:1000});
-    assert.match(await page.locator('#score0').textContent(),/1 errores/);
+    assert.match(await page.locator('#score0').textContent(),/1 error/);
     await page.close();
 
     const second=await browser.newPage({reducedMotion:'reduce',serviceWorkers:'block'});
