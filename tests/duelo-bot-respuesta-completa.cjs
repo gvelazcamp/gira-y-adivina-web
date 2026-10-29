@@ -40,14 +40,14 @@ function create(mode="bot",jugador=1){
    sendOnline(){},
    applyAnswer(){},
    rightAnswer(){
-     answerCount++;this.question.answered=true;this.phase="transition";
-     this.players[this.active].score++;
-     this.transitionTimeout=this.setTimeout(()=>{this.active=1-this.active;this.turn++;this.nextQuestion()},2800);
+     answerCount++;context.question.answered=true;context.phase="transition";
+     context.players[context.active].score++;
+     context.transitionTimeout=context.setTimeout(()=>{context.active=1-context.active;context.turn++;context.nextQuestion()},2800);
    },
    passTurn(){
-     passCount++;this.question.answered=true;this.phase="transition";
-     this.players[this.active].errors++;
-     this.transitionTimeout=this.setTimeout(()=>{this.active=1-this.active;this.turn++;this.nextQuestion()},1900);
+     passCount++;context.question.answered=true;context.phase="transition";
+     context.players[context.active].errors++;
+     context.transitionTimeout=context.setTimeout(()=>{context.active=1-context.active;context.turn++;context.nextQuestion()},1900);
    }
  };
  // Functions from vm are run against the supplied context, not the test module.
