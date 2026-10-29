@@ -134,11 +134,33 @@
      y cada letra va en su círculo. Posiciones en % del recorte. */
   const RUEDA_JUEGO=[[50.12,11.16],[59.01,12.49],[67.22,16.12],[74.48,21.74],[79.89,29.39],[83.71,38.44],[85.17,48.45],[83.89,58.47],[80.35,67.68],[74.79,75.47],[67.43,81.61],[59.01,85.45],[50.14,87.32],[41.09,85.96],[32.68,82.32],[25.27,76.76],[19.42,68.86],[15.65,59.24],[14.39,48.82],[15.91,38.48],[19.86,29.42],[25.34,21.64],[32.73,15.99],[41.11,12.45]];
   function posLetra(letra){const i=LETRAS_ROSCO.indexOf(String(letra||"").toUpperCase());return i>=0?RUEDA_JUEGO[i]:null;}
+  /* Reacciones de Giro durante la partida en el estudio: aparece desde abajo del
+     rosco con una pose y dice una frase grabada (voz/reacciones/, 12 frases
+     cortadas de una grabación de Gonzalo en ElevenLabs). No repite la misma
+     frase dos veces seguidas. */
+  const REACCIONES={
+    acierto:{poses:["Giro_festejando.png"],frases:["acierto-1","acierto-2","acierto-3","acierto-4"]},
+    error:{poses:["Giro_confundido.png"],frases:["error-1","error-2","error-3","error-4"]},
+    pasar:{poses:["Giro_suspenso.png"],frases:["pasar-1","pasar-2"]},
+    tiempo:{poses:["Giro_sorprendido.png"],frases:["tiempo-1","tiempo-2"]}
+  };
+  const ultimaFrase={};let reacAudio=null,reacTimer=null;
+  function reaccion(tipo){
+    const r=REACCIONES[tipo];if(!r||!habilitado())return;
+    const rueda=document.querySelector(".rr-game.rr-estudio .rr-rueda");if(!rueda)return;
+    let opciones=r.frases.filter(f=>f!==ultimaFrase[tipo]);if(!opciones.length)opciones=r.frases;
+    const frase=opciones[Math.floor(Math.random()*opciones.length)];ultimaFrase[tipo]=frase;
+    rueda.querySelector(".grp-reac")?.remove();clearTimeout(reacTimer);
+    const img=document.createElement("img");img.className="grp-reac grp-reac-"+tipo;img.alt="";img.setAttribute("aria-hidden","true");img.draggable=false;
+    img.src=BASE+r.poses[Math.floor(Math.random()*r.poses.length)];rueda.appendChild(img);
+    reacTimer=setTimeout(()=>img.remove(),1700);
+    try{if(reacAudio)reacAudio.pause();reacAudio=new Audio(BASE+"voz/reacciones/giro-"+frase+".mp3");reacAudio.play().catch(()=>{});}catch(e){}
+  }
   /* Las llama el Rosco al tocar Jugar (solo) — siguiente() arranca la partida. */
   function presentarSolo(siguiente){if(!habilitado())return false;return mostrarParticipantes("solo","",siguiente);}
   function presentarDuelo(rival,siguiente){if(!habilitado())return false;return mostrarParticipantes("duelo",rival,siguiente);}
   function limpiar(){
-    cortarApertura();
+    cortarApertura();cortarCierre();
     cortarParticipantes();
     clearInterval(intervalo);intervalo=null;
     if(salidaTimer!==null){clearTimeout(salidaTimer);salidaTimer=null;}
@@ -292,7 +314,37 @@
       imagen:"saludo"
     });
   }
+  /* Cierre en el estudio: escena a pantalla completa de victoria (la mitad o
+     más de aciertos) o de revancha, con el resultado escrito en la pantalla de
+     la escena y la frase grabada de Giro. "Ver resultados" muestra el panel
+     original del Rosco, que queda debajo. */
+  let cierre=null;
+  function cortarCierre(){if(!cierre)return;const c=cierre;cierre=null;c.capa.remove();document.removeEventListener("keydown",c.tecla);try{c.voz.pause();}catch(e){}}
+  function mostrarCierre(ok,errores,total,puntos){
+    cortarCierre();
+    const perfecto=total>0&&ok===total,gano=total>0&&ok>=total/2;
+    const capa=document.createElement("div");capa.className="grp-apertura grp-cierre grp-cierre-"+(gano?"victoria":"revancha");
+    capa.setAttribute("role","dialog");capa.setAttribute("aria-modal","true");capa.setAttribute("aria-label",gano?"¡Ganador!":"¡Revancha!");
+    const cuadro=document.createElement("div");cuadro.className="grp-ap-cuadro";
+    const fondo=document.createElement("img");fondo.className="grp-ap-estudio grp-cierre-fondo";fondo.alt="";
+    fondo.src=BASE+"escenas/"+(gano?"Giro_cierre_victoria_16x9.webp":"Giro_cierre_derrota_revancha_16x9.webp");
+    const caja=document.createElement("div");caja.className="grp-cierre-caja";caja.textContent=ok+" / "+total;
+    const detalle=document.createElement("div");detalle.className="grp-cierre-detalle";
+    detalle.textContent=(perfecto?"¡Rosco perfecto! · ":"")+"aciertos · "+errores+" errores · "+puntos+" puntos";
+    const cartel=document.createElement("div");cartel.className="grp-part-cartel grp-cierre-cartel";
+    const dice=document.createElement("p");
+    dice.textContent="🎙 Giro: "+(perfecto?"¡Espectacular! ¡Completaste el Rosco sin errores!":gano?"¡Muy buena partida! ¡Vamos por más!":"¡No pasa nada! Una nueva vuelta nos espera. ¡Vamos por la revancha!");
+    const ir=document.createElement("button");ir.type="button";ir.className="grp-boton grp-accion";ir.textContent="Ver resultados";
+    cartel.append(dice,ir);cuadro.append(fondo,caja,detalle,cartel);capa.appendChild(cuadro);document.body.appendChild(capa);
+    const voz=new Audio(BASE+"voz/"+(perfecto?"giro-rosco-perfecto.mp3":gano?"giro-rosco-buena.mp3":"giro-rosco-revancha.mp3"));
+    setTimeout(()=>{if(cierre&&cierre.capa===capa)voz.play().catch(()=>{});},500);
+    const terminar=()=>{if(!cierre||cierre.capa!==capa)return;capa.classList.add("grp-ap-fin");setTimeout(cortarCierre,650);};
+    const tecla=e=>{if(e.key==="Escape"||e.key==="Enter"){e.preventDefault();terminar();}};
+    cierre={capa,tecla,voz};ir.addEventListener("click",terminar);document.addEventListener("keydown",tecla);
+    ir.focus({preventScroll:true});return true;
+  }
   function mostrarFinal(resultado){
+    if(resultado&&resultado.estudio&&habilitado())return mostrarCierre(Number(resultado.aciertos)||0,Number(resultado.errores)||0,Number(resultado.total)||0,Number(resultado.puntos)||0);
     const ok=Number(resultado&&resultado.aciertos)||0;
     const total=Number(resultado&&resultado.total)||0;
     const puntos=Number(resultado&&resultado.puntos)||0;
@@ -306,5 +358,5 @@
       imagen:perfecto?"festeja":ok?"presenta":"revancha"
     });
   }
-  window.GiroRoscoPiloto={mostrarInicio,mostrarFinal,presentarSolo,presentarDuelo,posLetra,cerrar,habilitado};
+  window.GiroRoscoPiloto={mostrarInicio,mostrarFinal,presentarSolo,presentarDuelo,posLetra,reaccion,cerrar,habilitado};
 })();
