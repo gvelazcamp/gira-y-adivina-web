@@ -1824,3 +1824,7 @@ Fecha: 29/10/2026 — Giro: tercera frase grabada (Cesar Rodriguez, ElevenLabs):
 ```text
 Fecha: 29/10/2026 — Giro: cuarta y última frase grabada (Cesar Rodriguez): giro-rosco-revancha.mp3, "¡No pasa nada! Una nueva vuelta nos espera. ¡Vamos por la revancha!" (0 aciertos). Ahora las 4 frases de Giro en el Rosco suenan con voz de hombre grabada; la voz del celular queda solo de respaldo si el audio no carga. giro-rosco-piloto v11, rosco v41, sw v534.
 ```
+
+```text
+Fecha: 29/10/2026 — DECISIÓN de Gonzalo: NO quiere la boca de Giro que se mueve al hablar. No reactivar la animación de bocas (Giro/bocas y Giro/bocas-v2 quedan guardadas sin usar). Lo que sigue en carpeta sin usar y se puede proponer: parpadeo, escenas de plano medio / primer plano / cierre victoria / cierre revancha, pantalla gigante, estudios de 100 Rioplatenses, Duelo de Conocimiento y principal, y las 4 músicas elegidas en Pixabay (sin descargar).
+```
