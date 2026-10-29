@@ -39,7 +39,7 @@ const RoscoRioplatense=(()=>{
   const ARTE=n=>"assets/rosco/"+n+".webp",ico=n=>'<img class="rr-ico" src="'+ARTE(n)+'" alt="" draggable="false">';
   function iniciarMusicaJuego(){
     /* En el piloto de Giro no reproducir la música del Rosco para Gonzalo. */
-    if(pruebaG&&window.GIRO_ROSCO_PILOTO!==false)return;
+    if(pruebaG&&typeof esGonzalo==="function"&&esGonzalo()&&window.GIRO_ROSCO_PILOTO!==false)return;
     try{
       if(typeof sonidoPermitido==="function"&&!sonidoPermitido())return;
       if(!audioMusica){audioMusica=new Audio("assets/audio/rosco-rioplatense-musica.mp3");audioMusica.loop=true;audioMusica.volume=.28;}
@@ -457,7 +457,7 @@ const RoscoRioplatense=(()=>{
       aciertos+" aciertos · "+errores+" errores · "+faltan+" sin responder. "+puntos+" puntos"+(bonus?" ("+bonus+" por tiempo)":"")+". Récord: "+datos.mejor+"."+(avanzar?" ¡Desbloqueaste el nivel "+(nivel+1)+"!":" Acertá al menos "+Math.ceil(items.length*ROSCO_CONFIG.proporcionAvance)+" y terminá la vuelta para avanzar."),acciones,faltan?"tiempo":errores?"terminado":"perfecto");
     const revision=document.createElement("div");revision.innerHTML=tablaRespuestas(respuestas,null);
     $(".rr-panel").insertBefore(revision,$(".rr-panel button"));$(".rr-principal").focus({preventScroll:true});
-    if(pruebaG&&typeof window.GiroRoscoPiloto?.mostrarFinal==="function"){
+    if(pruebaG&&typeof esGonzalo==="function"&&esGonzalo()&&typeof window.GiroRoscoPiloto?.mostrarFinal==="function"){
       window.GiroRoscoPiloto.mostrarFinal({aciertos,total:items.length,puntos});
     }
   }
