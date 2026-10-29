@@ -1876,3 +1876,7 @@ Fecha: 29/10/2026 — Rosco show: la presentación del participante ("¡Hoy jueg
 ```text
 Fecha: 29/10/2026 — Rosco show: en el video de Gonzalo (Redmi) el cartel "Jugar" se transparentaba en el primer instante de la apertura: la capa negra (.grp-apertura) entraba con fundido desde transparente. Ahora el fondo negro aparece entero de una y lo que entra con fundido es el contenido (.grp-ap-cuadro). Vale también para la presentación de participantes y el cierre. giro-rosco-piloto.css v15, rosco v53, sw v546.
 ```
+
+```text
+Fecha: 29/10/2026 — Rosco show: llegó la voz de Giro para la presentación del participante (Gonzalo, ElevenLabs, Cesar Rodriguez, 7,3 s): voz/giro-rosco-participante.mp3 ("¡Y ahora, un fuerte aplauso para nuestro participante! Veinticuatro letras, una sola vuelta. ¿Podrá completar el Rosco?"). Suena a 1,5 s de abrir la escena con la música más baja. Falta la de duelo (voz/giro-rosco-duelo.mp3). sw v547.
+```
