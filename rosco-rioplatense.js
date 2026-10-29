@@ -28,7 +28,7 @@ const RoscoRioplatense=(()=>{
       const activar=boton.dataset.voz==="si";
       cerrarConsultaVozG();vozLeyendoG=false;ultimo=performance.now();
       if(!raiz||fase!=="resolver"||document.hidden)return;
-      if(activar){alternarVozG();if(vozG)leerPistaG();}
+      if(activar)alternarVozG();
       else if(typeof hablar==="function")hablar(items[actual].definicion,audioMusica);
     });
     raiz.appendChild(capa);avisoVozG=capa;
@@ -156,53 +156,68 @@ const RoscoRioplatense=(()=>{
     detenerVoz();liberarMicrofonoG();actualizarEntradaG();
     mostrarEstadoVozG("Micrófono apagado.");
   }
+
+  /* Como Duelo: el acierto se acepta incluso en resultados parciales.
+     PASAPALABRA exige resultado final para evitar pases por ruido. */
+  function procesarResultadoVozG(e){
+    if(!vozG||vozLeyendoG||fase!=="resolver"||actual<0)return;
+    const resultados=e.results||[];
+    for(let i=Math.max(0,e.resultIndex||0);i<resultados.length;i++){
+      const resultado=resultados[i];if(!resultado)continue;
+      const opciones=Array.from(resultado).map(x=>String(x.transcript||"").trim().replace(/[¿¡!?,.;:]+$/g,"")).filter(Boolean);
+      if(!opciones.length)continue;
+      const pasa=opciones.some(t=>["PASAPALABRA","PASAR","PASO"].includes(normalizar(t)));
+      if(pasa){
+        mostrarEstadoVozG(resultado.isFinal?"Pasapalabra reconocido":"Oí «Pasapalabra» · confirmando…");
+        if(resultado.isFinal){vozSilenciosG=0;pasar();return;}
+        continue;
+      }
+      const correcta=opciones.find(t=>vale(items[actual],normalizar(t)));
+      if(correcta){
+        vozSilenciosG=0;$("#rrEntrada").value=correcta.slice(0,60);
+        enviar();return;
+      }
+      if(resultado.isFinal){
+        vozSilenciosG=0;$("#rrEntrada").value=opciones[0].slice(0,60);
+        enviar();return;
+      }
+      mostrarEstadoVozG("Oí «"+opciones[0].slice(0,45)+"» · seguí hablando");
+    }
+  }
   function arrancarEscuchaG(){
     if(!pruebaG||!vozG||vozLeyendoG||fase!=="resolver"||document.hidden||escuchando)return;
     const Recon=window.SpeechRecognition||window.webkitSpeechRecognition;
     if(!Recon){pararVozG();mensaje("El navegador no permite reconocer voz. Probá abrir girayadivina.com desde Chrome.");return;}
     const r=new Recon();reconocimiento=r;escuchando=true;
-    r.lang="es-UY";r.continuous=true;r.interimResults=false;r.maxAlternatives=4;
-    /* El navegador puede terminar sesiones continuas por inactividad.
-       La captura permanece abierta mientras el modo voz esté activo. */
+    r.lang="es-UY";r.continuous=true;r.interimResults=true;r.maxAlternatives=5;
     let inicioIntento=performance.now();
     detenerMusicaJuego();
-    mostrarEstadoVozG("Escuchando · Decí la palabra o Pasapalabra");
-    r.onresult=e=>{
-      if(!vozG||reconocimiento!==r||fase!=="resolver"||actual<0)return;
-      const resultado=e.results?.[e.resultIndex]||e.results?.[e.results.length-1];
-      if(!resultado||!resultado.isFinal)return;
-      const opciones=Array.from(resultado).map(x=>String(x.transcript||"").trim().replace(/[¿¡!?,.;:]+$/g,"")).filter(Boolean);
-      if(!opciones.length)return;
-      const pasa=opciones.some(t=>["PASAPALABRA","PASAR","PASO"].includes(normalizar(t)));
-      if(pasa){vozSilenciosG=0;pasar();return;}
-      vozSilenciosG=0;
-      const reconocida=opciones.find(t=>vale(items[actual],normalizar(t)))||opciones[0];
-      $("#rrEntrada").value=reconocida.slice(0,60);
-      enviar();
-    };
+    mostrarEstadoVozG("Conectando micrófono…");
+    r.onstart=()=>{if(reconocimiento===r)mostrarEstadoVozG("Micrófono conectado · preparando audio…");};
+    r.onaudiostart=()=>{if(reconocimiento===r)mostrarEstadoVozG("Escuchando · Decí tu respuesta o Pasapalabra");};
+    r.onresult=e=>{if(reconocimiento===r)procesarResultadoVozG(e);};
     r.onerror=e=>{
       if(reconocimiento!==r)return;
       const error=String(e.error||"");
       if(["not-allowed","service-not-allowed","audio-capture","language-not-supported"].includes(error)){
-        pararVozG();mensaje("No se pudo usar el micrófono ("+error+"). Revisá el permiso de Chrome o de la app.");return;
+        pararVozG();mensaje("No se pudo usar el micrófono ("+error+"). Revisá el permiso del navegador y si otra app lo está usando.");return;
       }
-      if(error==="network")mostrarEstadoVozG("El reconocimiento necesita conexión. Reintentando…");
-      if(error==="no-speech")mostrarEstadoVozG("Sin respuesta · Mantengo activo el modo voz.");
+      if(error==="network")mostrarEstadoVozG("Sin conexión para reconocer voz · reintentando…");
+      else if(error==="no-speech")mostrarEstadoVozG("No se escuchó voz · vuelvo a escuchar…");
+      else if(error!=="aborted")mostrarEstadoVozG("Micrófono interrumpido · reintentando…");
     };
     r.onend=()=>{
       if(reconocimiento!==r)return;
       reconocimiento=null;escuchando=false;
       if(vozG&&!vozLeyendoG&&fase==="resolver"&&!document.hidden){
-        /* El reintento anterior escalaba hasta 5 s después de estar en silencio.
-           Reabrir rápido tras una sesión normal; frenar un bucle de errores
-           inmediatos para evitar avisos repetidos del micrófono de Android. */
         const duro=performance.now()-inicioIntento;
         vozSilenciosG=duro<1200?Math.min(vozSilenciosG+1,3):0;
-        const pausa=vozSilenciosG?650+vozSilenciosG*350:300;
+        const pausa=vozSilenciosG?500+vozSilenciosG*350:450;
         clearTimeout(vozTimerG);vozTimerG=setTimeout(arrancarEscuchaG,pausa);
       }
     };
-    try{r.start();inicioIntento=performance.now();}catch(err){reconocimiento=null;escuchando=false;pararVozG();mensaje("No se pudo iniciar el micrófono. Revisá los permisos del juego.");}
+    try{r.start();inicioIntento=performance.now();}
+    catch(err){reconocimiento=null;escuchando=false;mostrarEstadoVozG("El micrófono no inició · reintentando…");clearTimeout(vozTimerG);vozTimerG=setTimeout(arrancarEscuchaG,950);}
   }
   function leerPistaG(){
     if(!pruebaG||!vozG||fase!=="resolver"||actual<0)return;
@@ -221,39 +236,27 @@ const RoscoRioplatense=(()=>{
       u.onend=terminar;u.onerror=terminar;
       speechSynthesis.speak(u);
       clearTimeout(vozTimerG);
-      vozTimerG=setTimeout(()=>{if(vozPistaG===u){try{speechSynthesis.cancel();}catch(e){}terminar();}},10000);
+      vozTimerG=setTimeout(()=>{if(vozPistaG===u){try{speechSynthesis.cancel();}catch(e){}terminar();}},16000);
     }catch(err){vozPistaG=null;vozLeyendoG=false;arrancarEscuchaG();}
   }
+
   function alternarVozG(){
     if(!pruebaG)return;
     if(vozG){pararVozG();return;}
     if(fase!=="resolver")return;
     if(!window.SpeechRecognition&&!window.webkitSpeechRecognition){
       mostrarEstadoVozG("Este navegador no admite respuestas habladas.");
-      mensaje("Para probar voz usá Chrome en Android.");
-      return;
+      mensaje("Para probar voz usá Chrome en Android.");return;
     }
-    vozG=true;vozSilenciosG=0;const sesion=++vozGeneracionG;
-    actualizarEntradaG();mostrarEstadoVozG("Solicitando micrófono…");
-    /* Una sola autorización al tocar Hablar y captura mantenida durante el modo.
-       Chrome puede reiniciar el reconocimiento sin soltar el micrófono físico. */
-    if(navigator.mediaDevices?.getUserMedia){
-      navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})
-        .then(stream=>{
-          if(!vozG||sesion!==vozGeneracionG||document.hidden||!raiz){
-            for(const t of stream.getTracks())t.stop();return;
-          }
-          vozStreamG=stream;arrancarEscuchaG();
-        })
-        .catch(error=>{
-          if(!vozG||sesion!==vozGeneracionG)return;
-          if(error?.name==="NotAllowedError"||error?.name==="PermissionDeniedError"){
-            pararVozG();mensaje("Permití el micrófono en Chrome o en la app para responder hablando.");return;
-          }
-          /* Web Speech puede funcionar sin getUserMedia en ciertos navegadores. */
-          arrancarEscuchaG();
-        });
-    }else arrancarEscuchaG();
+    if(!window.isSecureContext){
+      mensaje("El micrófono necesita HTTPS. Abrí girayadivina.com en Chrome.");return;
+    }
+    vozG=true;vozSilenciosG=0;++vozGeneracionG;
+    actualizarEntradaG();
+    /* Evitar una segunda captura getUserMedia: Duelo funciona usando
+       SpeechRecognition directamente, incluso al duplicar pantalla. */
+    mostrarEstadoVozG("Voz activada · leyendo la pista…");
+    leerPistaG();
   }
   /* El modo Hablar funciona tanto vertical como horizontal.
      Girar el teléfono no debe apagar una captura de audio activa. */
@@ -486,7 +489,21 @@ const RoscoRioplatense=(()=>{
     }else if(fase==="respuesta"){espera-=dt;if(espera<=0)siguiente();}
     hud();
   }
-  function visibilidad(){if(document.hidden){detenerMusicaJuego();if(pruebaG&&vozG)pararVozG();else if(pruebaG)detenerVoz();}else iniciarMusicaJuego();ultimo=performance.now();}
+  function visibilidad(){
+    if(document.hidden){
+      detenerMusicaJuego();
+      if(pruebaG&&vozG){
+        clearTimeout(vozTimerG);vozTimerG=null;
+        if(vozPistaG){try{speechSynthesis.cancel();}catch(e){}vozPistaG=null;vozLeyendoG=false;}
+        detenerVoz();
+        mostrarEstadoVozG("Micrófono en pausa · se reanuda al volver.");
+      }else if(pruebaG)detenerVoz();
+    }else if(pruebaG&&vozG&&fase==="resolver"){
+      clearTimeout(vozTimerG);vozTimerG=setTimeout(arrancarEscuchaG,450);
+      mostrarEstadoVozG("Reconectando micrófono…");
+    }else iniciarMusicaJuego();
+    ultimo=performance.now();
+  }
   /* El módulo del estudio se carga solamente si el Rosco lo abre Gonzalo.
      Sin depender de él para iniciar ni terminar una partida normal. */
   function cargarEscenaGiroG(referencia){
