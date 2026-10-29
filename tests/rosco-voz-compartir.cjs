@@ -19,7 +19,10 @@ function simulate(words,final,expected,sharing){
    pasar:()=>events.push("paso"),enviar:()=>events.push("respuesta:"+input.value)
  };
  parse(env,{resultIndex:0,results:[{0:{transcript:words},length:1,isFinal:final}]});
- assert(events.includes(expected),(sharing?"Compartiendo":"Directo")+": "+words+" => "+events);
+ if(expected===""){
+   assert(!events.some(e=>e.startsWith("respuesta:")||e==="paso"),
+     (sharing?"Compartiendo":"Directo")+": el eco de la pista no debe procesarse => "+events);
+ }else assert(events.includes(expected),(sharing?"Compartiendo":"Directo")+": "+words+" => "+events);
 }
 for(const sharing of [false,true]){
  simulate("manzana",false,"respuesta:MANZANA",sharing);
