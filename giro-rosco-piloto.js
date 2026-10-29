@@ -93,9 +93,33 @@
     try{if(typeof perfil!=="undefined"&&perfil)return String(perfil.nombre||"Vos").trim().slice(0,14)||"Vos";}catch(e){}
     return "Vos";
   }
+  /* Personaje de cada jugador en el show (hombre o mujer): lo elige la primera vez
+     y queda guardado en gya_giro_personaje (se puede cambiar desde la presentación).
+     El perfil no dice si es hombre o mujer, por eso se pregunta. */
+  function miPersonaje(){try{const v=localStorage.getItem("gya_giro_personaje");return v==="mujer"||v==="hombre"?v:"";}catch(e){return "";}}
+  let eleccion=null;
+  function cortarEleccion(){if(!eleccion)return;const e=eleccion;eleccion=null;e.capa.remove();}
+  function elegirPersonaje(despues){
+    cortarEleccion();
+    const capa=document.createElement("div");capa.className="grp-apertura grp-elegir";
+    capa.setAttribute("role","dialog");capa.setAttribute("aria-modal","true");capa.setAttribute("aria-label","Elegí tu personaje");
+    const caja=document.createElement("div");caja.className="grp-elegir-caja";
+    const h=document.createElement("h2");h.textContent="¿Cómo querés aparecer en el show?";
+    const p=document.createElement("p");p.textContent="Elegí tu personaje para el atril. Lo podés cambiar después.";
+    const fila=document.createElement("div");fila.className="grp-elegir-fila";
+    [["hombre","Hombre"],["mujer","Mujer"]].forEach(([id,txt])=>{
+      const b=document.createElement("button");b.type="button";b.className="grp-elegir-op";
+      const im=document.createElement("img");im.src=PERSONAJES[id];im.alt="";
+      const s=document.createElement("span");s.textContent=txt;b.append(im,s);
+      b.addEventListener("click",()=>{try{localStorage.setItem("gya_giro_personaje",id);}catch(e){}
+        despues();cortarEleccion();});
+      fila.appendChild(b);});
+    caja.append(h,p,fila);capa.appendChild(caja);document.body.appendChild(capa);
+    eleccion={capa};fila.querySelector("button").focus({preventScroll:true});
+  }
   function mostrarParticipantes(modo,rival,siguiente){
     cortarParticipantes();
-    const nombre=miNombre(),est=ESTUDIOS[modo]||ESTUDIOS.solo;
+    const nombre=miNombre(),est=ESTUDIOS[modo]||ESTUDIOS.solo,yo=miPersonaje()||"hombre",otro=yo==="mujer"?"hombre":"mujer";
     rival=String(rival||"").trim().slice(0,14);
     const capa=document.createElement("div");capa.className="grp-apertura grp-part grp-part-"+(modo==="duelo"?"duelo":"solo");
     capa.setAttribute("role","dialog");capa.setAttribute("aria-modal","true");capa.setAttribute("aria-label","Presentación de los participantes");
@@ -113,16 +137,21 @@
     };
     const dice=document.createElement("p");
     if(modo==="duelo"){
-      jugador("izq",PERSONAJES.hombre,nombre,1.9);
-      jugador("der",PERSONAJES.mujer,rival||"Rival",2.7);
+      jugador("izq",PERSONAJES[yo],nombre,1.9);
+      jugador("der",PERSONAJES[otro],rival||"Rival",2.7);
       dice.textContent="🎙 Giro: ¡Hoy se enfrentan "+nombre+" y "+(rival||"su rival")+"! 24 letras, una vuelta. ¿Quién gana?";
     }else{
-      jugador("centro",PERSONAJES.hombre,nombre,1.9);
+      jugador("centro",PERSONAJES[yo],nombre,1.9);
       dice.textContent="🎙 Giro: ¡Hoy juega "+nombre+"! 24 letras, una vuelta. ¿Podrá completar el Rosco?";
     }
     const cartel=document.createElement("div");cartel.className="grp-part-cartel";
     const ir=document.createElement("button");ir.type="button";ir.className="grp-boton grp-accion";ir.textContent="¡A jugar!";
     cartel.append(dice,ir);cuadro.appendChild(cartel);
+    if(modo!=="duelo"){
+      const cambiar=document.createElement("button");cambiar.type="button";cambiar.className="grp-part-cambiar";cambiar.textContent="👤 Cambiar personaje";
+      cambiar.addEventListener("click",()=>elegirPersonaje(()=>mostrarParticipantes(modo,rival,siguiente)));
+      cuadro.appendChild(cambiar);
+    }
     capa.appendChild(cuadro);document.body.appendChild(capa);
     /* La partida se arma ATRÁS y recién después se desvanece la presentación:
        así no se ve la pantalla del Rosco vacía en el medio. */
@@ -136,7 +165,8 @@
        presentando al participante (voz/giro-rosco-participante.mp3); mientras
        Giro habla, la música baja. */
     const musica=new Audio(BASE+"voz/giro-participantes-musica.mp3");musica.loop=true;musica.volume=.6;
-    const voz=new Audio(BASE+"voz/giro-rosco-"+(modo==="duelo"?"duelo":"participante")+".mp3");
+    /* Solo: "nuestro participante" o "nuestra participante" según el personaje. */
+    const voz=new Audio(BASE+"voz/giro-rosco-"+(modo==="duelo"?"duelo":yo==="mujer"?"participante-mujer":"participante")+".mp3");
     voz.addEventListener("play",()=>{musica.volume=.22;});
     const subir=()=>{musica.volume=.6;};voz.addEventListener("ended",subir);voz.addEventListener("error",subir);
     musica.play().catch(()=>{});
@@ -179,10 +209,14 @@
     try{if(reacAudio)reacAudio.pause();reacAudio=new Audio(BASE+"voz/reacciones/giro-"+frase+".mp3");reacAudio.play().catch(()=>{});}catch(e){}
   }
   /* Las llama el Rosco al tocar Jugar (solo) — siguiente() arranca la partida. */
-  function presentarSolo(siguiente){if(!habilitado())return false;return mostrarParticipantes("solo","",siguiente);}
+  function presentarSolo(siguiente){
+    if(!habilitado())return false;
+    if(!miPersonaje()){elegirPersonaje(()=>mostrarParticipantes("solo","",siguiente));return true;}
+    return mostrarParticipantes("solo","",siguiente);
+  }
   function presentarDuelo(rival,siguiente){if(!habilitado())return false;return mostrarParticipantes("duelo",rival,siguiente);}
   function limpiar(){
-    cortarApertura();cortarCierre();
+    cortarApertura();cortarCierre();cortarEleccion();
     cortarParticipantes();
     clearInterval(intervalo);intervalo=null;
     if(salidaTimer!==null){clearTimeout(salidaTimer);salidaTimer=null;}

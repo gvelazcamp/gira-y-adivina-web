@@ -165,3 +165,15 @@ body .rr-game.rr-estudio .grp-reac-atril{position:absolute;left:0;bottom:0;width
 .grp-cierre-detalle{position:absolute;left:68%;top:62.5%;width:29.5%;text-align:center;color:#e8eeff;
   font:700 clamp(8px,1.9vmin,20px)/1.25 system-ui,sans-serif;opacity:0;animation:grpApNegro .5s ease 1s forwards}
 .grp-cierre .grp-cierre-cartel{animation-delay:1.2s}
+/* Elegir personaje (hombre / mujer) para el show. */
+.grp-elegir{z-index:2147483002;padding:16px}
+.grp-elegir-caja{width:min(560px,100%);text-align:center;color:#fff;font-family:system-ui,sans-serif;animation:grpApNegro .4s ease both}
+.grp-elegir-caja h2{margin:0 0 6px;font:900 clamp(18px,4.6vmin,30px)/1.15 "Archivo Black",system-ui,sans-serif;color:#FFD23F}
+.grp-elegir-caja p{margin:0 0 16px;opacity:.85;font-size:clamp(13px,2.6vmin,16px)}
+.grp-elegir-fila{display:flex;gap:14px;justify-content:center}
+.grp-elegir-op{flex:1 1 0;max-width:230px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 10px 14px;cursor:pointer;
+  background:linear-gradient(#0b2a8a,#071948);border:2px solid #dba73a;border-radius:16px;color:#fff;font:800 16px system-ui,sans-serif;box-shadow:0 0 14px #ffb70044}
+.grp-elegir-op img{width:100%;max-height:min(38vh,220px);object-fit:contain}
+.grp-elegir-op:focus-visible,.grp-elegir-op:hover{outline:3px solid #FFD23F;outline-offset:2px}
+.grp-part-cambiar{position:absolute;top:2.5%;right:2%;z-index:2;border:1px solid #f9d26e;background:rgba(3,16,49,.75);color:#fff;
+  font:700 clamp(10px,2vmin,14px) system-ui,sans-serif;border-radius:999px;padding:.8vmin 1.6vmin;cursor:pointer;opacity:0;animation:grpApNegro .4s ease 3s forwards}
