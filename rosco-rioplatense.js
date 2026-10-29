@@ -563,12 +563,25 @@ const RoscoRioplatense=(()=>{
   }
   /* El módulo del estudio se carga solamente si el Rosco lo abre Gonzalo.
      Sin depender de él para iniciar ni terminar una partida normal. */
+  /* Cortina negra (solo Gonzalo): tapa el cartel de "Jugar" desde el primer
+     instante hasta que arranca la apertura del show, así lo último que se ve es
+     ese cartel y no aparece antes mientras carga lo de Giro. */
+  let cortinaTimerG=null;
+  function cortinaG(poner){
+    let c=document.getElementById("rrCortinaG");clearTimeout(cortinaTimerG);
+    if(!poner){c?.remove();return;}
+    if(!c){c=document.createElement("div");c.id="rrCortinaG";c.setAttribute("aria-hidden","true");
+      c.style.cssText="position:fixed;inset:0;z-index:2147482999;background:#000";document.body.appendChild(c);}
+    cortinaTimerG=setTimeout(()=>cortinaG(false),7000);
+  }
   function cargarEscenaGiroG(referencia){
     if(!pruebaG||!(typeof esGonzalo==="function"&&esGonzalo())||window.GIRO_ROSCO_PILOTO===false)return;
+    cortinaG(true);
     const activar=()=>{
       if(raiz===referencia&&raiz.isConnected&&fase==="inicio"&&typeof window.GiroRoscoPiloto?.mostrarInicio==="function"){
         window.GiroRoscoPiloto.mostrarInicio();
       }
+      cortinaG(false);
     };
     if(window.GiroRoscoPiloto){activar();return;}
     if(!document.querySelector('link[data-giro-rosco]')){
@@ -578,7 +591,7 @@ const RoscoRioplatense=(()=>{
     let script=document.querySelector('script[data-giro-rosco]');
     if(!script){
       script=document.createElement("script");script.src="giro-rosco-piloto.js?v=20";script.async=true;
-      script.dataset.giroRosco="1";script.addEventListener("load",activar,{once:true});
+      script.dataset.giroRosco="1";script.addEventListener("load",activar,{once:true});script.addEventListener("error",()=>cortinaG(false),{once:true});
       document.head.appendChild(script);
     }else script.addEventListener("load",activar,{once:true});
   }
@@ -616,6 +629,7 @@ const RoscoRioplatense=(()=>{
     cargarEscenaGiroG(raiz);
   }
   function salir(){
+    cortinaG(false);
     cerrarConsultaVozG();vozConsultadaG=false;
     if(window.GiroRoscoPiloto)window.GiroRoscoPiloto.cerrar();
     if(pruebaG)pararVozG();
