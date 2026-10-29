@@ -65,14 +65,14 @@
      - DUELO (para cuando se conecte): estudio con dos atriles
        (Giro_estudio_rosco_atriles_16x9.webp), el jugador y su rival.
      Los círculos del rosco vienen vacíos en la imagen y el juego escribe las 24
-     letras encima. Los personajes van ATRÁS de los atriles: encima se repite la
+     letras encima (centros medidos sobre el relleno azul de cada círculo). Los personajes van ATRÁS de los atriles: encima se repite la
      imagen del estudio recortada solo con el frente de cada atril. */
   const PERSONAJES={hombre:BASE+"participantes/participante_hombre.webp",mujer:BASE+"participantes/participante_mujer.webp"};
   const ESTUDIOS={
     solo:{img:BASE+"estudios/Giro_estudio_rosco_un_atril_16x9.webp",
-      circulos:[[48.56,7.86],[52.03,11.26],[55.74,12.96],[58.61,18.07],[60.65,24.65],[61.72,32.94],[62.68,40.17],[62.20,48.03],[60.89,56.32],[58.37,63.76],[55.26,66.95],[52.15,69.50],[48.68,70.14],[45.10,69.71],[41.51,67.59],[38.76,62.70],[36.60,56.96],[35.05,49.31],[34.93,40.81],[35.65,31.46],[36.24,24.65],[38.76,18.70],[41.27,13.60],[45.10,8.93]]},
+      circulos:[[48.55,9.38],[51.99,10.53],[55.21,13.45],[58.02,18.11],[60.07,24.46],[61.59,31.94],[62.13,40.18],[61.71,48.50],[60.30,56.09],[58.20,62.50],[55.44,66.61],[52.15,69.50],[48.68,70.14],[45.10,69.71],[41.75,66.97],[38.84,63.70],[36.59,57.15],[35.13,49.19],[34.65,40.49],[35.24,32.04],[36.76,24.61],[38.88,18.06],[41.77,13.33],[45.04,10.38]]},
     duelo:{img:BASE+"estudios/Giro_estudio_rosco_atriles_16x9.webp",
-      circulos:[[48.56,8.50],[52.51,9.35],[55.74,12.75],[58.73,17.00],[60.41,22.95],[62.20,29.54],[62.08,37.19],[61.84,44.85],[60.53,51.65],[58.49,57.39],[55.26,62.06],[51.91,65.04],[48.21,66.31],[44.38,65.25],[41.51,62.06],[38.16,57.39],[36.36,51.65],[34.69,44.63],[34.45,36.77],[34.81,29.54],[36.24,22.74],[39.00,17.00],[41.87,12.33],[45.10,9.78]]}
+      circulos:[[48.83,8.55],[52.34,9.59],[55.51,12.65],[58.30,16.93],[60.41,22.81],[61.91,29.60],[62.43,37.17],[61.95,44.55],[60.49,51.52],[58.40,57.49],[55.63,62.04],[52.24,65.07],[48.44,66.05],[44.58,65.07],[41.27,62.03],[38.44,57.56],[36.30,51.68],[34.84,44.71],[34.41,37.32],[35.00,29.66],[36.55,22.81],[38.77,16.89],[41.79,12.47],[45.18,9.41]]}
   };
   const LETRAS_ROSCO="ABCDEFGHIJKLMNOPQRSTUVYZ";
   let participantes=null;
