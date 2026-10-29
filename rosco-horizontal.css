@@ -497,3 +497,23 @@
   .rr-game .rr-voz-consulta p{margin-bottom:6px}
   .rr-game .rr-voz-consulta-acciones button{min-height:32px}
 }
+
+/* Margen de seguridad del teclado a la derecha al duplicar pantalla.
+   También vale con rotación manual; no altera el Rosco vertical. */
+@media (orientation:landscape) and (min-width:700px) and (max-width:1024px) and (max-height:600px){
+  body:not(.tvhost) .ext-shell.rr-abierta .rr-game #rrJuego:not([hidden]){
+    box-sizing:border-box;
+    padding-right:max(20px,env(safe-area-inset-right,0px));
+  }
+}
+/* En celulares horizontales bajos, conservar visible la cuarta fila
+   del teclado del Rosco sin afectar las teclas del modo vertical. */
+@media (orientation:landscape) and (min-width:700px) and (max-width:1024px) and (max-height:400px){
+  body:not(.tvhost) .rr-game.rr-gonzalo #rrJuego .rr-teclado-g{
+    gap:3px;
+    padding:5px;
+  }
+  body:not(.tvhost) .rr-game.rr-gonzalo #rrJuego .rr-tecla-g{
+    min-height:31px;
+  }
+}

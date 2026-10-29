@@ -23,9 +23,9 @@ assert(css.includes(".rr-game .rr-voz-consulta"),"El aviso de voz tiene estilo")
 assert(ext.includes('shell.classList.toggle("ext-tv-activo"'),"Marcador para mover extensiones solamente en TV");
 assert(extCss.includes(".ext-shell.ext-tv-activo .ext-wrap"),"Desplazar TV sin alterar celular");
 assert(index.includes("rosco-rioplatense.js?v=34"));
-assert(index.includes("rosco-horizontal.css?v=10"));
+assert(index.includes("rosco-horizontal.css?v=11"));
 assert(index.includes("extensiones.js?v=98"));
-assert(sw.includes("gya-cache-v517"));
+assert(sw.includes("gya-cache-v520"));
 const a=js.indexOf("  let vozConsultadaG=false,avisoVozG=null;");
 const b=js.indexOf("  /* Dibujos en assets/rosco/",a);
 assert(a>=0&&b>a,"Funciones reales de consulta encontradas");

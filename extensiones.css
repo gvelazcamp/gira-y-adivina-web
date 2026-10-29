@@ -1258,3 +1258,18 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
     max-height:100dvh;border-radius:0;
   }
 }
+
+/* Auditoría del margen derecho: solo los juegos con teclado propio
+   situado en la columna derecha (Palabra Secreta, Ahorcado y Tutti Frutti).
+   Rosco tiene su regla aislada en rosco-horizontal.css. */
+@media (orientation:landscape) and (min-width:600px) and (max-width:1024px) and (max-height:600px){
+  body:not(.tvhost) .ps-game .ps-play,
+  body:not(.tvhost) .ah-game{
+    box-sizing:border-box;
+    padding-right:max(20px,env(safe-area-inset-right,0px));
+  }
+  body:not(.tvhost) .tf .qns-pantalla.tf-teclado-propio>.tf-campo{
+    box-sizing:border-box;
+    padding-right:max(20px,env(safe-area-inset-right,0px))!important;
+  }
+}
