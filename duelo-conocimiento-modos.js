@@ -204,19 +204,54 @@ nextQuestion=async function(){
  if(mode==="online"&&online&&online.host)sendSnapshot();
  if(mode!=="bot"&&answerSel.value==="voice"&&canAnswer()&&!micWanted&&!micBlocked)startMic();
 };
+/* El HTML base programa un avance fijo de 2.8 s al acertar y de 1.9 s
+   al pasar. Solo en modo BOT reemplazamos esos dos temporizadores:
+   la locución debe terminar y luego la solución debe poder leerse.
+   No modificamos puntos, tiempo de respuesta ni penalizaciones. */
+function avanzarDespuesDeRespuestaBot(preguntaActual,jugadorActual,espera){
+ clearTimeout(transitionTimeout);
+ transitionTimeout=setTimeout(()=>{
+   if(mode!=="bot"||phase!=="transition"||question!==preguntaActual||active!==jugadorActual)return;
+   active=1-active;turn++;nextQuestion();
+ },espera);
+}
 const baseRight=rightAnswer;
 rightAnswer=function(value){
  clearTimeout(botHandle);if(mode==="online"&&online&&!online.host){applyAnswer(value);return;}
+ const eraBot=mode==="bot"&&active===1&&phase==="playing"&&question&&!question.answered;
+ const preguntaActual=question,jugadorActual=active;
  baseRight(value);
- if(mode==="bot"&&active===1&&phase==="transition")speak(`${players[1].name} responde: ${getCorrectAnswer(question)}.`,2400);
+ if(eraBot&&phase==="transition"&&question===preguntaActual){
+   clearTimeout(transitionTimeout);transitionTimeout=0;
+   const solucion=getCorrectAnswer(preguntaActual);
+   $dc("feedback").className="feedback success";
+   $dc("feedback").textContent=`✓ ${players[1].name} respondió: ${solucion}`;
+   setMicLabel("RESPUESTA DEL BOT",solucion+" · La siguiente pregunta empieza después de escuchar la respuesta.",false);
+   // No cortar una frase por un cronómetro fijo. El tiempo de lectura
+   // empieza después del fin de voz (o después del límite de seguridad).
+   speak(`${players[1].name} responde: ${solucion}.`,14000).then(()=>{
+     if(mode!=="bot"||phase!=="transition"||question!==preguntaActual||active!==jugadorActual)return;
+     avanzarDespuesDeRespuestaBot(preguntaActual,jugadorActual,3500);
+   });
+ }
  if(mode==="bot"&&active===0&&phase==="transition")stopMic();
  if(mode==="online"&&online&&online.host)sendSnapshot();
 };
 const basePass=passTurn;
 passTurn=function(){
  if(mode==="online"&&online&&!online.host){sendOnline("pass",{});$dc("feedback").textContent="Paso enviado. Esperando el siguiente turno…";stopMic();return;}
+ const mostrarSolucion=mode==="bot"&&phase==="playing"&&question&&!question.answered;
+ const preguntaActual=question,jugadorActual=active,nombre=players[active]?.name;
  if(mode==="bot")stopMic();
  basePass();
+ if(mostrarSolucion&&phase==="transition"&&question===preguntaActual){
+   clearTimeout(transitionTimeout);transitionTimeout=0;
+   const solucion=getCorrectAnswer(preguntaActual);
+   $dc("feedback").className="feedback fail";
+   $dc("feedback").textContent=`Paso de ${nombre}: 1 error. Respuesta correcta: ${solucion}.`;
+   setMicLabel("RESPUESTA CORRECTA",solucion+" · La siguiente pregunta aparece en unos segundos.",false);
+   avanzarDespuesDeRespuestaBot(preguntaActual,jugadorActual,4500);
+ }
  if(mode==="online"&&online&&online.host)sendSnapshot();
 };
 const baseFinish=finish;

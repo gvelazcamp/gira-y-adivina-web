@@ -74,7 +74,7 @@ const DueloConocimiento={
     const carga=document.createElement("div");carga.className="dc-cargando";carga.setAttribute("role","status");
     carga.innerHTML='<img src="logo-duelo-conocimiento.webp" alt=""><b>Preparando Duelo de Conocimiento…</b><i aria-hidden="true"></i><small>En un momento empieza el desafío</small><button type="button" hidden>Reintentar</button>';
     const frame=document.createElement("iframe");
-    frame.src="duelo-conocimiento.html?v=9";
+    frame.src="duelo-conocimiento.html?v=10";
     frame.title="Duelo de Conocimiento";
     frame.allow="microphone; autoplay";
     frame.setAttribute("allowfullscreen","");
