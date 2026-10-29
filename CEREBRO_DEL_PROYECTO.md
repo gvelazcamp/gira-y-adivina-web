@@ -1816,3 +1816,7 @@ Fecha: 29/10/2026 — El Rosco con voz de hombre (Gonzalo: "todo tiene audio fem
 ```text
 Fecha: 29/10/2026 — Giro (piloto del Rosco, solo Gonzalo) habla con voz de hombre GRABADA. Gonzalo: "le doy a Escuchar a Giro y sale mujer": la voz del celular (Web Speech) en su Android solo ofrece voz de mujer, así que el juego no puede elegir una de hombre. Solución: frases grabadas en ElevenLabs con la voz "Cesar Rodriguez – Young and Energetic" (la eligió y generó Gonzalo): presentacion-y-locucion-extensiones/Giro/voz/giro-rosco-inicio.mp3 (bienvenida, 8,9 s) y giro-rosco-perfecto.mp3 ("¡Espectacular! ¡Completaste el Rosco sin errores!", 3,5 s). "Escuchar a Giro" reproduce la grabación; si falla, vuelve a la voz del celular. También se cambió "usá Pasapalabra" por "usá Pasar" en la presentación (regla: no decir Pasapalabra). PENDIENTE: grabar con la misma voz "¡Muy buena partida! ¡Vamos por más!" (hoy dice además "Lograste N aciertos" con la voz del celular) y "¡No pasa nada! Una nueva vuelta nos espera. ¡Vamos por la revancha!". giro-rosco-piloto v9, rosco v39, sw v532.
 ```
+
+```text
+Fecha: 29/10/2026 — Giro: tercera frase grabada (Cesar Rodriguez, ElevenLabs): giro-rosco-buena.mp3, "¡Muy buena partida! ¡Vamos por más!" (2,6 s), suena al terminar el Rosco con aciertos pero no perfecto. Queda con voz del celular solo la de revancha (0 aciertos): falta grabar "¡No pasa nada! Una nueva vuelta nos espera. ¡Vamos por la revancha!". giro-rosco-piloto v10, rosco v40, sw v533.
+```
