@@ -229,7 +229,7 @@ rightAnswer=function(value){
    setMicLabel("RESPUESTA DEL BOT",solucion+" · La siguiente pregunta empieza después de escuchar la respuesta.",false);
    // No cortar una frase por un cronómetro fijo. El tiempo de lectura
    // empieza después del fin de voz (o después del límite de seguridad).
-   speak(`${players[1].name} responde: ${solucion}.`,14000).then(()=>{
+   speak(`${players[1].name} responde: ${solucion}.`,30000).then(()=>{
      if(mode!=="bot"||phase!=="transition"||question!==preguntaActual||active!==jugadorActual)return;
      avanzarDespuesDeRespuestaBot(preguntaActual,jugadorActual,3500);
    });
@@ -250,7 +250,11 @@ passTurn=function(){
    $dc("feedback").className="feedback fail";
    $dc("feedback").textContent=`Paso de ${nombre}: 1 error. Respuesta correcta: ${solucion}.`;
    setMicLabel("RESPUESTA CORRECTA",solucion+" · La siguiente pregunta aparece en unos segundos.",false);
-   avanzarDespuesDeRespuestaBot(preguntaActual,jugadorActual,4500);
+   // Giro dice la respuesta correcta completa antes de cambiar de turno.
+   speak(`Paso de ${nombre}. La respuesta correcta era: ${solucion}.`,30000).then(()=>{
+     if(mode!=="bot"||phase!=="transition"||question!==preguntaActual||active!==jugadorActual)return;
+     avanzarDespuesDeRespuestaBot(preguntaActual,jugadorActual,4500);
+   });
  }
  if(mode==="online"&&online&&online.host)sendSnapshot();
 };
