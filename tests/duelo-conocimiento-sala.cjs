@@ -31,7 +31,19 @@ const server=http.createServer((req,res)=>{
    if(url.startsWith('http://127.0.0.1:'))return route.continue();
    return route.fulfill({status:200,body:''});
   });
-  await context.addInitScript(()=>{Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async text=>{window.__copied=text}}})});
+  await context.addInitScript(()=>{
+   Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async text=>{window.__copied=text}}});
+   window.__spoken=[];window.__mics=[];
+   window.SpeechSynthesisUtterance=class{constructor(text){this.text=text}};
+   Object.defineProperty(window,'speechSynthesis',{configurable:true,value:{speak(utterance){window.__spoken.push(utterance.text);setTimeout(()=>utterance.onend?.(),30)},cancel(){}}});
+   class FakeRecognition{
+    constructor(){this.running=false;window.__mics.push(this)}
+    start(){this.running=true;setTimeout(()=>{if(this.running)this.onstart?.()},20);setTimeout(()=>{if(this.running)this.onaudiostart?.()},50)}
+    abort(){this.running=false;this.onend?.()}
+    emit(value){this.onresult?.({resultIndex:0,results:[{0:{transcript:String(value)},length:1,isFinal:true}]})}
+   }
+   window.SpeechRecognition=FakeRecognition;window.webkitSpeechRecognition=FakeRecognition;
+  });
   const base='http://127.0.0.1:'+server.address().port;
   const host=await context.newPage();
   await host.goto(base+'/duelo-conocimiento.html',{waitUntil:'load'});
@@ -65,7 +77,12 @@ const server=http.createServer((req,res)=>{
   assert.equal(await host.locator('#dc-room-start').isEnabled(),true);
   assert.equal(await host.locator('#setup-overlay').evaluate(el=>el.classList.contains('hidden')),false,'la sala no arranca sola');
   await host.locator('#dc-room-start').click();
-  await host.waitForFunction(()=>phase==='playing',null,{timeout:10000});
+  try{await host.waitForFunction(()=>phase==='playing',null,{timeout:10000})}
+  catch(error){
+   console.error('Host',await host.evaluate(()=>({phase,turn,feedback:document.querySelector('#feedback').textContent,mic:document.querySelector('#mic-main').textContent})));
+   console.error('Guest',await guest.evaluate(()=>({phase,turn,feedback:document.querySelector('#feedback').textContent,mic:document.querySelector('#mic-main').textContent})));
+   throw error;
+  }
   const first=await host.evaluate(()=>active);
   await guest.waitForFunction(index=>phase==='playing'&&active===index,first,{timeout:10000});
   const firstPage=first===0?host:guest,otherPage=first===0?guest:host;
@@ -81,6 +98,50 @@ const server=http.createServer((req,res)=>{
   await guest.waitForFunction(()=>players[0].score+players[1].score===2,null,{timeout:10000});
   assert.deepEqual(await host.evaluate(()=>players.map(player=>player.score)),[1,1]);
   assert.deepEqual(await guest.evaluate(()=>players.map(player=>player.score)),[1,1]);
+
+  const voiceHost=await context.newPage();
+  await voiceHost.goto(base+'/duelo-conocimiento.html',{waitUntil:'load'});
+  await voiceHost.locator('#input0').fill('Gonzalo');
+  await voiceHost.locator('[data-mode=online]').click();
+  await voiceHost.locator('input[name=category]').evaluateAll(inputs=>inputs.forEach(input=>input.checked=input.value==='matematica'));
+  await voiceHost.locator('#setup-form button[type=submit]').click();
+  const voiceCode=await voiceHost.locator('#dc-room-code-display').textContent();
+  const voiceGuest=await context.newPage();
+  await voiceGuest.goto(base+'/duelo-conocimiento.html?sala='+voiceCode,{waitUntil:'load'});
+  await voiceGuest.locator('#input0').fill('Martina');
+  await voiceGuest.locator('#setup-form button[type=submit]').click();
+  await voiceHost.locator('#dc-room-start').waitFor();
+  await voiceHost.waitForFunction(()=>!document.querySelector('#dc-room-start').disabled,null,{timeout:10000});
+  await voiceHost.locator('#dc-room-start').click();
+  await voiceHost.waitForFunction(()=>phase==='announcing',null,{timeout:10000});
+  await voiceHost.waitForTimeout(250);
+  assert.equal(await voiceHost.evaluate(()=>players[active].ms),40000,'ambos relojes esperan la pregunta hablada');
+  await voiceHost.waitForFunction(()=>phase==='playing',null,{timeout:10000});
+  const voiceFirst=await voiceHost.evaluate(()=>active);
+  await voiceGuest.waitForFunction(index=>phase==='playing'&&active===index,voiceFirst,{timeout:10000});
+  assert((await voiceHost.evaluate(()=>window.__spoken)).some(text=>text.includes('¿Cuánto da')),'el anfitrión oye la pregunta');
+  assert((await voiceGuest.evaluate(()=>window.__spoken)).some(text=>text.includes('¿Cuánto da')),'el invitado oye la pregunta');
+  const voiceFirstPage=voiceFirst===0?voiceHost:voiceGuest,voiceNextPage=voiceFirst===0?voiceGuest:voiceHost;
+  await voiceFirstPage.evaluate(()=>window.__mics.at(-1).emit(question.answer));
+  await voiceHost.waitForFunction(index=>players[index].score===1,voiceFirst,{timeout:10000});
+  await voiceHost.waitForFunction(()=>phase==='transition',null,{timeout:1000});
+  const pausedClock=await voiceHost.evaluate(index=>players[index].ms,voiceFirst);
+  await voiceHost.waitForTimeout(250);
+  assert.equal(await voiceHost.evaluate(index=>players[index].ms,voiceFirst),pausedClock,'el reloj se pausa al responder');
+  await voiceHost.waitForFunction(index=>phase==='playing'&&active===1-index,voiceFirst,{timeout:10000});
+  await voiceGuest.waitForFunction(index=>phase==='playing'&&active===1-index,voiceFirst,{timeout:10000});
+  assert((await voiceHost.evaluate(()=>window.__spoken)).some(text=>text.includes('responde:')),'el anfitrión oye el resultado');
+  assert((await voiceGuest.evaluate(()=>window.__spoken)).some(text=>text.includes('responde:')),'el invitado oye el resultado');
+  await voiceNextPage.evaluate(()=>window.__mics.at(-1).emit(question.answer));
+  await voiceHost.waitForFunction(()=>players[0].score+players[1].score===2,null,{timeout:10000});
+  await voiceGuest.waitForFunction(()=>players[0].score+players[1].score===2,null,{timeout:10000});
+  await voiceHost.waitForFunction(()=>phase==='playing',null,{timeout:10000});
+  const passer=await voiceHost.evaluate(()=>active);
+  await voiceGuest.waitForFunction(index=>phase==='playing'&&active===index,passer,{timeout:10000});
+  await (passer===0?voiceHost:voiceGuest).evaluate(()=>window.__mics.at(-1).emit('paso'));
+  await voiceHost.waitForFunction(index=>players[index].errors===1,passer,{timeout:10000});
+  await voiceGuest.waitForFunction(index=>players[index].errors===1,passer,{timeout:10000});
+  assert((await voiceHost.evaluate(()=>window.__spoken)).some(text=>text.includes('respuesta correcta')),'al pasar se anuncia la solución');
   const small=await context.newPage();
   await small.setViewportSize({width:320,height:486});
   await small.goto(base+'/duelo-conocimiento.html',{waitUntil:'load'});
@@ -96,6 +157,6 @@ const server=http.createServer((req,res)=>{
   const lobbyLayout=await small.evaluate(()=>({side:document.documentElement.scrollWidth-innerWidth,code:document.querySelector('#dc-room-code-display').textContent,start:document.querySelector('#dc-room-start').getBoundingClientRect().bottom}));
   assert(lobbyLayout.side<=0&&lobbyLayout.start<=486&&lobbyLayout.code.length===4,'la sala de espera queda visible en celular pequeño: '+JSON.stringify(lobbyLayout));
   await context.close();
-  console.log('PASS Duelo sala: crear, invitar, unirse, sorteo y turnos alternados en dos celulares');
+  console.log('PASS Duelo sala: invitación, sorteo, preguntas y resultados en voz, reloj pausado y turnos alternados');
  }finally{await browser.close();server.close()}
 })().catch(error=>{console.error(error);server.close();process.exitCode=1});

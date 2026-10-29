@@ -56,7 +56,8 @@ function syncAnswer(){
  voiceBtn.classList.toggle("dc-hidden",!voice);$dc("answer-form").classList.toggle("dc-hidden",voice);
  textBtn.textContent=voice?"⌨️ Responder escribiendo":"🎙 Probar micrófono";
  $dc("mic-panel").setAttribute("aria-label",voice?"Responder hablando":"Responder escribiendo");
- if(!voice)stopMic();else if((phase==="playing"&&canAnswer())||phase==="selecting")startMic();
+ if(!voice){stopMic();if(online?.micWaiting)onlineReadyAfterNarration();}
+ else if((phase==="playing"&&canAnswer())||phase==="selecting")startMic();
 }
 textBtn.onclick=()=>{answerSel.value=answerSel.value==="voice"?"text":"voice";micBlocked=false;syncAnswer();if(answerSel.value==="text"&&phase==="playing"&&canAnswer())$dc("answer-input").focus()};
 const micErrorText={ "not-allowed":"Permiso rechazado. Tocá el icono del candado en Chrome y permití el micrófono.", "service-not-allowed":"Chrome no permite reconocimiento de voz en este dispositivo.", "audio-capture":"No se detecta un micrófono. Revisá los permisos del teléfono.", "network":"El reconocimiento necesita conexión a internet." };
@@ -69,7 +70,7 @@ function micFallback(message){
  if(phase==="playing"&&canAnswer())$dc("answer-input").focus();
 }
 async function startMic(){
- if(answerSel.value!=="voice"||micWanted||micBlocked||phase==="announcing"||(phase==="playing"&&!canAnswer()))return;
+ if(answerSel.value!=="voice"||micWanted||micBlocked||(phase==="announcing"&&!online?.micWaiting)||(phase==="playing"&&!canAnswer()))return;
  if(!window.SpeechRecognition&&!window.webkitSpeechRecognition){micFallback("Este navegador no tiene reconocimiento de voz.");return;}
  if(!window.isSecureContext){micFallback("El micrófono necesita HTTPS.");return;}
  const token=++micToken;
@@ -78,8 +79,8 @@ async function startMic(){
  try{
    if(!micWanted||token!==micToken)return;
    if(!mic){const Ctor=window.SpeechRecognition||window.webkitSpeechRecognition;mic=new Ctor();const instance=mic;mic.lang="es-UY";mic.continuous=true;mic.interimResults=true;mic.maxAlternatives=5;
-     mic.onstart=()=>{if(mic!==instance||token!==micToken)return;micRunning=true;micNote("🎙 CONECTANDO AUDIO...");clearTimeout(micAudioTimer);micAudioTimer=setTimeout(()=>{if(mic===instance&&token===micToken&&phase==="waiting-mic"&&canAnswer())beginTimedTurn(false)},1800);};
-     mic.onaudiostart=()=>{if(mic!==instance||token!==micToken)return;micRunning=true;clearTimeout(micAudioTimer);voiceBtn.classList.add("ok");micNote("🎙 ESCUCHANDO");if(mode==="bot"&&phase==="waiting-mic"&&active===0)beginTimedTurn(false);if(phase==="playing"&&canAnswer())setMicLabel("TE ESCUCHAMOS",`Respondé, ${players[active].name}`,true);};
+     mic.onstart=()=>{if(mic!==instance||token!==micToken)return;micRunning=true;micNote("🎙 CONECTANDO AUDIO...");clearTimeout(micAudioTimer);micAudioTimer=setTimeout(()=>{if(mic!==instance||token!==micToken||!canAnswer())return;if(phase==="waiting-mic")beginTimedTurn(false);else if(online?.micWaiting)onlineReadyAfterNarration()},1800);};
+     mic.onaudiostart=()=>{if(mic!==instance||token!==micToken)return;micRunning=true;clearTimeout(micAudioTimer);voiceBtn.classList.add("ok");micNote("🎙 ESCUCHANDO");if(mode==="bot"&&phase==="waiting-mic"&&active===0)beginTimedTurn(false);if(online?.micWaiting&&canAnswer())onlineReadyAfterNarration();if(phase==="playing"&&canAnswer())setMicLabel("TE ESCUCHAMOS",`Respondé, ${players[active].name}`,true);};
      mic.onresult=e=>{if(mic!==instance||token!==micToken||!micWanted||!question||!canAnswer())return;
        if(mode==="bot"&&phase==="waiting-mic"&&active===0){micRunning=true;clearTimeout(micAudioTimer);beginTimedTurn(false)}
        if(phase!=="playing")return;
@@ -177,7 +178,7 @@ function turnCue(bot){
  setTimeout(()=>{if(phase==="playing"&&active===(bot?1:0))playTone(bot?330:940,.16,'sine',.055)},130);
 }
 const baseNext=nextQuestion;
-window.dueloPreparaTurno=()=>mode==="bot";
+window.dueloPreparaTurno=()=>mode==="bot"||(mode==="online"&&!!online?.host);
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 function cancelNarration(){try{window.speechSynthesis?.cancel()}catch(e){}}
 function speak(text,maxMs=5500){
@@ -191,6 +192,53 @@ function speak(text,maxMs=5500){
 function questionForVoice(q){
  if(q.category==="matematica")return `¿Cuánto da ${String(q.math||"").replace(/[×*]/g," por ").replace(/[÷/]/g," dividido ").replace(/\+/g," más ").replace(/[−-]/g," menos ")}?`;
  return q.label;
+}
+function onlineMaybeBeginTurn(){
+ if(mode!=="online"||!online?.host||phase!=="announcing"||!online.localReady||!online.guestReady)return;
+ online.micWaiting=false;clearTimeout(micStartupTimer);phase="playing";
+ const mine=active===0;
+ $dc("answer-input").disabled=!mine;$dc("answer-submit").disabled=!mine;
+ $dc("feedback").className="feedback";
+ $dc("feedback").textContent=mine?`¡Respondé ahora, ${players[0].name}!`:`Responde ${players[1].name}. Tu reloj está pausado.`;
+ setMicLabel(mine?"TE TOCA RESPONDER":"RIVAL JUGANDO",mine?"Ahora corre tu reloj.":"Tu reloj está pausado.",mine&&micRunning);
+ prevTick=performance.now();pauseClock();raf=requestAnimationFrame(tick);updatePlayers();sendSnapshot();
+ if(mine&&answerSel.value==="text"&&$dc("answer-form").offsetParent!==null)$dc("answer-input").focus();
+}
+function onlineReadyAfterNarration(){
+ if(mode!=="online"||!online||online.readySentTurn===turn||phase!=="announcing")return;
+ online.readySentTurn=turn;online.micWaiting=false;clearTimeout(micStartupTimer);
+ if(online.host){online.localReady=true;onlineMaybeBeginTurn();}
+ else sendOnline("ready",{turn});
+}
+async function onlineNarrateHost(){
+ const room=online,currentQuestion=question,currentTurn=turn;
+ room.localReady=false;room.guestReady=false;room.readySentTurn=-1;room.micWaiting=false;
+ stopMic();cancelNarration();
+ $dc("feedback").className="feedback";$dc("feedback").textContent="Escuchá la pregunta; los relojes están pausados.";
+ setMicLabel("PREGUNTA PARA "+upper(players[active].name),"El reloj empieza al terminar la lectura y activar el micrófono.",false);
+ updatePlayers();sendSnapshot();
+ await Promise.all([wait(2400),speak(`Turno de ${players[active].name}. ${questionForVoice(currentQuestion)}`)]);
+ if(online!==room||phase!=="announcing"||question!==currentQuestion||turn!==currentTurn)return;
+ if(active===0&&answerSel.value==="voice"){
+   room.micWaiting=true;setMicLabel("ACTIVANDO MICRÓFONO","El reloj sigue pausado.",false);
+   micStartupTimer=setTimeout(()=>{if(online===room&&room.micWaiting)micFallback("El micrófono tardó demasiado en activarse.")},8000);
+   startMic();
+ }else onlineReadyAfterNarration();
+}
+async function onlineNarrateGuest(){
+ const room=online,currentQuestion=question,currentTurn=turn;
+ if(room.guestNarrationTurn===currentTurn)return;
+ room.guestNarrationTurn=currentTurn;room.readySentTurn=-1;room.micWaiting=false;
+ stopMic();cancelNarration();
+ $dc("feedback").className="feedback";$dc("feedback").textContent="Escuchá la pregunta; los relojes están pausados.";
+ setMicLabel("PREGUNTA PARA "+upper(players[active].name),"Esperá a que termine la lectura.",false);
+ await Promise.all([wait(2400),speak(`Turno de ${players[active].name}. ${questionForVoice(currentQuestion)}`)]);
+ if(online!==room||phase!=="announcing"||turn!==currentTurn||questionKey(question)!==questionKey(currentQuestion))return;
+ if(active===1&&answerSel.value==="voice"){
+   room.micWaiting=true;setMicLabel("ACTIVANDO MICRÓFONO","Tu reloj sigue pausado.",false);
+   micStartupTimer=setTimeout(()=>{if(online===room&&room.micWaiting)micFallback("El micrófono tardó demasiado en activarse.")},8000);
+   startMic();
+ }else onlineReadyAfterNarration();
 }
 function beginTimedTurn(bot){
  if(mode!=="bot"||!question||question.answered||!['announcing','waiting-mic'].includes(phase))return;
@@ -228,7 +276,7 @@ nextQuestion=async function(){
    }
    return;
  }
- if(mode==="online"&&online&&online.host)sendSnapshot();
+ if(mode==="online"&&online?.host){await onlineNarrateHost();return;}
  if(mode!=="bot"&&answerSel.value==="voice"&&canAnswer()&&!micWanted&&!micBlocked)startMic();
 };
 /* El HTML base programa un avance fijo de 2.8 s al acertar y de 1.9 s
@@ -241,6 +289,27 @@ function avanzarDespuesDeRespuestaBot(preguntaActual,jugadorActual,espera){
    if(mode!=="bot"||phase!=="transition"||question!==preguntaActual||active!==jugadorActual)return;
    active=1-active;turn++;nextQuestion();
  },espera);
+}
+function onlineMaybeAdvance(){
+ const room=online;
+ if(mode!=="online"||!room?.host||phase!=="transition"||!room.resultHostDone||!room.resultGuestDone||room.resultAdvanceScheduled===turn)return;
+ room.resultAdvanceScheduled=turn;
+ const currentQuestion=question,currentPlayer=active,currentTurn=turn;
+ clearTimeout(transitionTimeout);
+ transitionTimeout=setTimeout(()=>{
+   if(online!==room||phase!=="transition"||question!==currentQuestion||active!==currentPlayer||turn!==currentTurn)return;
+   active=1-active;turn++;nextQuestion();
+ },1200);
+}
+function onlineAnnounceResult(phrase){
+ const room=online,currentQuestion=question,currentTurn=turn;
+ room.resultTurn=currentTurn;room.resultHostDone=false;room.resultGuestDone=false;
+ clearTimeout(transitionTimeout);transitionTimeout=0;stopMic();
+ sendSnapshot();
+ Promise.all([wait(1600),speak(phrase,8000)]).then(()=>{
+   if(online!==room||phase!=="transition"||question!==currentQuestion||turn!==currentTurn)return;
+   room.resultHostDone=true;onlineMaybeAdvance();
+ });
 }
 const baseRight=rightAnswer;
 rightAnswer=function(value){
@@ -262,7 +331,10 @@ rightAnswer=function(value){
    });
  }
  if(mode==="bot"&&active===0&&phase==="transition")stopMic();
- if(mode==="online"&&online&&online.host)sendSnapshot();
+ if(mode==="online"&&online?.host&&phase==="transition"&&question===preguntaActual){
+   const phrase=`${players[jugadorActual].name} responde: ${getCorrectAnswer(preguntaActual)}. Correcto.`;
+   onlineAnnounceResult(phrase);
+ }
 };
 const basePass=passTurn;
 function revealPhrase(q){const answer=getCorrectAnswer(q);return q.category==="banderas"?`La bandera era ${answer}.`:q.category==="ciudades"?`La ciudad era ${answer}.`:q.category==="videojuegos"?`El videojuego era ${answer}.`:`La respuesta correcta era: ${answer}.`}
@@ -273,7 +345,7 @@ passTurn=function(wrongValue=''){
  if(mode==="online"&&online&&!online.host){
    sendOnline("pass",{wrong:wrongValue});
    $dc("feedback").className="feedback fail";$dc("feedback").textContent=`✕ ${wrongValue?'RESPUESTA ERRÓNEA':'PASAPALABRA'} · Era ${solucion}. Sigue ${players[0].name}.`;
-   stopMic();if(revelar){lastRevealTurn=turn;speak(revealPhrase(preguntaActual),2800)}return;
+   stopMic();return;
  }
  const mostrarSolucion=mode==="bot"&&phase==="playing"&&preguntaActual&&!preguntaActual.answered;
  if(mode==="bot"||revelar)stopMic();
@@ -288,8 +360,9 @@ passTurn=function(wrongValue=''){
      if(mode!=="bot"||phase!=="transition"||question!==preguntaActual||active!==jugadorActual)return;
      avanzarDespuesDeRespuestaBot(preguntaActual,jugadorActual,4500);
    });
+ }else if(mode==="online"&&online?.host&&phase==="transition"&&question===preguntaActual){
+   onlineAnnounceResult(`${players[jugadorActual].name} ${wrongValue?'se equivocó':'pasó'}. ${revealPhrase(preguntaActual)}`);
  }else if(revelar&&phase==="transition")speak(revealPhrase(preguntaActual),2800);
- if(mode==="online"&&online&&online.host)sendSnapshot();
 };
 const baseFinish=finish;
 finish=function(winner,reason){
@@ -402,6 +475,14 @@ function onOnlineMsg(message){
    if(answerSel.value==="voice")startMic();
    return;
  }
+ if(message.type==="ready"&&online.host){
+   if(message.from===online.guestId&&phase==="announcing"&&message.data?.turn===turn){online.guestReady=true;onlineMaybeBeginTurn();}
+   return;
+ }
+ if(message.type==="reviewed"&&online.host){
+   if(message.from===online.guestId&&phase==="transition"&&message.data?.turn===turn&&online.resultTurn===turn){online.resultGuestDone=true;onlineMaybeAdvance();}
+   return;
+ }
  if(message.type==="state"&&!online.host){
    if(!online.started||message.from!==online.hostId||phase==="finished"||message.time<remoteState)return;
    remoteState=message.time;
@@ -421,10 +502,23 @@ function onOnlineMsg(message){
      $dc("question-title").textContent=question.label;
      $dc("question-number").textContent="RONDA "+turn+" · Turno de "+players[active].name;
      $dc("answer-input").value="";
+     if(phase==="announcing")onlineNarrateGuest();
    }
    $dc("answer-input").disabled=!(phase==="playing"&&active===1);
    $dc("answer-submit").disabled=!(phase==="playing"&&active===1);
-   if(phase==="transition"&&d.feedback){$dc("feedback").className=d.feedback.startsWith('✓')?'feedback success':'feedback fail';$dc("feedback").textContent=d.feedback;if((question?.category==="banderas"||isImageQuestion(question))&&d.feedback.includes("Era ")){const answer=getCorrectAnswer(question),paso=d.feedback.includes('PASAPALABRA');setMicLabel(`${paso?'PASAPALABRA':'RESPUESTA ERRÓNEA'} · ERA ${upper(answer)}`,`Sigue ${players[1-active].name}`,false);if(lastRevealTurn!==turn){lastRevealTurn=turn;speak(revealPhrase(question),2800)}}}
+   if(phase==="transition"&&d.feedback){
+     const success=d.feedback.startsWith('✓'),paso=d.feedback.includes('PASAPALABRA'),answer=question?getCorrectAnswer(question):'';
+     $dc("feedback").className=success?'feedback success':'feedback fail';$dc("feedback").textContent=d.feedback;
+     setMicLabel(success?'RESPUESTA CORRECTA':paso?'PASAPALABRA':'RESPUESTA ERRÓNEA',success?answer:revealPhrase(question),false);
+     if(lastRevealTurn!==turn){
+       lastRevealTurn=turn;stopMic();
+       const room=online,currentTurn=turn,currentKey=questionKey(question);
+       const phrase=success?`${players[active].name} responde: ${answer}. Correcto.`:`${players[active].name} ${paso?'pasó':'se equivocó'}. ${revealPhrase(question)}`;
+       Promise.all([wait(1600),speak(phrase,8000)]).then(()=>{
+         if(online===room&&phase==="transition"&&turn===currentTurn&&questionKey(question)===currentKey)sendOnline("reviewed",{turn:currentTurn});
+       });
+     }
+   }
    if(phase==="playing"){$dc("feedback").textContent=active===1?"¡Es tu turno!":"Esperá el turno de "+players[0].name;
     setMicLabel(active===1?"TE TOCA RESPONDER":"RIVAL JUGANDO",active===1?"Respondé por voz o escribiendo":"Tu reloj está pausado",active===1&&micRunning);}
    updatePlayers();return;
