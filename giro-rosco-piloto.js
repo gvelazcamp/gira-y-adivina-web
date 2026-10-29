@@ -30,7 +30,37 @@
     }
     frase=null;
   }
+  /* Apertura del programa (antes de que aparezca Giro): negro, se prenden las
+     luces del estudio, entra el logo con destellos y la música del show
+     (voz/giro-apertura-musica.mp3, hecha por Gonzalo en Gemini). Se puede saltar. */
+  let apertura=null;
+  function cortarApertura(){
+    if(!apertura)return;const a=apertura;apertura=null;
+    clearTimeout(a.timer);try{a.musica.pause();}catch(e){}a.capa.remove();
+    document.removeEventListener("keydown",a.tecla);
+  }
+  function mostrarApertura(siguiente){
+    cortarApertura();
+    const capa=document.createElement("div");capa.className="grp-apertura";
+    capa.setAttribute("role","dialog");capa.setAttribute("aria-modal","true");capa.setAttribute("aria-label","Girá y Adiviná, el programa");
+    const cuadro=document.createElement("div");cuadro.className="grp-ap-cuadro";
+    const img=(c,src)=>{const i=document.createElement("img");i.className=c;i.src=src;i.alt="";i.setAttribute("aria-hidden","true");i.draggable=false;return i;};
+    cuadro.append(img("grp-ap-estudio",BASE+"estudios/Giro_estudio_principal_16x9.webp"),img("grp-ap-luces",BASE+"efectos/Giro_efecto_haces_de_luz_transparente.webp"),
+      img("grp-ap-destellos",BASE+"efectos/Giro_efecto_destellos_transparente.png"),img("grp-ap-logo","assets/logo.webp"));
+    const saltar=document.createElement("button");saltar.type="button";saltar.className="grp-ap-saltar";saltar.textContent="Saltar ⏭";
+    capa.append(cuadro,saltar);document.body.appendChild(capa);
+    const musica=new Audio(BASE+"voz/giro-apertura-musica.mp3");
+    const terminar=()=>{if(!apertura||apertura.capa!==capa)return;capa.classList.add("grp-ap-fin");
+      clearTimeout(apertura.timer);apertura.timer=setTimeout(()=>{cortarApertura();siguiente();},650);};
+    const tecla=e=>{if(e.key==="Escape"||e.key==="Enter"){e.preventDefault();terminar();}};
+    apertura={capa,musica,tecla,timer:setTimeout(terminar,15400)};
+    saltar.addEventListener("click",terminar);document.addEventListener("keydown",tecla);
+    musica.addEventListener("ended",terminar);
+    musica.play().catch(()=>{});
+    saltar.focus({preventScroll:true});
+  }
   function limpiar(){
+    cortarApertura();
     clearInterval(intervalo);intervalo=null;
     if(salidaTimer!==null){clearTimeout(salidaTimer);salidaTimer=null;}
     reiniciarCine=null;
@@ -139,7 +169,7 @@
       salidaTimer=setTimeout(cerrar,460);
     });
     acciones.append(voz,avanzar);
-    const aviso=document.createElement("small");aviso.className="grp-aviso";aviso.textContent="Sin música · Voz opcional · Solo perfil Gonzalo";
+    const aviso=document.createElement("small");aviso.className="grp-aviso";aviso.textContent="Prueba · Solo perfil Gonzalo";
     panel.append(etiqueta,h,p,acciones,aviso);
     cont.append(stage,panel);overlay.appendChild(cont);document.body.appendChild(overlay);
     capa=overlay;document.addEventListener("keydown",teclado);
@@ -168,6 +198,10 @@
     return true;
   }
   function mostrarInicio(){
+    if(!habilitado())return false;
+    mostrarApertura(presentarGiro);return true;
+  }
+  function presentarGiro(){
     return presentar({
       tipo:"inicio",
       titulo:"¡Bienvenidos al Rosco!",
