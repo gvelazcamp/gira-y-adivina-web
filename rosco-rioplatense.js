@@ -410,7 +410,11 @@ const RoscoRioplatense=(()=>{
     if(pruebaG&&vozG)leerPistaG();
     else if(typeof hablar==="function")hablar(d.definicion,audioMusica);
   }
-  function iniciar(){if(window.Fichas&&!Fichas.usar("rosco-rioplatense",iniciar))return;duelo=false;config=configNivel(nivel);items=armarRonda();guardar();arrancarRonda();}
+  function iniciar(){if(window.Fichas&&!Fichas.usar("rosco-rioplatense",iniciar))return;
+    /* Solo Gonzalo (piloto de Giro): antes de arrancar, la presentación del participante en su atril. */
+    const empezar=()=>{if(!raiz)return;duelo=false;config=configNivel(nivel);items=armarRonda();guardar();arrancarRonda();};
+    if(pruebaG&&typeof esGonzalo==="function"&&esGonzalo()&&window.GiroRoscoPiloto?.presentarSolo?.(empezar))return;
+    empezar();}
   function arrancarRonda(){
     estados=items.map(()=>"pendiente");respuestas=items.map(()=>"");
     actual=-1;destino=-1;angulo=0;tiempo=config.segundos*1000;ultimo=performance.now();
@@ -561,12 +565,12 @@ const RoscoRioplatense=(()=>{
     };
     if(window.GiroRoscoPiloto){activar();return;}
     if(!document.querySelector('link[data-giro-rosco]')){
-      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=9";
+      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=10";
       estilo.dataset.giroRosco="1";document.head.appendChild(estilo);
     }
     let script=document.querySelector('script[data-giro-rosco]');
     if(!script){
-      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=14";script.async=true;
+      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=15";script.async=true;
       script.dataset.giroRosco="1";script.addEventListener("load",activar,{once:true});
       document.head.appendChild(script);
     }else script.addEventListener("load",activar,{once:true});
