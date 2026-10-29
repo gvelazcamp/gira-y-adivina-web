@@ -163,8 +163,8 @@ const RoscoRioplatense=(()=>{
     mostrarEstadoVozG("Micrófono apagado.");
   }
 
-  /* Como Duelo: el acierto se acepta incluso en resultados parciales.
-     PASAPALABRA exige resultado final para evitar pases por ruido. */
+  /* El acierto se acepta aun en parciales. Un error cuenta cuando Chrome
+     confirma el resultado final; no se penaliza el eco de la pista. */
   function procesarResultadoVozG(e){
     if(!vozG||vozLeyendoG||fase!=="resolver"||actual<0)return;
     const resultados=e.results||[];
@@ -191,7 +191,8 @@ const RoscoRioplatense=(()=>{
       /* Aceptar una sola frase natural, por ejemplo "la respuesta es acuario". */
       const opcionesRespuesta=opciones.flatMap(texto=>{
         const sinIntro=texto.replace(/^(?:(?:(?:la|mi)\s+)?respuesta\s+(?:es|ser[ií]a)|(?:yo\s+)?(?:creo|pienso)\s+que\s+es|(?:yo\s+)?digo|(?:es|ser[ií]a))\s+/i,"");
-        return texto===sinIntro?[texto]:[texto,sinIntro];
+        const sinArticulo=sinIntro.replace(/^(?:el|la|los|las|un|una)\s+/i,"");
+        return [texto,sinIntro,sinArticulo];
       });
       const correcta=opcionesRespuesta.find(t=>vale(items[actual],normalizar(t)));
       if(correcta){
@@ -201,17 +202,15 @@ const RoscoRioplatense=(()=>{
       /* Ignorar el eco de la locución; no penalizar al jugador. */
       const eco=opciones.some(t=>{
         const frase=normalizar(t),pista=normalizar(items[actual].definicion||"");
-        return frase.length>=8&&pista.includes(frase);
+        return frase.length>=5&&pista.includes(frase);
       });
       if(eco)continue;
       if(resultado.isFinal){
-        /* Como en Duelo, no penalizar una palabra mal transcrita: la voz
-           correcta sigue enviándose sola; esta queda visible por si se
-           quiere confirmar manualmente con Enviar o volver a hablar. */
+        /* Una respuesta final equivocada consume la letra, igual que Enviar.
+           Se conserva lo que oyó Chrome para el resumen final del Rosco. */
         vozSilenciosG=0;$("#rrEntrada").value=opciones[0].slice(0,60);
-        mostrarEstadoVozG("Oí «"+opciones[0].slice(0,45)+"» · repetí o tocá Enviar");
-        mensaje("Oí «"+opciones[0].slice(0,30)+"». No coincide con la respuesta; repetí o tocá Enviar.");
-        continue;
+        mostrarEstadoVozG("Oí «"+opciones[0].slice(0,45)+"» · respuesta incorrecta");
+        enviar();return;
       }
       mostrarEstadoVozG("Oí «"+opciones[0].slice(0,45)+"» · seguí hablando");
     }

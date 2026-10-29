@@ -31,13 +31,15 @@ for(const sharing of [false,true]){
  simulate("manzana",false,"respuesta:MANZANA",sharing);
  simulate("manzana",true,"respuesta:MANZANA",sharing);
  simulate("es manzana",true,"respuesta:MANZANA",sharing);
+ simulate("la manzana",true,"respuesta:MANZANA",sharing);
  simulate("la respuesta es manzana",false,"respuesta:MANZANA",sharing);
  simulate("creo que es manzana",true,"respuesta:MANZANA",sharing);
  simulate("Fruta de un árbol",true,"",sharing);
+ simulate("Fruta",true,"",sharing);
  simulate("pasapalabra",true,"paso",sharing);
  simulate("pasa palabra",true,"paso",sharing);
  simulate("pasapalabra",false,"estado:Oí «Pasapalabra» · confirmando…",sharing);
- simulate("ciruela",true,"estado:Oí «ciruela» · repetí o tocá Enviar",sharing);
+ simulate("ciruela",true,"respuesta:ciruela",sharing);
  simulate("ciruela",false,"estado:Oí «ciruela» · seguí hablando",sharing);
 }
 /* Si Android detecta voz pero no entrega texto, el intento se reinicia solo. */
@@ -83,6 +85,6 @@ assert(source.includes('vozTimerG=setTimeout(arrancarEscuchaG,450);'),"Reconecta
 assert(source.includes("Micrófono en pausa · se reanuda al volver."),"Modo voz activo al duplicar pantalla");
 const index=fs.readFileSync(path.join(__dirname,"..","index.html"),"utf8");
 const sw=fs.readFileSync(path.join(__dirname,"..","sw.js"),"utf8");
-assert(index.includes("rosco-rioplatense.js?v=61"));
-assert(sw.includes("rosco-rioplatense.js?v=61")&&sw.includes("gya-cache-v557"));
+assert(index.includes("rosco-rioplatense.js?v=62"));
+assert(sw.includes("rosco-rioplatense.js?v=62")&&sw.includes("gya-cache-v558"));
 console.log("PASS: voz y Pasapalabra, con y sin pantalla compartida, respuestas parciales, retorno y caché");
