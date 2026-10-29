@@ -60,8 +60,11 @@
       const u=new SpeechSynthesisUtterance(texto);
       u.lang="es-UY";u.rate=.92;u.pitch=1.04;u.volume=1;
       const voces=window.speechSynthesis.getVoices();
-      u.voice=voces.find(v=>v.lang.toLowerCase()==="es-uy")||
-        voces.find(v=>v.lang.toLowerCase().startsWith("es-"))||null;
+      /* Giro es hombre: primero una voz de hombre; si el celular no tiene, la común más grave. */
+      const vm=typeof obtenerVozMasculina==="function"?obtenerVozMasculina():null;
+      if(vm){u.voice=vm;u.pitch=.9;}else{u.pitch=.75;u.voice=voces.find(v=>v.lang.toLowerCase()==="es-uy")||
+        voces.find(v=>v.lang.toLowerCase().startsWith("es-"))||null;}
+      if(typeof avisarVozGonzalo==="function")avisarVozGonzalo(vm);
       u.onend=()=>{if(frase===u)frase=null;};
       u.onerror=()=>{if(frase===u)frase=null;};
       frase=u;window.speechSynthesis.speak(u);
