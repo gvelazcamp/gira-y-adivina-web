@@ -151,9 +151,14 @@
     let opciones=r.frases.filter(f=>f!==ultimaFrase[tipo]);if(!opciones.length)opciones=r.frases;
     const frase=opciones[Math.floor(Math.random()*opciones.length)];ultimaFrase[tipo]=frase;
     rueda.querySelector(".grp-reac")?.remove();clearTimeout(reacTimer);
-    const img=document.createElement("img");img.className="grp-reac grp-reac-"+tipo;img.alt="";img.setAttribute("aria-hidden","true");img.draggable=false;
-    img.src=BASE+r.poses[Math.floor(Math.random()*r.poses.length)];rueda.appendChild(img);
-    reacTimer=setTimeout(()=>img.remove(),1700);
+    /* Giro siempre detrás de su atril (el oficial de "GIRÁ Y ADIVINÁ"), como en la presentación. */
+    const caja=document.createElement("div");caja.className="grp-reac grp-reac-"+tipo;caja.setAttribute("aria-hidden","true");
+    const giro=document.createElement("img");giro.className="grp-reac-giro";giro.alt="";giro.draggable=false;
+    giro.src=BASE+r.poses[Math.floor(Math.random()*r.poses.length)];
+    const atril=document.createElement("img");atril.className="grp-reac-atril";atril.alt="";atril.draggable=false;
+    atril.src=BASE+"elementos/Giro_atril_oficial_chico.webp";
+    caja.append(giro,atril);rueda.appendChild(caja);
+    reacTimer=setTimeout(()=>caja.remove(),1700);
     try{if(reacAudio)reacAudio.pause();reacAudio=new Audio(BASE+"voz/reacciones/giro-"+frase+".mp3");reacAudio.play().catch(()=>{});}catch(e){}
   }
   /* Las llama el Rosco al tocar Jugar (solo) — siguiente() arranca la partida. */
