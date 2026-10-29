@@ -10,11 +10,7 @@ const RoscoRioplatense=(()=>{
   let datos=cargar(),raiz=null,shell=null,items=[],estados=[],respuestas=[],actual=-1,destino=-1,angulo=0;
   let nivel=1,config=null,fase="inicio",tiempo=0,espera=0,ultimo=0,intervalo=null,ultimoTac=0,duelo=false,usadasSesion=new Set();
   let audioMusica=null,reconocimiento=null,escuchando=false,altoLibre=0;
-  const perfilGiro=()=>{
-    try{return ["vale","gonzalo"].includes(String(perfil?.nombre||"").trim().toLowerCase());}
-    catch(e){return false;}
-  };
-  /* Voz y teclado del Rosco para los perfiles del show. */
+  /* Voz y teclado del Rosco para todos los jugadores. */
   let avisoTiempoG=false,pruebaG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozResultadoTimerG=null,vozMensajeG="",vozPistaG=null,vozSilenciosG=0,vozStreamG=null,vozGeneracionG=0,vozPaseTimerG=null;
   let vozConsultadaG=false,avisoVozG=null;
   function cerrarConsultaVozG(){if(avisoVozG){avisoVozG.remove();avisoVozG=null;}}
@@ -43,7 +39,7 @@ const RoscoRioplatense=(()=>{
   const ARTE=n=>"assets/rosco/"+n+".webp",ico=n=>'<img class="rr-ico" src="'+ARTE(n)+'" alt="" draggable="false">';
   function iniciarMusicaJuego(){
     /* En el show de Giro se usa su propia música. */
-    if(pruebaG&&perfilGiro()&&window.GIRO_ROSCO_PILOTO!==false)return;
+    if(pruebaG&&window.GIRO_ROSCO_PILOTO!==false)return;
     try{
       if(typeof sonidoPermitido==="function"&&!sonidoPermitido())return;
       if(!audioMusica){audioMusica=new Audio("assets/audio/rosco-rioplatense-musica.mp3");audioMusica.loop=true;audioMusica.volume=.28;}
@@ -292,8 +288,8 @@ const RoscoRioplatense=(()=>{
       speechSynthesis.cancel();
       const u=new SpeechSynthesisUtterance(items[actual].definicion);
       u.lang="es-UY";u.rate=.97;vozPistaG=u;
-      /* La voz de Giro lee la pista para Vale y Gonzalo. */
-      if(perfilGiro()&&typeof obtenerVozMasculina==="function"){const vm=obtenerVozMasculina();if(vm)u.voice=vm;u.pitch=vm?.9:.75;if(typeof avisarVozGonzalo==="function")avisarVozGonzalo(vm);}
+      /* La voz de Giro lee la pista para todos. */
+      if(typeof obtenerVozMasculina==="function"){const vm=obtenerVozMasculina();if(vm)u.voice=vm;u.pitch=vm?.9:.75;if(typeof avisarVozGonzalo==="function")avisarVozGonzalo(vm);}
       const terminar=()=>{
         if(vozPistaG!==u)return;vozPistaG=null;vozLeyendoG=false;
         ultimo=performance.now();
@@ -340,7 +336,7 @@ const RoscoRioplatense=(()=>{
     if(!raiz||document.hidden)return;
     /* En voz no abrir el teclado Android: la palabra entra por el micrófono. */
     if((pruebaG&&vozG)||esRoscoHorizontal())$("#rrEntrada").blur();
-    /* Estudio (Gonzalo): no abrir el teclado del celular solo; se abre al tocar el cuadro
+    /* Estudio: no abrir el teclado del celular solo; se abre al tocar el cuadro
        (si ya está abierto, se mantiene). Así el rosco arranca grande y no salta. */
     else if(raiz.classList.contains("rr-estudio")&&document.activeElement!==$("#rrEntrada")){}
     else $("#rrEntrada").focus({preventScroll:true});
@@ -445,9 +441,9 @@ const RoscoRioplatense=(()=>{
     else if(typeof hablar==="function")hablar(d.definicion,audioMusica);
   }
   function iniciar(){if(window.Fichas&&!Fichas.usar("rosco-rioplatense",iniciar))return;
-    /* Los perfiles del show ven la presentación antes de arrancar la partida. */
+    /* La presentación aparece antes de arrancar la partida. */
     const empezar=()=>{if(!raiz)return;duelo=false;config=configNivel(nivel);items=armarRonda();guardar();arrancarRonda();};
-    if(pruebaG&&perfilGiro()&&window.GiroRoscoPiloto?.presentarSolo?.(()=>{if(raiz){raiz.classList.add("rr-estudio");const sp=$("#rrPasar span");if(sp)sp.textContent="Pasar";}empezar();})){
+    if(pruebaG&&window.GiroRoscoPiloto?.presentarSolo?.(()=>{if(raiz){raiz.classList.add("rr-estudio");const sp=$("#rrPasar span");if(sp)sp.textContent="Pasar";}empezar();})){
       /* El cartel de Jugar queda oculto debajo de la presentación (si no, se veía al desvanecerse). */
       $("#rrPanel").hidden=true;return;}
     empezar();}
@@ -562,7 +558,7 @@ const RoscoRioplatense=(()=>{
     const leyenda=document.createElement("small");leyenda.className="rr-resultado-leyenda";
     leyenda.textContent="Letra · Respuesta correcta · Tu respuesta";revision.prepend(leyenda);
     $(".rr-panel").insertBefore(revision,$(".rr-panel button"));$(".rr-principal").focus({preventScroll:true});
-    if(pruebaG&&perfilGiro()&&typeof window.GiroRoscoPiloto?.mostrarFinal==="function"){
+    if(pruebaG&&typeof window.GiroRoscoPiloto?.mostrarFinal==="function"){
       window.GiroRoscoPiloto.mostrarFinal({aciertos,errores,total:items.length,puntos,estudio:raiz.classList.contains("rr-estudio")});
     }
   }
@@ -589,7 +585,7 @@ const RoscoRioplatense=(()=>{
       if(ultimoTac>110+(1-Math.max(0,espera)/ROSCO_CONFIG.giroMs)*230){if(typeof tac==="function")tac();ultimoTac=0;}
       if(espera<=0)detenerGiro();
     }else if(fase==="respuesta"){espera-=dt;if(espera<=0)siguiente();}
-    /* Estudio (Gonzalo): a los 10 segundos finales Giro avisa una vez, sin pisar la lectura de la pista. */
+    /* Estudio: a los 10 segundos finales Giro avisa una vez, sin pisar la lectura de la pista. */
     if(!avisoTiempoG&&tiempo<=10000&&(fase==="respuesta"||fase==="giro")&&raiz.classList.contains("rr-estudio")){avisoTiempoG=true;window.GiroRoscoPiloto?.reaccion?.("tiempo");}
     hud();
   }
@@ -609,7 +605,7 @@ const RoscoRioplatense=(()=>{
     }else iniciarMusicaJuego();
     ultimo=performance.now();
   }
-  /* El módulo del estudio se carga solo para Vale o Gonzalo.
+  /* El módulo del estudio se carga para todos los jugadores.
      Sin depender de él para iniciar ni terminar una partida normal. */
   /* Cortina negra del show: tapa el cartel de "Jugar" desde el primer
      instante hasta que arranca la apertura del show, así lo último que se ve es
@@ -623,7 +619,7 @@ const RoscoRioplatense=(()=>{
     cortinaTimerG=setTimeout(()=>cortinaG(false),7000);
   }
   function cargarEscenaGiroG(referencia){
-    if(!pruebaG||!perfilGiro()||window.GIRO_ROSCO_PILOTO===false)return;
+    if(!pruebaG||window.GIRO_ROSCO_PILOTO===false)return;
     cortinaG(true);
     const activar=()=>{
       if(raiz===referencia&&raiz.isConnected&&fase==="inicio"&&typeof window.GiroRoscoPiloto?.mostrarInicio==="function"){
@@ -638,7 +634,7 @@ const RoscoRioplatense=(()=>{
     }
     let script=document.querySelector('script[data-giro-rosco]');
     if(!script){
-      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=26";script.async=true;
+      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=27";script.async=true;
       script.dataset.giroRosco="1";script.addEventListener("load",activar,{once:true});script.addEventListener("error",()=>cortinaG(false),{once:true});
       document.head.appendChild(script);
     }else script.addEventListener("load",activar,{once:true});
@@ -646,7 +642,7 @@ const RoscoRioplatense=(()=>{
   function abrir(contenedor){
     salir();datos=cargar();nivel=datos.nivelMax;config=configNivel(nivel);fase="inicio";usadasSesion=new Set();
     raiz=document.createElement("div");raiz.className="rr-game";raiz.dataset.fase="inicio";altoLibre=0;
-    pruebaG=perfilGiro();
+    pruebaG=true;
     vozG=false;vozConsultadaG=false;cerrarConsultaVozG();
     if(pruebaG)raiz.classList.add("rr-gonzalo");
     raiz.innerHTML='<button type="button" class="ext-volver" id="rrVolver">⟵ Extensiones</button><div class="rr-titulo rr-titulo-arte"><h2 class="rr-logo-h"><img class="rr-logo" src="'+ARTE("logo")+'" alt="El Rosco" draggable="false"></h2><p>Una vuelta, muchas palabras nuestras.</p></div><div id="rrJuego" hidden><div class="sf-hud"><div><small>Nivel</small><b id="rrNivel"></b></div><div><small>'+ico("aciertos")+'Aciertos</small><b id="rrAciertos"></b></div><div><small>'+ico("errores")+'Errores</small><b id="rrErrores"></b></div><div><small>'+ico("reloj")+'Tiempo</small><b id="rrTiempo"></b></div></div><div class="sf-bar"><i id="rrBarra"></i></div><div class="rr-rueda"><div id="rrDisco"></div><b id="rrGrande"></b></div><div class="rr-pista" role="status" aria-live="polite"><div class="voz-fila"><span class="rr-pista-ico">'+ico("pista")+'</span><small id="rrRegla"></small><button type="button" class="voz-btn rr-escuchar" id="rrEscuchar" aria-label="Escuchar la pista">'+ico("escuchar")+'</button></div><p id="rrDefinicion"></p></div><p id="rrMensaje" class="rr-mensaje" role="status"></p><form id="rrForm" autocomplete="off"><label class="rr-sr" for="rrEntrada">Tu respuesta</label><div class="rr-fila"><input id="rrEntrada" placeholder="Tu palabra" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" enterkeyhint="send" maxlength="60"><button id="rrEnviar" type="submit">Enviar</button><button id="rrPasar" type="button">'+ico("pasapalabra")+'<span>Pasapalabra</span></button><button id="rrVoz" type="button" class="rr-microfono" aria-label="Responder hablando" aria-pressed="false" title="Responder por voz">🎙<span>Hablar</span></button></div></form></div><div id="rrPanel" class="rr-panel-capa"></div>';

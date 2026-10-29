@@ -22,9 +22,10 @@ const perfil={nombre:"Gonzalo"};
 vm.runInNewContext(src,{window,perfil,document:{createElement:crear,querySelector:()=>rueda},
   Audio:AudioFalso,setTimeout:()=>1,clearTimeout(){}});
 const api=window.GiroRoscoPiloto;
-for(const nombre of ["Gonzalo","Vale"]){perfil.nombre=nombre;assert.equal(api.habilitado(),true,nombre);}
-for(const nombre of ["Grace","Otro"]){perfil.nombre=nombre;assert.equal(api.habilitado(),false,nombre);}
-assert(rosco.includes("pruebaG=perfilGiro()"),"Vale y Gonzalo deben activar el show en el Rosco");
+for(const nombre of ["Gonzalo","Vale","Grace","Otro"]){perfil.nombre=nombre;assert.equal(api.habilitado(),true,nombre);}
+window.GIRO_ROSCO_PILOTO=false;assert.equal(api.habilitado(),false,"se conserva el interruptor de prueba");
+window.GIRO_ROSCO_PILOTO=true;
+assert(rosco.includes("pruebaG=true;"),"todos deben activar el show en el Rosco");
 perfil.nombre="Gonzalo";
 const cargar=(fragmento,evento="onload")=>{
   const img=[...imagenes.values()].find(im=>im.url.includes(fragmento));
@@ -48,5 +49,5 @@ const esperar=()=>new Promise(resolve=>setImmediate(resolve));
   cargar("Giro_confundido.png","onerror");
   await esperar();
   assert.equal(rueda.children.length,0,"si Giro falla, tampoco aparece el atril");
-  console.log("PASS: solo Vale y Gonzalo habilitados; Giro y atril juntos, sin atril vacío");
+  console.log("PASS: Rosco habilitado para todos; Giro y atril juntos, sin atril vacío");
 })().catch(error=>{console.error(error);process.exitCode=1;});

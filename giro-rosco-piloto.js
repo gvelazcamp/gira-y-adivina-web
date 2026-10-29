@@ -1,4 +1,4 @@
-/* Presentación de Giro para El Rosco — perfiles Vale y Gonzalo.
+/* Presentación de Giro para El Rosco — disponible para todos los jugadores.
    Overlay aislado: no altera el motor del Rosco ni las salas. Sin música. */
 (function(){
   "use strict";
@@ -19,10 +19,7 @@
   };
   let capa=null, intervalo=null, frase=null, activa=false, salirDeCapa=null, anteriorFoco=null;
   let reiniciarCine=null, salidaTimer=null;
-  const habilitado=()=>{
-    try{return ["vale","gonzalo"].includes(String(perfil?.nombre||"").trim().toLowerCase())&&window.GIRO_ROSCO_PILOTO!==false;}
-    catch(e){return false;}
-  };
+  const habilitado=()=>window.GIRO_ROSCO_PILOTO!==false;
   /* Frases grabadas con voz de hombre (ElevenLabs): suenan igual en cualquier
      celular. Las que todavía no están grabadas usan la voz del celular. */
   let grabacion=null;
@@ -329,7 +326,7 @@
       stage.append(fondo,halo,actor,efecto,rotulo);
     }
     const panel=document.createElement("div");panel.className="grp-panel";
-    const etiqueta=document.createElement("p");etiqueta.className="grp-etiqueta";etiqueta.textContent="PRESENTACIÓN DE PRUEBA · "+miNombre().toUpperCase();
+    const etiqueta=document.createElement("p");etiqueta.className="grp-etiqueta";etiqueta.textContent="PRESENTACIÓN · "+miNombre().toUpperCase();
     const h=document.createElement("h2");h.textContent=titulo;
     const p=document.createElement("p");p.className="grp-descripcion";p.textContent=descripcion;
     const acciones=document.createElement("div");acciones.className="grp-acciones";
@@ -350,7 +347,7 @@
       salidaTimer=setTimeout(cerrar,460);
     });
     acciones.append(voz,avanzar);
-    const aviso=document.createElement("small");aviso.className="grp-aviso";aviso.textContent="Prueba · Vale y Gonzalo";
+    const aviso=document.createElement("small");aviso.className="grp-aviso";aviso.textContent="Giro presenta El Rosco";
     panel.append(etiqueta,h,p,acciones,aviso);
     cont.append(stage,panel);overlay.appendChild(cont);document.body.appendChild(overlay);
     capa=overlay;document.addEventListener("keydown",teclado);
