@@ -1,4 +1,4 @@
-/* Regresión de Celular/TV en Extensiones para Gonzalo y Vale únicamente.
+/* Regresión de Celular/TV en Extensiones para todos los perfiles.
    Ejecutar desde la raíz: node tests/extensiones-vale-tv.cjs */
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
@@ -9,11 +9,11 @@ const index=fs.readFileSync(path.join(root,"index.html"),"utf8");
 const ext=fs.readFileSync(path.join(root,"extensiones.js"),"utf8");
 const sw=fs.readFileSync(path.join(root,"sw.js"),"utf8");
 new Function(ext);new Function(sw);
-assert(index.includes('extensiones.js?v=99'));
-assert(sw.includes('"./extensiones.js?v=99"'));
+assert(index.includes('extensiones.js?v=100'));
+assert(sw.includes('"./extensiones.js?v=100"'));
 assert(ext.includes('const selector=modoTVDisponible()?'),"selector protegido");
 assert(ext.includes('if(!modoTVDisponible())return;'),"protección de selección");
-assert(ext.includes('if(modoTVDisponible()&&modoTVElegido'),"protección al iniciar");
+assert(ext.includes('id!=="duelo-conocimiento"&&modoTVDisponible()&&modoTVElegido'),"modo TV opcional al iniciar");
 assert(ext.includes('boton.hidden=!modoTVDisponible()||vista==="lobby"'),"protección del botón interior");
 const inicio=index.indexOf("function esGonzalo(){");
 const fin=index.indexOf("function puedeVerSalaTV()",inicio);
@@ -51,7 +51,10 @@ async function probar(nombre,puedeExt,puedeRuleta){
 (async()=>{
   await probar("Gonzalo",true,true);
   await probar("Vale",true,false);
-  await probar("Romina",false,false);
-  await probar("Andrés",false,false);
-  console.log("PASS selector Celular/TV: Gonzalo y Vale; Ruleta exclusiva Gonzalo");
+  await probar("Romina",true,false);
+  await probar("Andrés",true,false);
+  await probar("UsuarioNuevo",true,false);
+  assert(ext.includes('{id:"duelo-conocimiento",nombre:"Duelo de Conocimiento"'),"Duelo en catálogo");
+  assert(/\{id:"duelo-conocimiento"[^\n]*estado:"disponible"/.test(ext),"Duelo habilitado sin restricciones por usuario");
+  console.log("PASS selector Celular/TV y Duelo de Conocimiento para todos; Ruleta exclusiva Gonzalo");
 })().catch(e=>{console.error(e);process.exitCode=1;});

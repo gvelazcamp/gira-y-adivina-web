@@ -5190,12 +5190,9 @@ $("bRanking").onclick=rkAbrir;
 /* Social muestra el avance por los mapas del juego y las partidas activas.
    Las ciudades son destinos del juego, nunca ubicaciones reales. */
 function esGonzalo(){try{return(perfil&&perfil.nombre||"").trim().toLowerCase()==="gonzalo";}catch(e){return false;}}
-/* Solo el selector Celular/TV de Extensiones, no las funciones de administrador
-   ni el botón de TV de la Ruleta principal. */
-function puedeModoTVExtensiones(){
-  try{return ["gonzalo","vale"].includes(String(perfil&&perfil.nombre||"").trim().toLowerCase());}
-  catch(e){return false;}
-}
+/* El selector Celular/TV de Extensiones es público; no cambia los permisos
+   de administración ni el botón TV de la Ruleta principal. */
+function puedeModoTVExtensiones(){return true;}
 function puedeVerSalaTV(){
   const nombre=String(perfil&&perfil.nombre||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
   return ["andres","romina","gonzalo","vale"].includes(nombre);
@@ -12020,7 +12017,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="canta-la-cancion.js?v=13"></script>
 <script src="tutti-frutti-datos.js?v=35"></script>
 <script src="tutti-frutti.js?v=97"></script>
-<script src="extensiones.js?v=99"></script>
+<script src="extensiones.js?v=100"></script>
 <script src="sala-tv.js?v=1"></script>
 <link rel="stylesheet" href="tele.css?v=5">
 <script src="tele.js?v=7"></script>

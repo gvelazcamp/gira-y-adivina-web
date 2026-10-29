@@ -232,8 +232,8 @@ const Extensiones=(()=>{
   let shell=null,contenido=null,vista="";
   let modoTVElegido=false,versionModo=0;
   let avisoTV=null,focoAntesAvisoTV=null;
-  /* El selector Celular/TV de Extensiones es solo para Gonzalo y Vale.
-     Para los demás perfiles se conserva la rotación física normal. */
+  /* El selector Celular/TV de Extensiones está disponible para todos.
+     El modo TV sigue siendo opcional y el menú mantiene su orientación. */
   const modoTVDisponible=()=>typeof puedeModoTVExtensiones==="function"&&puedeModoTVExtensiones();
   function pintarTV(){
     const boton=shell?.querySelector("#extTV");if(!boton)return;
@@ -256,7 +256,7 @@ const Extensiones=(()=>{
     if(modo!=="tv")return;
     modoTVElegido=true;pintarSelectorModo();
     /* Al elegir TV en Más juegos todavía no giramos: el menú sigue
-       vertical. El giro se solicita al abrir un juego, solo para Gonzalo o Vale. */
+       vertical. El giro se solicita al abrir un juego si se eligió TV. */
     if(vista==="lobby"){salirTV();pintarSelectorModo();return;}
     if(!window.GyaTV?.activo("ext"))await window.GyaTV?.alternar("ext");
     if(version!==versionModo)return;
@@ -362,7 +362,7 @@ const Extensiones=(()=>{
     vista="lobby";salirTV();mostrar();pintarTV();Fichas.enJuego("");
     shell.querySelector("#extTitulo").textContent="Jugá más juegos de Girá y Adiviná";
     const selector=modoTVDisponible()?'<div class="ext-selector-modo" role="group" aria-label="Modo de pantalla"><span>Pantallas</span><button type="button" data-modo="celular" aria-pressed="true">📱 Celular</button><button type="button" data-modo="tv" aria-pressed="false">📺 TV</button></div>':"";
-    /* Mantener la portada pegada al título. El selector de ambos perfiles comparte
+    /* Mantener la portada pegada al título. El selector de todos los perfiles comparte
        fila con «Más juegos» y no genera una fila adicional sobre la portada. */
     const tituloJuegos=selector?'<div class="ext-seccion-barra"><h3 class="ext-seccion">🎮 Más juegos</h3>'+selector+'</div>':'<h3 class="ext-seccion">🎮 Más juegos</h3>';
     contenido.innerHTML='<div class="ext-hero"><span>✦ MÁS JUEGOS, MÁS DESAFÍOS</span><h2>Extensiones</h2><p>Elegí un juego del universo Girá y Adiviná. Jugá gratis, sin gastar vidas ni monedas.</p></div>'+tituloJuegos+'<div class="ext-lista" id="extListaResto"></div><h3 class="ext-seccion">🎉 Juegos de previa</h3><div class="ext-lista" id="extListaPrevia"></div>';
@@ -401,7 +401,7 @@ const Extensiones=(()=>{
     const ext=EXTENSIONES.find(x=>x.id===id&&x.estado==="disponible"&&extensionVisible(x));if(!ext)return;
     mostrar();vista=id;contenido.replaceChildren();Fichas.enJuego(id);pintarTV();
     /* Pedir orientación horizontal solo al entrar al juego y solo cuando
-       Gonzalo o Vale eligieron TV, nunca al seleccionar el modo en el menú. */
+       el usuario eligió TV, nunca al seleccionar el modo en el menú. */
     if(id!=="duelo-conocimiento"&&modoTVDisponible()&&modoTVElegido&&!window.GyaTV?.activo("ext"))
       void window.GyaTV?.alternar("ext").then(()=>pintarTV());
     shell.querySelector("#extTitulo").textContent=ext.nombre;
