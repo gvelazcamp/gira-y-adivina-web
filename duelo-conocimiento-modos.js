@@ -3,7 +3,7 @@
 "use strict";
 const $dc=id=>document.getElementById(id);
 const originalStart=start, originalNextQuestion=nextQuestion, originalRightAnswer=rightAnswer, originalFinish=finish, originalReset=resetToConfig;
-let mode="bot", botHandle=0, botError=30, online=null, mic=null, micWanted=false, micRunning=false, micBlocked=false, micToken=0, micStartupTimer=0, micAudioTimer=0, lastSpeech="",lastSpeechAt=0, remoteState=0, lastFlagRevealTurn=-1;
+let mode="bot", botHandle=0, botError=30, online=null, mic=null, micWanted=false, micRunning=false, micBlocked=false, micToken=0, micStartupTimer=0, micAudioTimer=0, lastSpeech="",lastSpeechAt=0, remoteState=0, lastRevealTurn=-1;
 const alphabet="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const uniqueId=()=>Math.random().toString(36).slice(2,10);
 const nameSafe=s=>String(s||"Jugador").trim().slice(0,14).replace(/[<>]/g,"");
@@ -81,7 +81,7 @@ async function startMic(){
          const candidate=String(result[j].transcript||"").trim();
          if(!candidate)continue;
          if(result.isFinal&&normalize(candidate)==="paso"){passTurn();return;}
-         if(result.isFinal&&question.category==="banderas"&&!wrongFlag&&(countriesSpoken(candidate).length||normalize(candidate).includes("inglaterra")))wrongFlag=candidate;
+         if(result.isFinal&&!wrongFlag&&((question.category==="banderas"&&(countriesSpoken(candidate).length||normalize(candidate).includes("inglaterra")))||(isImageQuestion(question)&&openAnswer(candidate,question.category))))wrongFlag=candidate;
          if(!isRightAnswer(candidate,question))continue;
          const key=candidate.toLocaleLowerCase('es-UY'),now=Date.now();if(key===lastSpeech&&now-lastSpeechAt<1500)return;
          lastSpeech=key;lastSpeechAt=now;applyAnswer(candidate);return;
@@ -129,7 +129,7 @@ isRightAnswer=function(v,q){
 };
 function applyAnswer(value){
  if(phase!=="playing"||!question||!canAnswer())return;
- if(!isRightAnswer(value,question)){if(question.category==="banderas")passTurn(value);else $dc("feedback").textContent=openAnswerHint(value,question)||"No es correcto. Seguí intentando.";return;}
+ if(!isRightAnswer(value,question)){if(question.category==="banderas"||isImageQuestion(question))passTurn(value);else $dc("feedback").textContent=openAnswerHint(value,question)||"No es correcto. Seguí intentando.";return;}
  if(mode==="online"&&online&&!online.host){sendOnline("guess",{guess:value});$dc("feedback").textContent="Respuesta enviada. Esperando validación...";return;}
  rightAnswer(value);
 }
@@ -144,8 +144,8 @@ function botTurn(retries=0){
  const speed=retries?1400+Math.floor(Math.random()*700):2700+Math.floor(Math.random()*1000);
  botHandle=setTimeout(()=>{
    if(mode!=="bot"||phase!=="playing"||active!==1||question!==currentQuestion)return;
-   if(!retries&&Math.random()*100<botError){if(question.category==="banderas"){const wrongCode=allCodes.find(code=>code!==question.code);passTurn(COUNTRY_NAMES[wrongCode]);}else{$dc("feedback").className="feedback fail";$dc("feedback").textContent=players[1].name+" se equivocó. Su reloj sigue corriendo.";botTurn(1);}}
-   else if(OPEN_ANSWERS[question.category]){const options=OPEN_ANSWERS[question.category].filter(entry=>!usedOpenAnswers.has(question.category+':'+normalize(entry.name)));if(options.length)rightAnswer(options[Math.floor(Math.random()*options.length)].name);else passTurn();}
+   if(!retries&&Math.random()*100<botError){if(question.category==="banderas"){const wrongCode=allCodes.find(code=>code!==question.code);passTurn(COUNTRY_NAMES[wrongCode]);}else if(isImageQuestion(question)){const wrong=IMAGE_QUESTIONS[question.category].names.find(name=>name!==question.answer);passTurn(wrong);}else{$dc("feedback").className="feedback fail";$dc("feedback").textContent=players[1].name+" se equivocó. Su reloj sigue corriendo.";botTurn(1);}}
+   else if(isImageQuestion(question))rightAnswer(question.answer);
    else rightAnswer("BOT");
  },speed);
 }
@@ -242,31 +242,30 @@ rightAnswer=function(value){
  if(mode==="online"&&online&&online.host)sendSnapshot();
 };
 const basePass=passTurn;
+function revealPhrase(q){const answer=getCorrectAnswer(q);return q.category==="banderas"?`La bandera era ${answer}.`:q.category==="ciudades"?`La ciudad era ${answer}.`:q.category==="simpsons"?`El personaje era ${answer}.`:q.category==="videojuegos"?`El videojuego era ${answer}.`:`La respuesta correcta era: ${answer}.`}
 passTurn=function(wrongValue=''){
  const preguntaActual=question,jugadorActual=active,nombre=players[active]?.name;
- const bandera=preguntaActual?.category==="banderas";
- const solucion=bandera?getCorrectAnswer(preguntaActual):OPEN_ANSWERS[preguntaActual?.category]
-   ?OPEN_ANSWERS[preguntaActual.category].find(entry=>!usedOpenAnswers.has(preguntaActual.category+':'+normalize(entry.name)))?.name
-   :preguntaActual?getCorrectAnswer(preguntaActual):'';
+ const revelar=preguntaActual?.category==="banderas"||isImageQuestion(preguntaActual);
+ const solucion=preguntaActual?getCorrectAnswer(preguntaActual):'';
  if(mode==="online"&&online&&!online.host){
    sendOnline("pass",{wrong:wrongValue});
-   $dc("feedback").textContent=bandera?`✗ Era ${solucion}. Sigue ${players[0].name}.`:"Paso enviado. Esperando el siguiente turno…";
-   stopMic();if(bandera){lastFlagRevealTurn=turn;speak(`La bandera era ${solucion}.`,2800)}return;
+   $dc("feedback").textContent=revelar?`✗ Era ${solucion}. Sigue ${players[0].name}.`:"Paso enviado. Esperando el siguiente turno…";
+   stopMic();if(revelar){lastRevealTurn=turn;speak(revealPhrase(preguntaActual),2800)}return;
  }
  const mostrarSolucion=mode==="bot"&&phase==="playing"&&preguntaActual&&!preguntaActual.answered;
- if(mode==="bot"||bandera)stopMic();
+ if(mode==="bot"||revelar)stopMic();
  basePass(wrongValue);
  if(mostrarSolucion&&phase==="transition"&&question===preguntaActual){
    clearTimeout(transitionTimeout);transitionTimeout=0;
-   const frase=bandera?`La bandera era ${solucion}.`:OPEN_ANSWERS[preguntaActual.category]?`Podías decir ${solucion}.`:`La respuesta correcta era: ${solucion}.`;
+   const frase=revealPhrase(preguntaActual);
    $dc("feedback").className="feedback fail";
-   $dc("feedback").textContent=bandera?`✗ Era ${solucion}. Sigue ${players[1-active].name}.`:`Paso de ${nombre}: 1 error. ${frase}`;
-   setMicLabel(bandera?"RESPUESTA CORRECTA":"PASO",frase+" La siguiente pregunta aparece en unos segundos.",false);
+   $dc("feedback").textContent=revelar?`✗ Era ${solucion}. Sigue ${players[1-active].name}.`:`Paso de ${nombre}: 1 error. ${frase}`;
+   setMicLabel(revelar?"RESPUESTA CORRECTA":"PASO",frase+" La siguiente pregunta aparece en unos segundos.",false);
    speak(frase,30000).then(()=>{
      if(mode!=="bot"||phase!=="transition"||question!==preguntaActual||active!==jugadorActual)return;
      avanzarDespuesDeRespuestaBot(preguntaActual,jugadorActual,4500);
    });
- }else if(bandera&&phase==="transition")speak(`La bandera era ${solucion}.`,2800);
+ }else if(revelar&&phase==="transition")speak(revealPhrase(preguntaActual),2800);
  if(mode==="online"&&online&&online.host)sendSnapshot();
 };
 const baseFinish=finish;
@@ -278,7 +277,7 @@ finish=function(winner,reason){
  }
 };
 const baseReset=resetToConfig;
-resetToConfig=function(){clearTimeout(botHandle);cancelNarration();stopMic();stopOnline();lastFlagRevealTurn=-1;baseReset();voiceBtn.disabled=false;$dc("input0").value="";syncSetup();syncAnswer()};
+resetToConfig=function(){clearTimeout(botHandle);cancelNarration();stopMic();stopOnline();lastRevealTurn=-1;baseReset();voiceBtn.disabled=false;$dc("input0").value="";syncSetup();syncAnswer()};
 function codeValid(c){return /^[A-HJ-NP-Z2-9]{4}$/.test(c)}
 function sendOnline(type,data){
  if(!online)return;
@@ -321,8 +320,8 @@ function onOnlineMsg(message){
    const d=message.data;players=d.players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0}));usedOpenAnswers.clear();(d.usedOpenAnswers||[]).forEach(answer=>usedOpenAnswers.add(answer));
    active=d.active;turn=d.turn;if(d.phase==="finished")return;
    phase=d.phase;
-   const olderKey=question&&JSON.stringify([question.category,question.code,question.math,question.person&&question.person.name]);
-   const nextKey=d.question&&JSON.stringify([d.question.category,d.question.code,d.question.math,d.question.person&&d.question.person.name]);
+   const olderKey=question&&JSON.stringify([question.category,question.code,question.math,question.answer,question.person&&question.person.name]);
+   const nextKey=d.question&&JSON.stringify([d.question.category,d.question.code,d.question.math,d.question.answer,d.question.person&&d.question.person.name]);
    question=d.question;
    $dc("roulette-overlay").classList.add("hidden");
    if(question&&olderKey!==nextKey){
@@ -333,14 +332,14 @@ function onOnlineMsg(message){
    }
    $dc("answer-input").disabled=!(phase==="playing"&&active===1);
    $dc("answer-submit").disabled=!(phase==="playing"&&active===1);
-   if(phase==="transition"&&d.feedback){$dc("feedback").className="feedback fail";$dc("feedback").textContent=d.feedback;if(question?.category==="banderas"&&d.feedback.includes("Era ")){const answer=getCorrectAnswer(question);setMicLabel(`BANDERA DE ${upper(answer)}`,`Sigue ${players[1-active].name}`,false);if(lastFlagRevealTurn!==turn){lastFlagRevealTurn=turn;speak(`La bandera era ${answer}.`,2800)}}}
+   if(phase==="transition"&&d.feedback){$dc("feedback").className="feedback fail";$dc("feedback").textContent=d.feedback;if((question?.category==="banderas"||isImageQuestion(question))&&d.feedback.includes("Era ")){const answer=getCorrectAnswer(question);setMicLabel(`ERA ${upper(answer)}`,`Sigue ${players[1-active].name}`,false);if(lastRevealTurn!==turn){lastRevealTurn=turn;speak(revealPhrase(question),2800)}}}
    if(phase==="playing"){$dc("feedback").textContent=active===1?"¡Es tu turno!":"Esperá el turno de "+players[0].name;
     setMicLabel(active===1?"TE TOCA RESPONDER":"RIVAL JUGANDO",active===1?"Respondé por voz o escribiendo":"Tu reloj está pausado",active===1&&micRunning);}
    updatePlayers();return;
  }
  if(message.type==="guess"&&online.host&&phase==="playing"&&active===1&&question){
    if(isRightAnswer(message.data.guess,question))rightAnswer(message.data.guess);
-   else if(question.category==="banderas")passTurn(message.data.guess);
+   else if(question.category==="banderas"||isImageQuestion(question))passTurn(message.data.guess);
    else sendOnline("wrong",{feedback:openAnswerHint(message.data.guess,question)});
    return;
  }
@@ -391,7 +390,7 @@ start=function(){
  // El contador y el cartel viven en la pantalla de Extensiones, fuera de este iframe.
  if(mode==="bot"&&window.parent!==window&&window.parent.Fichas&&
     !window.parent.Fichas.usar("duelo-conocimiento",()=>{if(document.contains(place))start();}))return;
- clearTimeout(botHandle);stopOnline();lastFlagRevealTurn=-1;
+ clearTimeout(botHandle);stopOnline();lastRevealTurn=-1;
  if(mode==="bot"){$dc("input1").disabled=false;$dc("input1").value="Sofía";}
  if(mode==="online"){
    if(roomChoice.value==="join"){const c=roomInput.value.trim().toUpperCase();if(!codeValid(c)){onlineStatus("Ingresá un código válido de 4 caracteres.");return;}connectOnline(false,c);}

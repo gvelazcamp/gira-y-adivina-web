@@ -72,9 +72,9 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
 .category-grid input{width:17px;height:17px;accent-color:var(--gold)}.category-fieldset small{display:block;margin-top:9px;color:var(--soft);font-size:10px;line-height:1.35}
 .flag-box.photo-mode{width:min(100%,260px);aspect-ratio:1.15;overflow:hidden}.flag-box.photo-mode img#portrait-img{width:100%;height:100%;object-fit:cover;object-position:center 25%;border-radius:7px}
 .flag-box.math-mode{width:min(100%,310px);aspect-ratio:1.6;background:linear-gradient(145deg,#48276d,#16153d);border-color:rgba(255,201,64,.4)}
-.flag-box.open-mode{width:min(100%,310px);aspect-ratio:1.6;background:linear-gradient(145deg,#502a83,#191341);border-color:rgba(255,201,64,.55)}.flag-box.open-mode #math-visual{font-size:clamp(22px,4vw,33px);white-space:pre-line;text-align:center}
+.flag-box.image-mode{width:min(100%,280px);aspect-ratio:1;padding:5px;background:#24143e;border-color:rgba(255,201,64,.65);overflow:hidden}#quiz-image{width:100%;height:100%;border-radius:7px;background-repeat:no-repeat;background-color:#24143e}
 #math-visual{font-size:clamp(28px,5vw,46px);font-weight:1000;letter-spacing:-.045em;color:white;text-shadow:0 3px 14px #0007;line-height:1.3}
-#flag-img[hidden],#portrait-img[hidden],#math-visual[hidden],.image-credit[hidden]{display:none!important}
+#flag-img[hidden],#portrait-img[hidden],#math-visual[hidden],#quiz-image[hidden],.image-credit[hidden]{display:none!important}
 .image-credit{font-size:10px;color:#bbafce;margin:-8px 0 11px}.image-credit a{color:var(--aqua)}
 @media(max-width:500px){.category-grid label{padding:8px 6px;font-size:11px}.category-fieldset{margin:9px 0}.flag-box.photo-mode{aspect-ratio:1.25}}
 .dc-setup-logo{display:block;width:min(265px,65vw);height:auto;max-height:230px;object-fit:contain;margin:0 auto 8px;filter:drop-shadow(0 6px 16px #0007)}.dc-title-logo{display:block;width:92px;height:82px;object-fit:contain;margin:0 auto 2px;filter:drop-shadow(0 3px 9px #0009)}@media(max-width:600px){.dc-setup-logo{width:min(188px,53vw);max-height:172px}.dc-title-logo{width:70px;height:62px}}
@@ -107,7 +107,7 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
         <div class="active-turn-banner" id="active-turn-banner" role="status" aria-live="polite" hidden></div>
         <div class="question-number" id="question-number">Ronda 01 · Turno de Andrés</div>
         <div class="question-title" id="question-title">¿DE QUÉ PAÍS ES ESTA BANDERA?</div>
-        <div class="flag-box" id="flag-box"><img id="flag-img" alt="Bandera para adivinar"/><img id="portrait-img" alt="Foto para identificar" hidden/><div id="math-visual" hidden></div></div><div class="image-credit" id="image-credit" hidden>Foto de Wikipedia / Wikimedia Commons · <a href="https://commons.wikimedia.org" rel="noopener noreferrer" target="_blank" id="credit-link">Ver fuente</a></div>
+        <div class="flag-box" id="flag-box"><img id="flag-img" alt="Bandera para adivinar"/><img id="portrait-img" alt="Foto para identificar" hidden/><div id="quiz-image" role="img" aria-label="Imagen para identificar" hidden></div><div id="math-visual" hidden></div></div><div class="image-credit" id="image-credit" hidden>Foto de Wikipedia / Wikimedia Commons · <a href="https://commons.wikimedia.org" rel="noopener noreferrer" target="_blank" id="credit-link">Ver fuente</a></div>
         <div class="mic-panel" id="mic-panel" aria-label="Respuesta escrita de prueba">
           <div class="mic-main" id="mic-main">RESPONDÉ AL DESAFÍO</div>
           <div class="mic-heard" id="mic-heard">Podés activar tu micrófono en Chrome.</div>
@@ -182,7 +182,7 @@ function newCountry(p){if(!p.deck.length){p.deck=shuffled(allCodes);if(p.deck[0]
 
 const PEOPLE = {"famosos":[{"name":"Natalia Oreiro","title":"Natalia Oreiro","lang":"es"},{"name":"Jorge Drexler","title":"Jorge Drexler","lang":"es"},{"name":"Rubén Rada","title":"Rubén Rada","lang":"es"},{"name":"China Zorrilla","title":"China Zorrilla","lang":"es"},{"name":"Mario Benedetti","title":"Mario Benedetti","lang":"es"},{"name":"José Mujica","title":"José Mujica","lang":"es"},{"name":"María Noel Riccetto","title":"María Noel Riccetto","lang":"es"},{"name":"Ricardo Darín","title":"Ricardo Darín","lang":"es"},{"name":"Guillermo Francella","title":"Guillermo Francella","lang":"es"},{"name":"Mirtha Legrand","title":"Mirtha Legrand","lang":"es"},{"name":"Susana Giménez","title":"Susana Giménez","lang":"es"},{"name":"Tini Stoessel","title":"Tini Stoessel","lang":"es"},{"name":"Lali Espósito","title":"Lali Espósito","lang":"es"},{"name":"Mercedes Sosa","title":"Mercedes Sosa","lang":"es"},{"name":"Duki","title":"Duki","lang":"es"},{"name":"Soledad Pastorutti","title":"Soledad Pastorutti","lang":"es"},{"name":"Fito Páez","title":"Fito Páez","lang":"es"},{"name":"Taylor Swift","title":"Taylor Swift","lang":"en"},{"name":"Beyoncé","title":"Beyoncé","lang":"en"},{"name":"Lady Gaga","title":"Lady Gaga","lang":"en"},{"name":"Billie Eilish","title":"Billie Eilish","lang":"en"},{"name":"Tom Cruise","title":"Tom Cruise","lang":"en"},{"name":"Leonardo DiCaprio","title":"Leonardo DiCaprio","lang":"en"},{"name":"Jennifer Lopez","title":"Jennifer Lopez","lang":"en"},{"name":"Ariana Grande","title":"Ariana Grande","lang":"en"},{"name":"Selena Gomez","title":"Selena Gomez","lang":"en"},{"name":"Will Smith","title":"Will Smith","lang":"en"},{"name":"Zendaya","title":"Zendaya","lang":"en"},{"name":"Johnny Depp","title":"Johnny Depp","lang":"en"},{"name":"Brad Pitt","title":"Brad Pitt","lang":"en"},{"name":"Morgan Freeman","title":"Morgan Freeman","lang":"en"},{"name":"Robert Downey Jr.","title":"Robert Downey Jr.","lang":"en"},{"name":"Dwayne Johnson","title":"Dwayne Johnson","lang":"en"},{"name":"Emma Stone","title":"Emma Stone","lang":"en"}],"futbol":[{"name":"Lionel Messi","title":"Lionel Messi","lang":"es"},{"name":"Diego Maradona","title":"Diego Maradona","lang":"es"},{"name":"Ángel Di María","title":"Ángel Di María","lang":"es"},{"name":"Julián Álvarez","title":"Julián Álvarez (futbolista)","lang":"es"},{"name":"Lautaro Martínez","title":"Lautaro Martínez","lang":"es"},{"name":"Paulo Dybala","title":"Paulo Dybala","lang":"es"},{"name":"Emiliano Martínez","title":"Emiliano Martínez (futbolista)","lang":"es"},{"name":"Rodrigo de Paul","title":"Rodrigo de Paul","lang":"es"},{"name":"Sergio Agüero","title":"Sergio Agüero","lang":"es"},{"name":"Luis Suárez","title":"Luis Suárez (futbolista)","lang":"es"},{"name":"Edinson Cavani","title":"Edinson Cavani","lang":"es"},{"name":"Federico Valverde","title":"Federico Valverde","lang":"es"},{"name":"Darwin Núñez","title":"Darwin Núñez","lang":"es"},{"name":"Ronald Araújo","title":"Ronald Araújo","lang":"es"},{"name":"Diego Forlán","title":"Diego Forlán","lang":"es"},{"name":"Sebastián Abreu","title":"Sebastián Abreu","lang":"es"},{"name":"José María Giménez","title":"José María Giménez (futbolista)","lang":"es"},{"name":"Cristiano Ronaldo","title":"Cristiano Ronaldo","lang":"es"},{"name":"Neymar","title":"Neymar","lang":"es"},{"name":"Kylian Mbappé","title":"Kylian Mbappé","lang":"es"},{"name":"Erling Haaland","title":"Erling Haaland","lang":"es"},{"name":"Mohamed Salah","title":"Mohamed Salah","lang":"es"},{"name":"Vinícius Júnior","title":"Vinícius Júnior","lang":"es"},{"name":"Kevin De Bruyne","title":"Kevin De Bruyne","lang":"es"},{"name":"Robert Lewandowski","title":"Robert Lewandowski","lang":"es"},{"name":"Luka Modrić","title":"Luka Modrić","lang":"es"},{"name":"Karim Benzema","title":"Karim Benzema","lang":"es"},{"name":"David Beckham","title":"David Beckham","lang":"es"},{"name":"Pelé","title":"Pelé","lang":"es"},{"name":"Zlatan Ibrahimović","title":"Zlatan Ibrahimović","lang":"es"},{"name":"Virgil van Dijk","title":"Virgil van Dijk","lang":"es"},{"name":"Harry Kane","title":"Harry Kane","lang":"es"}]};
 const FLAG_LEVELS={easy:["uy", "ar", "br", "cl", "py", "bo", "pe", "co", "ec", "ve", "mx", "us", "es", "pt", "fr", "it", "de", "gb", "cn", "jp", "kr", "ca", "au", "nz", "in", "za", "eg", "tr", "sa", "il"],medium:["cr", "pa", "cu", "do", "ht", "jm", "gt", "hn", "sv", "ni", "bz", "bs", "tt", "gy", "sr", "gr", "ie", "be", "nl", "ch", "at", "se", "no", "dk", "fi", "is", "pl", "cz", "sk", "hu", "ro", "bg", "hr", "rs", "ba", "me", "si", "al", "gr", "ua", "ru", "by", "lt", "lv", "ee", "ge", "am", "az", "md", "ma", "dz", "tn", "ly", "ng", "gh", "sn", "cm", "ci", "ke", "et", "ug", "tz", "zw", "zm", "ao", "mz", "na", "bw", "mg", "mu", "qa", "ae", "kw", "bh", "om", "jo", "lb", "iq", "ir", "pk", "bd", "np", "lk", "th", "vn", "kh", "la", "mm", "my", "sg", "id", "ph", "tw", "mn", "kz", "uz", "kg", "tj", "af"],hard:["bn", "tl", "pg", "fj", "ws", "to", "vu", "sb", "cy", "mt", "lu", "li", "ad", "mc", "sm", "va", "mk", "fo", "gl", "bt", "mv", "sc", "rw", "bi", "so", "dj", "er", "sd", "ss", "td", "ne", "ml", "bf", "bj", "tg", "ga", "gm", "gw", "sl", "lr", "cf", "cd", "cg", "gq", "st", "cv", "km", "ls", "sz", "mw", "ye", "sy", "ps", "bb", "gd", "lc", "vc", "kn", "dm", "ag"]};
-// En estas dos rondas se nombra una respuesta por turno, sin repetir ninguna entre jugadores.
+// Nombres alternativos para reconocer la respuesta hablada de cada imagen.
 const OPEN_ANSWERS={
  ciudades:`Montevideo
 Buenos Aires
@@ -358,10 +358,16 @@ Guitar Hero`
 for(const category of Object.keys(OPEN_ANSWERS))OPEN_ANSWERS[category]=OPEN_ANSWERS[category].split('\n').map(line=>{const [name,...aliases]=line.split('|');return {name,aliases:[name,...aliases].map(normalize)}});
 const usedOpenAnswers=new Set();
 function openAnswer(value,category){const phrase=' '+normalize(value)+' ';if(!phrase.trim())return null;let match=null,longest=0;for(const entry of OPEN_ANSWERS[category]||[])for(const alias of entry.aliases)if(alias.length>longest&&phrase.includes(' '+alias+' ')){match=entry;longest=alias.length}return match}
+const IMAGE_QUESTIONS={
+ ciudades:{atlas:'assets/duelo/ciudades-atlas.png',grid:4,names:['París','Nueva York','Roma','Londres','Tokio','Río de Janeiro','Sídney','Dubái','Venecia','Barcelona','San Francisco','El Cairo','Buenos Aires','Montevideo','Punta del Este','Berlín'],label:'¿QUÉ CIUDAD ES?'},
+ simpsons:{atlas:'assets/duelo/simpsons-atlas.svg',grid:3,names:['Homero Simpson','Marge Simpson','Bart Simpson','Lisa Simpson','Maggie Simpson','Ned Flanders','Montgomery Burns','Moe Szyslak','Krusty el Payaso'],label:'¿QUÉ PERSONAJE DE LOS SIMPSON ES?'},
+ videojuegos:{atlas:'assets/duelo/videojuegos-atlas.png',grid:4,names:['Minecraft','Fortnite','Roblox','Tetris','Pac-Man','Super Mario Bros.','Mario Kart','The Legend of Zelda','Sonic the Hedgehog','Pokémon GO','Grand Theft Auto V','Among Us','Angry Birds','Plants vs. Zombies','Rocket League','Candy Crush Saga'],label:'¿QUÉ VIDEOJUEGO ES?'}
+};
+function isImageQuestion(q){return !!IMAGE_QUESTIONS[q?.category]}
 const PHOTO_CACHE={};
 let questionGeneration=0;
 const askedQuestions=new Set();
-function questionKey(q){return q.category==='banderas'?'banderas:'+q.code:q.category==='matematica'?'matematica:'+q.math:OPEN_ANSWERS[q.category]?q.category+':'+turn:q.category+':'+normalize(q.person.name)}
+function questionKey(q){return q.category==='banderas'?'banderas:'+q.code:q.category==='matematica'?'matematica:'+q.math:isImageQuestion(q)?q.category+':'+normalize(q.answer):q.category+':'+normalize(q.person.name)}
 function randomInt(min,max){return Math.floor(Math.random()*(max-min+1))+min}
 function nextTopic(p){if(!p.topicDeck.length)p.topicDeck=shuffled([...settings.categories]);return p.topicDeck.pop()}
 function nextPerson(p,category){const key=category+'Deck';if(!p[key].length)p[key]=shuffled(PEOPLE[category]);p[key]=p[key].filter(person=>!askedQuestions.has(category+':'+normalize(person.name)));return p[key].pop()||null}
@@ -392,7 +398,7 @@ function newMath(p){
  while(askedQuestions.has('matematica:'+n+' + '+(n+1)))n++;
  return {category:'matematica',answer:String(2*n+1),math:n+' + '+(n+1),label:'¿CUÁNTO DA ESTA CUENTA?',level:Math.min(6,Math.floor(p.score/2)+1)};
 }
-function buildQuestion(p,category){if(category==='banderas')return newFlag(p);if(category==='matematica')return newMath(p);if(OPEN_ANSWERS[category]){if(!OPEN_ANSWERS[category].some(entry=>!usedOpenAnswers.has(category+':'+normalize(entry.name))))return newMath(p);return {category,label:{ciudades:'NOMBRÁ UNA CIUDAD TURÍSTICA',simpsons:'NOMBRÁ UN PERSONAJE DE LOS SIMPSON',videojuegos:'NOMBRÁ UN VIDEOJUEGO'}[category],level:null}}const person=nextPerson(p,category);return person?{category,person,label:category==='famosos'?'¿QUIÉN ES ESTA PERSONA?':'¿QUÉ FUTBOLISTA ES?',level:null}:newMath(p)}
+function buildQuestion(p,category){if(category==='banderas')return newFlag(p);if(category==='matematica')return newMath(p);if(IMAGE_QUESTIONS[category]){const set=IMAGE_QUESTIONS[category],choices=set.names.map((answer,cell)=>({answer,cell})).filter(item=>!askedQuestions.has(category+':'+normalize(item.answer)));if(!choices.length)return newMath(p);const pick=shuffled(choices).pop();return {category,answer:pick.answer,img:set.atlas,cell:pick.cell,grid:set.grid,label:set.label,level:null}}const person=nextPerson(p,category);return person?{category,person,label:category==='famosos'?'¿QUIÉN ES ESTA PERSONA?':'¿QUÉ FUTBOLISTA ES?',level:null}:newMath(p)}
 function personAnswers(person){const n=normalize(person.name);const words=n.split(' ');const r=[n];
  if(words.length>=2){const last=words[words.length-1];const pool=[...PEOPLE.famosos,...PEOPLE.futbol];const matches=pool.filter(p=>normalize(p.name).split(' ').at(-1)===last);if(last.length>=4&&!['junior','martinez'].includes(last)&&matches.length===1)r.push(last);r.push(words.slice(-2).join(' '));}
  if(n==='lionel messi')r.push('messi','leo messi');
@@ -405,11 +411,11 @@ function personAnswers(person){const n=normalize(person.name);const words=n.spli
  if(n==='duki')r.push('duki');
  return [...new Set(r)].filter(x=>x.length>2)
 }
-function isRightAnswer(value,q){if(!q)return false;if(OPEN_ANSWERS[q.category]){const entry=openAnswer(value,q.category);return !!entry&&!usedOpenAnswers.has(q.category+':'+normalize(entry.name))}if(q.category==='banderas')return isCorrectSpeech(value,q.code);
+function isRightAnswer(value,q){if(!q)return false;if(isImageQuestion(q)){const entry=openAnswer(value,q.category);return !!entry&&normalize(entry.name)===normalize(q.answer)}if(q.category==='banderas')return isCorrectSpeech(value,q.code);
  if(q.category==='matematica')return /^-?\d+$/.test(value.trim())&&Number(value.trim())===Number(q.answer);
  return personAnswers(q.person).includes(normalize(value));}
-function openAnswerHint(value,q){if(!OPEN_ANSWERS[q?.category])return '';const entry=openAnswer(value,q.category);return entry&&usedOpenAnswers.has(q.category+':'+normalize(entry.name))?`${entry.name} ya se dijo. Probá otra respuesta.`:'No la reconocí. Probá otra respuesta.'}
-function getCorrectAnswer(q){return OPEN_ANSWERS[q.category]?q.answer:q.category==='banderas'?COUNTRY_NAMES[q.code]:q.category==='matematica'?q.answer:q.person.name}
+function openAnswerHint(value,q){if(!isImageQuestion(q))return '';return openAnswer(value,q.category)?'No es esa imagen. Mirá de nuevo.':'No entendí la respuesta. Repetila.'}
+function getCorrectAnswer(q){return isImageQuestion(q)?q.answer:q.category==='banderas'?COUNTRY_NAMES[q.code]:q.category==='matematica'?q.answer:q.person.name}
 function photoSource(person){return `https://${person.lang}.wikipedia.org/wiki/${encodeURIComponent(person.title.replaceAll(' ','_'))}`}
 async function lookupPortrait(person){
  const key=person.lang+':'+person.title;
@@ -424,14 +430,12 @@ function loadImage(url,timeout=5500){return new Promise((resolve,reject)=>{const
 function showVisual(q){
  $('flag-box').classList.toggle('photo-mode',q.category==='famosos'||q.category==='futbol');
  $('flag-box').classList.toggle('math-mode',q.category==='matematica');
- $('flag-box').classList.toggle('open-mode',!!OPEN_ANSWERS[q.category]);
- $('flag-img').hidden=q.category!=='banderas';$('portrait-img').hidden=!['famosos','futbol'].includes(q.category);$('math-visual').hidden=q.category!=='matematica'&&!OPEN_ANSWERS[q.category];
+ $('flag-box').classList.toggle('image-mode',isImageQuestion(q));
+ $('flag-img').hidden=q.category!=='banderas';$('portrait-img').hidden=!['famosos','futbol'].includes(q.category);$('quiz-image').hidden=!isImageQuestion(q);$('math-visual').hidden=q.category!=='matematica';
  $('image-credit').hidden=!['famosos','futbol'].includes(q.category);
  if(q.category==='banderas'){$('flag-img').src=q.img;$('flag-img').alt='Bandera para identificar'}
  if(q.category==='matematica')$('math-visual').textContent=q.math+' = ?';
- if(q.category==='ciudades')$('math-visual').textContent='🏙\nCIUDADES TURÍSTICAS';
- if(q.category==='simpsons')$('math-visual').textContent='🍩\nLOS SIMPSON';
- if(q.category==='videojuegos')$('math-visual').textContent='🎮\nVIDEOJUEGOS';
+ if(isImageQuestion(q)){const image=$('quiz-image'),step=100/(q.grid-1);image.style.backgroundImage=`url("${q.img}")`;image.style.backgroundSize=`${q.grid*100}% ${q.grid*100}%`;image.style.backgroundPosition=`${q.cell%q.grid*step}% ${Math.floor(q.cell/q.grid)*step}%`;image.setAttribute('aria-label',`Imagen de ${q.category} para identificar`)}
  if(q.category==='famosos'||q.category==='futbol'){$('portrait-img').src=q.img;$('credit-link').href=photoSource(q.person);}
  $('flag-box').classList.remove('pulse');void $('flag-box').offsetWidth;$('flag-box').classList.add('pulse');
 }
@@ -444,10 +448,11 @@ async function nextQuestion(){
  const serial=++questionGeneration;phase='loading';pauseClock();$('answer-input').disabled=true;$('answer-submit').disabled=true;updatePlayers();
  let q=buildQuestion(p,nextTopic(p));
  $('question-title').textContent=q.label;$('question-number').textContent=`${{banderas:'BANDERAS',matematica:'MATEMÁTICA',famosos:'FAMOSOS',futbol:'FÚTBOL',ciudades:'CIUDADES TURÍSTICAS',simpsons:'LOS SIMPSON',videojuegos:'VIDEOJUEGOS'}[q.category]}${q.level?' · NIVEL '+q.level:''} · Turno de ${p.name}`;
- if(q.category==='banderas'||q.category==='famosos'||q.category==='futbol'){
+ if(q.category==='banderas'||q.category==='famosos'||q.category==='futbol'||isImageQuestion(q)){
   $('feedback').className='feedback';$('feedback').textContent='Preparando imagen…';setMicLabel('CARGANDO DESAFÍO','El cronómetro está pausado mientras carga la imagen.',false);
   try{
    if(q.category==='banderas'){q.img=IMAGES.flags[q.code]||`https://flagcdn.com/w320/${q.code}.png`;await loadImage(q.img,5000)}
+   else if(isImageQuestion(q))await loadImage(q.img,5000);
    else{
      let loaded=false;
      for(let attempt=0;attempt<3;attempt++){
@@ -473,15 +478,15 @@ async function nextQuestion(){
   if(phase==='announcing'){updatePlayers();return}
   prevTick=performance.now();pauseClock();raf=requestAnimationFrame(tick);updatePlayers();if(puedeResponder&&$('answer-form').offsetParent!==null)$('answer-input').focus();
 }
-function rightAnswer(transcript){if(phase!=='playing'||!question||question.answered)return;if(OPEN_ANSWERS[question.category]){const entry=openAnswer(transcript,question.category);if(!entry||usedOpenAnswers.has(question.category+':'+normalize(entry.name)))return;question.answer=entry.name;usedOpenAnswers.add(question.category+':'+normalize(entry.name))}question.answered=true;pauseClock();$('answer-input').disabled=true;$('answer-submit').disabled=true;const p=players[active];p.score++;$('feedback').className='feedback success';$('feedback').textContent=`✓ ¡Correcto, ${p.name}! ${getCorrectAnswer(question)}`;setMicLabel('¡CORRECTO!',`${getCorrectAnswer(question)} · ${p.name} conserva ${fmt(p.ms)}`,false);phase='transition';updatePlayers();playTone(730,.095);setTimeout(()=>playTone(990,.15),100);transitionTimeout=setTimeout(()=>{if(phase!=='transition')return;active=1-active;turn++;nextQuestion()},active===1?2800:1700)}
-function passTurn(wrongValue=''){if(phase!=='playing'||!question||question.answered)return;const bandera=question.category==='banderas',respuesta=bandera?getCorrectAnswer(question):'';question.answered=true;pauseClock();$('answer-input').disabled=true;$('answer-submit').disabled=true;const p=players[active];p.errors=(p.errors||0)+1;$('feedback').className='feedback fail';$('feedback').textContent=bandera?`✗ Era ${respuesta}. Sigue ${players[1-active].name}.`:`Paso de ${p.name}: 1 error. Sigue ${players[1-active].name}.`;setMicLabel(bandera?`BANDERA DE ${upper(respuesta)}`:'PASO',bandera?`${wrongValue?'Respuesta incorrecta':'Pasaste'} · ${p.name} suma 1 error`:`Se suma 1 error a ${p.name}`,false);phase='transition';updatePlayers();playTone(250,.16,'triangle');transitionTimeout=setTimeout(()=>{if(phase!=='transition')return;active=1-active;turn++;nextQuestion()},bandera?3400:1900)}
-function consumeSpeech(txt,isFinal){if(phase!=='playing'||!question||question.answered||performance.now()<ignoreSpeechUntil)return;const heard=normalize(txt);if(!heard)return;setMicLabel('TE ESCUCHAMOS',`Se escuchó: «${txt}»`,true);if(isCorrectSpeech(txt,question.code)){rightAnswer(txt);return}if(isFinal){if(question.category==='banderas'&&(countriesSpoken(txt).length||heard.includes('inglaterra'))){passTurn(txt);return}$('feedback').className='feedback fail';$('feedback').textContent=question.category==='banderas'?'No entendí un país. Repetí tu respuesta.':'No es correcto. ¡Probá otra vez!';playTone(210,.08,'triangle');}}
+function rightAnswer(transcript){if(phase!=='playing'||!question||question.answered)return;if(isImageQuestion(question)){const entry=openAnswer(transcript,question.category);if(!entry||normalize(entry.name)!==normalize(question.answer))return;usedOpenAnswers.add(question.category+':'+normalize(question.answer))}question.answered=true;pauseClock();$('answer-input').disabled=true;$('answer-submit').disabled=true;const p=players[active];p.score++;$('feedback').className='feedback success';$('feedback').textContent=`✓ ¡Correcto, ${p.name}! ${getCorrectAnswer(question)}`;setMicLabel('¡CORRECTO!',`${getCorrectAnswer(question)} · ${p.name} conserva ${fmt(p.ms)}`,false);phase='transition';updatePlayers();playTone(730,.095);setTimeout(()=>playTone(990,.15),100);transitionTimeout=setTimeout(()=>{if(phase!=='transition')return;active=1-active;turn++;nextQuestion()},active===1?2800:1700)}
+function passTurn(wrongValue=''){if(phase!=='playing'||!question||question.answered)return;const revelar=question.category==='banderas'||isImageQuestion(question),respuesta=revelar?getCorrectAnswer(question):'';question.answered=true;pauseClock();$('answer-input').disabled=true;$('answer-submit').disabled=true;const p=players[active];p.errors=(p.errors||0)+1;$('feedback').className='feedback fail';$('feedback').textContent=revelar?`✗ Era ${respuesta}. Sigue ${players[1-active].name}.`:`Paso de ${p.name}: 1 error. Sigue ${players[1-active].name}.`;setMicLabel(revelar?`ERA ${upper(respuesta)}`:'PASO',revelar?`${wrongValue?'Respuesta incorrecta':'Pasaste'} · ${p.name} suma 1 error`:`Se suma 1 error a ${p.name}`,false);phase='transition';updatePlayers();playTone(250,.16,'triangle');transitionTimeout=setTimeout(()=>{if(phase!=='transition')return;active=1-active;turn++;nextQuestion()},revelar?3400:1900)}
+function consumeSpeech(txt,isFinal){if(phase!=='playing'||!question||question.answered||performance.now()<ignoreSpeechUntil)return;const heard=normalize(txt);if(!heard)return;setMicLabel('TE ESCUCHAMOS',`Se escuchó: «${txt}»`,true);if(isRightAnswer(txt,question)){rightAnswer(txt);return}if(isFinal){if((question.category==='banderas'&&(countriesSpoken(txt).length||heard.includes('inglaterra')))||(isImageQuestion(question)&&openAnswer(txt,question.category))){passTurn(txt);return}$('feedback').className='feedback fail';$('feedback').textContent=question.category==='banderas'?'No entendí un país. Repetí tu respuesta.':isImageQuestion(question)?'No entendí la respuesta. Repetila.':'No es correcto. ¡Probá otra vez!';playTone(210,.08,'triangle')}}
 function localAudioLimitation(){return !window.isSecureContext&&!['file:','content:'].includes(location.protocol)}
 function localAudioMessage(){return 'Archivo abierto desde Descargas: podés intentar activar el micrófono en Chrome, pero Android podría bloquear el reconocimiento de voz. Si no funciona, tendrás que abrir el juego desde una página HTTPS.'}
 function clearMicStartTimer(){clearTimeout(micStartTimer);micStartTimer=0}
 function setupRecognition(){if(recognition)return;recognition=new SpeechAPI();recognition.lang='es-UY';recognition.continuous=true;recognition.interimResults=true;recognition.maxAlternatives=3;
- recognition.onstart=()=>{clearMicStartTimer();if(micBlocked){try{recognition.abort()}catch(e){}return}micActive=true;micBlocked=false;lastMicError='';$('mic-overlay').classList.add('hidden');if(phase==='selecting'&&!selectionStarted)runRoulette();if(phase==='waiting-mic'){phase='playing';setMicLabel('TE ESCUCHAMOS',`Decí el país, ${players[active].name}`,true);prevTick=performance.now();pauseClock();raf=requestAnimationFrame(tick);updatePlayers()}else if(phase==='playing'){setMicLabel('TE ESCUCHAMOS',`Decí el país, ${players[active].name}`,true)}else if(phase==='selecting'){setMicLabel('MICRÓFONO ACTIVADO','Sorteando quién comienza...',true)}};
- recognition.onresult=e=>{if(phase!=='playing')return;for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i];for(let j=0;j<r.length;j++){let phrase=r[j].transcript;if(isCorrectSpeech(phrase,question?.code)){consumeSpeech(phrase,true);return}}if(r[0])consumeSpeech(r[0].transcript,r.isFinal)}};
+ recognition.onstart=()=>{clearMicStartTimer();if(micBlocked){try{recognition.abort()}catch(e){}return}micActive=true;micBlocked=false;lastMicError='';$('mic-overlay').classList.add('hidden');if(phase==='selecting'&&!selectionStarted)runRoulette();if(phase==='waiting-mic'){phase='playing';setMicLabel('TE ESCUCHAMOS',`Respondé, ${players[active].name}`,true);prevTick=performance.now();pauseClock();raf=requestAnimationFrame(tick);updatePlayers()}else if(phase==='playing'){setMicLabel('TE ESCUCHAMOS',`Respondé, ${players[active].name}`,true)}else if(phase==='selecting'){setMicLabel('MICRÓFONO ACTIVADO','Sorteando quién comienza...',true)}};
+ recognition.onresult=e=>{if(phase!=='playing')return;for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i];for(let j=0;j<r.length;j++){let phrase=r[j].transcript;if(isRightAnswer(phrase,question)){consumeSpeech(phrase,true);return}}if(r[0])consumeSpeech(r[0].transcript,r.isFinal)}};
  recognition.onerror=e=>{clearMicStartTimer();lastMicError=e.error||'desconocido';if(['not-allowed','service-not-allowed','audio-capture','network','language-not-supported'].includes(lastMicError)){micBlocked=true;showMicIssue(lastMicError)}};
  recognition.onend=()=>{clearMicStartTimer();micActive=false;if(!micRequested||phase==='finished'||phase==='setup')return;if(phase==='playing'){phase='waiting-mic';pauseClock();updatePlayers();setMicLabel('RECONECTANDO EL MICRÓFONO','Reloj pausado temporalmente',false)}if(!micBlocked){clearTimeout(restartTimer);restartTimer=setTimeout(()=>requestMicrophone(),260)}else showMicIssue(lastMicError)};
 }
@@ -569,7 +574,7 @@ $('answer-form').addEventListener('submit',e=>{
  if(isRightAnswer(spoken,question)){
    rightAnswer(spoken);
  }else{
-   if(question.category==='banderas'){passTurn(spoken);return}
+   if(question.category==='banderas'||isImageQuestion(question)){passTurn(spoken);return}
    $('feedback').className='feedback fail';
    $('feedback').textContent=openAnswerHint(spoken,question)||'No es correcto. ¡Probá otra vez!';
    setMicLabel('SEGUÍ INTENTANDO',`Escribiste: «${spoken}» · Tu reloj sigue corriendo`,false);
@@ -582,6 +587,6 @@ function initPreview(){players=[{name:'Andrés',ms:40000,score:0},{name:'Sofía'
 initPreview();
 </script>
 <script src="lib/mqtt.min.js?v=5.10.1"></script>
-<script src="duelo-conocimiento-modos.js?v=12"></script>
+<script src="duelo-conocimiento-modos.js?v=13"></script>
 </body>
 </html>

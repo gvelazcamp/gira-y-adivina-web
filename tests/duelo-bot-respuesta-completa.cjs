@@ -26,7 +26,7 @@ function create(mode="bot",jugador=1){
  const timers=new Map(),clears=[],feedback={textContent:"",className:""};
  let nextId=0,resolveNarration=null,answerCount=0,passCount=0,questions=0,micStops=0;
  const context={
-   mode,active:jugador,phase:"playing",question:{answered:false,answer:"Uruguay"},OPEN_ANSWERS:{},usedOpenAnswers:new Set(),normalize:s=>s,
+   mode,active:jugador,phase:"playing",question:{answered:false,answer:"Uruguay"},isImageQuestion:()=>false,
    players:[{name:"Vale",score:0,errors:0},{name:"BOT",score:0,errors:0}],
    botHandle:0,transitionTimeout:0,turn:1,
    $dc(id){if(id==="feedback")return feedback;return{textContent:"",className:""}},
