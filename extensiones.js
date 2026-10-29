@@ -16,7 +16,11 @@ function obtenerVozMasculina(){
   const voces=speechSynthesis.getVoices();if(!voces.length)return null;
   const es=voces.filter(v=>/^es/i.test(v.lang));
   const pool=es.length?es:voces;
-  const porNombre=pool.find(v=>/\b(male|hombre|var[oó]n|jorge|diego|carlos|pablo|juan|miguel|enrique|pedro|andr[eé]s|[aá]lvaro|ra[uú]l)\b/i.test(v.name));
+  /* Android (motor de Google) a veces marca el género en el nombre: "…#male_1-local". */
+  const porMarca=pool.find(v=>/#male/i.test(v.name+" "+(v.voiceURI||"")));
+  if(porMarca)return porMarca;
+  /* Nombres de hombre de Windows/Edge (Mateo de Uruguay, Tomás de Argentina…) y de iPhone (Eddy, Reed, Rocko, Grandpa). */
+  const porNombre=pool.find(v=>/\b(male|hombre|var[oó]n|jorge|diego|carlos|pablo|juan|miguel|enrique|pedro|andr[eé]s|[aá]lvaro|ra[uú]l|mateo|tom[aá]s|gonzalo|alonso|gerardo|sergio|emilio|lorenzo|federico|eddy|reed|rocko|grandpa|monte)\b/i.test(v.name));
   if(porNombre)return porNombre;
   const esSufijoMasculino=v=>/-(?:Standard|Wavenet|Neural2)-[BD]$/i.test(v.name)||/-(?:Standard|Wavenet|Neural2)-[BD]$/i.test(v.voiceURI||"");
   return pool.find(esSufijoMasculino)||null;
@@ -47,6 +51,7 @@ function hablar(texto,audioExtra){
     const voz=obtenerVozMasculina();
     u.pitch=voz?.75:.6;
     if(voz)u.voice=voz;
+    if(typeof avisarVozGonzalo==="function")avisarVozGonzalo(voz);
     const reanudarMusica=()=>{
       if(t!==hablarToken)return;
       if(typeof sincronizarMusica==="function")sincronizarMusica();
@@ -57,6 +62,15 @@ function hablar(texto,audioExtra){
   }catch(e){}
 }
 window.hablar=hablar;
+/* Solo Gonzalo (prueba de voz de hombre en El Rosco): una vez por apertura le
+   avisa qué voz eligió el juego, para saber qué ofrece su celular. */
+let vozAvisadaGonzalo=false;
+function avisarVozGonzalo(voz){
+  if(vozAvisadaGonzalo||typeof esGonzalo!=="function"||!esGonzalo()||typeof mostrarToast!=="function")return;
+  vozAvisadaGonzalo=true;
+  mostrarToast("🔊",voz?"Voz de hombre: "+voz.name:"Este celular no le ofrece al juego una voz de hombre: se usa la común, más grave.","Prueba de voz");
+}
+window.avisarVozGonzalo=avisarVozGonzalo;
 
 /* Duelo de Conocimiento se abre aislado en su HTML; esto evita tocar
    el estado de la ruleta y permite solicitar permiso de micrófono. */

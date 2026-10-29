@@ -264,6 +264,8 @@ const RoscoRioplatense=(()=>{
       speechSynthesis.cancel();
       const u=new SpeechSynthesisUtterance(items[actual].definicion);
       u.lang="es-UY";u.rate=.97;vozPistaG=u;
+      /* Prueba solo para Gonzalo: voz de hombre (o la común más grave si el celular no tiene). */
+      if(typeof esGonzalo==="function"&&esGonzalo()&&typeof obtenerVozMasculina==="function"){const vm=obtenerVozMasculina();if(vm)u.voice=vm;u.pitch=vm?.9:.75;if(typeof avisarVozGonzalo==="function")avisarVozGonzalo(vm);}
       const terminar=()=>{
         if(vozPistaG!==u)return;vozPistaG=null;vozLeyendoG=false;
         ultimo=performance.now();
@@ -564,7 +566,7 @@ const RoscoRioplatense=(()=>{
     }
     let script=document.querySelector('script[data-giro-rosco]');
     if(!script){
-      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=7";script.async=true;
+      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=8";script.async=true;
       script.dataset.giroRosco="1";script.addEventListener("load",activar,{once:true});
       document.head.appendChild(script);
     }else script.addEventListener("load",activar,{once:true});
