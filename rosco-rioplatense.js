@@ -172,11 +172,22 @@ const RoscoRioplatense=(()=>{
         if(resultado.isFinal){vozSilenciosG=0;pasar();return;}
         continue;
       }
-      const correcta=opciones.find(t=>vale(items[actual],normalizar(t)));
+      /* Aceptar una sola frase natural, por ejemplo "la respuesta es acuario". */
+      const opcionesRespuesta=opciones.flatMap(texto=>{
+        const sinIntro=texto.replace(/^(?:(?:(?:la|mi)\s+)?respuesta\s+(?:es|ser[ií]a)|(?:yo\s+)?(?:creo|pienso)\s+que\s+es|(?:yo\s+)?digo|(?:es|ser[ií]a))\s+/i,"");
+        return texto===sinIntro?[texto]:[texto,sinIntro];
+      });
+      const correcta=opcionesRespuesta.find(t=>vale(items[actual],normalizar(t)));
       if(correcta){
-        vozSilenciosG=0;$("#rrEntrada").value=correcta.slice(0,60);
+        vozSilenciosG=0;$("#rrEntrada").value=items[actual].palabra;
         enviar();return;
       }
+      /* Ignorar el eco de la locución; no penalizar al jugador. */
+      const eco=opciones.some(t=>{
+        const frase=normalizar(t),pista=normalizar(items[actual].definicion||"");
+        return frase.length>=8&&pista.includes(frase);
+      });
+      if(eco)continue;
       if(resultado.isFinal){
         vozSilenciosG=0;$("#rrEntrada").value=opciones[0].slice(0,60);
         enviar();return;
@@ -193,8 +204,11 @@ const RoscoRioplatense=(()=>{
     let inicioIntento=performance.now();
     detenerMusicaJuego();
     mostrarEstadoVozG("Conectando micrófono…");
-    r.onstart=()=>{if(reconocimiento===r)mostrarEstadoVozG("Micrófono conectado · preparando audio…");};
-    r.onaudiostart=()=>{if(reconocimiento===r)mostrarEstadoVozG("Escuchando · Decí tu respuesta o Pasapalabra");};
+    r.onstart=()=>{if(reconocimiento===r&&!vozLeyendoG)mostrarEstadoVozG("Micrófono conectado · preparando audio…");};
+    r.onaudiostart=()=>{
+      if(reconocimiento!==r)return;
+      if(!vozLeyendoG&&fase==="resolver")mostrarEstadoVozG("🎙 ESCUCHANDO · Respondé una sola vez");
+    };
     r.onresult=e=>{if(reconocimiento===r)procesarResultadoVozG(e);};
     r.onerror=e=>{
       if(reconocimiento!==r)return;
@@ -221,7 +235,8 @@ const RoscoRioplatense=(()=>{
   }
   function leerPistaG(){
     if(!pruebaG||!vozG||fase!=="resolver"||actual<0)return;
-    detenerVoz();detenerMusicaJuego();vozLeyendoG=true;
+    /* Mantener la escucha entre letras para evitar el segundo intento. */
+    detenerMusicaJuego();vozLeyendoG=true;
     mostrarEstadoVozG("Leyendo la pista…");
     try{
       if(!("speechSynthesis" in window))throw Error("Sin lectura de voz");
@@ -231,7 +246,10 @@ const RoscoRioplatense=(()=>{
       const terminar=()=>{
         if(vozPistaG!==u)return;vozPistaG=null;vozLeyendoG=false;
         ultimo=performance.now();
-        if(vozG&&fase==="resolver")arrancarEscuchaG();
+        if(vozG&&fase==="resolver"){
+          if(escuchando)mostrarEstadoVozG("🎙 ESCUCHANDO · Respondé una sola vez");
+          else {mostrarEstadoVozG("Conectando micrófono…");arrancarEscuchaG();}
+        }
       };
       u.onend=terminar;u.onerror=terminar;
       speechSynthesis.speak(u);
@@ -344,7 +362,7 @@ const RoscoRioplatense=(()=>{
     }
   }
   function siguiente(){
-    detenerVoz();
+    if(!(pruebaG&&vozG))detenerVoz();
     const p=pendientes();if(!p.length){terminar();return;}
     const opciones=p.length>1?p.filter(i=>i!==actual):p;
     destino=opciones[Math.floor(Math.random()*opciones.length)];actual=-1;fase="giro";
@@ -394,7 +412,7 @@ const RoscoRioplatense=(()=>{
   }
   function enviar(){
     if(!raiz||fase!=="resolver"||document.hidden)return;
-    detenerVoz();
+    if(!(pruebaG&&vozG))detenerVoz();
     tic();if(fase!=="resolver")return;
     const crudo=$("#rrEntrada").value.trim().slice(0,30);
     const valor=normalizar($("#rrEntrada").value);if(!valor){mensaje("Escribí una palabra o tocá Pasapalabra.");enfocar();return;}
@@ -408,7 +426,7 @@ const RoscoRioplatense=(()=>{
   }
   function pasar(){
     if(!raiz||fase!=="resolver"||document.hidden)return;
-    detenerVoz();
+    if(!(pruebaG&&vozG))detenerVoz();
     tic();if(fase!=="resolver")return;
     $("#rrEntrada").value="";enfocar();siguiente();
   }
@@ -542,7 +560,11 @@ const RoscoRioplatense=(()=>{
     }
     $("#rrVolver").onclick=()=>Extensiones.abrirLobby();
     $("#rrForm").onsubmit=e=>{e.preventDefault();enviar();};$("#rrPasar").onclick=pasar;$("#rrVoz").onclick=responderPorVoz;
-    $("#rrEscuchar").onclick=()=>{if(actual>=0&&typeof hablar==="function")hablar(items[actual].definicion,audioMusica);};
+    $("#rrEscuchar").onclick=()=>{
+      if(actual<0)return;
+      if(pruebaG&&vozG)leerPistaG();
+      else if(typeof hablar==="function")hablar(items[actual].definicion,audioMusica);
+    };
     for(const b of raiz.querySelectorAll("#rrForm button"))b.onpointerdown=e=>e.preventDefault();
     $("#rrEntrada").onbeforeinput=e=>{if(fase!=="resolver")e.preventDefault();};
     $("#rrEntrada").addEventListener("focus",()=>setTimeout(ajustarPantalla,350));$("#rrEntrada").addEventListener("blur",()=>setTimeout(ajustarPantalla,350));

@@ -30,6 +30,10 @@ for(const sharing of [false,true]){
  simulate("ciruela",true,"respuesta:ciruela",sharing);
  simulate("ciruela",false,"estado:Oí «ciruela» · seguí hablando",sharing);
 }
+for(const name of ["siguiente","enviar","pasar"]){
+ const i=source.indexOf("  function "+name+"(){");
+ assert(i>=0&&source.slice(i,i+230).includes("if(!(pruebaG&&vozG))detenerVoz();"),name+" mantiene la escucha entre letras");
+}
 const activation=source.slice(source.indexOf("  function alternarVozG(){"),source.indexOf("  /* El modo Hablar funciona",source.indexOf("  function alternarVozG(){")));
 assert(!activation.includes("getUserMedia"),"No bloquear Web Speech con una segunda captura");
 assert(activation.includes("leerPistaG();"),"La pista abre el micrófono al terminar de hablar");
@@ -38,6 +42,6 @@ assert(source.includes('vozTimerG=setTimeout(arrancarEscuchaG,450);'),"Reconecta
 assert(source.includes("Micrófono en pausa · se reanuda al volver."),"Modo voz activo al duplicar pantalla");
 const index=fs.readFileSync(path.join(__dirname,"..","index.html"),"utf8");
 const sw=fs.readFileSync(path.join(__dirname,"..","sw.js"),"utf8");
-assert(index.includes("rosco-rioplatense.js?v=34"));
-assert(sw.includes("rosco-rioplatense.js?v=34")&&sw.includes("gya-cache-v517"));
+assert(index.includes("rosco-rioplatense.js?v=35"));
+assert(sw.includes("rosco-rioplatense.js?v=35")&&sw.includes("gya-cache-v521"));
 console.log("PASS: voz y Pasapalabra, con y sin pantalla compartida, respuestas parciales, retorno y caché");
