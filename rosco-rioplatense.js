@@ -11,7 +11,7 @@ const RoscoRioplatense=(()=>{
   let nivel=1,config=null,fase="inicio",tiempo=0,espera=0,ultimo=0,intervalo=null,ultimoTac=0,duelo=false,usadasSesion=new Set();
   let audioMusica=null,reconocimiento=null,escuchando=false,altoLibre=0;
   /* Voz y teclado del Rosco para todos los jugadores. */
-  let avisoTiempoG=false,pruebaG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozResultadoTimerG=null,vozMensajeG="",vozPistaG=null,vozSilenciosG=0,vozStreamG=null,vozGeneracionG=0,vozPaseTimerG=null;
+  let avisoTiempoG=false,pruebaG=false,vozG=false,vozLeyendoG=false,vozTimerG=null,vozResultadoTimerG=null,vozMensajeG="",vozPistaG=null,vozSilenciosG=0,vozStreamG=null,vozGeneracionG=0,vozPaseTimerG=null,vozErrorTimerG=null,vozErrorPendienteG=null;
   let vozConsultadaG=false,avisoVozG=null;
   function cerrarConsultaVozG(){if(avisoVozG){avisoVozG.remove();avisoVozG=null;}}
   /* Una única decisión en la partida: Sí activa voz sin tocar de nuevo Hablar;
@@ -150,8 +150,9 @@ const RoscoRioplatense=(()=>{
     if(stream)for(const track of stream.getTracks())try{track.stop();}catch(e){}
   }
   function cancelarPaseVozG(){clearTimeout(vozPaseTimerG);vozPaseTimerG=null;}
+  function cancelarErrorVozG(){clearTimeout(vozErrorTimerG);vozErrorTimerG=null;vozErrorPendienteG=null;}
   function pararVozG(){
-    cancelarPaseVozG();
+    cancelarPaseVozG();cancelarErrorVozG();
     ++vozGeneracionG;
     vozG=false;vozLeyendoG=false;vozSilenciosG=0;clearTimeout(vozTimerG);vozTimerG=null;
     if(vozPistaG){try{speechSynthesis.cancel();}catch(e){}vozPistaG=null;}
@@ -159,8 +160,8 @@ const RoscoRioplatense=(()=>{
     mostrarEstadoVozG("Micrófono apagado.");
   }
 
-  /* El acierto se acepta aun en parciales. Un error cuenta cuando Chrome
-     confirma el resultado final; no se penaliza el eco de la pista. */
+  /* El acierto se acepta aun en parciales. Ante un resultado final incorrecto,
+     dar tiempo a corregir una transcripción equivocada antes de contar error. */
   function procesarResultadoVozG(e){
     if(!vozG||vozLeyendoG||fase!=="resolver"||actual<0)return;
     const resultados=e.results||[];
@@ -171,6 +172,7 @@ const RoscoRioplatense=(()=>{
       if(!opciones.length)continue;
       const pasa=opciones.some(t=>["PASAPALABRA","PASAR","PASO"].includes(normalizar(t)));
       if(pasa){
+        cancelarErrorVozG();
         mostrarEstadoVozG(resultado.isFinal?"Pasapalabra reconocido":"Oí «Pasapalabra» · confirmando…");
         if(resultado.isFinal){vozSilenciosG=0;pasar();return;}
         /* Chrome puede quedarse en resultado parcial: una sola vez basta
@@ -192,6 +194,7 @@ const RoscoRioplatense=(()=>{
       });
       const correcta=opcionesRespuesta.find(t=>vale(items[actual],normalizar(t)));
       if(correcta){
+        cancelarErrorVozG();
         vozSilenciosG=0;$("#rrEntrada").value=items[actual].palabra;
         enviar();return;
       }
@@ -202,11 +205,22 @@ const RoscoRioplatense=(()=>{
       });
       if(eco)continue;
       if(resultado.isFinal){
-        /* Una respuesta final equivocada consume la letra, igual que Enviar.
-           Se conserva lo que oyó Chrome para el resumen final del Rosco. */
-        vozSilenciosG=0;$("#rrEntrada").value=opciones[0].slice(0,60);
-        mostrarEstadoVozG("Oí «"+opciones[0].slice(0,45)+"» · respuesta incorrecta");
-        enviar();return;
+        /* Android suele confundir palabras cortas como «untar» o «yuyo».
+           Si fue un error de transcripción, el jugador puede repetirla; si
+           no corrige, la respuesta oída cuenta como error igualmente. */
+        const texto=opciones[0].slice(0,60),letra=actual,generacion=vozGeneracionG;
+        if(vozErrorPendienteG?.letra===letra&&vozErrorPendienteG.texto===texto)continue;
+        cancelarErrorVozG();vozSilenciosG=0;
+        vozErrorPendienteG={letra,texto};
+        mostrarEstadoVozG("Oí «"+texto.slice(0,30)+"» · si entendí mal, repetí ahora");
+        vozErrorTimerG=setTimeout(()=>{
+          vozErrorTimerG=null;
+          if(!vozG||vozLeyendoG||fase!=="resolver"||actual!==letra||vozGeneracionG!==generacion)return;
+          vozErrorPendienteG=null;
+          if($("#rrEntrada").value.trim())return; // El jugador está corrigiendo con teclado.
+          $("#rrEntrada").value=texto;enviar();
+        },3000);
+        continue;
       }
       mostrarEstadoVozG("Oí «"+opciones[0].slice(0,45)+"» · seguí hablando");
     }
@@ -242,6 +256,9 @@ const RoscoRioplatense=(()=>{
       if(!vozLeyendoG&&fase==="resolver")mostrarEstadoVozG("🎙 ESCUCHANDO · Respondé una sola vez");
     };
     r.onspeechstart=()=>{if(reconocimiento===r&&!vozLeyendoG&&fase==="resolver"){
+      /* Una nueva respuesta comenzó: esperar su transcripción antes de
+         confirmar el error anterior. */
+      if(vozErrorPendienteG)cancelarErrorVozG();
       mostrarEstadoVozG("🎙 Te escucho · decí tu respuesta");esperarResultadoVozG(r);
     }};
     r.onresult=e=>{if(reconocimiento===r){
@@ -343,7 +360,7 @@ const RoscoRioplatense=(()=>{
     ajustarPantalla();
   }
   function detenerVoz(){
-    cancelarPaseVozG();
+    cancelarPaseVozG();cancelarErrorVozG();
     clearTimeout(vozResultadoTimerG);vozResultadoTimerG=null;
     const r=reconocimiento;reconocimiento=null;escuchando=false;
     const boton=$("#rrVoz");
@@ -416,7 +433,7 @@ const RoscoRioplatense=(()=>{
     }
   }
   function siguiente(){
-    cancelarPaseVozG();
+    cancelarPaseVozG();cancelarErrorVozG();
     if(!(pruebaG&&vozG))detenerVoz();
     const p=pendientes();if(!p.length){terminar();return;}
     const opciones=p.length>1?p.filter(i=>i!==actual):p;
@@ -473,7 +490,7 @@ const RoscoRioplatense=(()=>{
   }
   function enviar(){
     if(!raiz||fase!=="resolver"||document.hidden)return;
-    cancelarPaseVozG();
+    cancelarPaseVozG();cancelarErrorVozG();
     if(!(pruebaG&&vozG))detenerVoz();
     tic();if(fase!=="resolver")return;
     const crudo=$("#rrEntrada").value.trim().slice(0,30);
@@ -489,7 +506,7 @@ const RoscoRioplatense=(()=>{
   }
   function pasar(){
     if(!raiz||fase!=="resolver"||document.hidden)return;
-    cancelarPaseVozG();
+    cancelarPaseVozG();cancelarErrorVozG();
     if(!(pruebaG&&vozG))detenerVoz();
     tic();if(fase!=="resolver")return;
     if(raiz.classList.contains("rr-estudio"))window.GiroRoscoPiloto?.reaccion?.("pasar");

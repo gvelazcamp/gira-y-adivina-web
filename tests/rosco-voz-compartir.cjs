@@ -10,22 +10,53 @@ assert(a>=0&&b>a,"La función real de voz existe");
 const fragment=source.slice(a,b);
 const parse=new Function("env","e","with(env){"+fragment+"return procesarResultadoVozG(e)}");
 function simulate(words,final,expected,sharing){
- const events=[],input={value:""};
+ const events=[],input={value:""},timers=new Map();let nextTimer=0;
  const env={
    vozG:true,vozLeyendoG:false,fase:"resolver",actual:0,vozSilenciosG:0,
-   cancelarPaseVozG(){},vozGeneracionG:0,vozPaseTimerG:null,
-   setTimeout:()=>1,clearTimeout:()=>{},
+   cancelarPaseVozG(){},vozGeneracionG:0,vozPaseTimerG:null,vozErrorTimerG:null,vozErrorPendienteG:null,
+   setTimeout(fn,ms){const id=++nextTimer;timers.set(id,{fn,ms});return id;},clearTimeout(id){timers.delete(id);},
    items:[{palabra:"MANZANA",definicion:"Fruta de un árbol que puede ser roja o verde"}],
    normalizar:t=>t.toUpperCase().replace(/\s+/g,""),vale:(q,t)=>q.palabra===t,
    $:()=>input,mostrarEstadoVozG:msg=>events.push("estado:"+msg),
    mensaje:msg=>events.push("mensaje:"+msg),
    pasar:()=>events.push("paso"),enviar:()=>events.push("respuesta:"+input.value)
  };
+ env.cancelarErrorVozG=()=>{env.clearTimeout(env.vozErrorTimerG);env.vozErrorTimerG=null;env.vozErrorPendienteG=null;};
  parse(env,{resultIndex:0,results:[{0:{transcript:words},length:1,isFinal:final}]});
+ if(expected==="respuesta:ciruela"){
+   assert(!events.some(e=>e.startsWith("respuesta:")),"Una transcripción errónea tiene plazo de corrección");
+   const pendiente=[...timers.values()].find(t=>t.ms===3000);
+   assert(pendiente,"El error final se confirma tras un plazo breve");pendiente.fn();
+ }
  if(expected===""){
    assert(!events.some(e=>e.startsWith("respuesta:")||e==="paso"),
      (sharing?"Compartiendo":"Directo")+": el eco de la pista no debe procesarse => "+events);
  }else assert(events.includes(expected),(sharing?"Compartiendo":"Directo")+": "+words+" => "+events);
+}
+/* Si Android oyó mal una palabra, repetirla antes del plazo evita el error. */
+{
+ const events=[],input={value:""},timers=new Map();let nextTimer=0;
+ const env={
+   vozG:true,vozLeyendoG:false,fase:"resolver",actual:0,vozSilenciosG:0,
+   cancelarPaseVozG(){},vozGeneracionG:0,vozPaseTimerG:null,vozErrorTimerG:null,vozErrorPendienteG:null,
+   setTimeout(fn,ms){const id=++nextTimer;timers.set(id,{fn,ms});return id;},clearTimeout(id){timers.delete(id);},
+   items:[{palabra:"UNTAR",definicion:"Pasar manteca por la tostada"}],
+   normalizar:t=>t.toUpperCase().replace(/\s+/g,""),vale:(q,t)=>q.palabra===t,
+   $:()=>input,mostrarEstadoVozG:msg=>events.push("estado:"+msg),
+   pasar:()=>events.push("paso"),enviar:()=>events.push("respuesta:"+input.value)
+ };
+ env.cancelarErrorVozG=()=>{env.clearTimeout(env.vozErrorTimerG);env.vozErrorTimerG=null;env.vozErrorPendienteG=null;};
+ const result=(transcript,isFinal)=>parse(env,{resultIndex:0,results:[{0:{transcript},length:1,isFinal}]});
+ result("un tal",true);
+ assert.equal(events.filter(x=>x.startsWith("respuesta:")).length,0);
+ result("untar",false);
+ assert(events.includes("respuesta:UNTAR"));
+ assert.equal(timers.size,0,"La corrección cancela el error pendiente");
+ env.items[0]={palabra:"YUYO",definicion:"Nombre popular para una hierba que crece silvestre"};
+ input.value="";env.actual=1;env.items[1]=env.items[0];
+ result("huyo",true);result("yuyo",true);
+ assert(events.includes("respuesta:YUYO"));
+ assert.equal(timers.size,0);
 }
 for(const sharing of [false,true]){
  simulate("manzana",false,"respuesta:MANZANA",sharing);
@@ -50,12 +81,12 @@ const tareas=new Map(),instancias=[],estados=[];
 let proximaTarea=0;
 const envWatchdog={
  pruebaG:true,vozG:true,vozLeyendoG:false,fase:"resolver",escuchando:false,
- reconocimiento:null,vozResultadoTimerG:null,vozTimerG:null,vozSilenciosG:0,
+ reconocimiento:null,vozResultadoTimerG:null,vozTimerG:null,vozSilenciosG:0,vozErrorPendienteG:null,
  document:{hidden:false},performance:{now:()=>0},
  setTimeout(fn,ms){const id=++proximaTarea;tareas.set(id,{fn,ms});return id;},
  clearTimeout(id){tareas.delete(id);},
  detenerMusicaJuego(){},mostrarEstadoVozG(texto){estados.push(texto);},
- procesarResultadoVozG(){},pararVozG(){throw Error("no debe apagar Hablar");},mensaje(){},
+ procesarResultadoVozG(){},cancelarErrorVozG(){},pararVozG(){throw Error("no debe apagar Hablar");},mensaje(){},
  window:{SpeechRecognition:class{
    start(){instancias.push(this);}
    abort(){this.onend?.();}
@@ -85,6 +116,6 @@ assert(source.includes('vozTimerG=setTimeout(arrancarEscuchaG,450);'),"Reconecta
 assert(source.includes("Micrófono en pausa · se reanuda al volver."),"Modo voz activo al duplicar pantalla");
 const index=fs.readFileSync(path.join(__dirname,"..","index.html"),"utf8");
 const sw=fs.readFileSync(path.join(__dirname,"..","sw.js"),"utf8");
-assert(index.includes("rosco-rioplatense.js?v=64"));
-assert(sw.includes("rosco-rioplatense.js?v=64")&&sw.includes("gya-cache-v560"));
+assert(index.includes("rosco-rioplatense.js?v=65"));
+assert(sw.includes("rosco-rioplatense.js?v=65")&&sw.includes("gya-cache-v561"));
 console.log("PASS: voz y Pasapalabra, con y sin pantalla compartida, respuestas parciales, retorno y caché");
