@@ -429,7 +429,10 @@ const Extensiones=(()=>{
 })();
 window.Extensiones=Extensiones;
 const botonExtensiones=document.getElementById("bExtensiones");
-if(EXTENSIONES_HABILITADAS&&botonExtensiones){botonExtensiones.hidden=false;botonExtensiones.onclick=Extensiones.abrirLobby;}
+if(botonExtensiones){
+  botonExtensiones.hidden=!EXTENSIONES_HABILITADAS;
+  if(EXTENSIONES_HABILITADAS){botonExtensiones.onclick=Extensiones.abrirLobby;if(botonExtensiones.dataset.pendiente){delete botonExtensiones.dataset.pendiente;Extensiones.abrirLobby();}}
+}
 /* Link de invitación de Contra Reloj (?sala=XXXX): abre el juego directo
    para que el invitado solo ponga su nombre y entre. */
 /* Lo mismo para los duelos 1 vs 1 (?duelo=<juego>&sala=XXXX). Si el

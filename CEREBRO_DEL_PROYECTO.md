@@ -1884,3 +1884,7 @@ Fecha: 29/10/2026 — Rosco show: llegó la voz de Giro para la presentación de
 ```text
 Fecha: 29/10/2026 — Rosco show: llegó la voz de Giro para el duelo (voz/giro-rosco-duelo.mp3: "¡Esta noche se enfrentan dos participantes! Veinticuatro letras, una sola vuelta. ¿Quién se lleva el Rosco?"). Queda lista para cuando se conecte la escena de dos atriles al duelo online (pendiente). sw v548.
 ```
+
+```text
+Fecha: 29/10/2026 — Inicio: el botón "Jugá más juegos de Girá y Adiviná" (#bExtensiones) tardaba unos segundos en aparecer (Gonzalo: "que aparezca siempre como todos, sin cargar"). Arrancaba con hidden y recién lo mostraba extensiones.js, que es de los últimos scripts del index. Ahora es visible desde el arranque; si se toca antes de que cargue extensiones.js, queda anotado (data-pendiente) y el lobby se abre apenas carga. EXTENSIONES_HABILITADAS=false lo sigue ocultando. Para todos los usuarios. extensiones.js v107, sw v549.
+```
