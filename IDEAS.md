@@ -925,3 +925,40 @@ Antes de implementar el popup, Gonzalo quiere definir:
 
 El popup automático y su integración de anuncios quedan fuera de producción
 hasta que se acuerde esa planificación.
+
+---
+
+## Ideas para una previa con televisión y celulares — 29/10/2026 (PENDIENTES)
+
+**Estado: solo ideas. No implementar, activar, publicar ni modificar juegos existentes sin autorización explícita.**
+
+Concepto de contexto: una reunión o previa entre amigos, con **Giro como conductor en la TV**, mientras cada participante usa **su propio celular** para responder o votar. Se guardan **tres ideas independientes** para decidir más adelante si se convierten en juegos individuales o en rondas de una misma experiencia.
+
+### 1. La confesión anónima
+
+- **Dinámica:** todos escriben desde su celular una respuesta personal y divertida a la misma pregunta. Las respuestas se envían sin mostrar quién escribió cada una.
+- **Ejemplo de pregunta:** «¿Cuál fue la peor excusa que inventaste para no salir?».
+- **En la TV:** Giro lee una respuesta por vez, **sin decir el nombre** de su autor.
+- **En los celulares:** los demás intentan adivinar qué jugador escribió esa confesión.
+- **Momento divertido:** la revelación del autor genera risas, anécdotas y explicaciones espontáneas.
+- **Importante:** preservar el anonimato hasta la revelación; no mostrar de antemano quién mandó cada texto.
+
+### 2. Defendé lo indefendible
+
+- **Dinámica:** Giro propone una situación discutible y elige a **dos jugadores** para debatir posiciones contrarias, incluso si no representan sus opiniones personales.
+- **Ejemplo de debate:** «¿Está mal revisar el celular de tu pareja?».
+- **En la TV:** aparecen los dos jugadores, las posturas que deben defender y el tiempo de intervención.
+- **En los celulares:** el resto vota quién defendió mejor su postura, no necesariamente con quién está de acuerdo.
+- **Momento divertido:** tener que argumentar a favor de una idea difícil o contraria a la propia opinión.
+
+### 3. ¡Pará, que tengo algo para decir!
+
+- **Dinámica:** después de revelar una votación grupal, cualquier participante puede **pedir la palabra** mediante un botón en su celular.
+- **En la TV:** aparece el nombre de quien pidió hablar; Giro le da **15 segundos** para explicar su versión o defenderse.
+- **En persona:** el jugador habla normalmente con sus amigos en la previa. **El celular solo pide el turno; no necesita grabar ni transmitir su voz.**
+- **Después:** los demás votan desde su celular si le creen o si los convenció, y la TV muestra el resultado.
+- **Ejemplo:** la mayoría vota que Martín sería el primero en desaparecer cuando llega la cuenta; Martín pide la palabra y responde: «¡Pero si la última vez pagué yo las pizzas!». El grupo decide si le cree.
+- **Momento divertido:** abre espacio a defensas, discusiones espontáneas y risas a partir de lo que votó el grupo.
+
+**Decisión pendiente:** definir más adelante si se presentan por separado o como tres dinámicas dentro de una propuesta de previa con Giro. Por ahora **solo conservar las tres ideas en este documento**.
+
