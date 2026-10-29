@@ -163,8 +163,10 @@ body .rr-game.rr-estudio .sf-hud>div{background:#071948cc;border:1px solid #dba7
 }
 @media (prefers-reduced-motion:reduce){body .rr-game.rr-estudio .rr-letra{animation:none!important}}
 /* Reacción de Giro: sube desde abajo del rosco, dice su frase y se va. */
-body .rr-game.rr-estudio .rr-rueda .grp-reac{position:absolute;left:50%;bottom:4%;height:46%;width:auto;z-index:3;pointer-events:none;
+body .rr-game.rr-estudio .rr-rueda .grp-reac{position:absolute;left:50%;bottom:3%;width:44%;aspect-ratio:1/1.2;z-index:3;pointer-events:none;
   filter:drop-shadow(0 4px 10px #000a);transform-origin:50% 100%;animation:grpReac 1.7s cubic-bezier(.2,1.3,.4,1) both}
+body .rr-game.rr-estudio .grp-reac-giro{position:absolute;left:50%;bottom:38%;width:76%;height:auto;transform:translateX(-50%)}
+body .rr-game.rr-estudio .grp-reac-atril{position:absolute;left:0;bottom:0;width:100%;height:auto}
 @keyframes grpReac{0%{opacity:0;transform:translateX(-50%) translateY(30%) scale(.6)}15%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.05)}25%{transform:translateX(-50%) scale(1)}80%{opacity:1;transform:translateX(-50%) scale(1)}100%{opacity:0;transform:translateX(-50%) translateY(20%) scale(.8)}}
 @media (prefers-reduced-motion:reduce){body .rr-game.rr-estudio .rr-rueda .grp-reac{animation:grpReacSimple 1.7s both}@keyframes grpReacSimple{0%,100%{opacity:0;transform:translateX(-50%)}10%,85%{opacity:1;transform:translateX(-50%)}}}
 /* Cierre en el estudio: el resultado va en la pantallita de la escena (¡GANADOR! / ¡REVANCHA!). */
