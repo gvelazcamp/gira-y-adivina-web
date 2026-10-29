@@ -20,7 +20,11 @@
   let capa=null, intervalo=null, frase=null, activa=false, salirDeCapa=null, anteriorFoco=null;
   let reiniciarCine=null, salidaTimer=null;
   const habilitado=()=>typeof esGonzalo==="function"&&esGonzalo()&&window.GIRO_ROSCO_PILOTO!==false;
+  /* Frases grabadas con voz de hombre (ElevenLabs): suenan igual en cualquier
+     celular. Las que todavía no están grabadas usan la voz del celular. */
+  let grabacion=null;
   function cancelarVoz(){
+    if(grabacion){try{grabacion.pause();}catch(e){}grabacion=null;}
     if(frase&&"speechSynthesis" in window){
       try{window.speechSynthesis.cancel();}catch(e){}
     }
@@ -53,8 +57,16 @@
     limpiar();
     if(typeof siguiente==="function")siguiente();
   }
-  function hablar(texto){
-    if(!activa||!("speechSynthesis" in window)||typeof SpeechSynthesisUtterance!=="function")return;
+  function hablar(texto,audio){
+    if(!activa)return;
+    if(audio){
+      cancelarVoz();
+      const a=new Audio(audio);grabacion=a;
+      const fallo=()=>{if(grabacion!==a)return;grabacion=null;hablar(texto);};
+      a.onended=()=>{if(grabacion===a)grabacion=null;};a.onerror=fallo;
+      a.play().catch(fallo);return;
+    }
+    if(!("speechSynthesis" in window)||typeof SpeechSynthesisUtterance!=="function")return;
     cancelarVoz();
     try{
       const u=new SpeechSynthesisUtterance(texto);
@@ -70,7 +82,7 @@
       frase=u;window.speechSynthesis.speak(u);
     }catch(e){frase=null;}
   }
-  function presentar({tipo,titulo,descripcion,locucion,imagen,continuar}){
+  function presentar({tipo,titulo,descripcion,locucion,audio,imagen,continuar}){
     if(!habilitado())return false;
     limpiar();activa=true;anteriorFoco=document.activeElement;
     salirDeCapa=continuar||null;
@@ -115,7 +127,7 @@
       // Una acción directa del usuario permite iniciar la voz en Android.
       // Reiniciamos los planos para que acompañen la presentación hablada.
       if(tipo==="inicio"&&reiniciarCine)reiniciarCine();
-      hablar(locucion);
+      hablar(locucion,audio);
     });
     const avanzar=document.createElement("button");avanzar.type="button";avanzar.className="grp-boton grp-accion";
     avanzar.textContent=tipo==="final"?"Ver resultados":"Ir al Rosco";
@@ -159,8 +171,9 @@
     return presentar({
       tipo:"inicio",
       titulo:"¡Bienvenidos al Rosco!",
-      descripcion:"Giro presenta el desafío. Una letra, muchas categorías. Respondé las pistas, usá Pasapalabra cuando lo necesites y completá la vuelta.",
+      descripcion:"Giro presenta el desafío. Una letra, muchas categorías. Respondé las pistas, usá Pasar cuando lo necesites y completá la vuelta.",
       locucion:"¡Bienvenidos a Girá y Adiviná Rioplatense! Soy Giro. Hoy jugamos al Rosco. Una letra, muchas categorías. ¿Estás preparado? ¡Arrancamos!",
+      audio:BASE+"voz/giro-rosco-inicio.mp3",
       imagen:"saludo"
     });
   }
@@ -174,6 +187,7 @@
       tipo:"final",titulo,
       descripcion:ok+" de "+total+" aciertos · "+puntos+" puntos. El detalle y las opciones para continuar están en el resultado original del Rosco.",
       locucion:perfecto?"¡Espectacular! ¡Completaste el Rosco sin errores!":ok?"¡Muy buena partida! Lograste "+ok+" aciertos. ¡Vamos por más!":"¡No pasa nada! Una nueva vuelta nos espera. ¡Vamos por la revancha!",
+      audio:perfecto?BASE+"voz/giro-rosco-perfecto.mp3":"",
       imagen:perfecto?"festeja":ok?"presenta":"revancha"
     });
   }
