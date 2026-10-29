@@ -1880,3 +1880,7 @@ Fecha: 29/10/2026 — Rosco show: en el video de Gonzalo (Redmi) el cartel "Juga
 ```text
 Fecha: 29/10/2026 — Rosco show: llegó la voz de Giro para la presentación del participante (Gonzalo, ElevenLabs, Cesar Rodriguez, 7,3 s): voz/giro-rosco-participante.mp3 ("¡Y ahora, un fuerte aplauso para nuestro participante! Veinticuatro letras, una sola vuelta. ¿Podrá completar el Rosco?"). Suena a 1,5 s de abrir la escena con la música más baja. Falta la de duelo (voz/giro-rosco-duelo.mp3). sw v547.
 ```
+
+```text
+Fecha: 29/10/2026 — Rosco show: llegó la voz de Giro para el duelo (voz/giro-rosco-duelo.mp3: "¡Esta noche se enfrentan dos participantes! Veinticuatro letras, una sola vuelta. ¿Quién se lleva el Rosco?"). Queda lista para cuando se conecte la escena de dos atriles al duelo online (pendiente). sw v548.
+```
