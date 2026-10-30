@@ -2034,3 +2034,7 @@ Fecha: 31/10/2026 — El 📺 del inicio (solo Gonzalo) busca la tele directo po
 ```text
 Fecha: 31/10/2026 — Botón 📺 del inicio (solo Gonzalo): menú «Jugar en la tele» con las 3 formas y un popup explicativo para cada una (Gonzalo: "entrás al ícono de tele: lo más fácil, con código, celular de tele; seleccionás y abre un popup explicativo con esas imágenes"). Menú: tarjetas con dibujo — ⭐ Transmitir (Chromecast/Google TV, la más fácil, resaltada), 🔢 Navegador de la tele (código), 📱 Un celular de tele (plan B, emitir). Al tocar una: popup con su dibujo (assets/tele/transmitir|codigo|celular-tele.webp, armados con capturas reales), los pasos, qué necesita y el botón: «Buscar teles» (Chromecast; avisa si ve una tele, y si no encuentra sugiere las otras), «Poner el código» (va a tele/) o «Este celular es la tele» (abre index.html?tele=1 en ese celular para emitirlo); y «Ver las otras formas». Probado con tele simulada: transmitir deja el celular en la sala. tele.js v24, tele.css v15, sw v595.
 ```
+
+```text
+Fecha: 30/10/2026 — Inicio igual para todos que el de Gonzalo y Vale (Gonzalo: "Sala/TV Familia quede igual que a Gonzalo y Vale en inicio, que se reemplace por Torneos"). Antes el botón Torneos se ocultaba solo para andres/romina/gonzalo/vale (puedeVerSalaTV) y el resto veía Sala TV / Familia + Torneos; ahora nadie ve Torneos en el inicio y todos ven Sala TV / Familia (va a girayadivina.com/tele) en la grilla, igual que Gonzalo. Torneos sigue en el código (capaTorneos, tickets), solo se oculta el botón del inicio. sw v596.
+```

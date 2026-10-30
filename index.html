@@ -7956,9 +7956,9 @@ function actualizarChipPerfil(){
   }else chip.style.display="none";
   if($("campoNombre"))$("campoNombre").style.display=perfilExiste()?"none":"";
   const parametros=new URLSearchParams(location.search);
-  const grupoSalaTV=puedeVerSalaTV();
+  /* Desde el 30/10/2026 el inicio es igual para todos al de Gonzalo y Vale: Sala TV / Familia y sin Torneos. */
   $("bTV").style.display=!parametros.has("tv")&&!parametros.has("sala")?"":"none";
-  $("bTorneos").style.display=grupoSalaTV?"none":"";
+  $("bTorneos").style.display="none";
   actualizarAccesoPruebas();
 }
 /* Evita que dos jugadores distintos elijan el mismo nombre de perfil:
