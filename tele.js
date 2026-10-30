@@ -85,7 +85,7 @@
     let timerJuego=null,ultimoTic=0;
     const mandar=m=>{if(red)red.mandar(m);};
     function estadoCel(){
-      if(T.fase==="menu")return{pantalla:"menu",juegos:JUEGOS.map(j=>({id:j.id,nombre:j.nombre,ok:j.ok}))};
+      if(T.fase==="menu")return{pantalla:"menu",juegos:JUEGOS.map(j=>({id:j.id,nombre:j.nombre,ok:j.ok,icono:j.icono,desc:j.desc}))};
       if(T.fase==="ruleta")return{pantalla:"ruleta"};
       if(!T.g)return{pantalla:"menu"};
       return T.g.cel();
@@ -1034,7 +1034,10 @@
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2><p>El control lo tiene <b>${esc(mando)}</b>. Ayudalo con las respuestas 😉</p><button type="button" class="tl-boton" id="tlTomar">Tomar el control</button></div>`;
         raiz.querySelector("#tlTomar").onclick=()=>mandar({t:"tomar"});return;}
       if(c.pantalla==="menu"){
-        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>¿A qué juegan?</h2><div class="tl-cel-juegos">${(c.juegos||[]).map(j=>`<button type="button" class="tl-boton${j.ok?"":" tl-pronto"}" data-j="${esc(j.id)}" ${j.ok?"":"disabled"}>${esc(j.nombre)}${j.ok?"":" · pronto"}</button>`).join("")}</div></div>`;
+        /* Tarjetas con el dibujo de cada juego (las mismas de la tele), en dos columnas. */
+        raiz.innerHTML=cab+`<div class="tl-cel-menu"><h2>¿A qué juegan?</h2><p>Tocá un juego y se abre en la tele 📺</p>
+          <div class="tl-cel-jug">${m.jug.map(j=>`<span class="${j.pid===m.mando?"tl-mando":""}">${j.pid===m.mando?"🎮 ":""}${esc(j.n)}</span>`).join("")}</div>
+          <div class="tl-cel-tarjetas">${(c.juegos||[]).map(j=>`<button type="button" class="tl-cel-tarjeta${j.ok?"":" tl-pronto"}" data-j="${esc(j.id)}" ${j.ok?"":"disabled"}><img src="${esc(j.icono||"")}" alt="" onerror="this.style.visibility='hidden'"><b>${esc(j.nombre)}</b><small>${esc(j.ok?(j.desc||""):"Pronto")}</small></button>`).join("")}</div></div>`;
         raiz.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>accion("elegir",{juego:b.dataset.j}));return;}
       const menu=`<button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>`;
       if(c.pantalla==="rosco_show"){

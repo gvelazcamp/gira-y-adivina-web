@@ -1978,3 +1978,7 @@ Fecha: 31/10/2026 — Rosco en la tele: pantalla negra al arrancar y la presenta
 ```text
 Fecha: 31/10/2026 — Rosco en la tele: la presentación de Giro ("¡Bienvenidos al Rosco!") mostraba la barra de desplazamiento con flechitas al costado (Gonzalo, captura en la compu 1366×607): no entraba en la pantalla porque el cartel con los botones iba debajo del estudio. Solo en la tele (html.tele-modo, tele.css): el estudio ocupa todo el alto posible y el cartel va encima, abajo, con el título y los botones (sin la descripción). Comprobado sin desplazamiento en 1366×607, 1280×720 y 1920×1080. El celular no cambia. tele.css v10, sw v581.
 ```
+
+```text
+Fecha: 31/10/2026 — Juegos en la tele: el menú del celular dejó de ser una lista de botones (Gonzalo: "en el cel aparece un listado nomás"). Ahora: «¿A qué juegan?» + «Tocá un juego y se abre en la tele», los jugadores de la sala (🎮 el del control) y tarjetas en dos columnas con el mismo dibujo de cada juego que la tele, su nombre y una línea de qué es. La tele manda icono y descripción en el estado del menú. tele.js v12, tele.css v11, sw v582.
+```
