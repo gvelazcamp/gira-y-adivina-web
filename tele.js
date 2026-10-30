@@ -154,6 +154,7 @@
       if(direction){e.preventDefault();window.gyaTVRemote(direction);}
     });
     pintar();
+    setTimeout(precargarGiro,1500);
     /* El navegador no deja sonar música hasta el primer toque: al tocar, se saca el aviso. */
     ["pointerdown","keydown"].forEach(ev=>document.addEventListener(ev,()=>{if(T.fase==="menu")setTimeout(pintar,50);},{once:true}));
     conectar(cod,()=>{difundir();setInterval(difundir,2500);},()=>{avisoTele("No se pudo conectar. Revisá el internet de la tele y recargá.");},recibir);
@@ -475,11 +476,32 @@
     if(window.GiroRoscoPiloto){cb(true);return;}
     if(!document.querySelector('link[data-giro-rosco]')){const l=document.createElement("link");l.rel="stylesheet";l.href="giro-rosco-piloto.css?v=19";l.dataset.giroRosco="1";document.head.appendChild(l);}
     let sc=document.querySelector('script[data-giro-rosco]');
-    if(!sc){sc=document.createElement("script");sc.src="giro-rosco-piloto.js?v=28";sc.async=true;sc.dataset.giroRosco="1";document.head.appendChild(sc);}
+    if(!sc){sc=document.createElement("script");sc.src="giro-rosco-piloto.js?v=29";sc.async=true;sc.dataset.giroRosco="1";document.head.appendChild(sc);}
     let listo=false;const fin=ok=>{if(listo)return;listo=true;cb(ok&&!!window.GiroRoscoPiloto);};
     sc.addEventListener("load",()=>fin(true),{once:true});sc.addEventListener("error",()=>fin(false),{once:true});setTimeout(()=>fin(!!window.GiroRoscoPiloto),8000);
   }
   let giroAperturaVista=false;
+  /* La tele precarga el show de Giro mientras está en el menú: así el Rosco no
+     arranca con la pantalla en negro esperando las imágenes. */
+  const GIRO_B="presentacion-y-locucion-extensiones/Giro/";
+  const GIRO_IMGS=["estudios/Giro_estudio_principal_16x9.webp","efectos/Giro_efecto_haces_de_luz_transparente.webp","efectos/Giro_efecto_destellos_transparente.png",
+    "escenas/Giro_presentacion_plano_general_16x9.webp","estudios/Giro_estudio_rosco_un_atril_16x9.webp","estudios/Giro_estudio_rosco_juego_fondo.webp",
+    "participantes/participante_hombre.webp","participantes/participante_mujer.webp","elementos/Giro_atril_oficial_chico.webp",
+    "Giro_festejando.png","Giro_confundido.png","Giro_suspenso.png","Giro_sorprendido.png","Giro_tarjetas.png",
+    "escenas/Giro_cierre_victoria_16x9.webp","escenas/Giro_cierre_derrota_revancha_16x9.webp"].map(x=>GIRO_B+x).concat(["assets/logo.webp"]);
+  const giroCargadas=[];
+  function precargarGiro(){
+    if(giroCargadas.length)return;
+    GIRO_IMGS.forEach(src=>{const i=new Image();i.decoding="async";i.src=src;giroCargadas.push(i);});
+    ["voz/giro-apertura-musica.mp3","voz/giro-participantes-musica.mp3","voz/giro-rosco-inicio.mp3"].forEach(a=>{try{const au=new Audio();au.preload="auto";au.src=GIRO_B+a;giroCargadas.push(au);}catch(e){}});
+    cargarGiro(()=>{});
+  }
+  /* Antes de mostrar la apertura, esperar (máximo 6 s) a que estén las imágenes. */
+  function giroListo(){
+    precargarGiro();
+    const imgs=giroCargadas.filter(x=>x instanceof HTMLImageElement);
+    return Promise.race([Promise.all(imgs.map(i=>i.complete?Promise.resolve():new Promise(ok=>{i.addEventListener("load",ok,{once:true});i.addEventListener("error",ok,{once:true});}))),new Promise(ok=>setTimeout(ok,6000))]);
+  }
   function juegoRosco(T,actualizar){
     const CANT=20,SEGUNDOS=160,LETRAS="ABCDEFGHIJLMNOPQRSTUVYZ";
     const norm=s=>sinTilde(s).replace(/\s+/g,"");
@@ -505,10 +527,14 @@
     cargarGiro(ok=>{
       if(muerto)return;
       if(!ok||!G().habilitado()){aJugar();return;}
+      giroListo().then(()=>arrancarShow());
+    });
+    function arrancarShow(){
+      if(muerto)return;
       const presentar=()=>{if(muerto)return;if(!G().presentarSolo(aJugar,{nombre:jugador().n||"Jugador",personaje:jugador().pj||""}))aJugar();};
       if(giroAperturaVista){presentar();return;}
       giroAperturaVista=true;if(!G().mostrarInicio(presentar))aJugar();
-    });
+    }
     const reaccionar=tipo=>{try{const aro=document.querySelector("#teleTV .tl-aro");if(aro&&G())G().reaccion(tipo,aro);}catch(e){}};
     const pend=()=>est.map((s,i)=>s==="pendiente"?i:-1).filter(i=>i>=0);
     function avanzar(){const p=pend();if(!p.length){terminar();return;}actual=p.find(i=>i>actual)??p[0];}
@@ -560,6 +586,8 @@
     const regla=d=>(norm(d.palabra)[0]===d.letra?"Empieza con la ":"Contiene la ")+d.letra;
     function pintar(raiz,quien){
       const n=items.length,ok=est.filter(s=>s==="ok").length,mal=est.filter(s=>s==="mal").length;
+      if(fase==="show"&&!document.querySelector(".grp-apertura,.grp-overlay")){
+        raiz.innerHTML=`<div class="tl-centro tl-rosco tl-estudio"><img class="tl-logo" src="assets/logo.webp" alt=""><h1>Preparando el estudio…</h1></div>`;return;}
       if(fase==="fin"||fase==="cierre"){
         raiz.innerHTML=`<div class="tl-centro tl-fin"><h1>${ok>=n*.7?"¡Tremendo rosco! 🎉":ok>=n/2?"¡Muy bien! 👏":"¡Se terminó!"}</h1>
           <div class="tl-res"><span class="tl-ok">✓ ${ok} aciertos</span><span class="tl-mal">✘ ${mal} errores</span><span>⏱ ${reloj(SEGUNDOS*1000-tiempo)}</span></div>

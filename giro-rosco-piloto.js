@@ -6,7 +6,7 @@
   const ESCENA=BASE+"estudios/Giro_estudio_rosco_16x9.png";
   // Un único fotograma oficial: Giro y su atril ya forman parte de la misma
   // imagen. Nunca mezclar otras poses, tamaños o atriles en la apertura.
-  const PLANO_ESTABLE=BASE+"escenas/Giro_presentacion_plano_general_16x9.png";
+  const PLANO_ESTABLE=BASE+"escenas/Giro_presentacion_plano_general_16x9.webp";
   const IMAGENES={
     neutral:BASE+"opcionales/espera/Giro_espera_neutral.png",
     respira:BASE+"opcionales/espera/Giro_espera_respirando.png",
