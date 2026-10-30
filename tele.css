@@ -172,6 +172,12 @@ html.tele-modo body{background:#160B24}
 .tl-codigo{font-size:calc(var(--u)*5.2);letter-spacing:calc(var(--u)*.4);margin:0}
 .tl-jugadores li{font-size:calc(var(--u)*1.2);padding:calc(var(--u)*.4) calc(var(--u)*1)}
 .tl-sala .tl-ayuda{font-size:calc(var(--u)*1.1);margin:0}
+.tl-qr{width:calc(var(--u)*15);height:calc(var(--u)*15);background:#fff;border-radius:calc(var(--u)*1);padding:calc(var(--u)*.3);box-shadow:0 0 calc(var(--u)*2) #F5B30166}
+.tl-qr svg{display:block;width:100%;height:100%}
+.tl-sala:has(.tl-qr) .tl-logo{height:calc(var(--u)*7)}
+.tl-qr-txt{color:#F5B301;font-weight:800}
+.tl-url-chica{color:#37D6C0;font-weight:900}
+.tl-sala:has(.tl-qr) .tl-codigo{font-size:calc(var(--u)*4.2)}
 .tl-juegos{grid-template-columns:repeat(4,1fr);gap:calc(var(--u)*1.1);align-content:center}
 .tl-tarjeta{padding:calc(var(--u)*.8);gap:calc(var(--u)*.25);border-radius:calc(var(--u)*1.4)}
 .tl-tarjeta img{width:calc(var(--u)*8);height:calc(var(--u)*6)}

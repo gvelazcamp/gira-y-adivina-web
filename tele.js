@@ -152,6 +152,20 @@
   /* =====================================================================
      TELE (anfitrión): tiene el estado y lo manda a los celulares.
      ===================================================================== */
+  /* QR para unirse desde el celular (30/10/2026): lleva a girayadivina.com/tele/?codigo=XXXXX con el código ya puesto.
+     Usa lib/qrcode-generator.js (MIT, guardado en el repo); se carga solo en la tele y, si falla, queda el código escrito. */
+  let qrLib=null,qrCache={};
+  function cargarQR(alListo){
+    if(window.qrcode){qrLib=window.qrcode;return;}if(qrLib==="cargando")return;qrLib="cargando";
+    const sc=document.createElement("script");sc.src="lib/qrcode-generator.js?v=1";sc.onload=()=>{qrLib=window.qrcode||null;alListo&&alListo();};sc.onerror=()=>{qrLib=null;};document.head.appendChild(sc);
+  }
+  function qrSala(cod){
+    if(qrCache[cod])return qrCache[cod];
+    if(typeof qrLib!=="function")return "";
+    try{const url=new URL("tele/?codigo="+cod,location.href).href;const q=qrLib(0,"M");q.addData(url);q.make();
+      qrCache[cod]=q.createSvgTag({cellSize:4,margin:3,scalable:true});}catch(e){return "";}
+    return qrCache[cod];
+  }
   function iniciarTele(){
     let cod="";
     const pedido=(P.get("cod")||"").toUpperCase();if(pedido.length===5&&[...pedido].every(c=>CHARS.includes(c))){cod=pedido;try{localStorage.setItem("gya_tele_codigo",cod);}catch(e){}}
@@ -227,11 +241,12 @@
       raiz.className="tl-tv";
       if(T.fase==="intro"){raiz.innerHTML=`<div class="tl-centro tl-rosco tl-estudio"><img class="tl-logo" src="assets/logo.webp" alt=""><h1>Preparando el estudio…</h1></div>`;return;}
       if(T.fase==="ruleta"){raiz.innerHTML=`<div class="tl-centro"><img class="tl-logo" src="assets/logo.webp" alt=""><h1>Abriendo la Ruleta…</h1><p>En los celulares: entrá a <b>girayadivina.com/tv.html</b> y poné el código nuevo que va a aparecer en la tele.</p></div>`;return;}
+      const qr=qrSala(cod);if(!qr)cargarQR(pintar);
       const jug=T.jug.length?T.jug.map(j=>`<li class="${j.pid===T.mando?"tl-mando":""}">${j.pid===T.mando?"🎮 ":""}${esc(j.n)}</li>`).join(""):"<li class='tl-vacio'>Esperando celulares…</li>";
       raiz.innerHTML=`<div class="tl-menu">
         <section class="tl-sala"><img class="tl-logo" src="assets/logo.webp" alt="Girá y Adiviná">
-          <p class="tl-paso">En el celular entrá a</p><p class="tl-url">girayadivina.com/tele</p>
-          <p class="tl-paso">y poné el código</p><div class="tl-codigo">${cod}</div>
+          ${qr?`<div class="tl-qr" role="img" aria-label="Código QR para unirse">${qr}</div><p class="tl-paso tl-qr-txt">📷 Escaneá con la cámara del celular</p><p class="tl-paso">o entrá a <b class="tl-url-chica">girayadivina.com/tele</b> con el código</p>`:`<p class="tl-paso">En el celular entrá a</p><p class="tl-url">girayadivina.com/tele</p>
+          <p class="tl-paso">y poné el código</p>`}<div class="tl-codigo">${cod}</div>
           <ul class="tl-jugadores">${jug}</ul>
           ${T.mando?`<p class="tl-ayuda">🎮 ${esc(nombreMando())} elige el juego desde su celular (o con el control remoto).</p>`:""}
           ${navigator.userActivation&&!navigator.userActivation.hasBeenActive?`<p class="tl-ayuda tl-sonido">🔊 Para que suene la música y la voz de Giro: tocá la tele o apretá OK en el control una vez.</p>`:""}</section>

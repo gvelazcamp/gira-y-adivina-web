@@ -2070,3 +2070,7 @@ Fecha: 30/10/2026 — Intro de la tele: las tomas de los juegos (Rosco, 100 Riop
 ```text
 Fecha: 30/10/2026 — Intro de la tele ahora de 11 s y con el Ahorcado entre los cortes (Gonzalo: "falta el ahorcado entre los juegos, capaz un poco más de segundos"). Cortes: ruleta, Rosco, Ahorcado ("PA_TAFRO_A" con letras usadas), 100 Rioplatenses, Mímica, ¿Quién soy?; el logo con golpe entra a los 7,6 s junto con "¡Girá y Adiviná!" del locutor. Video ?v=5, giro-rosco-piloto.js v35, rosco-rioplatense.js v78, tele.js v30, sw v603.
 ```
+
+```text
+Fecha: 30/10/2026 — QR en la pantalla de la tele para unirse (Gonzalo: "un QR en la pantalla de la tele… cada uno apunta la cámara y entra directo"). En el menú de la tele, arriba del código, hay un QR que abre girayadivina.com/tele/?codigo=XXXXX con el código ya puesto (solo falta el nombre; en esa página se oculta "Esta pantalla es la tele" cuando viene del QR). El QR se genera en la tele con lib/qrcode-generator.js (qrcode-generator 1.4.4, Kazuhiko Arase, MIT, guardado en el repo para no depender de un CDN); si no carga, queda el texto de siempre. Probado: el QR se lee bien y entra en 1366×600, 1280×720 y 1920×1080 sin deslizar. tele.js v31, tele.css v17, sw v604.
+```

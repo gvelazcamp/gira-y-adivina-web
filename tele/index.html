@@ -26,7 +26,8 @@ const q=new URLSearchParams(location.search),nombre=document.getElementById("n")
 let guardado="";try{nombre.value=localStorage.getItem("gya_tele_nombre")||localStorage.getItem("gya_nombre")||"";guardado=localStorage.getItem("gya_tele_vinculada")||"";}catch(e){}
 if(!/^[A-Z0-9]{4,6}$/.test(guardado))guardado="";
 const indicado=(q.get("codigo")||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
-if(indicado)codigo.value=indicado;
+/* Si vino del QR de la tele, el código ya está: se oculta "Esta pantalla es la tele" y solo falta el nombre. */
+if(indicado){codigo.value=indicado;document.getElementById("tvLink").hidden=true;if(!nombre.value.trim())setTimeout(()=>nombre.focus(),300);}
 if(q.get("telered")==="local")document.getElementById("tvLink").href+="&telered=local";
 function entrar(c,n){const destino=new URL("../index.html",location.href);destino.searchParams.set("telecel",c);destino.searchParams.set("n",n);if(q.get("telered")==="local")destino.searchParams.set("telered","local");location.href=destino.href;}
 if(guardado&&!indicado&&!q.has("cambiar")&&nombre.value.trim()){
