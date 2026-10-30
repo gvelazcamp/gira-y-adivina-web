@@ -1998,3 +1998,7 @@ Fecha: 31/10/2026 — Voz de Giro en la presentación de cada juego de la tele. 
 ```text
 Fecha: 31/10/2026 — Ahorcado (celular y tele): "después de mucha inactividad, la primera letra que pongo hace como un negro y va apareciendo; después todas impecables" (Gonzalo). Causa: la casilla con letra (assets/ahorcado/casilla_ok.webp) es un fondo CSS que el navegador recién pedía con el primer acierto; después de un rato quieto esa primera carga tardaba y la casilla se veía vacía/oscura. Ahora: el Ahorcado del celular baja y decodifica sus 12 dibujos al abrir y los deja en memoria; la tele precarga los del Ahorcado al abrir el menú (junto con el show de Giro) y al elegirlo; y en los dos queda un pseudo-elemento invisible con casilla_ok/casilla para que estén ya dibujadas. Comprobado: casilla_ok se pide al abrir, antes de jugar. ahorcado v15, extensiones.css v150, tele.js v15, tele.css v13, sw v586.
 ```
+
+```text
+Fecha: 31/10/2026 — Mímica: solo frases cortas, en el celular y en la tele (Gonzalo: "un pirata con pata de palo… son frases muy largas para jugar y que adivinen"). Se usan solo las de hasta 3 palabras: Fácil 67 de 96, Media 54 de 72, Difícil 48 de 60 (169 en total). Las largas siguen en mimica-datos.js pero no salen. El juego del celular quedó igual (dos equipos, uno actúa y su equipo adivina); Gonzalo lo va a pensar. mimica v8, tele.js v16, sw v587.
+```
