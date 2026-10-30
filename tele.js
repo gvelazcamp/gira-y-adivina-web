@@ -88,6 +88,7 @@
     function estadoCel(){
       if(T.fase==="menu")return{pantalla:"menu",juegos:JUEGOS.map(j=>({id:j.id,nombre:j.nombre,ok:j.ok,icono:j.icono,desc:j.desc}))};
       if(T.fase==="ruleta")return{pantalla:"ruleta"};
+      if(T.fase==="intro")return{pantalla:"intro",nombre:(JUEGOS.find(j=>j.id===T.juego)||{}).nombre||""};
       if(!T.g)return{pantalla:"menu"};
       return T.g.cel();
     }
@@ -106,25 +107,49 @@
       if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
       if(m.a==="elegir"&&T.fase==="menu"){elegir(String(m.juego||""));return;}
       if(m.a==="menu"){volverMenu();return;}
+      if(m.a==="intro_seguir"&&T.fase==="intro"){try{window.GiroRoscoPiloto.avanzar();}catch(e){}return;}
       if(T.g&&T.fase==="juego")T.g.accion(m);
     }
-    function elegir(id){
+    function elegir(id,revancha){
       const j=JUEGOS.find(x=>x.id===id);if(!j||!j.ok)return;
       if(id==="tutti"&&T.jug.length<2){avisoTele("Tutti Frutti necesita al menos 2 celulares para revisar las respuestas");return;}
       despierta();
+      /* Todos los juegos arrancan con el programa: apertura y Giro presentando (el Rosco tiene su propio show). */
+      if(id==="rosco"){if(!revancha)giroAperturaVista=false;arrancar(id);return;}
+      if(!revancha&&GIRO_INTROS[id]){introTele(id,j,()=>arrancar(id));return;}
+      arrancar(id);
+    }
+    function introTele(id,j,despues){
+      clearInterval(timerJuego);if(T.g&&T.g.fin)T.g.fin();T.g=null;T.fase="intro";T.juego=id;pintar();difundir();
+      const sigue=()=>T.fase==="intro"&&T.juego===id;
+      cargarGiro(ok=>{
+        if(!sigue())return;const G=window.GiroRoscoPiloto;
+        if(!ok||!G||!G.habilitado()||!G.presentarJuego){despues();return;}
+        giroListo().then(()=>{
+          if(!sigue())return;
+          const t=GIRO_INTROS[id];
+          if(!G.presentarJuego({...t,rotulo:"GIRÁ Y ADIVINÁ · "+j.nombre.toUpperCase(),audio:GIRO_B+"voz/tele/giro-intro-"+id+".mp3",despues:()=>{if(sigue())despues();}})){despues();return;}
+          /* Si nadie toca «Siguiente», Giro termina de presentar y arranca solo. */
+          let prev="",acc=0;timerJuego=setInterval(()=>{if(!sigue()){clearInterval(timerJuego);return;}const e=G.etapa();if(e!==prev){prev=e;acc=0;}else acc+=500;if(e==="giro"&&acc>16000){acc=-1e9;G.avanzar();}},500);
+        });
+      });
+    }
+    function arrancar(id){
       if(id==="ruleta"){T.fase="ruleta";T.juego="ruleta";pintar();difundir();setTimeout(()=>{location.href="index.html?tvhost=1";},1500);return;}
       T.fase="juego";T.juego=id;T.g=(id==="mimica"?juegoMimica:id==="numero"?juegoNumero:id==="quien"?juegoQuien:id==="duelo"?juegoDuelo:id==="puzzle"?juegoPuzzle:id==="tutti"?juegoTutti:id==="rosco"?juegoRosco:id==="ahorcado"?juegoAhorcado:juegoCien)(T,actualizar);
       ultimoTic=performance.now();clearInterval(timerJuego);
       timerJuego=setInterval(()=>{const a=performance.now(),dt=a-ultimoTic;ultimoTic=a;if(T.g&&T.g.tic)T.g.tic(dt);},200);
       actualizar();
     }
-    function volverMenu(){clearInterval(timerJuego);if(T.g&&T.g.fin)T.g.fin();T.fase="menu";T.juego=null;T.g=null;pintar();difundir();}
+    function volverMenu(){clearInterval(timerJuego);if(T.g&&T.g.fin)T.g.fin();T.fase="menu";T.juego=null;T.g=null;
+      try{if(window.GiroRoscoPiloto&&document.querySelector(".grp-apertura,.grp-overlay"))window.GiroRoscoPiloto.cerrar();}catch(e){}pintar();difundir();}
     function actualizar(){pintar();difundir();}
-    T.volverMenu=volverMenu;T.otra=()=>elegir(T.juego);
+    T.volverMenu=volverMenu;T.otra=()=>elegir(T.juego,true);
     function nombreMando(){const j=T.jug.find(x=>x.pid===T.mando);return j?j.n:"";}
     function pintar(){
       if(T.fase==="juego"&&T.g){raiz.className="tl-tv tl-juego-"+T.juego;T.g.pintar(raiz,nombreMando());return;}
       raiz.className="tl-tv";
+      if(T.fase==="intro"){raiz.innerHTML=`<div class="tl-centro tl-rosco tl-estudio"><img class="tl-logo" src="assets/logo.webp" alt=""><h1>Preparando el estudio…</h1></div>`;return;}
       if(T.fase==="ruleta"){raiz.innerHTML=`<div class="tl-centro"><img class="tl-logo" src="assets/logo.webp" alt=""><h1>Abriendo la Ruleta…</h1><p>En los celulares: entrá a <b>girayadivina.com/tv.html</b> y poné el código nuevo que va a aparecer en la tele.</p></div>`;return;}
       const jug=T.jug.length?T.jug.map(j=>`<li class="${j.pid===T.mando?"tl-mando":""}">${j.pid===T.mando?"🎮 ":""}${esc(j.n)}</li>`).join(""):"<li class='tl-vacio'>Esperando celulares…</li>";
       raiz.innerHTML=`<div class="tl-menu">
@@ -546,11 +571,33 @@
     if(window.GiroRoscoPiloto){cb(true);return;}
     if(!document.querySelector('link[data-giro-rosco]')){const l=document.createElement("link");l.rel="stylesheet";l.href="giro-rosco-piloto.css?v=19";l.dataset.giroRosco="1";document.head.appendChild(l);}
     let sc=document.querySelector('script[data-giro-rosco]');
-    if(!sc){sc=document.createElement("script");sc.src="giro-rosco-piloto.js?v=29";sc.async=true;sc.dataset.giroRosco="1";document.head.appendChild(sc);}
+    if(!sc){sc=document.createElement("script");sc.src="giro-rosco-piloto.js?v=30";sc.async=true;sc.dataset.giroRosco="1";document.head.appendChild(sc);}
     let listo=false;const fin=ok=>{if(listo)return;listo=true;cb(ok&&!!window.GiroRoscoPiloto);};
     sc.addEventListener("load",()=>fin(true),{once:true});sc.addEventListener("error",()=>fin(false),{once:true});setTimeout(()=>fin(!!window.GiroRoscoPiloto),8000);
   }
   let giroAperturaVista=false;
+  /* Presentación de cada juego en la tele (apertura del programa + Giro en su atril).
+     El audio va en voz/tele/giro-intro-<id>.mp3; mientras no esté grabado, Giro lo dice con la voz de la tele. */
+  const GIRO_INTROS={
+    ahorcado:{titulo:"¡Bienvenidos al Ahorcado!",descripcion:"Adivinen la palabra letra por letra antes de que se complete el muñeco.",
+      locucion:"¡Bienvenidos al Ahorcado Rioplatense! Elijan las letras desde el celular y descubran la palabra antes de que se complete el muñeco. ¡Cuidado con las letras que no están!"},
+    cien:{titulo:"¡100 Rioplatenses Dicen!",descripcion:"Encuentren las respuestas más populares de la encuesta.",
+      locucion:"¡Bienvenidos a 100 Rioplatenses Dicen! Preguntamos a cien rioplatenses y ustedes tienen que encontrar las respuestas más populares. Tres errores y se termina la ronda. ¡Vamos!"},
+    ruleta:{titulo:"¡La Ruleta!",descripcion:"Giren la ruleta y adivinen el panel.",
+      locucion:"¡Bienvenidos a La Ruleta! Giren, compren vocales y adivinen el panel antes que los demás. ¡Que la suerte esté de su lado!"},
+    tutti:{titulo:"¡Tutti Frutti!",descripcion:"Sale una letra y todos completan las categorías.",
+      locucion:"¡Bienvenidos al Tutti Frutti! Sale una letra y cada uno completa las categorías desde su celular. El primero que termina grita ¡basta! ¿Están listos?"},
+    puzzle:{titulo:"¡El Puzzle!",descripcion:"Armen el mismo rompecabezas entre todos.",
+      locucion:"¡Bienvenidos al Puzzle! Elijan una imagen y ármenla entre todos moviendo las piezas desde el celular. ¡Trabajo en equipo!"},
+    duelo:{titulo:"¡Duelo de Conocimiento!",descripcion:"Respondan hablando al celular. El reloj corre.",
+      locucion:"¡Bienvenidos al Duelo de Conocimiento! Banderas, cuentas, famosos y mucho más. Respondan hablando al celular antes de que se termine el reloj. ¡Que gane el que más sabe!"},
+    quien:{titulo:"¡¿Quién soy?!",descripcion:"Uno de espaldas a la tele; los demás le dan pistas.",
+      locucion:"¡Bienvenidos a Quién soy! Uno se pone de espaldas a la tele y los demás le dan pistas sin decir la palabra. ¡A adivinar antes de que se termine el tiempo!"},
+    numero:{titulo:"¡¿Qué número soy?!",descripcion:"El que juega, de espaldas: los demás le dan pistas del número.",
+      locucion:"¡Bienvenidos a Qué número soy! El que juega se pone de espaldas a la tele y los demás le dan pistas para que adivine su número. ¿Más alto o más bajo?"},
+    mimica:{titulo:"¡Mímica!",descripcion:"Uno de espaldas adivina; los demás actúan sin hablar. Gana el que adivina más.",
+      locucion:"¡Bienvenidos a Mímica! Uno se pone de espaldas a la tele y los demás actúan la frase sin hablar. Gana el que adivine más frases en su tiempo. ¡Silencio y a actuar!"}
+  };
   /* La tele precarga el show de Giro mientras está en el menú: así el Rosco no
      arranca con la pantalla en negro esperando las imágenes. */
   const GIRO_B="presentacion-y-locucion-extensiones/Giro/";
@@ -1135,6 +1182,9 @@
           <div class="tl-cel-tarjetas">${(c.juegos||[]).map(j=>`<button type="button" class="tl-cel-tarjeta${j.ok?"":" tl-pronto"}" data-j="${esc(j.id)}" ${j.ok?"":"disabled"}><img src="${esc(j.icono||"")}" alt="" onerror="this.style.visibility='hidden'"><b>${esc(j.nombre)}</b><small>${esc(j.ok?(j.desc||""):"Pronto")}</small></button>`).join("")}</div></div>`;
         raiz.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>accion("elegir",{juego:b.dataset.j}));return;}
       const menu=`<button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>`;
+      if(c.pantalla==="intro"){
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎬 Giro presenta ${esc(c.nombre)}</h2><p>Mirá la tele 📺 · podés esperar o pasar al juego.</p><button type="button" class="tl-boton tl-oro" id="tlSeguir">⏭ Siguiente</button>${menu}</div>`;
+        raiz.querySelector("#tlSeguir").onclick=()=>accion("intro_seguir");raiz.querySelector("#tlMenu").onclick=()=>accion("menu");return;}
       if(c.pantalla==="rosco_show"){
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎬 ${c.fase==="cierre"?"Giro cierra el programa":"Giro presenta el Rosco"}</h2><p>Mirá la tele 📺 · podés esperar o pasar a lo siguiente.</p><button type="button" class="tl-boton tl-oro" id="tlSeguir">⏭ Siguiente</button>${menu}</div>`;
         raiz.querySelector("#tlSeguir").onclick=()=>accion("rs_seguir");raiz.querySelector("#tlMenu").onclick=()=>{if(confirm("¿Volver al menú?"))accion("menu");};return;}
