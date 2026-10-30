@@ -45,13 +45,13 @@
     capa.setAttribute("role","dialog");capa.setAttribute("aria-modal","true");capa.setAttribute("aria-label","Girá y Adiviná, el programa");
     const cuadro=document.createElement("div");cuadro.className="grp-ap-cuadro";
     const img=(c,src)=>{const i=document.createElement("img");i.className=c;i.src=src;i.alt="";i.setAttribute("aria-hidden","true");i.draggable=false;return i;};
-    /* En la tele (Juegos en la tele) la apertura es un video de 10 s (30/10/2026): estudio que se prende con el logo,
-       cortes rápidos de los juegos (ruleta, Rosco, 100 Rioplatenses, Mímica), "esto es…" y el logo con golpe,
+    /* En la tele (Juegos en la tele) la apertura es un video de 11 s (30/10/2026): estudio que se prende con el logo,
+       cortes rápidos de los juegos (ruleta, Rosco, Ahorcado, 100 Rioplatenses, Mímica, ¿Quién soy?) y el logo con golpe,
        papelitos y aplausos. Lleva su propia música. En el celular sigue la apertura de imágenes. */
     const enTele=document.documentElement.classList.contains("tele-modo");
     let video=null;
     if(enTele){video=document.createElement("video");video.className="grp-ap-video";
-      video.src=BASE+"video/giro-apertura-tele."+(video.canPlayType('video/mp4; codecs="avc1.64001F"')?"mp4":"webm")+"?v=4";
+      video.src=BASE+"video/giro-apertura-tele."+(video.canPlayType('video/mp4; codecs="avc1.64001F"')?"mp4":"webm")+"?v=5";
       video.playsInline=true;video.preload="auto";video.setAttribute("aria-hidden","true");cuadro.append(video);
       /* Si la tele no puede pasar el video, se sigue directo con Giro (sin quedar en negro). */
       video.addEventListener("error",()=>setTimeout(()=>{if(apertura&&apertura.capa===capa)terminar();},400));}
@@ -69,7 +69,7 @@
       const v0=musica.volume;let paso=0;const baja=setInterval(()=>{paso++;try{musica.volume=Math.max(0,v0*(1-paso/8));}catch(e){}if(paso>=8){clearInterval(baja);try{musica.pause();}catch(e){}}},80);
       setTimeout(()=>capa.remove(),700);};
     const tecla=e=>{if(e.key==="Escape"||e.key==="Enter"){e.preventDefault();terminar();}};
-    apertura={capa,musica,tecla,timer:setTimeout(terminar,video?10600:15400)};
+    apertura={capa,musica,tecla,timer:setTimeout(terminar,video?11600:15400)};
     saltar.addEventListener("click",terminar);document.addEventListener("keydown",tecla);
     musica.addEventListener("ended",terminar);
     /* Si la tele no deja arrancar con sonido, el video sale igual sin sonido. */
