@@ -1954,3 +1954,7 @@ Fecha: 31/10/2026 — Juegos en la tele: 3 juegos nuevos (Gonzalo: "¿qué núme
 ```text
 Fecha: 31/10/2026 — tele/index.html (girayadivina.com/tele) sin deslizar (Gonzalo: "esto tiene que adaptarse sin scroll a una pantalla", captura en la compu). En pantalla ancha (horizontal, ≥700 px) va en dos columnas: a la izquierda logo, título y «Esta pantalla es la tele»; a la derecha el formulario (o «Tu tele ya está vinculada»); medidas según el alto de la pantalla. En celular parado se achicaron márgenes. Comprobado: entra justo en 1360×607, 1280×720, 1920×1080 y 390×844. No se tocó nada del deslizar (solo tamaños). sw v575.
 ```
+
+```text
+Fecha: 31/10/2026 — tele/index.html: en la compu o la tele (pantalla horizontal de 900 px o más) ya no se ven «Tu nombre» ni «Código» (Gonzalo: "sacá eso"; son para los celulares). Solo logo, título y el botón dorado «📺 Esta pantalla es la tele», más un enlace chico «Estoy en un celular o tablet: entrar con el código» que muestra el formulario (y con ?cambiar=1 sale el formulario directo). En el celular sigue igual. sw v576.
+```

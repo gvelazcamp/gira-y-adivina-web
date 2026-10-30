@@ -6,14 +6,22 @@ main{max-width:1150px;display:grid;grid-template-columns:1fr 1.15fr;gap:4vw;alig
 .intro img{width:clamp(64px,14vh,130px);height:clamp(64px,14vh,130px)}h1{font-size:clamp(24px,6vh,54px)}
 p{margin:1.2vh 0}section,form{margin:0;padding:2.4vh 2vw}label{margin:1.4vh 0 .6vh}
 input{font-size:clamp(16px,3vh,26px);padding:1.4vh}button,.tv-link{font-size:clamp(15px,2.8vh,24px);padding:1.8vh;margin-top:1.8vh}
-main>small{grid-column:1/-1;margin-top:0;font-size:clamp(11px,1.8vh,16px)}}</style></head>
-<body><main><div class="intro"><img src="../icono-192.png" alt="Girá y Adiviná"><h1>Juegos en la tele</h1><p>Creá la sala desde tu celular. La tele muestra el juego y los celulares responden.</p><a class="tv-link" id="tvLink" href="../index.html?tele=1">📺 Esta pantalla es la tele</a></div>
+main>small{grid-column:1/-1;margin-top:0;font-size:clamp(11px,1.8vh,16px)}}
+/* En la compu o la tele: solo «Esta pantalla es la tele» (el nombre y el código son para los celulares). */
+body.solo-tele main{display:block;max-width:760px}body.solo-tele .panel,body.solo-tele main>small{display:none}
+body.solo-tele .intro img{width:clamp(80px,20vh,180px);height:clamp(80px,20vh,180px)}body.solo-tele h1{font-size:clamp(28px,8vh,72px)}
+body.solo-tele .tv-link{font-size:clamp(18px,4vh,34px);padding:2.6vh;background:#f5b301;color:#160b24;border:0}
+.soy-cel{display:none;background:none;border:0;color:#d7c8e5;text-decoration:underline;font:600 clamp(13px,2.2vh,18px) system-ui;margin-top:2.4vh;width:auto;margin-inline:auto;padding:6px}
+body.solo-tele .soy-cel{display:block}</style></head>
+<body><main><div class="intro"><img src="../icono-192.png" alt="Girá y Adiviná"><h1>Juegos en la tele</h1><p>Creá la sala desde tu celular. La tele muestra el juego y los celulares responden.</p><a class="tv-link" id="tvLink" href="../index.html?tele=1">📺 Esta pantalla es la tele</a><button type="button" class="soy-cel" id="soyCel">Estoy en un celular o tablet: entrar con el código</button></div>
 <div class="panel"><section id="linked" hidden><strong>Tu tele ya está vinculada</strong><p id="linkedInfo"></p><button type="button" id="quickStart">Crear sala en mi tele</button><button type="button" class="sec" id="changeTv">Usar otra tele o cambiar nombre</button></section>
 <form id="f"><p>La primera vez, abrí esta página en la tele y tocá «Esta pantalla es la tele». Después escribí acá el código que aparezca.</p><label for="n">Tu nombre</label><input id="n" maxlength="14" required autocomplete="nickname" placeholder="¿Cómo te llamás?">
 <label for="c">Código que aparece en la tele</label><input id="c" minlength="4" maxlength="6" required autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Ej.: K7RQ2">
 <button>Vincular tele y crear sala</button></form></div>
 <small>La tele debe tener el juego abierto y ambos dispositivos necesitan internet. El enlace anterior con ?tele=1 también sigue funcionando.</small></main>
 <script>
+if(matchMedia("(orientation:landscape) and (min-width:900px)").matches&&!new URLSearchParams(location.search).has("cambiar"))document.body.classList.add("solo-tele");
+document.getElementById("soyCel").onclick=()=>document.body.classList.remove("solo-tele");
 const q=new URLSearchParams(location.search),nombre=document.getElementById("n"),codigo=document.getElementById("c"),form=document.getElementById("f"),linked=document.getElementById("linked");
 let guardado="";try{nombre.value=localStorage.getItem("gya_tele_nombre")||localStorage.getItem("gya_nombre")||"";guardado=localStorage.getItem("gya_tele_vinculada")||"";}catch(e){}
 if(!/^[A-Z0-9]{4,6}$/.test(guardado))guardado="";
