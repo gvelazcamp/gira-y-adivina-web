@@ -277,7 +277,16 @@ nextQuestion=async function(){
    return;
  }
  if(mode==="online"&&online?.host){await onlineNarrateHost();return;}
- if(mode!=="bot"&&answerSel.value==="voice"&&canAnswer()&&!micWanted&&!micBlocked)startMic();
+ /* Mismo celular: el micrófono se prende al tocar Empezar (para el permiso)
+    y queda escuchando durante el sorteo; Android corta esa escucha por
+    silencio justo cuando aparece la 1ª pregunta y la 1ª respuesta se perdía.
+    En la 1ª pregunta se reinicia limpio para que escuche desde ahí. */
+ if(mode!=="bot"&&answerSel.value==="voice"&&canAnswer()&&!micBlocked){
+   if(turn===1&&micWanted){
+     stopMic();const primera=question;
+     setTimeout(()=>{if(phase==="playing"&&question===primera&&!micWanted&&!micBlocked&&answerSel.value==="voice")startMic()},300);
+   }else if(!micWanted)startMic();
+ }
 };
 /* El HTML base programa un avance fijo de 2.8 s al acertar y de 1.9 s
    al pasar. Solo en modo BOT reemplazamos esos dos temporizadores:
