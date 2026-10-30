@@ -43,7 +43,7 @@
     const cols=["#F5B301","#E5197C","#37D6C0","#7B3FE4","#2F9BFF","#FF7A1A","#fff"];let conf="";
     for(let i=0;i<110;i++)conf+=`<i style="left:${Math.random()*100}%;background:${cols[i%cols.length]};animation-delay:${(Math.random()*2.6).toFixed(2)}s;animation-duration:${(2.8+Math.random()*2.4).toFixed(2)}s;--g:${Math.round(Math.random()*720-360)}deg"></i>`;
     el.innerHTML=`<img class="tl-podio-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
-      <img class="tl-podio-giro" src="${GB}Giro_festejando.png" alt="">
+      <img class="tl-podio-giro" src="${GB}Giro_festejando_cuerpo.webp" alt="">
       <div class="tl-podio-caja"><p class="tl-podio-juego">${esc(o.juego||"")}</p><h1>${esc(o.titulo||"")}</h1>${o.sub?`<p class="tl-podio-sub">${esc(o.sub)}</p>`:""}
         ${o.equipo?`<div class="tl-podio-equipo"><b>${esc(filas[0]?filas[0].pts:"")}</b><span>${esc(filas[0]?filas[0].n:"")}</span></div>`:
         `<div class="tl-podio-gradas">${orden.map((f,k)=>f?`<div class="tl-podio-col tl-podio-p${k===1?1:k===0?2:3}"><span class="tl-podio-nom">${k===1?"👑 ":""}${esc(f.n)}</span><span class="tl-podio-pts">${esc(f.pts)}</span><div class="tl-podio-escalon">${k===1?1:k===0?2:3}</div></div>`:"<div></div>").join("")}</div>
@@ -742,7 +742,7 @@
   const GIRO_IMGS=["estudios/Giro_estudio_principal_16x9.webp","efectos/Giro_efecto_haces_de_luz_transparente.webp","efectos/Giro_efecto_destellos_transparente.png",
     "escenas/Giro_presentacion_plano_general_16x9.webp","estudios/Giro_estudio_rosco_un_atril_16x9.webp","estudios/Giro_estudio_rosco_juego_fondo.webp",
     "participantes/participante_hombre.webp","participantes/participante_mujer.webp","elementos/Giro_atril_oficial_chico.webp",
-    "Giro_festejando.png","Giro_confundido.png","Giro_suspenso.png","Giro_sorprendido.png","Giro_tarjetas.png",
+    "Giro_festejando.png","Giro_festejando_cuerpo.webp","Giro_confundido.png","Giro_suspenso.png","Giro_sorprendido.png","Giro_tarjetas.png",
     "escenas/Giro_cierre_victoria_16x9.webp","escenas/Giro_cierre_derrota_revancha_16x9.webp"].map(x=>GIRO_B+x).concat(["assets/logo.webp"]);
   const giroCargadas=[];
   function precargarGiro(){
