@@ -2038,3 +2038,7 @@ Fecha: 31/10/2026 — Botón 📺 del inicio (solo Gonzalo): menú «Jugar en la
 ```text
 Fecha: 30/10/2026 — Inicio igual para todos que el de Gonzalo y Vale (Gonzalo: "Sala/TV Familia quede igual que a Gonzalo y Vale en inicio, que se reemplace por Torneos"). Antes el botón Torneos se ocultaba solo para andres/romina/gonzalo/vale (puedeVerSalaTV) y el resto veía Sala TV / Familia + Torneos; ahora nadie ve Torneos en el inicio y todos ven Sala TV / Familia (va a girayadivina.com/tele) en la grilla, igual que Gonzalo. Torneos sigue en el código (capaTorneos, tickets), solo se oculta el botón del inicio. sw v596.
 ```
+
+```text
+Fecha: 30/10/2026 — El botón 📺 del inicio (#btnTeleCast, "Jugar en la tele": menú con Transmitir / Con código / Celular de tele) ahora lo ven todos, no solo Gonzalo (Gonzalo: "lo del icono de tele del juego dejale a todos"). tele.js v25, sw v597.
+```
