@@ -51,7 +51,7 @@
     const enTele=document.documentElement.classList.contains("tele-modo");
     let video=null;
     if(enTele){video=document.createElement("video");video.className="grp-ap-video";
-      video.src=BASE+"video/giro-apertura-tele."+(video.canPlayType('video/mp4; codecs="avc1.64001F"')?"mp4":"webm");
+      video.src=BASE+"video/giro-apertura-tele."+(video.canPlayType('video/mp4; codecs="avc1.64001F"')?"mp4":"webm")+"?v=2";
       video.playsInline=true;video.preload="auto";video.setAttribute("aria-hidden","true");cuadro.append(video);
       /* Si la tele no puede pasar el video, se sigue directo con Giro (sin quedar en negro). */
       video.addEventListener("error",()=>setTimeout(()=>{if(apertura&&apertura.capa===capa)terminar();},400));}
