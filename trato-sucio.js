@@ -58,28 +58,38 @@ const TratoSucio=(()=>{
   const op=i=>i>=0&&R?`${L[i]} · ${R.sit.o[i]}`:"—";
   const giro=(p,txt)=>`<div class="ts-giro"><img src="${G+POSE[p]}.png" alt="Giro" draggable="false"><div class="ts-burbuja">${txt}</div></div>`;
   const expl=t=>explicado?`<div class="ts-expl">📖 ${t}</div>`:"";
-  const cab=()=>`<div class="ts-cab"><b>🃏 EL TRATO SUCIO</b><span>Ronda ${ronda}/${RONDAS} · ⭐ ${pts[yo().pid]||0}</span><button type="button" class="ts-ver" id="tsVer">👁 Mi carta</button></div>`;
-  function pantalla(html){if(!raiz)return;raiz.innerHTML=html;const v=q("tsVer");if(v)v.onclick=verCarta;}
+  /* Dibujos en assets/trato/ (hoja de ChatGPT recortada + cartas del Word de Gonzalo + logo). */
+  const A=n=>"assets/trato/"+n+".webp";
+  const PASOS=[["situacion","mesa","Situación"],["carta","carta_dorso","Carta"],["voto1","urna","1er voto"],["debate","debate","Debate"],["final","pacto","Voto final"],["pistas","pistas","Pistas"],["acusa","acusacion","Acusar"],["revela","revelacion","Cartas"]];
+  const cab=paso=>{const k=PASOS.findIndex(x=>x[0]===paso);
+    return`<div class="ts-cab"><img class="ts-cab-logo" src="${A("logo")}" alt="El Trato Sucio"><span>Ronda <b>${ronda}</b>/${RONDAS}<br>⭐ ${pts[yo().pid]||0} pts</span>${R&&R.volteada?`<button type="button" class="ts-ver" id="tsVer"><img src="${A(rolDe("yo")==="sabo"?"carta_sabo":rolDe("yo")==="complice"?"complice":"carta_leal")}" alt="">Mi carta</button>`:""}</div>
+    <div class="ts-pasos">${PASOS.map((x,i)=>`<div class="ts-paso${i===k?" ts-ahora":i<k?" ts-hecho":""}"><img src="${A(x[1])}" alt=""><small>${x[2]}</small></div>`).join("")}</div>`;};
+  const hacer=(img,txt)=>`<div class="ts-hacer"><img src="${A(img)}" alt=""><div><small>QUÉ HACÉS AHORA</small><b>${txt}</b></div></div>`;
+  function pantalla(html){if(!raiz)return;raiz.innerHTML=html;try{raiz.scrollIntoView({block:"start"});}catch(e){}const v=q("tsVer");if(v)v.onclick=verCarta;}
   function limpiarTiempos(){clearInterval(timer);clearTimeout(charla);timer=null;charla=null;flujo++;}
 
   function abrir(contenedor){
     salir();cargar();
     Object.values(POSE).forEach(p=>{const i=new Image();i.src=G+p+".png";});
+    ["logo","mesa","carta_dorso","carta_leal","carta_sabo","complice","oferta","urna","debate","pacto","pacto_roto","pistas","acusacion","revelacion","comodin","reloj","mision","descubierto","escapo","cumplieron","trofeo"].forEach(n=>{const i=new Image();i.src=A(n);});
     raiz=document.createElement("section");raiz.className="ts";contenedor.appendChild(raiz);
     inicio();
   }
   function inicio(){
     limpiarTiempos();ronda=0;R=null;
     pantalla(`<div class="ts-panel">
-      ${giro("saluda","¡Bienvenidos a <b>El Trato Sucio</b>! Pactos, sospechas y traiciones. Hoy jugás vos contra los bots para aprender cómo funciona.")}
-      <ol class="ts-reglas">
-        <li>🗺️ Giro presenta una situación con <b>4 opciones</b>.</li>
-        <li>🃏 Cada uno ve su <b>carta secreta</b>: LEAL o SABOTEADOR (con una misión).</li>
-        <li>🗳️ <b>Primer voto</b> en secreto y después <b>debate</b>: la opción más apoyada es el <b>pacto</b>.</li>
-        <li>🤝 El saboteador puede ofrecer un <b>trato anónimo</b> para tener un cómplice.</li>
-        <li>✅ <b>Voto final</b>: el pacto se cumple solo si votan <b>todos igual</b>.</li>
-        <li>🕵️ Giro da <b>pistas</b>, todos <b>acusan</b> y se revelan las cartas.</li>
-      </ol>
+      <img class="ts-logo" src="${A("logo")}" alt="El Trato Sucio">
+      ${giro("saluda","¡Bienvenido! Hoy jugás vos contra los bots para aprender cómo funciona. Así es cada ronda:")}
+      <div class="ts-reglas">
+        <div><img src="${A("mesa")}" alt=""><p><b>1. Situación.</b> Giro cuenta un problema con 4 opciones (A, B, C, D).</p></div>
+        <div><img src="${A("carta_dorso")}" alt=""><p><b>2. Carta secreta.</b> Te toca <b>LEAL</b> o <b>SABOTEADOR</b>. Nadie sabe la de los demás.</p></div>
+        <div><img src="${A("urna")}" alt=""><p><b>3. Primer voto.</b> Elegís una opción sin hablar.</p></div>
+        <div><img src="${A("debate")}" alt=""><p><b>4. Debate.</b> Discuten 40 segundos. La opción más apoyada es el <b>PACTO</b>. El saboteador puede mandar un <b>trato anónimo</b> para conseguir un cómplice.</p></div>
+        <div><img src="${A("pacto")}" alt=""><p><b>5. Voto final.</b> El pacto se cumple solo si votan <b>todos igual</b>.</p></div>
+        <div><img src="${A("pistas")}" alt=""><p><b>6. Pistas y acusación.</b> Giro da pistas y cada uno acusa a quién cree saboteador.</p></div>
+        <div><img src="${A("revelacion")}" alt=""><p><b>7. Se dan vuelta las cartas</b> y se reparten los puntos.</p></div>
+      </div>
+      <div class="ts-gana"><div><img src="${A("carta_leal")}" alt=""><p><b>LEAL</b> gana si se cumple el pacto y si descubre al saboteador.</p></div><div><img src="${A("carta_sabo")}" alt=""><p><b>SABOTEADOR</b> gana si su opción secreta junta 2 votos y nadie lo descubre.</p></div></div>
       <div class="ts-fila"><span>👥 Jugadores (vos + bots)</span><div class="ts-cant"><button type="button" id="tsMenos">−</button><b>${cant}</b><button type="button" id="tsMas">+</button></div></div>
       <label class="ts-check"><input type="checkbox" id="tsExpl" ${explicado?"checked":""}> 📖 Explicar cada paso</label>
       <button type="button" class="ts-principal" id="tsEmpezar">▶ Empezar partida (${RONDAS} rondas)</button>
@@ -110,9 +120,9 @@ const TratoSucio=(()=>{
   function misionTxt(){return `que <b>${esc(op(R.obj))}</b> saque <b>${MISION} votos o más</b> en el voto final, sin que te descubran`;}
   function cartaHtml(){
     const r=rolDe("yo");
-    if(r==="sabo")return`<div class="ts-carta ts-sabo"><div class="ts-carta-rol">😈 SABOTEADOR</div><p>Tu misión: ${misionTxt()}.</p><p class="ts-chico">Empujá esa opción en el debate sin que se note. Podés ofrecer un trato anónimo para conseguir un cómplice.</p></div>`;
-    if(r==="complice")return`<div class="ts-carta ts-comp"><div class="ts-carta-rol">🤝 CÓMPLICE</div><p>Aceptaste el trato: en el voto final votá <b>${esc(op(R.obj))}</b>. Si no los descubren, ganás +300.</p></div>`;
-    return`<div class="ts-carta ts-leal"><div class="ts-carta-rol">😇 LEAL</div><p>Tu misión: que <b>todos voten lo mismo</b> y descubrir si hay un saboteador.</p><p class="ts-chico">${comodin.yo?"Ya usaste tu comodín de traición.":"Te queda el comodín «Traicionar por mi cuenta» (una vez por partida)."}</p></div>`;
+    if(r==="sabo")return`<div class="ts-carta ts-sabo"><img class="ts-carta-img" src="${A("carta_sabo")}" alt="Saboteador"><div class="ts-mision"><img src="${A("mision")}" alt=""><p><b>Tu misión secreta:</b> ${misionTxt()}.</p></div><p class="ts-chico">Empujá esa opción en el debate sin que se note. Podés ofrecer un trato anónimo para conseguir un cómplice.</p></div>`;
+    if(r==="complice")return`<div class="ts-carta ts-comp"><img class="ts-carta-img" src="${A("complice")}" alt="Cómplice"><div class="ts-carta-rol">CÓMPLICE</div><p>Aceptaste el trato: en el voto final votá <b>${esc(op(R.obj))}</b>. Si no los descubren, ganás +300.</p></div>`;
+    return`<div class="ts-carta ts-leal"><img class="ts-carta-img" src="${A("carta_leal")}" alt="Leal"><p><b>Tu misión:</b> que <b>todos voten lo mismo</b> y descubrir si hay un saboteador.</p><p class="ts-chico">${comodin.yo?"Ya usaste tu comodín de traición.":"Te queda el comodín «Traicionar por mi cuenta» (una vez por partida)."}</p></div>`;
   }
   function verCarta(){
     if(!R||!R.volteada)return;
@@ -120,18 +130,19 @@ const TratoSucio=(()=>{
     capa.querySelector("button").onclick=()=>capa.remove();raiz.appendChild(capa);
   }
   function situacion(){
-    pantalla(cab()+`<div class="ts-panel">${giro("tarjetas",`Ronda ${ronda}: ${esc(R.sit.t)}`)}
+    pantalla(cab("situacion")+`<div class="ts-panel">${giro("tarjetas",`${esc(R.sit.t)}`)}
       <div class="ts-ops">${R.sit.o.map((o,i)=>`<div class="ts-op"><b>${L[i]}</b>${esc(o)}</div>`).join("")}</div>
       ${expl("Todos ven las mismas 4 opciones. Ahora cada uno recibe su carta secreta: puede que haya un saboteador… o que todos sean leales.")}
+      ${hacer("carta_dorso","Leé las 4 opciones y tocá «Ver mi carta».")}
       <button type="button" class="ts-principal" id="tsSig">🃏 Ver mi carta</button></div>`);
     q("tsSig").onclick=carta;
   }
   function carta(){
-    pantalla(cab()+`<div class="ts-panel"><h3>Tu carta secreta</h3>
-      <button type="button" class="ts-dorso" id="tsDorso"><span>?</span><small>Tocá para darla vuelta</small></button>
+    pantalla(cab("carta")+`<div class="ts-panel">${hacer("carta_dorso","Tocá la carta para darla vuelta. ¡Que nadie más la vea!")}
+      <button type="button" class="ts-dorso" id="tsDorso"><img src="${A("carta_dorso")}" alt="Carta boca abajo"><small>👆 Tocá para darla vuelta</small></button>
       ${expl("En la partida real cada uno la mira en su celular y nadie sabe qué le tocó a los demás. En 3 de cada 4 rondas hay un saboteador.")}</div>`);
     q("tsDorso").onclick=()=>{R.volteada=true;sonar(rolDe("yo")==="sabo"?220:660,.18,"triangle",.06);
-      pantalla(cab()+`<div class="ts-panel"><h3>Tu carta secreta</h3>${cartaHtml()}
+      pantalla(cab("carta")+`<div class="ts-panel">${cartaHtml()}
         ${expl(rolDe("yo")==="sabo"?"Sos el saboteador: tu objetivo NO es romper el pacto sí o sí, sino que tu opción junte 2 votos. Si convencés a todos de pactar tu opción, ¡ganás sin traicionar!":"Sos leal: ganás puntos si el pacto se cumple y si acertás quién saboteó. Con el botón 👁 Mi carta la volvés a ver cuando quieras.")}
         <button type="button" class="ts-principal" id="tsSig">🗳️ Al primer voto</button></div>`);
       q("tsSig").onclick=voto1;};
@@ -141,7 +152,8 @@ const TratoSucio=(()=>{
     return Math.random()<0.5?R.fav:Math.floor(Math.random()*4);
   }
   function voto1(){
-    pantalla(cab()+`<div class="ts-panel">${giro("senala","Primer voto, <b>sin hablar</b>. ¿Qué elegís vos?")}
+    pantalla(cab("voto1")+`<div class="ts-panel">${hacer("urna","Primer voto, sin hablar: tocá la opción que elegís.")}
+      <p class="ts-sit">${esc(R.sit.t)}</p>
       <div class="ts-ops ts-elegir">${R.sit.o.map((o,i)=>`<button type="button" class="ts-op" data-o="${i}"><b>${L[i]}</b>${esc(o)}</button>`).join("")}</div>
       ${expl("Es secreto: la tele solo muestra cuántos votos sacó cada opción, nunca quién votó qué. Este voto después sirve de pista: Giro va a contar quiénes cambiaron.")}</div>`);
     raiz.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{
@@ -176,7 +188,7 @@ const TratoSucio=(()=>{
     }
     function ofertaParaMi(){
       const capa=document.createElement("div");capa.className="ts-capa";
-      capa.innerHTML=`<div class="ts-capa-caja ts-oferta"><h3>📩 Mensaje anónimo</h3><p>«Alguien te ofrece ser su cómplice. Si en el voto final votás <b>${esc(op(R.obj))}</b> y no los descubren, ganás <b>+300</b>. ¿Aceptás?»</p>
+      capa.innerHTML=`<div class="ts-capa-caja ts-oferta"><img class="ts-hero" src="${A("oferta")}" alt=""><h3>Mensaje anónimo</h3><p>«Alguien te ofrece ser su cómplice. Si en el voto final votás <b>${esc(op(R.obj))}</b> y no los descubren, ganás <b>+300</b>. ¿Aceptás?»</p>
         ${expl("No sabés quién te lo mandó: solo sabés que hay un saboteador. Si aceptás, dejás de ganar como leal y jugás para él.")}
         <div class="ts-dos"><button type="button" class="ts-principal" id="tsAcepto">🤝 Acepto</button><button type="button" id="tsRechazo">❌ Rechazo</button></div></div>`;
       raiz.appendChild(capa);sonar(520,.12,"square",.04);
@@ -186,7 +198,7 @@ const TratoSucio=(()=>{
     function pintarPanelPropio(){
       const p=q("tsPropio");if(!p)return;
       if(R.sabo==="yo"){
-        if(!R.oferta)p.innerHTML=`<h4>🤝 Ofrecer trato anónimo (una vez)</h4><div class="ts-nombres">${J.filter(j=>j.pid!=="yo").map(j=>`<button type="button" data-a="${j.pid}">${esc(j.n)}</button>`).join("")}</div>`;
+        if(!R.oferta)p.innerHTML=`<div class="ts-propio-cab"><img src="${A("oferta")}" alt=""><h4>Ofrecer trato anónimo (una vez): elegí a quién</h4></div><div class="ts-nombres">${J.filter(j=>j.pid!=="yo").map(j=>`<button type="button" data-a="${j.pid}">${esc(j.n)}</button>`).join("")}</div>`;
         else p.innerHTML=`<h4>🤝 Oferta a ${esc(nom(R.oferta.a))}</h4><p>${R.oferta.estado==="pendiente"?"⏳ Esperando respuesta…":R.oferta.estado==="si"?"✅ Aceptó: va a votar tu opción.":"❌ La rechazó (y ahora sabe que hay un saboteador)."}</p>`;
         p.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{const a=b.dataset.a;R.oferta={de:"yo",a,estado:"pendiente"};pintarPanelPropio();
           setTimeout(()=>{if(mio!==flujo||!R.oferta)return;R.oferta.estado=Math.random()<0.6?"si":"no";if(R.oferta.estado==="si")R.complice=a;pintarPanelPropio();},2200);});
@@ -194,7 +206,8 @@ const TratoSucio=(()=>{
       else if(R.oferta&&R.oferta.a==="yo")p.innerHTML=`<p>❌ Rechazaste la oferta: ahora sabés que <b>hay un saboteador</b>.</p>`;
       else p.innerHTML="";
     }
-    pantalla(cab()+`<div class="ts-panel"><div class="ts-reloj-fila"><b>🗣️ DEBATE</b><span id="tsReloj">${resta} s</span></div>
+    pantalla(cab("debate")+`<div class="ts-panel">${hacer("debate","Leé el chat y tocá qué opción apoyás. La más apoyada al final será el PACTO.")}
+      <div class="ts-reloj-fila"><img src="${A("reloj")}" alt=""><b>DEBATE</b><span id="tsReloj">${resta} s</span></div>
       <div class="ts-sub">Primer voto: ${cuenta(R.voto1).map((n,i)=>`${L[i]} ${n}`).join(" · ")}</div>
       <div id="tsChat" class="ts-chat"></div>
       <div class="ts-sub">Tu apoyo ahora (podés cambiarlo):</div>
@@ -220,8 +233,9 @@ const TratoSucio=(()=>{
   function votoFinal(){
     const r=rolDe("yo"),puede=r==="leal"&&!comodin.yo;
     const pintar=()=>{
-      pantalla(cab()+`<div class="ts-panel">${giro("suspenso",`El pacto es <b>${esc(op(R.pacto))}</b>. Voto final, secreto. ¿Cumplís o traicionás?`)}
-        ${puede?`<label class="ts-check ts-traicion"><input type="checkbox" id="tsTraicion" ${R.traicionMia?"checked":""}> 😈 Traicionar por mi cuenta <small>(comodín: una vez por partida)</small></label>`:""}
+      pantalla(cab("final")+`<div class="ts-panel">${hacer("pacto",r==="leal"?"Votá en secreto. Para cumplir el pacto tocá la opción con 🤝.":`Votá en secreto. Tu opción secreta es ${esc(op(R.obj))}.`)}
+        <div class="ts-pacto-cartel"><small>EL PACTO ES</small><b>${esc(op(R.pacto))}</b></div>
+        ${puede?`<label class="ts-check ts-traicion"><img src="${A("comodin")}" alt=""><input type="checkbox" id="tsTraicion" ${R.traicionMia?"checked":""}> Traicionar por mi cuenta <small>(comodín: una vez por partida)</small></label>`:""}
         <div class="ts-ops ts-elegir">${R.sit.o.map((o,i)=>`<button type="button" class="ts-op${i===R.pacto?" ts-pacto":""}" data-o="${i}" ${R.traicionMia&&i===R.pacto?"disabled":""}><b>${L[i]}</b>${esc(o)}${i===R.pacto?" 🤝":""}</button>`).join("")}</div>
         ${expl(r==="sabo"?`Tu misión: que ${esc(op(R.obj))} junte 2 votos. ${R.complice?"Tu cómplice va a votarla.":"Sin cómplice, solo lo lograrías si el pacto es tu opción."}`:r==="complice"?`Prometiste votar ${esc(op(R.obj))}.`:"Si todos votan el pacto, cada leal gana +200. Con el comodín votás otra cosa a propósito: si nadie te descubre ganás +400, si te descubren perdés 300.")}</div>`);
       const t=q("tsTraicion");if(t)t.onchange=e=>{R.traicionMia=e.target.checked;pintar();};
@@ -240,8 +254,9 @@ const TratoSucio=(()=>{
   function pistas(){
     const c=cuenta(R.final);R.cumplido=J.every(j=>R.final[j.pid]===R.pacto);
     R.cambiaron=J.filter(j=>R.voto1[j.pid]!==R.final[j.pid]).length;R.votosSosp=c[R.sospechosa];
-    pantalla(cab()+`<div class="ts-panel">${giro(R.cumplido?"festeja":"sorprendido",R.cumplido?"¡Votaron todos igual! El pacto se cumplió… ¿o alguien ganó igual?":`¡${c[R.pacto]} cumplieron y ${J.length-c[R.pacto]} no! ¡Alguien rompió el trato!`)}
+    pantalla(cab("pistas")+`<div class="ts-panel"><img class="ts-hero" src="${A(R.cumplido?"cumplieron":"pacto_roto")}" alt="">${giro(R.cumplido?"festeja":"sorprendido",R.cumplido?"¡Votaron todos igual! El pacto se cumplió… ¿o alguien ganó igual?":`¡${c[R.pacto]} cumplieron y ${J.length-c[R.pacto]} no! ¡Alguien rompió el trato!`)}
       ${barras(c,R.pacto)}
+      ${hacer("pistas","Mirá las pistas y pensá quién pudo haber saboteado.")}
       <div class="ts-pistas"><p>🔄 <b>${R.cambiaron}</b> persona${R.cambiaron===1?"":"s"} cambiaron su voto desde el primero.</p>
         <p>🕵️ Giro sospecha de <b>${esc(op(R.sospechosa))}</b>: sacó <b>${R.votosSosp}</b> voto${R.votosSosp===1?"":"s"}.</p></div>
       ${expl("Estas son las pistas para acusar. La opción sospechosa suele ser la de la misión del saboteador (aunque a veces no hay saboteador y es una pista falsa). Pensá: ¿quién la empujó en el debate?")}
@@ -260,7 +275,7 @@ const TratoSucio=(()=>{
     let sab=null,com=null;
     const pintar=()=>{
       const lista=(sel,tipo)=>`<div class="ts-nombres">${J.filter(j=>j.pid!=="yo").map(j=>`<button type="button" class="${sel===j.pid?"ts-sel":""}" data-${tipo}="${j.pid}">${esc(j.n)}</button>`).join("")}<button type="button" class="${sel==="nadie"?"ts-sel":""}" data-${tipo}="nadie">🙅 Nadie</button></div>`;
-      pantalla(cab()+`<div class="ts-panel">${giro("confundido","Hora de acusar. ¿Fue un error… o tenemos un traidor entre nosotros?")}
+      pantalla(cab("acusa")+`<div class="ts-panel">${hacer("acusacion","Elegí quién creés que saboteó y quién fue su cómplice (o «Nadie»).")}
         <h4>😈 ¿Quién saboteó o traicionó?</h4>${lista(sab,"s")}<h4>🤝 ¿Quién fue su cómplice?</h4>${lista(com,"c")}
         ${expl("Queda descubierto el más votado (si hay empate, nadie). Acertar te da +100; acusar a un inocente, −50. «Nadie» es correcto si no hubo nadie.")}
         <button type="button" class="ts-principal" id="tsConfirmar" ${sab&&com?"":"disabled"}>✔ Confirmar acusación</button></div>`);
@@ -294,7 +309,9 @@ const TratoSucio=(()=>{
     const conteo=(a)=>Object.entries(a.c).sort((x,y)=>y[1]-x[1]).map(([p,n])=>`${esc(nom(p))} ${n}`).join(" · ");
     const ultima=ronda>=RONDAS,gano=d.yo>0;
     sonar(gano?784:220,.25,gano?"triangle":"sawtooth",.05);
-    pantalla(cab()+`<div class="ts-panel">${giro(R.sabo?(sabDesc?"festeja":"sorprendido"):"senala",R.sabo?`¡<b>${esc(nom(R.sabo))}</b> era el SABOTEADOR! Su misión: que ${esc(op(R.obj))} juntara 2 votos → ${mision?"✅ la cumplió":"❌ no la cumplió"}.`:"¡Esta ronda <b>no había saboteador</b>! Todos eran leales.")}
+    const heroe=sabDesc?"descubierto":R.sabo&&mision?"escapo":R.cumplido?"cumplieron":"pacto_roto";
+    pantalla(cab("revela")+`<div class="ts-panel"><div class="ts-revela-cartas">${J.map(j=>`<div class="${j.pid==="yo"?"ts-yo":""}"><img src="${A(j.pid===R.sabo?"carta_sabo":j.pid===R.complice?"complice":"carta_leal")}" alt=""><small>${esc(j.n)}${R.traidores.includes(j.pid)?" 🗡️":""}</small></div>`).join("")}</div>
+      <img class="ts-hero" src="${A(heroe)}" alt="">${giro(R.sabo?(sabDesc?"festeja":"sorprendido"):"senala",R.sabo?`¡<b>${esc(nom(R.sabo))}</b> era el SABOTEADOR! Su misión: que ${esc(op(R.obj))} juntara 2 votos → ${mision?"✅ la cumplió":"❌ no la cumplió"}.`:"¡Esta ronda <b>no había saboteador</b>! Todos eran leales.")}
       <div class="ts-revela">
         <p>🤝 Cómplice: <b>${R.complice?esc(nom(R.complice)):"no hubo"}</b>${R.oferta&&R.oferta.estado==="no"?` (le ofrecieron a ${esc(nom(R.oferta.a))} y rechazó)`:""}</p>
         ${R.traidores.length?`<p>😈 Traición por su cuenta: <b>${R.traidores.map(nom).map(esc).join(", ")}</b></p>`:""}
@@ -310,7 +327,7 @@ const TratoSucio=(()=>{
     partidas++;guardar();
     const orden=[...J].sort((a,b)=>pts[b.pid]-pts[a.pid]),gane=orden[0].pid==="yo";
     try{if(gane&&typeof sonarSFX==="function")sonarSFX("aplausos");}catch(e){}
-    pantalla(`<div class="ts-panel">${giro(gane?"festeja":"saluda",gane?"¡Ganaste la noche de traiciones! 🏆":`¡Ganó <b>${esc(orden[0].n)}</b>! Revancha cuando quieras.`)}
+    pantalla(`<div class="ts-panel"><img class="ts-logo" src="${A("logo")}" alt=""><img class="ts-hero" src="${A("trofeo")}" alt="">${giro(gane?"festeja":"saluda",gane?"¡Ganaste la noche de traiciones! 🏆":`¡Ganó <b>${esc(orden[0].n)}</b>! Revancha cuando quieras.`)}
       <table class="ts-tabla">${orden.map((j,i)=>`<tr class="${j.pid==="yo"?"ts-yo":""}"><td>${["🥇","🥈","🥉"][i]||""} ${esc(j.n)}</td><td><b>${pts[j.pid]}</b></td></tr>`).join("")}</table>
       <button type="button" class="ts-principal" id="tsOtra">🔄 Otra partida</button><button type="button" id="tsInicio">⚙️ Cambiar jugadores</button></div>`);
     q("tsOtra").onclick=empezar;q("tsInicio").onclick=inicio;
