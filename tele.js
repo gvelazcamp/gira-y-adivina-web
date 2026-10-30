@@ -427,12 +427,11 @@
     const TIEMPOS=[45,60,90],GB="presentacion-y-locucion-extensiones/Giro/";
     let nivel="mezcla",tiempo=60,fase="config",orden=[],turno=0,restante=0,cuenta=0,mazo=[],idx=0,hechas=[],marcador={},muerto=false;
     const nombreDe=pid=>(T.jug.find(j=>j.pid===pid)||{}).n||"Jugador";
+    /* Frases cortas, mezcladas e intercaladas (fácil, media, difícil…): window.mimicaMazo en mimica.js. */
     function armarMazo(){
-      /* Frases cortas y sin artículos (mimicaCortas, en mimica.js): en un concurso contra reloj las largas cortan el ritmo. */
-      const crudas=nivel==="mezcla"?NIV.slice(0,3).flatMap(n=>n[2]()):(NIV.find(n=>n[0]===nivel)||NIV[0])[2]();
-      const lista=typeof window.mimicaCortas==="function"?window.mimicaCortas(crudas):crudas.filter(t=>String(t).trim().split(/\s+/).length<=3);
-      const libres=Vistas.filtrar("mimica",lista,x=>x);
-      return mezclar(libres).concat(mezclar(lista.filter(x=>!libres.includes(x))));
+      if(typeof window.mimicaMazo==="function")return window.mimicaMazo();
+      const lista=NIV.slice(0,3).flatMap(n=>n[2]()).filter(t=>String(t).trim().split(/\s+/).length<=3);
+      return mezclar(Vistas.filtrar("mimica",lista,x=>x));
     }
     function empezar(){orden=T.jug.map(j=>j.pid);if(orden.length<2)return;marcador={};orden.forEach(p=>marcador[p]=0);turno=0;mazo=armarMazo();idx=0;prepararTurno();}
     function prepararTurno(){hechas=[];restante=tiempo*1000;cuenta=4000;fase="cuenta";actualizar();}
@@ -447,7 +446,6 @@
       if((m.a==="mm_ok"||m.a==="mm_paso")&&fase==="jugando"&&Number(m.i)===idx&&m.pid!==orden[turno]){marcar(m.a==="mm_ok");return;}
       if(m.pid!==T.mando)return;
       if(fase==="config"){
-        if(m.a==="mm_nivel"&&NIV.some(n=>n[0]===m.nivel)){nivel=m.nivel;actualizar();return;}
         if(m.a==="mm_tiempo"&&TIEMPOS.includes(Number(m.seg))){tiempo=Number(m.seg);actualizar();return;}
         if(m.a==="mm_empezar"){empezar();return;}return;}
       if(m.a==="mm_terminar"&&fase==="jugando"){restante=0;finTurno();return;}
@@ -468,7 +466,7 @@
     function pintar(raiz){
       if(fase==="config"){raiz.innerHTML=`<div class="tl-mm tl-mm-telon"><div class="tl-mm-oscuro"></div><div class="tl-mm-card"><img class="tl-mm-logo" src="assets/mimica/logo.webp" alt="Mímica">
         <p>Uno se pone <b>de espaldas a la tele</b> y los demás le hacen <b>mímica</b> de la frase, sin hablar.<br>Gana el que <b>adivina más frases en ${tiempo} segundos</b>.</p>
-        <p class="tl-mm-chico">${esc((NIV.find(n=>n[0]===nivel)||NIV[3])[1])} · ${T.jug.length} jugadores · 🎮 se empieza desde el celular</p></div>${giro("Giro_saludando")}</div>`;return;}
+        <p class="tl-mm-chico">Frases cortas mezcladas · ${T.jug.length} jugadores · 🎮 se empieza desde el celular</p></div>${giro("Giro_saludando")}</div>`;return;}
       if(fase==="cuenta"){raiz.innerHTML=`<div class="tl-mm tl-mm-telon"><div class="tl-mm-oscuro"></div><div class="tl-mm-haz"></div>
         <div class="tl-mm-card"><small>🙈 LE TOCA ADIVINAR A</small><div class="tl-mm-nombre">${esc(nombreDe(orden[turno]))}</div><span class="tl-mm-pill">¡DE ESPALDAS A LA TELE!</span>
         <p>Los demás: hagan la mímica de la frase, ¡sin hablar!</p></div><div class="tl-mm-cuenta" id="tlMmCuenta">${Math.min(3,Math.max(1,Math.ceil(cuenta/1000)))}</div>${giro("Giro_senalando_derecha")}${tabla()}</div>`;return;}
@@ -1117,10 +1115,8 @@
       if(c.fase==="fin"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🏆 ¡Terminó!</h2><button type="button" class="tl-boton tl-oro" id="tlMmOtra">🔄 Jugar otra vez</button>${menu}</div>`;
         raiz.querySelector("#tlMmOtra").onclick=()=>accion("mm_config");enlazarMenu();return;}
       raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎭 Mímica</h2><p>Juegan todos los de la sala (${c.jugadores}). Cada uno, de espaldas a la tele; gana el que adivina más.</p>
-        <p>Frases</p><div class="tl-dc-opciones">${c.niveles.map(([id,n])=>`<button type="button" data-nivel="${id}" class="${c.nivel===id?"tl-pz-activo":""}">${n}</button>`).join("")}</div>
         <p>Tiempo de cada uno</p><div class="tl-dc-opciones">${c.tiempos.map(t=>`<button type="button" data-t="${t}" class="${c.tiempo===t?"tl-pz-activo":""}">${t} s</button>`).join("")}</div>
         <button type="button" class="tl-boton tl-oro" id="tlMmEmpezar" ${c.jugadores<2?"disabled":""}>▶ Empezar</button>${c.jugadores<2?"<p>Hacen falta al menos 2 celulares en la sala.</p>":""}${menu}</div>`;
-      raiz.querySelectorAll("[data-nivel]").forEach(b=>b.onclick=()=>accion("mm_nivel",{nivel:b.dataset.nivel}));
       raiz.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>accion("mm_tiempo",{seg:Number(b.dataset.t)}));
       raiz.querySelector("#tlMmEmpezar").onclick=()=>accion("mm_empezar");enlazarMenu();
     }
