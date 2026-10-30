@@ -428,7 +428,8 @@
     let nivel="mezcla",tiempo=60,fase="config",orden=[],turno=0,restante=0,cuenta=0,mazo=[],idx=0,hechas=[],marcador={},muerto=false;
     const nombreDe=pid=>(T.jug.find(j=>j.pid===pid)||{}).n||"Jugador";
     function armarMazo(){
-      const lista=nivel==="mezcla"?NIV.slice(0,3).flatMap(n=>n[2]()):(NIV.find(n=>n[0]===nivel)||NIV[0])[2]();
+      /* Solo frases cortas (hasta 3 palabras): en un concurso contra reloj las largas cortan el ritmo. */
+      const lista=(nivel==="mezcla"?NIV.slice(0,3).flatMap(n=>n[2]()):(NIV.find(n=>n[0]===nivel)||NIV[0])[2]()).filter(t=>String(t).trim().split(/\s+/).length<=3);
       const libres=Vistas.filtrar("mimica",lista,x=>x);
       return mezclar(libres).concat(mezclar(lista.filter(x=>!libres.includes(x))));
     }

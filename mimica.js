@@ -53,7 +53,8 @@ const Mimica=(()=>{
     q("mimWpp").onclick=()=>PantallaFija.invitar("mimica","Mímica rioplatense");
   }
   function empezar(){
-    mazos=NIVELES.map(n=>{const todas=n.lista(),libres=Vistas.filtrar("mimica",todas,x=>x);return mezclar(libres).concat(mezclar(todas.filter(x=>!libres.includes(x))));});
+    /* Solo frases cortas (hasta 3 palabras), igual que en la tele (Gonzalo, 31/10/2026). */
+    mazos=NIVELES.map(n=>{const todas=n.lista().filter(t=>String(t).trim().split(/\s+/).length<=3),libres=Vistas.filtrar("mimica",todas,x=>x);return mezclar(libres).concat(mezclar(todas.filter(x=>!libres.includes(x))));});
     idx=[0,0,0];pts=[0,0];turno=0;turnos=0;PantallaFija.activar();previa();
   }
   function pantalla(html,clase){raiz.innerHTML=`<div class="qns-pantalla imp-juego mim-escena ${clase||""}" style="--c:${COLORES[turno]}"><button type="button" class="pf-salir" id="mimSalir">✕ Salir</button>${html}</div>`;PantallaFija.confirmar(q("mimSalir"),configurar);}
