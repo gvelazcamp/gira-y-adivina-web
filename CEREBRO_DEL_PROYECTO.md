@@ -2018,3 +2018,7 @@ Fecha: 31/10/2026 — Botón 📺 «Jugar en la tele» en la pantalla de inicio 
 ```text
 Fecha: 31/10/2026 — El botón 📺 del inicio (solo Gonzalo) ahora va directo a girayadivina.com/tele (Gonzalo). Para duplicar la pantalla usa «Emitir» del centro de control del Redmi. La ventana con «Transmitir a la tele» (Chromecast) quedó guardada en Tele.compartirPantalla por si se vuelve a usar. tele.js v20, sw v591.
 ```
+
+```text
+Fecha: 31/10/2026 — El botón 📺 del inicio (solo Gonzalo) volvió a abrir la ventana «Jugar en la tele» (Gonzalo: "volvé a como estaba"): Transmitir a la tele por Chromecast (la tele abre la sala sola y el celular entra sin código), «Con un código» (girayadivina.com/tele) y cómo duplicar la pantalla. tele.js v21, sw v592.
+```
