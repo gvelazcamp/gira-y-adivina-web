@@ -1009,3 +1009,7 @@ Este pack es **independiente** de «La confesión anónima», «Defendé lo inde
 **Pendiente para una futura planificación:** nombre definitivo, duración, número de desafíos, cuál es el desafío faltante, sistema de puntuación, funcionamiento de las salas y viabilidad técnica de integrar todas las extensiones sin alterar su modo individual.
 
 **Regla:** mantener intactos el juego principal, las extensiones y la Sala TV actual hasta que exista autorización expresa para implementar este pack.
+
+## Imágenes guardadas para videos o publicidad (30/10/2026)
+
+- `promo/referencias/ruleta-juego-principal.webp`: captura real del juego principal (Jugar ahora / Jugar online). A la izquierda el tablero (panel de la frase, turno, Girar, Comprar vocal, Resolver, Pista y teclado); a la derecha la ruleta girando con sus valores ($150 a $1000, Quiebra, Pierde turno, Comodín, x2 Premio). Sirve para usarla tal cual en un video o imagen, o para pasársela a ChatGPT como referencia para que dibuje la ruleta igual a la del juego.

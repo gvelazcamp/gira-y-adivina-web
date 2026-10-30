@@ -2042,3 +2042,7 @@ Fecha: 30/10/2026 — Inicio igual para todos que el de Gonzalo y Vale (Gonzalo:
 ```text
 Fecha: 30/10/2026 — El botón 📺 del inicio (#btnTeleCast, "Jugar en la tele": menú con Transmitir / Con código / Celular de tele) ahora lo ven todos, no solo Gonzalo (Gonzalo: "lo del icono de tele del juego dejale a todos"). tele.js v25, sw v597.
 ```
+
+```text
+Fecha: 30/10/2026 — Guardada para el futuro la captura del juego principal (tablero + ruleta girando) en promo/referencias/ruleta-juego-principal.webp, anotada en IDEAS.md ("Imágenes guardadas para videos o publicidad"). Gonzalo: "guardame esta imagen a futuro… para imagen a futuro en algún video o imagen". No la carga el juego, no hace falta tocar versiones ni sw.
+```
