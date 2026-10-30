@@ -693,12 +693,12 @@ const RoscoRioplatense=(()=>{
     };
     if(window.GiroRoscoPiloto){activar();return;}
     if(!document.querySelector('link[data-giro-rosco]')){
-      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=20";
+      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=21";
       estilo.dataset.giroRosco="1";document.head.appendChild(estilo);
     }
     let script=document.querySelector('script[data-giro-rosco]');
     if(!script){
-      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=35";script.async=true;
+      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=36";script.async=true;
       script.dataset.giroRosco="1";script.addEventListener("load",activar,{once:true});script.addEventListener("error",()=>cortinaG(false),{once:true});
       document.head.appendChild(script);
     }else script.addEventListener("load",activar,{once:true});

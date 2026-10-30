@@ -45,8 +45,8 @@
     el.innerHTML=`<img class="tl-podio-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
       <img class="tl-podio-giro" src="${GB}Giro_festejando_cuerpo.webp" alt="">
       <div class="tl-podio-caja"><p class="tl-podio-juego">${esc(o.juego||"")}</p><h1>${esc(o.titulo||"")}</h1>${o.sub?`<p class="tl-podio-sub">${esc(o.sub)}</p>`:""}
-        ${o.equipo?`<div class="tl-podio-equipo"><b>${esc(filas[0]?filas[0].pts:"")}</b><span>${esc(filas[0]?filas[0].n:"")}</span></div>`:
-        `<div class="tl-podio-gradas">${orden.map((f,k)=>f?`<div class="tl-podio-col tl-podio-p${k===1?1:k===0?2:3}"><span class="tl-podio-nom">${k===1?"👑 ":""}${esc(f.n)}</span><span class="tl-podio-pts">${esc(f.pts)}</span><div class="tl-podio-escalon">${k===1?1:k===0?2:3}</div></div>`:"<div></div>").join("")}</div>
+        ${o.equipo?`<div class="tl-podio-equipo">${filas[0]&&filas[0].av&&fotoFestejo(filas[0].av)?`<img class="tl-podio-av" src="${fotoFestejo(filas[0].av)}" alt="" onerror="this.remove()">`:""}<b>${esc(filas[0]?filas[0].pts:"")}</b><span>${esc(filas[0]?filas[0].n:"")}</span></div>`:
+        `<div class="tl-podio-gradas">${orden.map((f,k)=>f?`<div class="tl-podio-col tl-podio-p${k===1?1:k===0?2:3}">${f.av&&fotoFestejo(f.av)?`<img class="tl-podio-av" src="${fotoFestejo(f.av)}" alt="" onerror="this.remove()">`:""}<span class="tl-podio-nom">${k===1?"👑 ":""}${esc(f.n)}</span><span class="tl-podio-pts">${esc(f.pts)}</span><div class="tl-podio-escalon">${k===1?1:k===0?2:3}</div></div>`:"<div></div>").join("")}</div>
         ${filas.length>3?`<p class="tl-podio-resto">${filas.slice(3).map((f,i)=>`${i+4}. ${esc(f.n)} · ${esc(f.pts)}`).join(" &nbsp; ")}</p>`:""}`}</div>
       <div class="tl-podio-conf">${conf}</div>`;
     document.body.appendChild(el);
@@ -57,6 +57,12 @@
     podio={el,k,t:setTimeout(cerrarPodio,10000)};
   }
   const nombreDe=(T,pid)=>{const j=T.jug.find(x=>x.pid===pid);return j?j.n:"Jugador";};
+  /* Cada uno juega con su avatar (30/10/2026): atril (assets/atril/<avatar>.webp, los 35 gratis + el de Gonzalo)
+     y festejo (assets/festejos, mapa RTV_AVATAR_FESTEJO de index.html). Si no hay, queda el personaje genérico. */
+  const ATRIL_AV=new Set([...Array.from({length:22},(_,i)=>"avatar-"+String(i+1).padStart(2,"0")),"avatar-33",...Array.from({length:13},(_,i)=>"avatar-"+(42+i))]);
+  const avDe=(T,pid)=>{const j=T.jug.find(x=>x.pid===pid);return j&&j.av||"";};
+  const fotoAtril=av=>ATRIL_AV.has(av)?"assets/atril/"+av+".webp":"";
+  const fotoFestejo=av=>{try{if(typeof RTV_AVATAR_FESTEJO!=="undefined"&&RTV_AVATAR_FESTEJO[av])return "assets/festejos/"+RTV_AVATAR_FESTEJO[av]+".webp";}catch(e){}return fotoAtril(av);};
   const JUEGOS=[
     {id:"rosco",nombre:"El Rosco",icono:"assets/rosco/logo.webp",desc:"Juega uno, los demás miran",ok:true},
     {id:"silabario",nombre:"Silabario",icono:"logo-silabario-rioplatense.svg",desc:"Armá la palabra con las sílabas",ok:true},
@@ -226,7 +232,7 @@
       if(m.t==="hola"){
         const n=limpio(m.n,14)||"Jugador";let j=T.jug.find(x=>x.pid===m.pid),cambio=false;
         if(!j){if(T.jug.length>=8)return;j={pid:m.pid,n};T.jug.push(j);sonar(880,.12,"triangle",.06);cambio=true;}
-        if(j.n!==n){j.n=n;cambio=true;}if(m.pj==="hombre"||m.pj==="mujer")j.pj=m.pj;j.visto=Date.now();if(!T.mando||!T.jug.some(x=>x.pid===T.mando)){T.mando=m.pid;cambio=true;}
+        if(j.n!==n){j.n=n;cambio=true;}if(m.pj==="hombre"||m.pj==="mujer")j.pj=m.pj;if(/^avatar-\d{2}$/.test(m.av||""))j.av=m.av;j.visto=Date.now();if(!T.mando||!T.jug.some(x=>x.pid===T.mando)){T.mando=m.pid;cambio=true;}
         if(cambio){pintar();difundir();}return;
       }
       const j=T.jug.find(x=>x.pid===m.pid);if(!j)return;j.visto=Date.now();
@@ -361,10 +367,10 @@
       historial.push({letra,puntos:sumas});const max=Math.max(...Object.values(sumas));
       jugadores.forEach(j=>{totales[j.pid]+=sumas[j.pid];if(max>0&&sumas[j.pid]===max)ganadas[j.pid]++;});
       if(ronda>=RONDAS){fase="fin";
-        const f=jugadores.map(j=>({n:j.n,g:ganadas[j.pid],t:totales[j.pid]})).sort((a,b)=>b.g-a.g||b.t-a.t);
+        const f=jugadores.map(j=>({n:j.n,av:avDe(T,j.pid),g:ganadas[j.pid],t:totales[j.pid]})).sort((a,b)=>b.g-a.g||b.t-a.t);
         const emp=f.length>1&&f[0].g===f[1].g&&f[0].t===f[1].t;
         podioTele({juego:"TUTTI FRUTTI",titulo:emp?"¡EMPATE!":"¡GANÓ "+String(f[0]?f[0].n:"").toUpperCase()+"!",sub:emp?"Nadie se sacó ventaja":"El mejor de "+RONDAS+" rondas",
-          filas:f.map(x=>({n:x.n,pts:x.g+(x.g===1?" ronda":" rondas")+" · "+x.t+" pts"}))});
+          filas:f.map(x=>({n:x.n,av:x.av,pts:x.g+(x.g===1?" ronda":" rondas")+" · "+x.t+" pts"}))});
       }else nueva();actualizar();}
     function accion(m){
       if(m.a==="otra"&&fase==="fin"&&m.pid===T.mando){T.otra();return;}
@@ -470,7 +476,7 @@
     function terminar(){fase="fin";const ok=resultados.filter(r=>r.ok).length;
       try{const r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");if(ok>(r.quien||0)){r.quien=ok;localStorage.setItem("gya_tele_records",JSON.stringify(r));}}catch(e){}
       const nq=nombreDe(T,quien);
-      if(ok>0)podioTele({juego:"¿QUIÉN SOY?",titulo:"¡"+String(nq).toUpperCase()+" ADIVINÓ "+ok+"!",sub:ok>=5?"¡Una máquina!":"Buen intento",equipo:true,filas:[{n:nq,pts:ok+(ok===1?" acierto":" aciertos")}]});
+      if(ok>0)podioTele({juego:"¿QUIÉN SOY?",titulo:"¡"+String(nq).toUpperCase()+" ADIVINÓ "+ok+"!",sub:ok>=5?"¡Una máquina!":"Buen intento",equipo:true,filas:[{n:nq,av:avDe(T,quien),pts:ok+(ok===1?" acierto":" aciertos")}]});
       else sfx("abucheo");actualizar();}
     function accion(m){
       if((m.a==="qs_ok"||m.a==="qs_paso")&&fase==="jugando"&&Number(m.i)===idx){marcar(m.a==="qs_ok");return;}
@@ -577,8 +583,8 @@
     function finTurno(){fase="resumen";sfx("aplausos");actualizar();}
     function siguiente(){turno++;if(turno>=orden.length){fase="fin";
         const mejor=Math.max(0,...Object.values(marcador));try{const r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");if(mejor>(r.mimica||0)){r.mimica=mejor;localStorage.setItem("gya_tele_records",JSON.stringify(r));}}catch(e){}
-        const f=orden.map(pid=>({n:nombreDe(T,pid),v:marcador[pid]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
-        podioTele({juego:"MÍMICA",titulo:emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",sub:"El que más adivinó en su turno",filas:f.map(x=>({n:x.n,pts:x.v+(x.v===1?" acierto":" aciertos")}))});
+        const f=orden.map(pid=>({n:nombreDe(T,pid),av:avDe(T,pid),v:marcador[pid]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
+        podioTele({juego:"MÍMICA",titulo:emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",sub:"El que más adivinó en su turno",filas:f.map(x=>({n:x.n,av:x.av,pts:x.v+(x.v===1?" acierto":" aciertos")}))});
         actualizar();return;}
       SND.turno();prepararTurno();}
     function accion(m){
@@ -709,9 +715,9 @@
   /* Show de Giro (giro-rosco-piloto.js, el mismo del Rosco del celular): se carga al elegir el Rosco. */
   function cargarGiro(cb){
     if(window.GiroRoscoPiloto){cb(true);return;}
-    if(!document.querySelector('link[data-giro-rosco]')){const l=document.createElement("link");l.rel="stylesheet";l.href="giro-rosco-piloto.css?v=20";l.dataset.giroRosco="1";document.head.appendChild(l);}
+    if(!document.querySelector('link[data-giro-rosco]')){const l=document.createElement("link");l.rel="stylesheet";l.href="giro-rosco-piloto.css?v=21";l.dataset.giroRosco="1";document.head.appendChild(l);}
     let sc=document.querySelector('script[data-giro-rosco]');
-    if(!sc){sc=document.createElement("script");sc.src="giro-rosco-piloto.js?v=35";sc.async=true;sc.dataset.giroRosco="1";document.head.appendChild(sc);}
+    if(!sc){sc=document.createElement("script");sc.src="giro-rosco-piloto.js?v=36";sc.async=true;sc.dataset.giroRosco="1";document.head.appendChild(sc);}
     let listo=false;const fin=ok=>{if(listo)return;listo=true;cb(ok&&!!window.GiroRoscoPiloto);};
     sc.addEventListener("load",()=>fin(true),{once:true});sc.addEventListener("error",()=>fin(false),{once:true});setTimeout(()=>fin(!!window.GiroRoscoPiloto),8000);
   }
@@ -793,7 +799,7 @@
     });
     function arrancarShow(){
       if(muerto)return;
-      const presentar=()=>{if(muerto)return;if(!G().presentarSolo(aJugar,{nombre:jugador().n||"Jugador",personaje:jugador().pj||""}))aJugar();};
+      const presentar=()=>{if(muerto)return;if(!G().presentarSolo(aJugar,{nombre:jugador().n||"Jugador",personaje:jugador().pj||"",foto:fotoAtril(jugador().av||"")}))aJugar();};
       if(giroAperturaVista){presentar();return;}
       giroAperturaVista=true;if(!G().mostrarInicio(presentar))aJugar();
     }
@@ -958,9 +964,9 @@
     function revelar(){if(fase!=="jugando")return;fase="revela";actualizar();clearTimeout(timer);
       timer=setTimeout(()=>{if(muerto)return;if(ronda>=items.length)terminar();else nueva();},4200);}
     function terminar(){fase="fin";clearTimeout(timer);
-      const f=jugadores.map(j=>({n:j.n,v:puntos[j.pid]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
+      const f=jugadores.map(j=>({n:j.n,av:avDe(T,j.pid),v:puntos[j.pid]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
       podioTele({juego:CFG.nombre,titulo:f.length<2?"¡"+String(f[0]?f[0].n:"").toUpperCase()+" SUMÓ "+(f[0]?f[0].v:0)+"!":emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",
-        sub:"El más rápido en armar"+(SIL?" las palabras":" las frases"),equipo:f.length<2,filas:f.map(x=>({n:x.n,pts:x.v+" pts"}))});
+        sub:"El más rápido en armar"+(SIL?" las palabras":" las frases"),equipo:f.length<2,filas:f.map(x=>({n:x.n,av:x.av,pts:x.v+" pts"}))});
       actualizar();}
     function accion(m){
       if(m.a==="otra"&&fase==="fin"&&m.pid===T.mando){T.otra();return;}
@@ -1072,7 +1078,7 @@
     }
     function entrar(){
       raiz.innerHTML=`<div class="tl-cel-caja"><h2>Conectando con la tele…</h2><p>Código <b>${codCel}</b></p></div>`;
-      conectar(codCel,()=>{conectado=true;const h=()=>{let pj="";try{pj=localStorage.getItem("gya_giro_personaje")||"";}catch(e){}mandar({t:"hola",n:nombre,pj});};h();hola=setInterval(h,4000);
+      conectar(codCel,()=>{conectado=true;const h=()=>{let pj="";try{pj=localStorage.getItem("gya_giro_personaje")||"";}catch(e){}let av="";try{av=localStorage.getItem("gya_avatar")||"";}catch(e){}mandar({t:"hola",n:nombre,pj,av});};h();hola=setInterval(h,4000);
         setTimeout(()=>{if(!ultimo)raiz.innerHTML=`<div class="tl-cel-caja"><h2>No encuentro la tele 🤔</h2><p>Revisá que el código <b>${codCel}</b> sea el que muestra la tele y que la tele siga abierta.</p><button type="button" class="tl-boton" onclick="location.reload()">Probar de nuevo</button><a class="tl-boton tl-chico" href="tele/?cambiar=1">Usar otra tele</a></div>`;},12000);},
         ()=>{raiz.innerHTML=`<div class="tl-cel-caja"><h2>Sin conexión</h2><p>No se pudo conectar (${esc(window.gyaFalloConexion||"sin respuesta")}). Probá con datos del celular.</p><button type="button" class="tl-boton" onclick="location.reload()">Reintentar</button></div>`;},
         m=>{if(m.t==="estado"&&m.cod===codCel){ultimo=m;visto=Date.now();try{localStorage.setItem("gya_tele_vinculada",codCel);}catch(e){}pintar();}});

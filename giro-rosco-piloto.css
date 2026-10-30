@@ -178,3 +178,5 @@ body .rr-game.rr-estudio .grp-reac-atril{position:absolute;left:0;bottom:0;width
 .grp-elegir-op:focus-visible,.grp-elegir-op:hover{outline:3px solid #FFD23F;outline-offset:2px}
 .grp-part-cambiar{position:absolute;top:2.5%;right:2%;z-index:2;border:1px solid #f9d26e;background:rgba(3,16,49,.75);color:#fff;
   font:700 clamp(10px,2vmin,14px) system-ui,sans-serif;border-radius:999px;padding:.8vmin 1.6vmin;cursor:pointer;opacity:0;animation:grpApNegro .4s ease 3s forwards}
+/* Juegos en la tele: el avatar del jugador en el atril (assets/atril, más alto que el personaje genérico). */
+.grp-part-persona.grp-part-centro.grp-part-avatar{width:17%}

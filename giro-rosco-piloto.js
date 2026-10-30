@@ -142,7 +142,7 @@
       l.style.left=x+"%";l.style.top=y+"%";l.style.animationDelay=(.3+i*.06)+"s";cuadro.appendChild(l);});
     const jugador=(lado,foto,texto,demora)=>{
       const f=document.createElement("img");f.className="grp-part-persona grp-part-"+lado;f.src=foto;f.alt="";f.style.animationDelay=demora+"s";
-      f.addEventListener("error",()=>f.remove(),{once:true});
+      f.addEventListener("error",()=>{if(f.dataset.resp){f.src=f.dataset.resp;delete f.dataset.resp;}else f.remove();});
       const frente=document.createElement("img");frente.className="grp-part-frente grp-part-"+lado;frente.src=fondo.src;frente.alt="";frente.setAttribute("aria-hidden","true");
       const n=document.createElement("div");n.className="grp-part-nombre grp-part-"+lado;n.style.animationDelay=(demora+.25)+"s";
       const t=document.createElement("span");t.textContent=texto;t.style.setProperty("--k",Math.min(2.2,13/Math.max(1,texto.length)));n.appendChild(t);cuadro.append(f,frente,n);
@@ -153,7 +153,9 @@
       jugador("der",PERSONAJES[otro],rival||"Rival",2.7);
       dice.textContent="🎙 Giro: ¡Hoy se enfrentan "+nombre+" y "+(rival||"su rival")+"! 24 letras, una vuelta. ¿Quién gana?";
     }else{
-      jugador("centro",PERSONAJES[yo],nombre,1.9);
+      /* En la tele, si el jugador tiene avatar con pose de atril, aparece él (si no carga, el personaje de siempre). */
+      jugador("centro",opc&&opc.foto||PERSONAJES[yo],nombre,1.9);
+      if(opc&&opc.foto){const f=cuadro.querySelector(".grp-part-persona.grp-part-centro");if(f){f.dataset.resp=PERSONAJES[yo];f.classList.add("grp-part-avatar");}}
       dice.textContent="🎙 Giro: ¡Hoy juega "+nombre+"! 24 letras, una vuelta. ¿Podrá completar el Rosco?";
     }
     const cartel=document.createElement("div");cartel.className="grp-part-cartel";

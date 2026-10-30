@@ -355,3 +355,9 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-or-cel-fichas button{border:0;border-radius:12px;background:#F6EFE2;color:#160B24;font:900 1.15rem 'Archivo Black',system-ui,sans-serif;padding:12px 14px;box-shadow:0 4px 0 #b9a98a;cursor:pointer}
 .tl-or-cel-fichas button:disabled{opacity:.25;box-shadow:none}
 .tl-or-cel-resp{font:900 1.4rem 'Archivo Black',system-ui,sans-serif;color:#F5B301}
+/* Podio: el avatar de cada uno festejando arriba de su escalón. */
+.tl-podio-av{width:calc(var(--u)*11);height:calc(var(--u)*13);object-fit:contain;object-position:bottom;filter:drop-shadow(0 1vh 1.4vh #000a);animation:tlPodioCaja .6s cubic-bezier(.2,1.5,.4,1) 1.3s both}
+.tl-podio-p1 .tl-podio-av{width:calc(var(--u)*14);height:calc(var(--u)*16)}
+.tl-podio-equipo .tl-podio-av{width:calc(var(--u)*15);height:calc(var(--u)*17)}
+.tl-podio-caja:has(.tl-podio-av){padding-top:calc(var(--u)*1.2)}
+.tl-podio-caja:has(.tl-podio-av) h1{font-size:calc(var(--u)*3.8)}
