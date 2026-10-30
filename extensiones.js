@@ -95,7 +95,7 @@ const DueloConocimiento={
     carga.innerHTML='<img src="logo-duelo-conocimiento.webp" alt=""><b>Preparando Duelo de Conocimiento…</b><i aria-hidden="true"></i><small>En un momento empieza el desafío</small><button type="button" hidden>Reintentar</button>';
     const frame=document.createElement("iframe");
     const invitacion=new URLSearchParams(location.search).get("duelo_conocimiento");
-    frame.src="duelo-conocimiento.html?v=24"+(/^[A-HJ-NP-Z2-9]{4}$/i.test(invitacion||"")?"&sala="+invitacion.toUpperCase():"");
+    frame.src="duelo-conocimiento.html?v=25"+(/^[A-HJ-NP-Z2-9]{4}$/i.test(invitacion||"")?"&sala="+invitacion.toUpperCase():"");
     frame.title="Duelo de Conocimiento";
     frame.allow="microphone; autoplay";
     frame.setAttribute("allowfullscreen","");

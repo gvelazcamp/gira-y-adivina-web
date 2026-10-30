@@ -102,6 +102,36 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
  .result-summary{grid-column:1;grid-row:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:center}.result-summary .cup{font-size:25px}.result-summary .overline{font-size:8px;margin-top:3px}.result-summary h2{font-size:clamp(18px,3vw,26px);margin:4px 0}.result-summary .winner-name{font-size:clamp(24px,4vw,34px);margin:3px 0}.result-summary p{font-size:10px;margin:2px 0 7px}.result-summary .result-metrics{width:100%;gap:4px;margin:3px 0}.result-summary .result-metric{padding:6px 4px}.result-summary .result-metric strong{font-size:13px}.result-summary .result-metric small{font-size:8px;letter-spacing:0}
  .result-review{grid-column:2;grid-row:1;min-height:0;margin:0;display:flex}.pl-tabla{flex:1;max-height:none;min-height:0}.pl-txt b{font-size:11px}.pl-mini{width:26px;height:18px}.review-player{display:flex;flex-direction:column;min-height:0;padding:6px}.review-player h3{font-size:11px;margin-bottom:4px}.review-list{min-height:0;max-height:none;flex:1}.review-row{font-size:10px;padding:5px}.review-row small,.review-answers b{font-size:9px}.result-modal .modal-actions{grid-column:1/-1;grid-row:2;justify-content:center}.result-modal .modal-actions button{padding:6px 12px;font-size:11px;flex:0 1 160px}
 }
+/* Dibujos del Duelo (assets/duelo/arte/) */
+.dc-ico{width:1.9em;height:1.9em;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 2px 3px #0006)}
+.dc-hero-rivals .dc-hero-vs{position:absolute;z-index:2;left:50%;top:50%;width:46%;height:auto;transform:translate(-50%,-50%);filter:drop-shadow(0 2px 4px #0008)}
+.roulette-vs img{height:2.6em;width:auto;display:block;margin:auto;filter:drop-shadow(0 3px 6px #0008)}
+.cup img{height:1.9em;width:auto;display:block;margin:auto}
+.dc-compartir{display:inline-flex;align-items:center;justify-content:center;gap:6px}.dc-compartir img{height:1.6em;width:auto}
+.question-frame{position:relative}
+.dc-reaccion{position:absolute;z-index:5;left:50%;top:38%;width:min(34%,150px);height:auto;transform:translate(-50%,-50%);pointer-events:none;filter:drop-shadow(0 6px 14px #000a)}
+.dc-reaccion.dc-pop{animation:dcPop 1.3s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes dcPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}30%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(.9)}}
+@media(prefers-reduced-motion:reduce){.dc-reaccion.dc-pop{animation:none}}
+@media(orientation:portrait){
+ html.dc-jugando .title-wrap,html.dc-jugando .host,html.dc-jugando .stats-line,html.dc-jugando .help-strip,html.dc-jugando .demo-response-hint{display:none!important}
+ html.dc-jugando .stage{min-height:0!important}
+ html.dc-jugando .question-frame{margin-top:0!important;padding-top:8px;padding-bottom:8px}
+ html.dc-jugando .center-area{min-height:0!important}
+ html.dc-jugando .stage-grid{grid-template-rows:auto auto!important;min-height:0!important}
+ html.dc-jugando .stage-rail,html.dc-jugando .led-dots{display:none}
+ html.dc-jugando .dot{width:13px!important;height:13px!important;font-size:9px!important}
+ html.dc-jugando .player-role{display:none}
+ html.dc-jugando .topbar{height:54px!important;padding-top:4px;padding-bottom:4px}
+ html.dc-jugando .flag-box{width:min(150px,40vw);margin-bottom:6px}
+ html.dc-jugando .char-zone{min-height:86px!important;max-height:96px!important}
+ html.dc-jugando .char-img{max-height:96px;width:auto}
+ html.dc-jugando .label-card{padding:4px 6px}
+ html.dc-jugando .clock{font-size:clamp(22px,7vw,32px)}
+}
+@media(orientation:portrait) and (max-height:725px){html.dc-jugando .char-zone{display:none!important}}
+/* Final: los tres botones entran (Cambiar y Compartir arriba, Revancha abajo a lo ancho). */
+@media(max-width:620px){.result-modal .modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.result-modal .modal-actions #rematch-btn{grid-column:1/-1}}
 </style>
 <link rel="stylesheet" href="duelo-conocimiento-entrada.css?v=2" />
 <link rel="stylesheet" href="duelo-conocimiento-horizontal.css?v=2" />
@@ -143,6 +173,7 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
           <button class="pass-button" id="pass-button" type="button">Paso · 1 error y cambia el turno</button>
           <div class="demo-response-hint">Escribí y pulsá Enter · Corre solo el reloj del jugador activo</div>
         </div>
+        <img class="dc-reaccion" id="dc-reaccion" alt="" aria-hidden="true" hidden>
         <div class="feedback" id="feedback" role="status" aria-live="polite">Respondé escribiendo y pulsando Enter.</div>
         <div class="help-strip">Voz y escritura de respaldo · Turnos automáticos</div>
       </div>
@@ -159,15 +190,15 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
 </div>
 <div class="overlay" id="setup-overlay" role="dialog" aria-modal="true" aria-labelledby="setup-title">
   <form class="modal dc-setup-card" id="setup-form">
-   <div class="dc-setup-hero"><div class="dc-hero-rivals" aria-hidden="true"><img src="assets/avatars/avatar-01.webp" alt=""><span>VS</span><img src="assets/avatars/avatar-02.webp" alt=""></div><div class="dc-hero-copy"><div class="overline">Girá y Adiviná presenta</div><h2 id="setup-title">DUELO DE <span>CONOCIMIENTO</span></h2><p>Respondé bien y frená tu reloj. El primero que se quede sin tiempo pierde.</p></div></div>
+   <div class="dc-setup-hero"><div class="dc-hero-rivals" aria-hidden="true"><img src="assets/avatars/avatar-01.webp" alt=""><img class="dc-hero-vs" src="assets/duelo/arte/vs.webp" alt=""><img src="assets/avatars/avatar-02.webp" alt=""></div><div class="dc-hero-copy"><div class="overline">Girá y Adiviná presenta</div><h2 id="setup-title">DUELO DE <span>CONOCIMIENTO</span></h2><p>Respondé bien y frená tu reloj. El primero que se quede sin tiempo pierde.</p></div></div>
    <div class="dc-setup-body"><div class="dc-setup-main"><div id="dc-mode-slot"></div><div class="form-row dc-player-row"><div class="field"><label for="input0">Jugador 1 · vos</label><input id="input0" type="text" maxlength="14" value="" placeholder="Escribí tu nombre" autocomplete="off" required /></div><div class="field"><label for="input1" id="dc-rival-label">Rival virtual</label><input id="input1" type="text" maxlength="14" value="Sofía" required /></div></div><small class="dc-orientation-help">Primero configurá los nombres con el celular vertical. Al empezar, jugá en horizontal.</small></div>
-   <div class="dc-setup-side"><fieldset class="category-fieldset"><legend>Elegí los desafíos</legend><div class="category-grid"><label><input type="checkbox" name="category" value="banderas" checked/> 🌎 Banderas</label><label><input type="checkbox" name="category" value="matematica" checked/> ➕ Matemática</label><label><input type="checkbox" name="category" value="famosos" checked/> ★ Famosos</label><label><input type="checkbox" name="category" value="futbol" checked/> ⚽ Futbolistas</label><label><input type="checkbox" name="category" value="ciudades"/> 🏙 Ciudades turísticas</label><label><input type="checkbox" name="category" value="videojuegos"/> 🎮 Videojuegos</label></div><small id="image-pool-status" aria-live="polite"></small></fieldset><div class="dc-options-row"><div class="field"><label for="time-select">Tiempo por jugador</label><select id="time-select"><option value="40" selected>40 segundos</option><option value="60">60 segundos</option><option value="90">90 segundos</option></select></div><div id="dc-answer-slot"></div></div><div class="dc-rules-brief">🎲 Sorteamos quién empieza · 🎙 Hablá o escribí · ⏱ Los errores consumen tiempo</div></div></div>
+   <div class="dc-setup-side"><fieldset class="category-fieldset"><legend>Elegí los desafíos</legend><div class="category-grid"><label><input type="checkbox" name="category" value="banderas" checked/> <img class="dc-ico" src="assets/duelo/arte/c_banderas.webp" alt="" aria-hidden="true"> Banderas</label><label><input type="checkbox" name="category" value="matematica" checked/> <img class="dc-ico" src="assets/duelo/arte/c_matematica.webp" alt="" aria-hidden="true"> Matemática</label><label><input type="checkbox" name="category" value="famosos" checked/> <img class="dc-ico" src="assets/duelo/arte/c_famosos.webp" alt="" aria-hidden="true"> Famosos</label><label><input type="checkbox" name="category" value="futbol" checked/> <img class="dc-ico" src="assets/duelo/arte/c_futbol.webp" alt="" aria-hidden="true"> Futbolistas</label><label><input type="checkbox" name="category" value="ciudades"/> <img class="dc-ico" src="assets/duelo/arte/c_ciudades.webp" alt="" aria-hidden="true"> Ciudades turísticas</label><label><input type="checkbox" name="category" value="videojuegos"/> <img class="dc-ico" src="assets/duelo/arte/c_videojuegos.webp" alt="" aria-hidden="true"> Videojuegos</label></div><small id="image-pool-status" aria-live="polite"></small></fieldset><div class="dc-options-row"><div class="field"><label for="time-select">Tiempo por jugador</label><select id="time-select"><option value="40" selected>40 segundos</option><option value="60">60 segundos</option><option value="90">90 segundos</option></select></div><div id="dc-answer-slot"></div></div><div class="dc-rules-brief">🎲 Sorteamos quién empieza · 🎙 Hablá o escribí · ⏱ Los errores consumen tiempo</div></div></div>
    <button class="primary" type="submit">▶ EMPEZAR DUELO</button><div class="setup-voice-error" id="setup-voice-error" role="alert"></div>
  </form>
 </div>
 <div class="overlay hidden" id="roulette-overlay" role="dialog" aria-modal="true" aria-labelledby="roulette-title">
  <div class="modal roulette-modal"><div class="overline">Girá y Adiviná Rioplatense</div><h2 id="roulette-title">¿QUIÉN <span>ARRANCA?</span></h2><p>Los dos participantes están listos. El programa elige quién comienza.</p>
-  <div class="roulette-names"><div class="roulette-name" id="roulette-name0">ANDRÉS</div><div class="roulette-vs">VS</div><div class="roulette-name" id="roulette-name1">SOFÍA</div></div>
+  <div class="roulette-names"><div class="roulette-name" id="roulette-name0">ANDRÉS</div><div class="roulette-vs"><img src="assets/duelo/arte/vs.webp" alt="VS"></div><div class="roulette-name" id="roulette-name1">SOFÍA</div></div>
   <div class="roulette-caption" id="roulette-caption">SORTEANDO PRIMER TURNO...</div>
  </div>
 </div>
@@ -175,10 +206,10 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
  <div class="modal"><div class="cup" aria-hidden="true">🎙</div><h2 id="mic-title">MICRÓFONO <span>PAUSADO</span></h2><p id="mic-issue">Para responder hablando, es necesario habilitar el micrófono.</p><button class="primary" id="retry-mic" type="button">🎙 REACTIVAR MICRÓFONO</button><button class="secondary" id="back-from-mic" type="button" style="margin-top:10px">VOLVER A CONFIGURACIÓN</button><div class="modal-foot">El reloj queda pausado mientras el micrófono no funciona.</div></div>
 </div>
 <div class="overlay hidden" id="result-overlay" role="dialog" aria-modal="true" aria-labelledby="result-title">
- <div class="modal result-modal"><div class="result-summary"><div class="cup" id="winner-cup">🏆</div><div class="overline">Final del programa</div><h2 id="result-title">¡TENEMOS <span>GANADOR!</span></h2><div class="winner-name" id="winner-name">ANDRÉS</div><p id="win-reason">El rival se quedó sin tiempo.</p>
+ <div class="modal result-modal"><div class="result-summary"><div class="cup" id="winner-cup"><img src="assets/duelo/arte/ganador.webp" alt=""></div><div class="overline">Final del programa</div><h2 id="result-title">¡TENEMOS <span>GANADOR!</span></h2><div class="winner-name" id="winner-name">ANDRÉS</div><p id="win-reason">El rival se quedó sin tiempo.</p>
  <div class="result-metrics"><div class="result-metric"><strong id="result0">0</strong><small id="result-label0">Andrés · aciertos</small></div><div class="result-metric"><strong id="result1">0</strong><small id="result-label1">Sofía · aciertos</small></div></div></div>
  <div class="result-review" id="result-review" aria-label="Respuestas de la partida"></div>
- <div class="modal-actions"><button class="secondary" id="configure-again" type="button">⚙ Cambiar</button><button class="primary" id="rematch-btn" type="button">↻ REVANCHA</button></div></div>
+ <div class="modal-actions"><button class="secondary" id="configure-again" type="button">⚙ Cambiar</button><button class="secondary dc-compartir" id="share-btn" type="button"><img src="assets/duelo/arte/compartir.webp" alt=""> Compartir</button><button class="primary" id="rematch-btn" type="button">↻ REVANCHA</button></div></div>
 </div>
 <div class="toast" id="toast" role="status"></div>
 <script>
@@ -588,6 +619,8 @@ function finish(winner,reason){
  clearTimeout(transitionTimeout);clearTimeout(rouletteTimer);question=null;stopVoice();updatePlayers();
  const p=resultado.winner===null?null:players[resultado.winner];
  $('winner-name').textContent=p?upper(p.name):'EMPATE';
+ $('winner-cup').querySelector('img').src='assets/duelo/arte/'+(p?'ganador':'empate')+'.webp';
+ ultimoResultadoDC={p,reason:resultado.reason};
  $('win-reason').textContent=(reason==='Se terminaron las imágenes nuevas'?`${reason}. Elegí otra categoría para seguir jugando. `:reason?.startsWith('No se pudo cargar la imagen')?`${reason} `:'')+(p?`${p.name} ganó: ${resultado.reason}.`:`Empate: ${resultado.reason}.`);
  $('result0').textContent=`${players[0].score} ${players[0].score===1?'acierto':'aciertos'} · ${players[0].errors||0} ${(players[0].errors||0)===1?'error':'errores'}`;
  $('result1').textContent=`${players[1].score} ${players[1].score===1?'acierto':'aciertos'} · ${players[1].errors||0} ${(players[1].errors||0)===1?'error':'errores'}`;
@@ -597,6 +630,40 @@ function finish(winner,reason){
  $('result-overlay').classList.remove('hidden');$('mic-overlay').classList.add('hidden');$('roulette-overlay').classList.add('hidden');
  playTone(660,.18);setTimeout(()=>playTone(880,.2),170);setTimeout(()=>playTone(1130,.25),350);
 }
+/* Dibujos del Duelo (hoja de ChatGPT, assets/duelo/arte/): tilde/cruz grandes al responder. */
+let ultimoResultadoDC=null;
+/* Celular parado: mientras se juega, todo entra en una pantalla (sin el título grande ni el conductor). */
+setInterval(()=>{document.documentElement.classList.toggle('dc-jugando',!['setup','finished'].includes(phase))},300);
+new MutationObserver(()=>{const f=$('feedback'),r=$('dc-reaccion');if(!f||!r)return;const ok=f.classList.contains('success'),mal=f.classList.contains('fail');
+ if(!ok&&!mal){r.hidden=true;return}r.src='assets/duelo/arte/'+(ok?'acierto':'error')+'.webp';r.hidden=false;r.classList.remove('dc-pop');void r.offsetWidth;r.classList.add('dc-pop');
+ clearTimeout(r._t);r._t=setTimeout(()=>{r.hidden=true},1300)}).observe(document.getElementById('feedback'),{attributes:true,attributeFilter:['class']});
+/* Compartir resultado: arma una imagen (logo, copa, ganador y puntajes) y la manda por el menú de compartir del celular
+   (WhatsApp, Instagram…). Si el celular no deja compartir imágenes, comparte el texto con el link. */
+function cargarImgDC(src){return new Promise(ok=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=src})}
+async function compartirResultadoDC(){
+ const r=ultimoResultadoDC,link='https://girayadivina.com/?ext=duelo-conocimiento';
+ const linea=j=>`${players[j].name}: ${players[j].score} ${players[j].score===1?'acierto':'aciertos'}`;
+ const texto=(r&&r.p?`🏆 ¡${r.p.name} ganó el Duelo de Conocimiento!`:'🤝 ¡Empate en el Duelo de Conocimiento!')+`\n${linea(0)} · ${linea(1)}\n¿Te animás? ${link}`;
+ try{
+  const c=document.createElement('canvas');c.width=1080;c.height=1350;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,1350);g.addColorStop(0,'#3b1c66');g.addColorStop(1,'#160B24');x.fillStyle=g;x.fillRect(0,0,1080,1350);
+  const [logo,copa]=await Promise.all([cargarImgDC('assets/duelo/arte/logo.webp'),cargarImgDC('assets/duelo/arte/'+(r&&r.p?'ganador':'empate')+'.webp')]);
+  const dib=(im,cx,y,w)=>{if(!im)return;const h=w*im.height/im.width;x.drawImage(im,cx-w/2,y,w,h)};
+  dib(logo,540,60,560);dib(copa,540,390,330);
+  x.textAlign='center';x.fillStyle='#F5B301';x.font='900 92px system-ui,sans-serif';x.fillText(r&&r.p?r.p.name.toUpperCase():'¡EMPATE!',540,850);
+  x.fillStyle='#fff';x.font='700 44px system-ui,sans-serif';x.fillText(r&&r.p?'¡ganó el duelo!':'¡nadie se sacó ventaja!',540,915);
+  [0,1].forEach(j=>{const cx=j?780:300;x.fillStyle='rgba(255,255,255,.08)';x.beginPath();x.roundRect(cx-210,980,420,170,28);x.fill();
+   x.fillStyle=j?'#E5197C':'#37D6C0';x.font='800 40px system-ui,sans-serif';x.fillText(players[j].name,cx,1040);
+   x.fillStyle='#fff';x.font='900 56px system-ui,sans-serif';x.fillText(players[j].score+' ✓  '+(players[j].errors||0)+' ✕',cx,1115)});
+  x.fillStyle='#F6EFE2';x.font='700 38px system-ui,sans-serif';x.fillText('Jugá en girayadivina.com',540,1260);
+  const blob=await new Promise(ok=>c.toBlob(ok,'image/png'));
+  const file=blob&&new File([blob],'duelo-de-conocimiento.png',{type:'image/png'});
+  if(file&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],text:texto});return}
+ }catch(e){if(e&&e.name==='AbortError')return}
+ try{if(navigator.share){await navigator.share({text:texto});return}}catch(e){if(e&&e.name==='AbortError')return}
+ window.open('https://wa.me/?text='+encodeURIComponent(texto),'_blank');
+}
+document.getElementById('share-btn').addEventListener('click',compartirResultadoDC);
 function resetToConfig(){questionGeneration++;clearTimeout(transitionTimeout);clearTimeout(rouletteTimer);pauseClock();stopVoice();phase='setup';question=null;selectionStarted=false;$('result-overlay').classList.add('hidden');$('roulette-overlay').classList.add('hidden');$('mic-overlay').classList.add('hidden');$('setup-overlay').classList.remove('hidden');$('feedback').textContent='Respondé escribiendo y pulsando Enter';$('feedback').className='feedback';updateImagePoolStatus();initAnimation()}
 function showToast(s){const t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2600)}
 $('setup-form').addEventListener('submit',e=>{e.preventDefault();start()});$('new-btn').addEventListener('click',resetToConfig);$('configure-again').addEventListener('click',resetToConfig);$('rematch-btn').addEventListener('click',start);
@@ -624,6 +691,6 @@ function initPreview(){players=[{name:'Andrés',ms:40000,score:0},{name:'Sofía'
 initPreview();
 </script>
 <script src="lib/mqtt.min.js?v=5.10.1"></script>
-<script src="duelo-conocimiento-modos.js?v=19"></script>
+<script src="duelo-conocimiento-modos.js?v=20"></script>
 </body>
 </html>
