@@ -326,3 +326,32 @@ html.tele-modo .grp-acciones{margin:0}
 @keyframes tlPodioSube{from{transform:scaleY(0);transform-origin:bottom}to{transform:scaleY(1);transform-origin:bottom}}
 @keyframes tlPodioConf{from{transform:translateY(0) rotate(0)}to{transform:translateY(112vh) rotate(var(--g))}}
 @media(prefers-reduced-motion:reduce){.tl-podio-conf{display:none}}
+/* Silabario y Frases en Giro en la tele (juegoOrdenar). */
+.tl-or{position:absolute;inset:0;overflow:hidden;--u:min(1vw,1.78vh);color:#fff}
+.tl-or-fondo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.45) blur(2px)}
+.tl-or-top{position:absolute;top:3vh;left:3vw;right:3vw;display:flex;justify-content:space-between;align-items:center;font:900 calc(var(--u)*1.8) 'Archivo Black',sans-serif}
+.tl-or-top span{background:#0C0616DD;border-radius:99px;padding:.8vh 1.8vw}
+.tl-or-reloj{color:#F5B301;min-width:calc(var(--u)*6);text-align:center}.tl-or-reloj.tl-urgente{color:#FF4D6D;animation:tlLatido 1s ease-in-out infinite}
+.tl-or-card{position:absolute;left:50%;top:13vh;transform:translateX(-50%);width:calc(var(--u)*82);text-align:center;background:#0C0616E6;border:.5vh solid #F5B301;border-radius:calc(var(--u)*2.6);padding:calc(var(--u)*2) calc(var(--u)*2.4);box-shadow:0 0 6vh #F5B30155}
+.tl-or-card small{font:900 calc(var(--u)*1.5) 'Archivo Black',sans-serif;letter-spacing:.3vw;color:#37D6C0}
+.tl-or-pista{margin:1vh 0 2vh;font:800 calc(var(--u)*2.9)/1.25 Outfit,system-ui,sans-serif}
+.tl-or-slots{display:flex;flex-wrap:wrap;justify-content:center;gap:calc(var(--u)*.9);margin-bottom:2vh}
+.tl-or-slots span{min-width:calc(var(--u)*8);height:calc(var(--u)*6.4);display:grid;place-items:center;padding:0 calc(var(--u)*1.2);border-radius:calc(var(--u)*1.1);border:.35vh dashed #ffffff55;font:900 calc(var(--u)*3) 'Archivo Black',sans-serif}
+.tl-or-fra .tl-or-slots span{min-width:calc(var(--u)*6);height:calc(var(--u)*5.2);font-size:calc(var(--u)*2.3)}
+.tl-or-slots span.tl-or-vista{border:0;background:#F5B301;color:#160B24;animation:tlPodioCaja .5s cubic-bezier(.2,1.5,.4,1) both}
+.tl-or-fichas{display:flex;flex-wrap:wrap;justify-content:center;gap:calc(var(--u)*1)}
+.tl-or-fichas span{background:#F6EFE2;color:#160B24;border-radius:calc(var(--u)*1);padding:calc(var(--u)*.9) calc(var(--u)*1.6);font:900 calc(var(--u)*2.8) 'Archivo Black',sans-serif;box-shadow:0 .6vh 0 #b9a98a}
+.tl-or-fra .tl-or-fichas span{font-size:calc(var(--u)*2.1);padding:calc(var(--u)*.7) calc(var(--u)*1.2)}
+.tl-or-jug{position:absolute;left:3vw;right:3vw;bottom:7.5vh;display:flex;flex-wrap:wrap;justify-content:center;gap:1vw}
+.tl-or-jug span{background:#0C0616DD;border:.3vh solid #ffffff33;border-radius:99px;padding:.7vh 1.6vw;font:800 calc(var(--u)*1.7) Outfit,system-ui,sans-serif}
+.tl-or-jug span b{color:#F5B301}.tl-or-jug span.tl-or-ok{border-color:#4CD38A;color:#4CD38A}
+.tl-or-ayuda{position:absolute;left:0;right:0;bottom:2.5vh;margin:0;text-align:center;font:700 calc(var(--u)*1.5) Outfit,system-ui,sans-serif;opacity:.9}
+/* celular */
+.tl-or-cel-pista{font-weight:800;font-size:1.05rem;line-height:1.35;margin:0 0 10px}
+.tl-or-cel-armado{min-height:56px;display:grid;place-items:center;background:#0C0616;border:2px solid #F5B301;border-radius:14px;padding:10px;font:900 1.35rem 'Archivo Black',system-ui,sans-serif;color:#F5B301;word-break:break-word}
+.tl-or-cel-armado span{font:700 .95rem system-ui;color:#BFAFD1}
+.tl-or-cel-aviso{margin:8px 0 0;font-weight:800;color:#FF8FA3}
+.tl-or-cel-fichas{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:12px 0 4px}
+.tl-or-cel-fichas button{border:0;border-radius:12px;background:#F6EFE2;color:#160B24;font:900 1.15rem 'Archivo Black',system-ui,sans-serif;padding:12px 14px;box-shadow:0 4px 0 #b9a98a;cursor:pointer}
+.tl-or-cel-fichas button:disabled{opacity:.25;box-shadow:none}
+.tl-or-cel-resp{font:900 1.4rem 'Archivo Black',system-ui,sans-serif;color:#F5B301}
