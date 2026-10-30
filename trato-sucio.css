@@ -1,0 +1,64 @@
+/* El Trato Sucio (trato-sucio.js): versión contra bots, solo Gonzalo. */
+.ts{color:#F6EFE2;font-family:Outfit,system-ui,sans-serif;padding:10px 12px 28px;max-width:560px;margin:0 auto}
+.ts-panel{display:flex;flex-direction:column;gap:12px}
+.ts-panel h3,.ts-panel h4{margin:4px 0 0;text-align:center}
+.ts-cab{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:13px}
+.ts-cab b{color:#F5B301;font-family:'Archivo Black',system-ui;letter-spacing:.5px}
+.ts-cab span{margin-left:auto;opacity:.85}
+.ts-ver{border:1px solid #F5B30166;background:#2A1A3C;color:#fff;border-radius:999px;padding:6px 10px;font-size:12px}
+.ts-giro{display:flex;align-items:flex-end;gap:8px}
+.ts-giro img{width:86px;height:auto;flex:0 0 auto;filter:drop-shadow(0 6px 10px #0008)}
+.ts-burbuja{position:relative;background:#fff;color:#1C1030;border-radius:16px 16px 16px 4px;padding:10px 12px;font-size:15px;line-height:1.35;box-shadow:0 4px 14px #0006}
+.ts-expl{background:#1E3A5F;border:1px solid #6FB3FF55;border-radius:12px;padding:9px 11px;font-size:13px;line-height:1.4;color:#DCEBFF}
+.ts-reglas{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.35}
+.ts-fila{display:flex;align-items:center;justify-content:space-between;background:#2A1A3C;border-radius:14px;padding:10px 12px}
+.ts-cant{display:flex;align-items:center;gap:12px}.ts-cant button{width:38px;height:38px;border-radius:50%;border:0;background:#3A2650;color:#fff;font-size:20px}
+.ts-check{display:flex;align-items:center;gap:8px;font-size:14px}
+.ts-check small{opacity:.7}
+.ts-traicion{background:#4A1520;border:1px solid #FF6B6B66;border-radius:12px;padding:10px}
+.ts button{font-family:inherit;cursor:pointer}
+.ts-panel>button,.ts-capa-caja button,.ts-dos button{border:0;border-radius:14px;padding:13px;font:800 16px Outfit,system-ui;background:#3A2650;color:#fff}
+.ts .ts-principal{background:#F5B301;color:#160B24;font-family:'Archivo Black',system-ui}
+.ts .ts-principal:disabled{opacity:.45}
+.ts-chico{font-size:12px;opacity:.75;text-align:center;margin:0}
+.ts-ops{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ts-op{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:70px;padding:8px;border-radius:14px;background:#2A1A3C;border:2px solid #ffffff22;color:#fff;font-size:14px;text-align:center}
+.ts-op b{font-family:'Archivo Black',system-ui;color:#F5B301;font-size:18px}
+.ts-elegir .ts-op:active{transform:scale(.97)}
+.ts-op.ts-sel{border-color:#F5B301;background:#4A3110}
+.ts-op.ts-pacto{border-color:#4CD38A}
+.ts-op:disabled{opacity:.35}
+.ts-mini .ts-op{min-height:48px;font-size:12px}.ts-mini .ts-op b{font-size:14px}
+.ts-dorso{align-self:center;width:190px;height:260px;border-radius:20px;border:3px solid #F5B301;background:repeating-linear-gradient(45deg,#3A1A5C 0 14px,#2A1240 14px 28px);color:#F5B301;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.ts-dorso span{font:900 90px 'Archivo Black',system-ui}.ts-dorso small{color:#fff;font-size:13px}
+.ts-carta{border-radius:20px;padding:18px;text-align:center;border:3px solid;animation:tsGiro .45s ease-out}
+.ts-carta p{margin:8px 0 0;line-height:1.4}
+.ts-carta-rol{font:900 26px 'Archivo Black',system-ui}
+.ts-leal{background:#123A2A;border-color:#4CD38A}.ts-sabo{background:#4A1520;border-color:#FF5A5A}.ts-comp{background:#3A2A10;border-color:#F5B301}
+@keyframes tsGiro{from{transform:rotateY(90deg)}to{transform:none}}
+.ts-reloj-fila{display:flex;justify-content:space-between;align-items:center;font-size:18px}
+#tsReloj{font:900 26px 'Archivo Black',system-ui;color:#F5B301}#tsReloj.ts-urgente{color:#FF5A5A}
+.ts-sub{font-size:13px;opacity:.85}
+.ts-chat{background:#120A1C;border-radius:14px;padding:10px;height:190px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.ts-chat p{margin:0;line-height:1.3}.ts-chat .ts-yo{color:#F5B301}.ts-chat .ts-msj-giro{color:#6FB3FF}
+.ts-barras{display:flex;flex-direction:column;gap:6px}
+.ts-barra{display:grid;grid-template-columns:1fr 34%;grid-template-rows:auto auto;column-gap:8px;font-size:12px;align-items:center}
+.ts-barra span{grid-column:1/3}.ts-barra i{display:block;height:10px;border-radius:6px;background:linear-gradient(90deg,#F5B301 var(--p),#ffffff1a var(--p))}
+.ts-barra b{justify-self:end}.ts-barra.ts-marca span{color:#4CD38A;font-weight:800}
+.ts-propio:empty{display:none}.ts-propio{background:#2A1A3C;border:1px solid #FF5A5A55;border-radius:14px;padding:10px}
+.ts-propio h4{margin:0 0 8px}.ts-propio p{margin:0;font-size:14px}
+.ts-nombres{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.ts-nombres button{border:2px solid #ffffff22;background:#2A1A3C;color:#fff;border-radius:999px;padding:8px 12px;font-size:14px}
+.ts-nombres button.ts-sel{border-color:#F5B301;background:#4A3110}
+.ts-pistas{background:#2A1A3C;border-radius:14px;padding:4px 12px}.ts-pistas p{margin:8px 0;font-size:15px}
+.ts-revela{background:#2A1A3C;border-radius:14px;padding:4px 12px;font-size:14px}.ts-revela p{margin:8px 0}
+.ts-tabla{width:100%;border-collapse:collapse;font-size:14px}
+.ts-tabla th{text-align:left;font-size:12px;opacity:.7;padding:4px}
+.ts-tabla td{padding:7px 4px;border-top:1px solid #ffffff1a;vertical-align:top}
+.ts-tabla td small{display:block;font-size:11px;opacity:.7;margin-top:2px}
+.ts-tabla td:not(:first-child){text-align:right;white-space:nowrap}
+.ts-tabla tr.ts-yo td{color:#F5B301}
+.ts-capa{position:fixed;inset:0;z-index:50;background:#0A0412E8;display:grid;place-items:center;padding:18px}
+.ts-capa-caja{width:min(420px,100%);display:flex;flex-direction:column;gap:12px;background:#1C1030;border:1px solid #F5B30166;border-radius:20px;padding:16px;text-align:center}
+.ts-oferta h3{margin:0}.ts-oferta p{margin:0;line-height:1.4}
+.ts-dos{display:grid;grid-template-columns:1fr 1fr;gap:8px}
