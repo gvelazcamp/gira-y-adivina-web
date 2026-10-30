@@ -2054,3 +2054,7 @@ Fecha: 30/10/2026 — Nueva intro de 10 s en la tele (Gonzalo: "que sea de 10 se
 ```text
 Fecha: 30/10/2026 — Voz del locutor en la intro de la tele (grabada por Gonzalo en ElevenLabs, voz Cesar Rodriguez): "¡Desde el living de tu casa…" (3,4 s, sobre los cortes), "esto es…" (6 s, con el cartel) y "¡Girá y Adiviná!" (6,8 s, con el golpe del logo); la música baja mientras habla. Video giro-apertura-tele.mp4/.webm?v=2. giro-rosco-piloto.js v32, rosco-rioplatense.js v75, tele.js v27, sw v599.
 ```
+
+```text
+Fecha: 30/10/2026 — Intro de la tele: se sacó el cartel negro "esto es…" (Gonzalo: "esto sacalo por otro juego más") y en su lugar va un corte más de ¿Quién soy? (tarjeta "China Zorrilla"); la voz del locutor sigue diciendo "esto es…" encima. Video ?v=3, giro-rosco-piloto.js v33, rosco-rioplatense.js v76, tele.js v28, sw v600.
+```
