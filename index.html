@@ -795,7 +795,7 @@ p.sub{margin:14px 0 24px;color:#C9B8DE}
 .stat-monedas{color:var(--oro)}
 .stat-vidas{color:#FF6E96}
 .stat-racha{color:#FF9640}
-#btnMusica,#bMasOpciones{font-size:.9rem;background:#FFFFFF14;width:26px;height:26px;border-radius:50%;
+#btnMusica,#bMasOpciones,#btnTeleCast{font-size:.9rem;background:#FFFFFF14;width:26px;height:26px;border-radius:50%;
  display:inline-grid;place-items:center;padding:0;flex:0 0 auto;color:var(--crema)}
 .cta-jugar{display:flex;align-items:center;justify-content:flex-start;gap:14px;text-align:left;
  background:linear-gradient(135deg,#FF3D94,#C21368);padding:18px 20px;box-shadow:0 6px 0 #8E0D4B}
@@ -1357,6 +1357,7 @@ body:not(.tvhost) #horizontalAyuda{display:none}
       <span class="stat-pill stat-racha" id="setupRacha" title="Racha de días jugados">🔥 <b>0</b></span>
       <span class="stat-pill stat-monedas" id="setupMonedas" title="Monedas: se ganan jugando y sirven para comprar en la Tienda">🪙 <b>0</b> monedas</span>
       <span class="stat-pill stat-vidas" id="setupVidas">❤️ <b>0</b></span>
+      <button id="btnTeleCast" type="button" title="Jugar en la tele" hidden>📺</button>
       <button id="btnMusica" type="button" title="Silenciar todo el sonido">🔊</button>
       <button id="bMasOpciones" type="button" title="Más opciones">⚙️</button>
     </div>
@@ -12023,8 +12024,8 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="tutti-frutti.js?v=97"></script>
 <script src="extensiones.js?v=116"></script>
 <script src="sala-tv.js?v=1"></script>
-<link rel="stylesheet" href="tele.css?v=13">
-<script src="tele.js?v=18"></script>
+<link rel="stylesheet" href="tele.css?v=14">
+<script src="tele.js?v=19"></script>
 </body>
 </html>
 

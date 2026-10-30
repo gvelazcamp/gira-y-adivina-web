@@ -265,3 +265,15 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-mm-podio{display:flex;flex-direction:column;gap:.8vh;width:80%}
 .tl-mm-podio div{display:flex;justify-content:space-between;background:#2A1A3C;border-radius:1.4vh;padding:.8vh 1.6vw;font:900 calc(var(--u)*1.9) 'Archivo Black'}.tl-mm-podio div:first-child{background:#4A3110;color:#F5B301}
 #teleTV.tl-juego-ahorcado::after{content:"";position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none;background:url(assets/ahorcado/casilla_ok.webp),url(assets/ahorcado/casilla.webp)}
+/* Botón 📺 del inicio (prueba, solo Gonzalo): ventana para jugar en la tele. */
+#btnTeleCast[hidden]{display:none!important}
+.tl-cast-capa{position:fixed;inset:0;z-index:2147483100;background:#0A0412E6;display:grid;place-items:center;padding:16px;font-family:Outfit,system-ui,sans-serif;color:#F6EFE2}
+.tl-cast-caja{position:relative;width:min(420px,100%);max-height:100%;overflow:auto;background:#1C1030;border:1px solid #F5B30166;border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 18px 40px #000a}
+.tl-cast-caja h2{margin:0;text-align:center;font:900 22px 'Archivo Black',system-ui;color:#F5B301}
+.tl-cast-x{position:absolute;right:10px;top:10px;width:34px;height:34px;border-radius:50%;border:0;background:#ffffff1a;color:#fff;font-size:16px}
+.tl-cast-op{background:#2A1A3C;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.tl-cast-op b{font-size:16px}.tl-cast-op small{font-size:13px;line-height:1.4;color:#D7C8E5}.tl-cast-op small b{font-size:13px;color:#fff}
+.tl-cast-uno{border:2px solid #F5B301}
+.tl-cast-btn{border:0;border-radius:12px;padding:12px;font:900 15px 'Archivo Black',system-ui;background:#F5B301;color:#160B24}
+.tl-cast-btn:disabled{opacity:.45}.tl-cast-sec{background:#3A2650;color:#fff}
+.tl-cast-estado{margin:0;font-size:13px;color:#37D6C0;min-height:1em}

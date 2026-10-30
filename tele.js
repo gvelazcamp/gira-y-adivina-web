@@ -10,8 +10,8 @@
   "use strict";
   const P=new URLSearchParams(location.search);
   const esTele=P.get("tele")==="1";
-  const codCel=(P.get("telecel")||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
-  const esCel=!!codCel&&!esTele;
+  let codCel=(P.get("telecel")||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
+  let esCel=!!codCel&&!esTele;
   const CHARS="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   const yo=(()=>{try{let id=sessionStorage.getItem("gya_tele_pid");if(!id){id="t"+Math.random().toString(36).slice(2,10);sessionStorage.setItem("gya_tele_pid",id);}return id;}catch(e){return"t"+Math.random().toString(36).slice(2,10);}})();
   const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -69,8 +69,62 @@
     contenedor.querySelector("#tlSoyTele").onclick=()=>{location.href="index.html?tele=1";};
   }
   function salir(){}
-  window.Tele={abrir,salir};
-  if(!esTele&&!esCel)return;
+  /* ---------- Botón 📺 de la pantalla de inicio (prueba, solo Gonzalo, 31/10/2026) ----------
+     Como el ícono de transmitir de YouTube: si hay una tele con Chromecast/Google TV en el wifi,
+     se elige y la tele abre la sala sola (Presentation API de Chrome) y este celular queda
+     conectado sin escribir código. Si no, muestra las otras dos formas: girayadivina.com/tele con
+     código, o duplicar la pantalla del celular. */
+  function compartirPantalla(){
+    document.querySelector(".tl-cast-capa")?.remove();
+    let nombre="";try{nombre=limpio((typeof perfil!=="undefined"&&perfil&&perfil.nombre)||localStorage.getItem("gya_tele_nombre")||"",14);}catch(e){}
+    const cod=Array.from({length:5},()=>CHARS[Math.floor(Math.random()*CHARS.length)]).join("");
+    const urlTele=new URL("index.html?tele=1&cod="+cod,location.href).href;
+    const hayCast=typeof window.PresentationRequest==="function";
+    const capa=document.createElement("div");capa.className="tl-cast-capa";
+    capa.innerHTML=`<div class="tl-cast-caja" role="dialog" aria-label="Jugar en la tele"><button type="button" class="tl-cast-x" aria-label="Cerrar">✕</button>
+      <h2>📺 Jugar en la tele</h2>
+      <div class="tl-cast-op tl-cast-uno"><b>📡 Transmitir a la tele</b><small>Teles con Chromecast, Google TV o Android TV en tu mismo wifi. La tele abre la sala sola.</small>
+        <button type="button" class="tl-cast-btn" id="tlCastIr" ${hayCast?"":"disabled"}>${hayCast?"Buscar teles":"Este celular no lo permite"}</button><p class="tl-cast-estado" id="tlCastEstado">${hayCast?"":"Probá abriendo el juego en Chrome."}</p></div>
+      <div class="tl-cast-op"><b>🔢 Con un código</b><small>Para cualquier tele con navegador (Samsung, LG…): en la tele entrá a <b>girayadivina.com/tele</b> y tocá «Esta pantalla es la tele».</small>
+        <button type="button" class="tl-cast-btn tl-cast-sec" id="tlCastCodigo">Escribir el código</button></div>
+      <div class="tl-cast-op"><b>📱 Duplicar la pantalla</b><small>La tele muestra lo mismo que tu celular.<br>Android: bajá la barra de arriba y tocá <b>«Transmitir»</b>, <b>«Smart View»</b> o <b>«Duplicar pantalla»</b>.<br>iPhone: Centro de control → <b>Duplicar pantalla</b>.</small></div></div>`;
+    document.body.appendChild(capa);
+    const cerrar=()=>capa.remove();
+    capa.querySelector(".tl-cast-x").onclick=cerrar;capa.addEventListener("click",e=>{if(e.target===capa)cerrar();});
+    capa.querySelector("#tlCastCodigo").onclick=()=>{location.href="tele/";};
+    const estado=t=>{const el=capa.querySelector("#tlCastEstado");if(el)el.textContent=t;};
+    if(!hayCast)return;
+    let pedido=null;try{pedido=new PresentationRequest([urlTele]);}catch(e){estado("Este celular no lo permite.");return;}
+    /* Avisa si ya ve una tele disponible en el wifi. */
+    try{pedido.getAvailability().then(a=>{const pinta=()=>estado(a.value?"✅ Hay una tele disponible en tu wifi":"No veo teles con Chromecast en tu wifi (igual podés buscar).");pinta();a.onchange=pinta;}).catch(()=>{});}catch(e){}
+    capa.querySelector("#tlCastIr").onclick=()=>{
+      estado("Buscando teles…");
+      pedido.start().then(conexion=>{
+        window.gyaConexionTele=conexion;
+        try{localStorage.setItem("gya_tele_vinculada",cod);}catch(e){}
+        estado("¡Conectado! La tele está abriendo la sala…");
+        setTimeout(()=>{cerrar();unirseTele(cod,nombre);},900);
+      }).catch(err=>{
+        const n=err&&err.name;
+        if(n==="NotAllowedError"||n==="AbortError")estado("");
+        else if(n==="NotFoundError")estado("No encontré teles con Chromecast en tu wifi. Probá con el código o duplicando la pantalla.");
+        else estado("No se pudo transmitir ("+(n||"error")+"). Probá con el código.");
+      });
+    };
+  }
+  /* Entra a la sala de la tele desde este celular sin recargar (así no se corta la transmisión). */
+  function unirseTele(cod,nombre){
+    if(esCel)return;codCel=cod;esCel=true;
+    silenciarApp();document.documentElement.classList.add("tele-modo");
+    iniciarCel(nombre);
+  }
+  function prepararBotonCast(){
+    const b=document.getElementById("btnTeleCast");if(!b)return;
+    const ver=()=>{let ok=false;try{ok=typeof esGonzalo==="function"&&esGonzalo();}catch(e){}b.hidden=!ok;};
+    ver();setInterval(ver,3000);b.onclick=compartirPantalla;
+  }
+  window.Tele={abrir,salir,compartirPantalla};
+  if(!esTele&&!esCel){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",prepararBotonCast);else prepararBotonCast();return;}
   silenciarApp();
   document.documentElement.classList.add("tele-modo");
 
@@ -79,7 +133,8 @@
      ===================================================================== */
   function iniciarTele(){
     let cod="";
-    try{const guardado=localStorage.getItem("gya_tele_codigo")||"";if(guardado.length===5&&[...guardado].every(c=>CHARS.includes(c)))cod=guardado;}catch(e){}
+    const pedido=(P.get("cod")||"").toUpperCase();if(pedido.length===5&&[...pedido].every(c=>CHARS.includes(c))){cod=pedido;try{localStorage.setItem("gya_tele_codigo",cod);}catch(e){}}
+    if(!cod)try{const guardado=localStorage.getItem("gya_tele_codigo")||"";if(guardado.length===5&&[...guardado].every(c=>CHARS.includes(c)))cod=guardado;}catch(e){}
     if(!cod){cod=Array.from({length:5},()=>CHARS[Math.floor(Math.random()*CHARS.length)]).join("");try{localStorage.setItem("gya_tele_codigo",cod);}catch(e){}}
     const T={cod,fase:"menu",jug:[],mando:null,juego:null,g:null,sel:0};
     const raiz=document.createElement("div");raiz.id="teleTV";raiz.className="tl-tv";document.body.appendChild(raiz);
@@ -832,7 +887,7 @@
   /* =====================================================================
      CELULAR: solo manda lo que toca el jugador y muestra lo que le toca.
      ===================================================================== */
-  function iniciarCel(){
+  function iniciarCel(nombreDirecto){
     const raiz=document.createElement("div");raiz.id="teleCel";raiz.className="tl-cel";document.body.appendChild(raiz);
     let nombre=limpio(P.get("n")||"",14);try{if(!nombre)nombre=limpio(localStorage.getItem("gya_tele_nombre")||localStorage.getItem("gya_nombre")||"",14);}catch(e){}
     let ultimo=null,conectado=false,visto=0,hola=null,pantallaPintada="";
@@ -1216,7 +1271,8 @@
     /* Si la tele deja de contestar, avisar. */
     setInterval(()=>{const el=raiz.querySelector("#tlTfReloj");if(el){const ms=Math.max(0,tfSegundos-(Date.now()-tfInicioReloj));el.textContent=Math.ceil(ms/1000)+" s";el.classList.toggle("tl-urgente",ms<=10000);}},250);
     setInterval(()=>{if(conectado&&ultimo&&Date.now()-visto>12000){pantallaPintada="";raiz.innerHTML=`<div class="tl-cel-caja"><h2>La tele no responde 📺</h2><p>Revisá que la tele siga abierta y con internet.</p></div>`;}},4000);
-    if(nombre&&P.get("n"))entrar();else pedirNombre();
+    if(nombreDirecto){nombre=limpio(nombreDirecto,14);try{localStorage.setItem("gya_tele_nombre",nombre);}catch(e){}entrar();}
+    else if(nombre&&P.get("n"))entrar();else pedirNombre();
   }
 
   const arrancar=()=>{if(esTele)iniciarTele();else iniciarCel();};
