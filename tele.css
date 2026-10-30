@@ -131,3 +131,40 @@ html.tele-modo body{background:#160B24}
 .tl-caja{display:flex;flex-direction:column;gap:10px;background:#2A1A3C;border-radius:16px;padding:14px}
 .tl-caja input{font:800 20px Outfit;padding:12px;border-radius:12px;border:2px solid #7B3FE4;background:#160B24;color:#fff;text-transform:uppercase;text-align:center}
 @media(prefers-reduced-motion:reduce){.tl-giro{transition:none}.tl-ruleta-cat,.tl-resp.tl-abierta,.tl-flash{animation:none}}
+/* ¿Qué número soy? / ¿Quién soy? / Duelo de Conocimiento en la tele (31/10/2026) */
+.tl-qn-logo,.tl-qs-logo{height:24vh;width:auto;filter:drop-shadow(0 1vh 2vh #0009)}
+.tl-qn-cuenta{font:900 30vh/1 'Archivo Black';color:#F5B301;text-shadow:0 1vh 0 #7a4b00;animation:tlLatido 1s ease-in-out infinite}
+@keyframes tlLatido{50%{transform:scale(1.08)}}
+.tl-qn-escena{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#160B24 url(assets/que-numero-soy/fondo.webp) center/cover no-repeat}
+.tl-qn-bola{width:min(78vh,60vw);height:min(78vh,60vw);display:grid;place-items:center;background:url(assets/que-numero-soy/bolilla.webp) center/contain no-repeat;filter:drop-shadow(0 2vh 4vh #000a)}
+.tl-qn-bola span{font:900 min(34vh,26vw)/1 'Archivo Black';color:#160B24}
+.tl-qn-bola .tl-qn-oculto{color:#7a6a8a}
+.tl-qn-pie{font-size:2.2vw;margin:1vh 0 0;text-shadow:0 2px 6px #000}
+.tl-qs-juego{position:absolute;inset:0;display:grid;grid-template-rows:auto 1fr auto;padding:4vh 4vw;background:#160B24 url(assets/quien-soy/fondo.webp) center/cover no-repeat;text-align:center}
+.tl-qs-juego header,.tl-qs-juego footer{display:flex;justify-content:space-between;align-items:center;font-size:2.4vw}
+.tl-qs-reloj{font:900 6vw/1 'Archivo Black';color:#F5B301}.tl-qs-reloj.tl-urgente{color:#FF5A5A}
+.tl-qs-palabra{align-self:center;font:900 min(11vw,22vh)/1.05 'Archivo Black';color:#fff;text-shadow:0 1vh 0 #7a4b00,0 0 4vh #000;padding:0 2vw;word-break:break-word}
+.tl-qs-juego footer span{font:900 3.2vw 'Archivo Black'}.tl-qs-juego .tl-ok{color:#4CD38A}.tl-qs-juego .tl-paso{color:#F5B301}
+.tl-qs-trofeo{height:20vh}
+.tl-duelo{position:absolute;inset:0}.tl-duelo iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#160B24}
+.tl-dc-config{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vh;text-align:center;background:radial-gradient(ellipse at 50% 0%,#3a1a5c 0%,#160B24 70%)}
+.tl-dc-config[hidden]{display:none}
+.tl-dc-logo{height:22vh;width:auto}.tl-dc-config h1{font-size:4vw;color:#F5B301;margin:0}.tl-dc-config p{font-size:1.8vw;margin:0}
+.tl-dc-vs{display:flex;align-items:center;gap:3vw;font-size:3vw}.tl-dc-vs span{font:900 4vw 'Archivo Black';color:#E5197C}
+.tl-dc-opciones{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.tl-dc-opciones button{border:2px solid #ffffff33;background:#3A2650;color:#fff;border-radius:12px;padding:10px 12px;font:700 15px Outfit,system-ui}
+.tl-dc-opciones button.tl-pz-activo{border-color:#F5B301;background:#4A3110}
+.tl-dc-marcador{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tl-dc-marcador div{background:#3A2650;border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:2px;font-size:14px}
+.tl-dc-marcador .tl-dc-activo{outline:2px solid #F5B301}
+.tl-dc-mic{font:900 20px 'Archivo Black';padding:22px;border-radius:18px;background:#3A2650}
+.tl-dc-mic.tl-dc-on{background:#E5197C;animation:tlLatido 1.2s ease-in-out infinite}
+.tl-dc-oi{color:#37D6C0;font-weight:700;min-height:1.4em}
+.tl-dc-texto{display:flex;gap:8px}.tl-dc-texto input{flex:1;min-width:0;border-radius:12px;border:0;padding:12px;font-size:16px}.tl-dc-texto .tl-boton{width:auto}
+.tl-qs-btn{border:0;border-radius:22px;padding:34px 10px;font:900 30px 'Archivo Black';color:#160B24}
+.tl-qs-btn:disabled{opacity:.4}.tl-qs-ok{background:#4CD38A}.tl-qs-paso{background:#F5B301}
+/* Con 9 juegos: tarjetas más bajas para que entren las 3 filas. */
+.tl-juegos{gap:1.2vw}.tl-tarjeta{padding:1vw;gap:.3vw}.tl-tarjeta img{width:10vw;height:min(7vw,15vh)}
+.tl-tarjeta small{font-size:1vw;line-height:1.2}
+/* El Duelo se dibuja a 2/3 y se agranda: en la tele se ve todo más grande. */
+.tl-duelo iframe{width:66.667%;height:66.667%;transform:scale(1.5);transform-origin:0 0}

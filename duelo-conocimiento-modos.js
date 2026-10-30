@@ -5,6 +5,9 @@ const $dc=id=>document.getElementById(id);
 const originalStart=start, originalNextQuestion=nextQuestion, originalRightAnswer=rightAnswer, originalFinish=finish, originalReset=resetToConfig;
 let mode="bot", botHandle=0, botError=30, online=null, mic=null, micWanted=false, micRunning=false, micBlocked=false, micToken=0, micStartupTimer=0, micAudioTimer=0, lastSpeech="",lastSpeechAt=0, remoteState=0, lastRevealTurn=-1;
 const alphabet="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+/* Juegos en la tele (?tv=1): la tele muestra el Duelo y el micrófono es el celular
+   del jugador (tele.js manda lo que oye con dueloTV.voz). */
+const MIC_EXTERNO=new URLSearchParams(location.search).get("tv")==="1";
 const uniqueId=()=>Math.random().toString(36).slice(2,10);
 const nameSafe=s=>String(s||"Jugador").trim().slice(0,14).replace(/[<>]/g,"");
 const roomCode=()=>Array.from({length:4},()=>alphabet[Math.floor(Math.random()*alphabet.length)]).join("");
@@ -64,6 +67,7 @@ const micErrorText={ "not-allowed":"Permiso rechazado. Tocá el icono del candad
 function micNote(s){voiceBtn.textContent=s}
 function micFallback(message){
  clearTimeout(micStartupTimer);
+ if(MIC_EXTERNO){micExternoListo();return;}
  answerSel.value="text";syncAnswer();
  if(mode==="bot"&&phase==="waiting-mic"&&active===0)beginTimedTurn(false);
  $dc("feedback").className="feedback fail";$dc("feedback").textContent=message+" Podés responder escribiendo.";
@@ -71,6 +75,7 @@ function micFallback(message){
 }
 async function startMic(){if(phase==='finished')return;
  if(answerSel.value!=="voice"||micWanted||micBlocked||(phase==="announcing"&&!online?.micWaiting)||(phase==="playing"&&!canAnswer()))return;
+ if(MIC_EXTERNO){const token=++micToken;micWanted=true;micBlocked=false;micRunning=false;micNote("📱 ACTIVANDO EL CELULAR...");clearTimeout(micAudioTimer);micAudioTimer=setTimeout(()=>{if(token===micToken)micExternoListo()},4000);return;}
  if(!window.SpeechRecognition&&!window.webkitSpeechRecognition){micFallback("Este navegador no tiene reconocimiento de voz.");return;}
  if(!window.isSecureContext){micFallback("El micrófono necesita HTTPS.");return;}
  const token=++micToken;
@@ -81,29 +86,43 @@ async function startMic(){if(phase==='finished')return;
    if(!mic){const Ctor=window.SpeechRecognition||window.webkitSpeechRecognition;mic=new Ctor();const instance=mic;mic.lang="es-UY";mic.continuous=true;mic.interimResults=true;mic.maxAlternatives=5;
      mic.onstart=()=>{if(mic!==instance||token!==micToken)return;micRunning=true;micNote("🎙 CONECTANDO AUDIO...");clearTimeout(micAudioTimer);micAudioTimer=setTimeout(()=>{if(mic!==instance||token!==micToken||!canAnswer())return;if(phase==="waiting-mic")beginTimedTurn(false);else if(online?.micWaiting)onlineReadyAfterNarration()},1800);};
      mic.onaudiostart=()=>{if(mic!==instance||token!==micToken)return;micRunning=true;clearTimeout(micAudioTimer);voiceBtn.classList.add("ok");micNote("🎙 ESCUCHANDO");if(mode==="bot"&&phase==="waiting-mic"&&active===0)beginTimedTurn(false);if(online?.micWaiting&&canAnswer())onlineReadyAfterNarration();if(phase==="playing"&&canAnswer())setMicLabel("TE ESCUCHAMOS",`Respondé, ${players[active].name}`,true);};
-     mic.onresult=e=>{if(mic!==instance||token!==micToken||!micWanted||!question||!canAnswer())return;
-       if(mode==="bot"&&phase==="waiting-mic"&&active===0){micRunning=true;clearTimeout(micAudioTimer);beginTimedTurn(false)}
-       if(phase!=="playing")return;
-       let wrongFlag="";
-       for(let i=e.resultIndex;i<e.results.length;i++){const result=e.results[i];for(let j=0;j<result.length;j++){
-         const candidate=String(result[j].transcript||"").trim();
-         if(!candidate)continue;
-         if(result.isFinal&&normalize(candidate)==="paso"){passTurn();return;}
-         if(result.isFinal&&!wrongFlag&&((question.category==="banderas"&&(countriesSpoken(candidate).length||normalize(candidate).includes("inglaterra")))||(isImageQuestion(question)&&openAnswer(candidate,question.category))))wrongFlag=candidate;
-         if(!isRightAnswer(candidate,question))continue;
-         const key=candidate.toLocaleLowerCase('es-UY'),now=Date.now();if(key===lastSpeech&&now-lastSpeechAt<1500)return;
-         lastSpeech=key;lastSpeechAt=now;applyAnswer(candidate);return;
-       }
-       const heard=String(result[0]?.transcript||"").trim();
-       if(heard){setMicLabel("TE ESCUCHAMOS","Oí: «"+heard+"»",true);if(result.isFinal&&!wrongFlag){$dc("feedback").className="feedback fail";$dc("feedback").textContent=question.category==="banderas"?"No entendí un país. Repetí tu respuesta.":openAnswerHint(heard,question)||"No es correcto. Probá otra vez.";playTone(210,.08,'triangle');}}
-       }
-       if(wrongFlag)passTurn(wrongFlag);
+     mic.onresult=e=>{if(mic!==instance||token!==micToken)return;
+       const lista=[];for(let i=e.resultIndex;i<e.results.length;i++){const result=e.results[i];lista.push({alts:Array.from(result).map(x=>String(x.transcript||"")),isFinal:!!result.isFinal});}
+       procesarVoz(lista);
      };
      mic.onerror=e=>{if(mic!==instance||token!==micToken)return;micRunning=false;clearTimeout(micAudioTimer);let err=e.error||"";if(["not-allowed","service-not-allowed","audio-capture","network"].includes(err)){micBlocked=true;micWanted=false;micFallback(micErrorText[err]||"Micrófono no disponible.");}else micNote("🎙 Micrófono interrumpido. Reintentar.");};
      mic.onend=()=>{if(mic!==instance||token!==micToken)return;micRunning=false;clearTimeout(micAudioTimer);voiceBtn.classList.remove("ok");if(mode==="bot"&&phase==="playing"&&active===0&&answerSel.value==="voice"&&question&&!question.answered){phase="waiting-mic";pauseClock();updatePlayers();setMicLabel("RECONECTANDO MICRÓFONO","Tu reloj está pausado.",false);const pending=question;micStartupTimer=setTimeout(()=>{if(mode==="bot"&&phase==="waiting-mic"&&question===pending)micFallback("No se pudo reconectar el micrófono.")},8000)}if(micWanted&&!micBlocked)setTimeout(()=>{if(mic===instance&&token===micToken&&micWanted&&!micRunning&&canAnswer()){try{mic.start()}catch(e){}}},450);};
    }
    if(!micRunning)try{mic.start()}catch(e){micFallback("No se pudo iniciar el micrófono.");}
  }catch(e){if(token!==micToken)return;micWanted=false;micBlocked=true;micFallback("Permiso de micrófono no habilitado.");}
+}
+/* Lo que se oyó (del micrófono de este equipo o del celular, en la tele):
+   lista de resultados {alts:[transcripciones], isFinal}. */
+function procesarVoz(lista){
+ if(!micWanted||!question||!canAnswer())return;
+ if(mode==="bot"&&phase==="waiting-mic"&&active===0){micRunning=true;clearTimeout(micAudioTimer);beginTimedTurn(false)}
+ if(phase!=="playing")return;
+ let wrongFlag="";
+ for(const result of lista){for(const alt of result.alts||[]){
+   const candidate=String(alt||"").trim();
+   if(!candidate)continue;
+   if(result.isFinal&&normalize(candidate)==="paso"){passTurn();return;}
+   if(result.isFinal&&!wrongFlag&&((question.category==="banderas"&&(countriesSpoken(candidate).length||normalize(candidate).includes("inglaterra")))||(isImageQuestion(question)&&openAnswer(candidate,question.category))))wrongFlag=candidate;
+   if(!isRightAnswer(candidate,question))continue;
+   const key=candidate.toLocaleLowerCase('es-UY'),now=Date.now();if(key===lastSpeech&&now-lastSpeechAt<1500)return;
+   lastSpeech=key;lastSpeechAt=now;applyAnswer(candidate);return;
+ }
+ const heard=String((result.alts||[])[0]||"").trim();
+ if(heard){setMicLabel("TE ESCUCHAMOS","Oí: «"+heard+"»",true);if(result.isFinal&&!wrongFlag){$dc("feedback").className="feedback fail";$dc("feedback").textContent=question.category==="banderas"?"No entendí un país. Repetí tu respuesta.":openAnswerHint(heard,question)||"No es correcto. Probá otra vez.";playTone(210,.08,'triangle');}}
+ }
+ if(wrongFlag)passTurn(wrongFlag);
+}
+/* En la tele: el celular avisó que ya escucha (o pasaron 4 s). */
+function micExternoListo(){
+ if(!MIC_EXTERNO||!micWanted)return;
+ clearTimeout(micAudioTimer);micRunning=true;voiceBtn.classList.add("ok");micNote("🎙 ESCUCHANDO EN EL CELULAR");
+ if(mode==="bot"&&phase==="waiting-mic"&&active===0)beginTimedTurn(false);
+ if(phase==="playing"&&canAnswer())setMicLabel("TE ESCUCHAMOS",`Respondé, ${players[active].name}`,true);
 }
 voiceBtn.onclick=()=>{if(micRunning){stopMic();return;}micBlocked=false;micWanted=false;startMic()};
 function stopMic(){++micToken;clearTimeout(micStartupTimer);clearTimeout(micAudioTimer);micWanted=false;micRunning=false;voiceBtn.classList.remove("ok");const previous=mic;mic=null;if(previous){try{previous.abort()}catch(e){}}micNote("🎙 ACTIVAR MICRÓFONO")}
@@ -384,7 +403,7 @@ finish=function(winner,reason){
 };
 function sincronizarPantallaDuelo(jugando,solicitarTV=false){
  try{
-   if(window.parent===window)return;
+   if(window.parent===window||MIC_EXTERNO)return;
    window.parent.DueloConocimiento?.pantalla?.(jugando);
    if(jugando&&solicitarTV)window.parent.Extensiones?.prepararDueloTV?.();
  }catch(e){}
@@ -626,4 +645,25 @@ new MutationObserver(()=>{
  sincronizarPantallaDuelo($dc("setup-overlay").classList.contains("hidden"));
 }).observe($dc("setup-overlay"),{attributes:true,attributeFilter:["class"]});
 syncSetup();syncAnswer();
+/* API para Juegos en la tele (tele.js): configurar y arrancar, voz del celular, pasar, revancha y estado. */
+if(MIC_EXTERNO)window.dueloTV={
+ configurar(c){
+   modeSel.value=c.modo==="local"?"local":"bot";modeSel.dispatchEvent(new Event("change"));
+   answerSel.value="voice";syncAnswer();
+   $dc("input0").value=String(c.nombres?.[0]||"Jugador 1").slice(0,14);
+   $dc("input1").disabled=false;$dc("input1").value=String(c.nombres?.[1]||"Sofía").slice(0,14);
+   if(c.segundos)$dc("time-select").value=String(c.segundos);
+   if(Array.isArray(c.categorias)&&c.categorias.length)document.querySelectorAll('input[name=category]').forEach(x=>x.checked=c.categorias.includes(x.value));
+   start();
+ },
+ voz(lista){if(Array.isArray(lista))procesarVoz(lista);},
+ listo(){micExternoListo();},
+ pasar(){if(phase==="playing"&&question&&!question.answered&&canAnswer())passTurn();},
+ texto(t){t=String(t||"").trim().slice(0,60);if(t&&phase==="playing"&&question&&!question.answered&&canAnswer())applyAnswer(t);},
+ revancha(){start();},
+ estado(){return{phase,mode,active,turn,nombres:players.map(p=>p.name),aciertos:players.map(p=>p.score),errores:players.map(p=>p.errors||0),
+   escucha:micWanted&&(phase==="playing"||phase==="waiting-mic")&&canAnswer()&&!(mode==="bot"&&active===1),
+   pregunta:question&&(phase==="playing"||phase==="waiting-mic"||phase==="announcing")?question.label:"",
+   resultado:phase==="finished"?($dc("result-title")?.textContent||""):""};}
+};
 })();
