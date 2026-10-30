@@ -140,9 +140,9 @@
   }
   function prepararBotonCast(){
     const b=document.getElementById("btnTeleCast");if(!b)return;
-    const ver=()=>{let ok=false;try{ok=typeof esGonzalo==="function"&&esGonzalo();}catch(e){}b.hidden=!ok;};
-    /* Gonzalo (31/10/2026): el 📺 abre el menú con las 3 formas (transmitir, código, celular de tele). */
-    ver();setInterval(ver,3000);b.onclick=compartirPantalla;
+    /* Gonzalo (31/10/2026): el 📺 abre el menú con las 3 formas (transmitir, código, celular de tele).
+       Desde el 30/10/2026 lo ven todos (antes solo Gonzalo). */
+    b.hidden=false;b.onclick=compartirPantalla;
   }
   window.Tele={abrir,salir,compartirPantalla};
   if(!esTele&&!esCel){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",prepararBotonCast);else prepararBotonCast();return;}
