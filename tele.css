@@ -193,3 +193,23 @@ html.tele-modo body{background:#160B24}
 .tl-pl-fila small{font-size:.85em;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:22vw}
 .tl-pl-ok b{background:#4CD38A}.tl-pl-mal b{background:#FF5A5A;color:#fff}.tl-pl-mal small{color:#FF9A9A}.tl-pl-pendiente{opacity:.7}
 .tl-panel .tl-flash{position:static;transform:none;align-self:flex-start;max-width:100%;white-space:normal;font-size:min(2.2vw,4vh);line-height:1.2;padding:1vh 2vw}
+/* 100 Rioplatenses en la tele: mismo estudio que el Rosco y Giro en su atril a la izquierda. */
+.tl-cien.tl-cien-estudio{display:grid;grid-template-columns:min(24vw,40vh) 1fr;align-items:center;gap:2vw;padding:2vh 3vw;background:#050818 url("presentacion-y-locucion-extensiones/Giro/estudios/Giro_estudio_rosco_juego_fondo.webp") center/cover no-repeat}
+.tl-cien-giro{position:relative;align-self:end;width:100%;aspect-ratio:1/1.25;filter:drop-shadow(0 1.4vh 2.4vh #000b)}
+.tl-cien-pose{position:absolute;left:50%;bottom:36%;width:80%;transform:translateX(-50%);animation:tlCienPose .45s cubic-bezier(.2,1.3,.4,1)}
+.tl-cien-atril{position:absolute;left:0;bottom:0;width:100%}
+@keyframes tlCienPose{from{transform:translateX(-50%) translateY(10%) scale(.92);opacity:.4}to{transform:translateX(-50%);opacity:1}}
+.tl-cien-centro{display:flex;flex-direction:column;align-items:center;gap:2vh;min-width:0}
+.tl-cien-estudio .tl-cien-top{background:#0C0616CC;border:.2vh solid #F5B30166;border-radius:99vw;padding:.8vh 2vw;font-size:min(1.4vw,2.6vh)}
+.tl-cien-pts{color:#F5B301}
+.tl-cien-estudio .tl-pregunta{margin:0;font-size:min(3vw,5.6vh);background:#160B24DD;border:.3vh solid #F5B301;border-radius:2vh;padding:1.4vh 2.4vw;text-shadow:0 .4vh 0 #000;box-shadow:0 0 3vh #F5B30155}
+.tl-cien-estudio .tl-tablero{width:100%;max-width:62vw;gap:1.2vh 1vw}
+.tl-cien-estudio .tl-resp{height:min(9vh,5vw);position:relative;font-size:min(2.2vw,4vh)}
+.tl-resp .tl-resp-n{font:900 1em 'Archivo Black'}
+.tl-resp.tl-abierta .tl-resp-n{display:grid;place-items:center;flex:0 0 auto;width:1.6em;height:1.6em;border-radius:50%;background:#160B24;color:#F5B301;font-size:.7em}
+.tl-resp.tl-abierta b{flex:1;text-align:left;margin-left:1vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-resp.tl-recien{animation:tlVueltaGrande .7s cubic-bezier(.2,1.3,.4,1);box-shadow:0 0 4vh #F5B301}
+@keyframes tlVueltaGrande{0%{transform:rotateX(90deg) scale(1.1)}60%{transform:rotateX(-12deg) scale(1.06)}100%{transform:none}}
+.tl-equis-grande small{display:block;font:900 min(3vw,5vh) 'Archivo Black';text-align:center;color:#fff;margin-top:-6vh}
+.tl-cien-estudio .tl-ayuda{background:#0C0616AA;border-radius:99vw;padding:.4vh 1.6vw}
+@media(prefers-reduced-motion:reduce){.tl-cien-pose,.tl-resp.tl-recien{animation:none}}
