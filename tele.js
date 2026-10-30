@@ -112,6 +112,17 @@
       });
     };
   }
+  function transmitirDirecto(){
+    if(typeof window.PresentationRequest!=="function"){compartirPantalla();return;}
+    let nombre="";try{nombre=limpio((typeof perfil!=="undefined"&&perfil&&perfil.nombre)||localStorage.getItem("gya_tele_nombre")||"",14);}catch(e){}
+    const cod=Array.from({length:5},()=>CHARS[Math.floor(Math.random()*CHARS.length)]).join("");
+    let pedido;try{pedido=new PresentationRequest([new URL("index.html?tele=1&cod="+cod,location.href).href]);}catch(e){compartirPantalla();return;}
+    pedido.start().then(conexion=>{
+      window.gyaConexionTele=conexion;try{localStorage.setItem("gya_tele_vinculada",cod);}catch(e){}
+      try{if(typeof mostrarToast==="function")mostrarToast("📺","¡Conectado! La tele está abriendo la sala…");}catch(e){}
+      setTimeout(()=>unirseTele(cod,nombre),700);
+    }).catch(err=>{const n=err&&err.name;if(n==="NotAllowedError"||n==="AbortError")return;compartirPantalla();});
+  }
   /* Entra a la sala de la tele desde este celular sin recargar (así no se corta la transmisión). */
   function unirseTele(cod,nombre){
     if(esCel)return;codCel=cod;esCel=true;
@@ -121,8 +132,10 @@
   function prepararBotonCast(){
     const b=document.getElementById("btnTeleCast");if(!b)return;
     const ver=()=>{let ok=false;try{ok=typeof esGonzalo==="function"&&esGonzalo();}catch(e){}b.hidden=!ok;};
-    /* Gonzalo (31/10/2026): el 📺 va directo a girayadivina.com/tele para unirse con el código de la tele. La ventana de Chromecast queda en Tele.compartirPantalla. */
-    ver();setInterval(ver,3000);b.onclick=()=>{location.href="tele/";};
+    /* Gonzalo (31/10/2026): el 📺 busca la tele directo (Chromecast): un toque, elegís la tele y la
+       tele abre la sala sola. Si no hay tele con Chromecast o el celular no lo permite, abre la
+       ventana con las otras formas (código o duplicar pantalla). */
+    ver();setInterval(ver,3000);b.onclick=transmitirDirecto;
   }
   window.Tele={abrir,salir,compartirPantalla};
   if(!esTele&&!esCel){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",prepararBotonCast);else prepararBotonCast();return;}
