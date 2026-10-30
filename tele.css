@@ -222,3 +222,13 @@ html.tele-modo .grp-panel{position:absolute;left:0;right:0;bottom:0;padding:1.6v
 html.tele-modo .grp-panel .grp-descripcion,html.tele-modo .grp-panel .grp-aviso,html.tele-modo .grp-panel .grp-etiqueta{display:none}
 html.tele-modo .grp-panel h2{margin:0;font-size:min(2.4vw,4.2vh)}
 html.tele-modo .grp-acciones{margin:0}
+/* Menú de juegos en el celular: tarjetas con dibujo en vez de una lista. */
+.tl-cel-menu{display:flex;flex-direction:column;gap:10px;text-align:center}
+.tl-cel-menu h2{margin:4px 0 0;font:900 24px 'Archivo Black';color:#F5B301}.tl-cel-menu>p{margin:0;color:#D7C8E5;font-size:14px}
+.tl-cel-jug{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.tl-cel-jug span{background:#2A1A3C;border-radius:99px;padding:4px 10px;font:700 13px Outfit,system-ui}.tl-cel-jug .tl-mando{background:#1FA866}
+.tl-cel-tarjetas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tl-cel-tarjeta{display:flex;flex-direction:column;align-items:center;gap:4px;border:1px solid #F5B30144;border-radius:18px;background:linear-gradient(180deg,#3A2650,#2A1A3C);color:#F6EFE2;padding:12px 8px;box-shadow:0 6px 14px #0007;cursor:pointer}
+.tl-cel-tarjeta img{width:78px;height:62px;object-fit:contain;filter:drop-shadow(0 4px 6px #0008)}
+.tl-cel-tarjeta b{font:900 15px/1.15 'Archivo Black'}.tl-cel-tarjeta small{font-size:11.5px;line-height:1.25;color:#D7C8E5}
+.tl-cel-tarjeta:active{transform:scale(.97);border-color:#F5B301}.tl-cel-tarjeta.tl-pronto{opacity:.45}
