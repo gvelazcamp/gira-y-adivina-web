@@ -292,7 +292,7 @@
       frase=u;window.speechSynthesis.speak(u);
     }catch(e){frase=null;}
   }
-  function presentar({tipo,titulo,descripcion,locucion,audio,imagen,continuar}){
+  function presentar({tipo,titulo,descripcion,locucion,audio,imagen,continuar,rotulo:textoRotulo,boton,respaldo}){
     if(!habilitado())return false;
     limpiar();activa=true;anteriorFoco=document.activeElement;
     salirDeCapa=continuar||null;
@@ -301,7 +301,7 @@
     // Construir con DOM, sin HTML dinámico ni texto de usuarios.
     const cont=document.createElement("section");cont.className="grp-contenido";
     const stage=document.createElement("div");stage.className="grp-escenario";
-    const rotulo=document.createElement("div");rotulo.className="grp-rotulo";rotulo.textContent="GIRÁ Y ADIVINÁ · EL ROSCO";
+    const rotulo=document.createElement("div");rotulo.className="grp-rotulo";rotulo.textContent=textoRotulo||"GIRÁ Y ADIVINÁ · EL ROSCO";
     const efecto=document.createElement("img");efecto.className="grp-efecto";
     efecto.src=BASE+"efectos/"+(tipo==="final"?"Giro_efecto_confeti_transparente.png":"Giro_efecto_destellos_transparente.png");
     efecto.alt="";efecto.setAttribute("aria-hidden","true");
@@ -340,7 +340,7 @@
       hablar(locucion,audio);
     });
     const avanzar=document.createElement("button");avanzar.type="button";avanzar.className="grp-boton grp-accion";
-    avanzar.textContent=tipo==="final"?"Ver resultados":"Ir al Rosco";
+    avanzar.textContent=boton||(tipo==="final"?"Ver resultados":"Ir al Rosco");
     avanzar.addEventListener("click",()=>{
       if(!activa||capa!==overlay||salidaTimer!==null)return;
       // Fundido hacia el panel original del Rosco; no inicia ni cambia la partida.
@@ -355,7 +355,9 @@
     capa=overlay;document.addEventListener("keydown",teclado);
     avanzar.focus({preventScroll:true});
     /* Giro habla solo apenas aparece (la grabación); el botón es para repetir. */
-    if(audio)setTimeout(()=>{if(capa===overlay&&activa)hablar(locucion,audio,true);},350);
+    /* respaldo: si todavía no está grabado el audio, Giro lo dice con la voz del equipo. */
+    if(audio)setTimeout(()=>{if(capa===overlay&&activa)hablar(locucion,audio,!respaldo);},350);
+    else if(respaldo&&locucion)setTimeout(()=>{if(capa===overlay&&activa)hablar(locucion);},350);
     if(tipo==="inicio"){
       const reducido=matchMedia("(prefers-reduced-motion: reduce)").matches;
       const pasos=["general","medio","cercano","general"];
@@ -443,6 +445,15 @@
     const b=document.querySelector(".grp-ap-saltar,.grp-part .grp-accion,.grp-cierre .grp-accion,.grp-overlay:not(.grp-saliendo) .grp-accion");
     if(b&&!b.disabled){b.click();return true;}return false;
   }
+  /* Juegos en la tele: la misma apertura del programa y Giro en su atril presentando
+     cualquier juego (titulo, descripción, locución y su audio grabado si existe). */
+  function presentarJuego(o){
+    if(!habilitado())return false;
+    const p=()=>presentar({tipo:"inicio",titulo:o.titulo,descripcion:o.descripcion||"",locucion:o.locucion||"",audio:o.audio||"",imagen:"saludo",
+      rotulo:o.rotulo,boton:o.boton||"¡A jugar!",respaldo:true,continuar:typeof o.despues==="function"?o.despues:null});
+    if(o.apertura===false)return p();
+    mostrarApertura(p);return true;
+  }
   function etapa(){return apertura?"apertura":capa?"giro":participantes?"participantes":cierre?"cierre":eleccion?"eleccion":"";}
-  window.GiroRoscoPiloto={mostrarInicio,mostrarFinal,presentarSolo,presentarDuelo,posLetra,reaccion,cerrar,habilitado,avanzar,etapa};
+  window.GiroRoscoPiloto={mostrarInicio,mostrarFinal,presentarSolo,presentarDuelo,posLetra,reaccion,cerrar,habilitado,avanzar,etapa,presentarJuego};
 })();
