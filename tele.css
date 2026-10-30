@@ -232,3 +232,35 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-cel-tarjeta img{width:78px;height:62px;object-fit:contain;filter:drop-shadow(0 4px 6px #0008)}
 .tl-cel-tarjeta b{font:900 15px/1.15 'Archivo Black'}.tl-cel-tarjeta small{font-size:11.5px;line-height:1.25;color:#D7C8E5}
 .tl-cel-tarjeta:active{transform:scale(.97);border-color:#F5B301}.tl-cel-tarjeta.tl-pronto{opacity:.45}
+/* Mímica en la tele (concurso): telón, frase gigante, reloj circular, Giro y tabla de jugadores. */
+.tl-mm{position:absolute;inset:0;overflow:hidden;--u:min(1vw,1.78vh)}
+.tl-mm-telon{background:#160B24 url(assets/mimica/telon.webp) center/cover}
+.tl-mm-fondo{background:#160B24 url(assets/mimica/fondo.webp) center/cover}
+.tl-mm-oscuro{position:absolute;inset:0;background:radial-gradient(ellipse 34% 60% at 50% 46%,transparent 0,#0a0412aa 70%,#0a0412dd 100%)}
+.tl-mm-haz{position:absolute;left:50%;top:-6vh;width:60vw;height:110vh;transform:translateX(-50%);background:conic-gradient(from 160deg at 50% 0%,transparent 0deg,#fff6d055 12deg,#fff6d088 20deg,#fff6d055 28deg,transparent 40deg);filter:blur(6px);mix-blend-mode:screen;pointer-events:none}
+.tl-mm-card{position:absolute;left:50%;top:13vh;transform:translateX(-50%);width:calc(var(--u)*52);text-align:center;background:#0C0616E6;border:.5vh solid #F5B301;border-radius:calc(var(--u)*2.6);padding:calc(var(--u)*2) calc(var(--u)*2.4);box-shadow:0 0 6vh #F5B30166,0 2vh 4vh #000a}
+.tl-mm-card small{font:900 calc(var(--u)*1.7) 'Archivo Black';letter-spacing:.3vw;color:#F5B301}
+.tl-mm-card p{font-size:calc(var(--u)*1.8);margin:1.4vh 0 0}.tl-mm-chico{opacity:.85;font-size:calc(var(--u)*1.4)!important}
+.tl-mm-logo{height:calc(var(--u)*13)}
+.tl-mm-nombre{font:900 calc(var(--u)*7)/1 'Archivo Black';color:#fff;margin:1.2vh 0 1.6vh;text-shadow:0 .8vh 0 #7a1030}
+.tl-mm-pill{display:inline-block;background:#FF4D6D;color:#fff;font:900 calc(var(--u)*1.9) 'Archivo Black';border-radius:99px;padding:.8vh 2vw;box-shadow:0 0 3vh #FF4D6Daa}
+.tl-mm-cuenta{position:absolute;left:50%;bottom:7vh;transform:translateX(-50%);width:calc(var(--u)*11.5);height:calc(var(--u)*11.5);border-radius:50%;display:grid;place-items:center;background:#F5B301;color:#160B24;font:900 calc(var(--u)*7.4) 'Archivo Black';box-shadow:0 0 5vh #F5B301,0 1.2vh 0 #7a4b00;animation:tlLatido 1s ease-in-out infinite}
+.tl-mm-giro{position:absolute;left:2vw;bottom:0;width:calc(var(--u)*19);aspect-ratio:1/1.25;filter:drop-shadow(0 1.4vh 2.4vh #000b)}
+.tl-mm-pose{position:absolute;left:50%;bottom:36%;width:80%;transform:translateX(-50%)}.tl-mm-atril{position:absolute;left:0;bottom:0;width:100%}
+.tl-mm-tabla{position:absolute;right:2.4vw;bottom:4vh;display:flex;flex-direction:column;gap:.8vh;max-height:60vh}
+.tl-mm-tabla div{min-width:calc(var(--u)*17);display:flex;justify-content:space-between;gap:2vw;background:#0C0616DD;border:.3vh solid #ffffff33;border-radius:1.6vh;padding:.6vh 1.2vw;font:900 calc(var(--u)*1.5) 'Archivo Black'}
+.tl-mm-tabla .tl-mm-ahora{border-color:#F5B301;color:#F5B301;box-shadow:0 0 2vh #F5B30177}
+.tl-mm-top{position:absolute;top:3vh;left:3vw;right:3vw;display:flex;justify-content:space-between;align-items:center;font:700 calc(var(--u)*2) Outfit}
+.tl-mm-top span{background:#0C0616DD;border-radius:99px;padding:.8vh 1.8vw}.tl-mm-ok{color:#4CD38A;font:900 calc(var(--u)*2.6) 'Archivo Black'!important}
+.tl-mm-frase{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:calc(var(--u)*62);text-align:center;font:900 calc(var(--u)*6.4)/1.05 'Archivo Black';color:#fff;background:#0C0616E0;border:.5vh solid #F5B301;border-radius:calc(var(--u)*3);padding:calc(var(--u)*3) calc(var(--u)*2.4);text-shadow:0 .8vh 0 #7a1030;box-shadow:0 0 6vh #F5B30166;word-break:normal;overflow-wrap:normal}
+.tl-mm-reloj{position:absolute;left:50%;bottom:4vh;transform:translateX(-50%);width:calc(var(--u)*12);height:calc(var(--u)*12);border-radius:50%;display:grid;place-items:center;background:conic-gradient(#F5B301 0 var(--p),#ffffff22 var(--p) 100%);box-shadow:0 0 4vh #F5B30188}
+.tl-mm-reloj span{width:80%;height:80%;border-radius:50%;display:grid;place-items:center;background:#160B24;font:900 calc(var(--u)*5) 'Archivo Black';color:#F5B301}
+.tl-mm-reloj.tl-urgente{background:conic-gradient(#FF4D6D 0 var(--p),#ffffff22 var(--p) 100%)}.tl-mm-reloj.tl-urgente span{color:#FF4D6D}
+.tl-mm-ayuda{position:absolute;left:50%;bottom:calc(var(--u)*13 + 5vh);transform:translateX(-50%);margin:0;background:#0C0616CC;border-radius:99px;padding:.6vh 1.6vw;font:700 calc(var(--u)*1.4) Outfit;white-space:nowrap}
+.tl-mm-res,.tl-mm-final{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:calc(var(--u)*60);text-align:center;background:#0C0616E6;border:.5vh solid #F5B301;border-radius:calc(var(--u)*2.6);padding:calc(var(--u)*2);display:flex;flex-direction:column;align-items:center;gap:1.4vh}
+.tl-mm-res img,.tl-mm-final img{height:calc(var(--u)*10)}.tl-mm-res h1,.tl-mm-final h1{margin:0;font:900 calc(var(--u)*3.4) 'Archivo Black';color:#F5B301}
+.tl-mm-res p,.tl-mm-final p{margin:0;font-size:calc(var(--u)*1.7)}
+.tl-mm-lista{display:flex;flex-wrap:wrap;gap:.8vh .8vw;justify-content:center;max-height:28vh;overflow:hidden}
+.tl-mm-lista span{background:#2A1A3C;border-radius:1.2vh;padding:.5vh 1vw;font:700 calc(var(--u)*1.4) Outfit}.tl-mm-lista .tl-ok{color:#4CD38A}.tl-mm-lista .tl-paso{color:#F5B301}
+.tl-mm-podio{display:flex;flex-direction:column;gap:.8vh;width:80%}
+.tl-mm-podio div{display:flex;justify-content:space-between;background:#2A1A3C;border-radius:1.4vh;padding:.8vh 1.6vw;font:900 calc(var(--u)*1.9) 'Archivo Black'}.tl-mm-podio div:first-child{background:#4A3110;color:#F5B301}

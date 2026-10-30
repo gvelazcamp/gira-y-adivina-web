@@ -29,6 +29,7 @@
     {id:"puzzle",nombre:"Puzzle",icono:"assets/puzzle-arte/icono.webp",desc:"Armen el mismo puzzle desde sus celulares",ok:true},
     {id:"duelo",nombre:"Duelo de Conocimiento",icono:"logo-duelo-conocimiento.webp",desc:"Respondé hablando al celular",ok:true},
     {id:"quien",nombre:"¿Quién soy?",icono:"assets/quien-soy/icono.webp",desc:"La tele muestra quién sos: adiviná de espaldas",ok:true},
+    {id:"mimica",nombre:"Mímica",icono:"assets/mimica/icono.webp",desc:"Uno de espaldas adivina, los demás actúan",ok:true},
     {id:"numero",nombre:"¿Qué número soy?",icono:"assets/que-numero-soy/icono.webp",desc:"La tele muestra el número: adiviná de espaldas",ok:true}
   ];
 
@@ -102,7 +103,7 @@
       if(m.t==="chau"){T.jug=T.jug.filter(x=>x.pid!==m.pid);if(T.mando===m.pid)T.mando=T.jug[0]?T.jug[0].pid:null;pintar();difundir();return;}
       if(m.t==="tomar"){if(T.juego==="tutti"&&T.g&&!T.g.participa(m.pid))return;T.mando=m.pid;pintar();difundir();return;}
       if(m.t!=="accion")return;
-      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
+      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
       if(m.a==="elegir"&&T.fase==="menu"){elegir(String(m.juego||""));return;}
       if(m.a==="menu"){volverMenu();return;}
       if(T.g&&T.fase==="juego")T.g.accion(m);
@@ -112,7 +113,7 @@
       if(id==="tutti"&&T.jug.length<2){avisoTele("Tutti Frutti necesita al menos 2 celulares para revisar las respuestas");return;}
       despierta();
       if(id==="ruleta"){T.fase="ruleta";T.juego="ruleta";pintar();difundir();setTimeout(()=>{location.href="index.html?tvhost=1";},1500);return;}
-      T.fase="juego";T.juego=id;T.g=(id==="numero"?juegoNumero:id==="quien"?juegoQuien:id==="duelo"?juegoDuelo:id==="puzzle"?juegoPuzzle:id==="tutti"?juegoTutti:id==="rosco"?juegoRosco:id==="ahorcado"?juegoAhorcado:juegoCien)(T,actualizar);
+      T.fase="juego";T.juego=id;T.g=(id==="mimica"?juegoMimica:id==="numero"?juegoNumero:id==="quien"?juegoQuien:id==="duelo"?juegoDuelo:id==="puzzle"?juegoPuzzle:id==="tutti"?juegoTutti:id==="rosco"?juegoRosco:id==="ahorcado"?juegoAhorcado:juegoCien)(T,actualizar);
       ultimoTic=performance.now();clearInterval(timerJuego);
       timerJuego=setInterval(()=>{const a=performance.now(),dt=a-ultimoTic;ultimoTic=a;if(T.g&&T.g.tic)T.g.tic(dt);},200);
       actualizar();
@@ -313,7 +314,7 @@
       if((m.a==="qs_ok"||m.a==="qs_paso")&&fase==="jugando"&&Number(m.i)===idx){marcar(m.a==="qs_ok");return;}
       if(m.pid!==T.mando)return;
       if(m.a==="qs_cat"&&fase==="config"){const v=String(m.cat||"");if(v==="mezcla"||cats().some(c=>c.id===v)){cat=v;actualizar();}return;}
-      if(m.a==="qs_tiempo"&&fase==="config"&&TIEMPOS.includes(Number(m.t))){tiempo=Number(m.t);actualizar();return;}
+      if(m.a==="qs_tiempo"&&fase==="config"&&TIEMPOS.includes(Number(m.seg))){tiempo=Number(m.seg);actualizar();return;}
       if(m.a==="qs_quien"&&fase==="config"&&T.jug.some(j=>j.pid===m.quien)){quien=m.quien;actualizar();return;}
       if(m.a==="qs_empezar"&&fase==="config"){empezar();return;}
       if(m.a==="qs_terminar"&&fase==="jugando"){terminar();return;}
@@ -392,6 +393,75 @@
       st:{phase:est.phase||"",active:est.active,nombres:est.nombres||[],aciertos:est.aciertos||[],errores:est.errores||[],pregunta:est.pregunta||"",resultado:est.resultado||""}};}
     function fin(){muerto=true;clearInterval(poll);try{iframe&&iframe.contentWindow&&iframe.contentWindow.speechSynthesis&&iframe.contentWindow.speechSynthesis.cancel();}catch(e){}}
     return{accion,pintar,cel,fin};
+  }
+
+  /* ---------- Mímica en la tele (concurso): uno de espaldas adivina, los demás hacen
+     la mímica de la frase que muestra la tele. Gana el que adivina más en su tiempo. ---------- */
+  function juegoMimica(T,actualizar){
+    const NIV=[["facil","🙂 Fácil",()=>window.MIMICA_FRASES||[]],["media","🎬 Media",()=>window.MIMICA_MEDIA||[]],["dificil","🔥 Difícil",()=>window.MIMICA_DIFICIL||[]],["mezcla","🎲 Mezcla",null]];
+    const TIEMPOS=[45,60,90],GB="presentacion-y-locucion-extensiones/Giro/";
+    let nivel="mezcla",tiempo=60,fase="config",orden=[],turno=0,restante=0,cuenta=0,mazo=[],idx=0,hechas=[],marcador={},muerto=false;
+    const nombreDe=pid=>(T.jug.find(j=>j.pid===pid)||{}).n||"Jugador";
+    function armarMazo(){
+      const lista=nivel==="mezcla"?NIV.slice(0,3).flatMap(n=>n[2]()):(NIV.find(n=>n[0]===nivel)||NIV[0])[2]();
+      const libres=Vistas.filtrar("mimica",lista,x=>x);
+      return mezclar(libres).concat(mezclar(lista.filter(x=>!libres.includes(x))));
+    }
+    function empezar(){orden=T.jug.map(j=>j.pid);if(orden.length<2)return;marcador={};orden.forEach(p=>marcador[p]=0);turno=0;mazo=armarMazo();idx=0;prepararTurno();}
+    function prepararTurno(){hechas=[];restante=tiempo*1000;cuenta=4000;fase="cuenta";actualizar();}
+    function marcar(ok){if(fase!=="jugando"||!mazo.length)return;const t=mazo[idx%mazo.length];hechas.push({t,ok});try{Vistas.marcar("mimica",t);}catch(e){}idx++;
+      if(ok){marcador[orden[turno]]++;sonar(720,.12,"triangle",.08);setTimeout(()=>sonar(980,.18,"sine",.08),110);}else sonar(300,.12,"sine",.05);actualizar();}
+    function finTurno(){fase="resumen";sfx("aplausos");actualizar();}
+    function siguiente(){turno++;if(turno>=orden.length){fase="fin";
+        const mejor=Math.max(0,...Object.values(marcador));try{const r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");if(mejor>(r.mimica||0)){r.mimica=mejor;localStorage.setItem("gya_tele_records",JSON.stringify(r));}}catch(e){}
+        sfx("aplausos");actualizar();return;}
+      prepararTurno();}
+    function accion(m){
+      if((m.a==="mm_ok"||m.a==="mm_paso")&&fase==="jugando"&&Number(m.i)===idx&&m.pid!==orden[turno]){marcar(m.a==="mm_ok");return;}
+      if(m.pid!==T.mando)return;
+      if(fase==="config"){
+        if(m.a==="mm_nivel"&&NIV.some(n=>n[0]===m.nivel)){nivel=m.nivel;actualizar();return;}
+        if(m.a==="mm_tiempo"&&TIEMPOS.includes(Number(m.seg))){tiempo=Number(m.seg);actualizar();return;}
+        if(m.a==="mm_empezar"){empezar();return;}return;}
+      if(m.a==="mm_terminar"&&fase==="jugando"){restante=0;finTurno();return;}
+      if(m.a==="mm_siguiente"&&fase==="resumen"){siguiente();return;}
+      if(m.a==="mm_config"&&fase==="fin"){fase="config";actualizar();}
+    }
+    function tic(dt){
+      if(fase==="cuenta"){const antes=Math.ceil(cuenta/1000);cuenta-=dt;if(cuenta<=0){fase="jugando";sonar(880,.18,"triangle",.07);actualizar();return;}
+        const ahora=Math.ceil(cuenta/1000);if(ahora!==antes&&ahora<=3){sonar(520,.06,"sine",.04);const el=document.querySelector("#tlMmCuenta");if(el)el.textContent=ahora;}return;}
+      if(fase!=="jugando")return;restante=Math.max(0,restante-dt);
+      const el=document.querySelector("#tlMmReloj");if(el){el.textContent=Math.ceil(restante/1000);el.parentElement.style.setProperty("--p",(restante/(tiempo*1000)*100)+"%");el.parentElement.classList.toggle("tl-urgente",restante<=10000);}
+      if(restante<=0)finTurno();
+    }
+    /* La frase nunca se corta a mitad de palabra: si una palabra es larga, la letra se achica. */
+    const tamFrase=f=>{const largo=Math.max(1,...String(f).split(/\s+/).map(w=>w.length));return Math.min(6.4,56/(largo*.78)).toFixed(2);};
+    const giro=pose=>`<div class="tl-mm-giro"><img class="tl-mm-pose" src="${GB}${pose}.png" alt="Giro"><img class="tl-mm-atril" src="${GB}elementos/Giro_atril_oficial_chico.webp" alt=""></div>`;
+    const tabla=()=>`<div class="tl-mm-tabla">${orden.map((p,i)=>`<div class="${i===turno&&fase!=="fin"?"tl-mm-ahora":""}"><span>${esc(nombreDe(p))}</span><b>${i<turno||(i===turno&&fase!=="cuenta")?marcador[p]:"–"}</b></div>`).join("")}</div>`;
+    function pintar(raiz){
+      if(fase==="config"){raiz.innerHTML=`<div class="tl-mm tl-mm-telon"><div class="tl-mm-oscuro"></div><div class="tl-mm-card"><img class="tl-mm-logo" src="assets/mimica/logo.webp" alt="Mímica">
+        <p>Uno se pone <b>de espaldas a la tele</b> y los demás le hacen <b>mímica</b> de la frase, sin hablar.<br>Gana el que <b>adivina más frases en ${tiempo} segundos</b>.</p>
+        <p class="tl-mm-chico">${esc((NIV.find(n=>n[0]===nivel)||NIV[3])[1])} · ${T.jug.length} jugadores · 🎮 se empieza desde el celular</p></div>${giro("Giro_saludando")}</div>`;return;}
+      if(fase==="cuenta"){raiz.innerHTML=`<div class="tl-mm tl-mm-telon"><div class="tl-mm-oscuro"></div><div class="tl-mm-haz"></div>
+        <div class="tl-mm-card"><small>🙈 LE TOCA ADIVINAR A</small><div class="tl-mm-nombre">${esc(nombreDe(orden[turno]))}</div><span class="tl-mm-pill">¡DE ESPALDAS A LA TELE!</span>
+        <p>Los demás: hagan la mímica de la frase, ¡sin hablar!</p></div><div class="tl-mm-cuenta" id="tlMmCuenta">${Math.min(3,Math.max(1,Math.ceil(cuenta/1000)))}</div>${giro("Giro_senalando_derecha")}${tabla()}</div>`;return;}
+      if(fase==="jugando"){const ok=hechas.filter(h=>h.ok).length;raiz.innerHTML=`<div class="tl-mm tl-mm-fondo">
+        <div class="tl-mm-top"><span>🙈 Adivina <b>${esc(nombreDe(orden[turno]))}</b></span><span class="tl-mm-ok">✔ ${ok}</span></div>
+        <div class="tl-mm-frase" style="font-size:calc(var(--u)*${tamFrase(mazo[idx%mazo.length]||"")})">${esc(mazo[idx%mazo.length]||"")}</div>
+        <div class="tl-mm-reloj${restante<=10000?" tl-urgente":""}" style="--p:${restante/(tiempo*1000)*100}%"><span id="tlMmReloj">${Math.ceil(restante/1000)}</span></div>
+        <p class="tl-mm-ayuda">🤫 ¡Sin hablar! · En el celular: ✔ Adivinó · ⏭ Pasar</p>${giro("Giro_suspenso")}${tabla()}</div>`;return;}
+      if(fase==="resumen"){const ok=hechas.filter(h=>h.ok).length;raiz.innerHTML=`<div class="tl-mm tl-mm-fondo"><div class="tl-mm-res">
+        <img src="assets/mimica/aplausos.webp" alt=""><h1>¡Tiempo! ${esc(nombreDe(orden[turno]))} adivinó ${ok}</h1>
+        <div class="tl-mm-lista">${hechas.map(h=>`<span class="${h.ok?"tl-ok":"tl-paso"}">${h.ok?"✔":"⏭"} ${esc(h.t)}</span>`).join("")||"<span>Ninguna frase</span>"}</div>
+        <p>${turno+1<orden.length?`Ahora adivina <b>${esc(nombreDe(orden[turno+1]))}</b> · 🎮 «Siguiente» en el celular`:"🎮 «Ver ganador» en el celular"}</p></div>${giro("Giro_festejando")}${tabla()}</div>`;return;}
+      const rank=[...orden].sort((a,b)=>marcador[b]-marcador[a]),top=marcador[rank[0]]||0,ganan=rank.filter(p=>marcador[p]===top);
+      raiz.innerHTML=`<div class="tl-mm tl-mm-telon"><div class="tl-mm-oscuro"></div><div class="tl-mm-final"><img src="assets/mimica/trofeo.webp" alt="">
+        <h1>${ganan.length>1?"¡Empate! "+ganan.map(nombreDe).map(esc).join(" y "):"¡Ganó "+esc(nombreDe(ganan[0]))+"!"}</h1><p>${top} frase${top===1?"":"s"} en ${tiempo} segundos</p>
+        <div class="tl-mm-podio">${rank.map((p,i)=>`<div><span>${["🥇","🥈","🥉"][i]||i+1+"."} ${esc(nombreDe(p))}</span><b>${marcador[p]}</b></div>`).join("")}</div></div>${giro("Giro_festejando")}</div>`;
+    }
+    function cel(){return{pantalla:"mimica",fase,nivel,tiempo,niveles:NIV.map(n=>[n[0],n[1]]),tiempos:TIEMPOS,adivina:orden[turno]||null,nombreAdivina:orden[turno]?nombreDe(orden[turno]):"",
+      i:idx,ok:hechas.filter(h=>h.ok).length,pasos:hechas.filter(h=>!h.ok).length,ultimo:turno+1>=orden.length,jugadores:T.jug.length};}
+    return{accion,tic,pintar,cel,fin(){muerto=true;}};
   }
 
   /* ---------- Puzzle: el motor original dibuja en la tele; teléfonos = controles ---------- */
@@ -731,7 +801,7 @@
         m=>{if(m.t==="estado"&&m.cod===codCel){ultimo=m;visto=Date.now();try{localStorage.setItem("gya_tele_vinculada",codCel);}catch(e){}pintar();}});
       window.addEventListener("pagehide",()=>{try{mandar({t:"chau"});}catch(e){}});
     }
-    const accion=(a,extra={})=>{mandar({t:"accion",a,...extra});try{if(typeof vibrar==="function")vibrar(25);}catch(e){}};
+    const accion=(a,extra={})=>{mandar({...extra,t:"accion",a});try{if(typeof vibrar==="function")vibrar(25);}catch(e){}};
     function pintarPuzzle(c,cab,soyMando){
       const menu=soyMando?'<button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>':"";
       const enlazarMenu=()=>{const b=raiz.querySelector("#tlMenu");if(b)b.onclick=()=>{if(confirm("¿Volver al menú? El puzzle queda guardado en la tele."))accion("menu");};};
@@ -977,6 +1047,30 @@
       try{const r=new Ctor();r.lang="es-UY";r.onstart=()=>{dcPermiso=true;try{localStorage.setItem("gya_tele_mic","1");}catch(e){}try{r.abort();}catch(e){}pantallaPintada="";pintar();};
         r.onerror=e=>{if(["not-allowed","service-not-allowed"].includes(e.error))alert("El celular no dio permiso al micrófono. Habilitalo en los permisos del navegador.");};r.start();}catch(e){}
     }
+    function pintarMimica(c,cab,soyMando){
+      const menu=`<button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>`;
+      const enlazarMenu=()=>{const b=raiz.querySelector("#tlMenu");if(b)b.onclick=()=>{if(confirm("¿Volver al menú?"))accion("menu");};};
+      if(c.fase==="jugando"||c.fase==="cuenta"){
+        if(c.adivina===yo){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🙈 ¡Te toca adivinar!</h2><p>Ponete <b>de espaldas a la tele</b> y no la mires.<br>Decí en voz alta lo que te parece que hacen.</p><p class="tl-cel-letra">✔ ${c.ok}</p></div>`;return;}
+        raiz.innerHTML=cab+`<div class="tl-cel-caja tl-qs-cel"><p>Adivina <b>${esc(c.nombreAdivina)}</b> · ✔ ${c.ok} · ⏭ ${c.pasos}</p>
+          <button type="button" class="tl-qs-btn tl-qs-ok" id="tlMmOk" ${c.fase!=="jugando"?"disabled":""}>✔ ¡ADIVINÓ!</button>
+          <button type="button" class="tl-qs-btn tl-qs-paso" id="tlMmPaso" ${c.fase!=="jugando"?"disabled":""}>⏭ PASAR</button>
+          ${soyMando?`<button type="button" class="tl-boton tl-chico" id="tlMmFin">⏹ Terminar este turno</button>`:""}</div>`;
+        raiz.querySelector("#tlMmOk").onclick=()=>accion("mm_ok",{i:c.i});raiz.querySelector("#tlMmPaso").onclick=()=>accion("mm_paso",{i:c.i});
+        raiz.querySelector("#tlMmFin")?.addEventListener("click",()=>accion("mm_terminar"));return;}
+      if(!soyMando){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎭 Mímica</h2><p>Mirá la tele 📺</p><button type="button" class="tl-boton" id="tlTomar">Tomar el control</button></div>`;raiz.querySelector("#tlTomar").onclick=()=>mandar({t:"tomar"});return;}
+      if(c.fase==="resumen"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏱ ¡Tiempo!</h2><p>${esc(c.nombreAdivina)} adivinó ${c.ok}</p><button type="button" class="tl-boton tl-oro" id="tlMmSig">${c.ultimo?"🏆 Ver ganador":"▶ Siguiente"}</button>${menu}</div>`;
+        raiz.querySelector("#tlMmSig").onclick=()=>accion("mm_siguiente");enlazarMenu();return;}
+      if(c.fase==="fin"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🏆 ¡Terminó!</h2><button type="button" class="tl-boton tl-oro" id="tlMmOtra">🔄 Jugar otra vez</button>${menu}</div>`;
+        raiz.querySelector("#tlMmOtra").onclick=()=>accion("mm_config");enlazarMenu();return;}
+      raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎭 Mímica</h2><p>Juegan todos los de la sala (${c.jugadores}). Cada uno, de espaldas a la tele; gana el que adivina más.</p>
+        <p>Frases</p><div class="tl-dc-opciones">${c.niveles.map(([id,n])=>`<button type="button" data-nivel="${id}" class="${c.nivel===id?"tl-pz-activo":""}">${n}</button>`).join("")}</div>
+        <p>Tiempo de cada uno</p><div class="tl-dc-opciones">${c.tiempos.map(t=>`<button type="button" data-t="${t}" class="${c.tiempo===t?"tl-pz-activo":""}">${t} s</button>`).join("")}</div>
+        <button type="button" class="tl-boton tl-oro" id="tlMmEmpezar" ${c.jugadores<2?"disabled":""}>▶ Empezar</button>${c.jugadores<2?"<p>Hacen falta al menos 2 celulares en la sala.</p>":""}${menu}</div>`;
+      raiz.querySelectorAll("[data-nivel]").forEach(b=>b.onclick=()=>accion("mm_nivel",{nivel:b.dataset.nivel}));
+      raiz.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>accion("mm_tiempo",{seg:Number(b.dataset.t)}));
+      raiz.querySelector("#tlMmEmpezar").onclick=()=>accion("mm_empezar");enlazarMenu();
+    }
     /* ---------- ¿Qué número soy? / ¿Quién soy? ---------- */
     function pintarNumero(c,cab){
       raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🔢 ¿Qué número soy?</h2><p>El que juega, <b>de espaldas a la tele</b>.</p>
@@ -1009,7 +1103,7 @@
         <button type="button" class="tl-boton tl-oro" id="tlQsEmpezar">▶ Empezar</button><button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button></div>`;
       raiz.querySelectorAll("[data-quien]").forEach(b=>b.onclick=()=>accion("qs_quien",{quien:b.dataset.quien}));
       raiz.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>accion("qs_cat",{cat:b.dataset.cat}));
-      raiz.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>accion("qs_tiempo",{t:Number(b.dataset.t)}));
+      raiz.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>accion("qs_tiempo",{seg:Number(b.dataset.t)}));
       raiz.querySelector("#tlQsEmpezar").onclick=()=>accion("qs_empezar");raiz.querySelector("#tlMenu").onclick=()=>accion("menu");
     }
 
@@ -1028,6 +1122,7 @@
       if(c.pantalla==="rosco"){const debe=c.escucha===yo&&soyMando;if(debe&&dcRec&&dcLetra!==c.i){try{dcRec.abort();}catch(e){}}dcLetra=c.i;dcVoz(debe);}
       if(c.pantalla==="duelo"){pintarDuelo(c,cab,soyMando);return;}
       if(c.pantalla==="quien"){pintarQuien(c,cab,soyMando);return;}
+      if(c.pantalla==="mimica"){pintarMimica(c,cab,soyMando);return;}
       if(c.pantalla==="numero"&&soyMando){pintarNumero(c,cab);return;}
       if(!soyMando){
         const mando=(m.jug.find(j=>j.pid===m.mando)||{}).n||"otro";
