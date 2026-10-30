@@ -2022,3 +2022,7 @@ Fecha: 31/10/2026 — El botón 📺 del inicio (solo Gonzalo) ahora va directo 
 ```text
 Fecha: 31/10/2026 — El botón 📺 del inicio (solo Gonzalo) volvió a abrir la ventana «Jugar en la tele» (Gonzalo: "volvé a como estaba"): Transmitir a la tele por Chromecast (la tele abre la sala sola y el celular entra sin código), «Con un código» (girayadivina.com/tele) y cómo duplicar la pantalla. tele.js v21, sw v592.
 ```
+
+```text
+Fecha: 31/10/2026 — El 📺 del inicio (solo Gonzalo) va directo a girayadivina.com/tele (Gonzalo: "apretar el ícono va a /tele, miro el cel, me uno a lo que dice la tele y arranco a jugar"). Flujo: en la tele girayadivina.com/tele → «Esta pantalla es la tele» (muestra el código); en el celular 📺 → nombre + código → menú de juegos. La ventana de Chromecast quedó guardada en Tele.compartirPantalla. tele.js v22, sw v593.
+```
