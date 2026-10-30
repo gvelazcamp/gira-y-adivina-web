@@ -95,7 +95,7 @@
       if(m.t==="hola"){
         const n=limpio(m.n,14)||"Jugador";let j=T.jug.find(x=>x.pid===m.pid),cambio=false;
         if(!j){if(T.jug.length>=8)return;j={pid:m.pid,n};T.jug.push(j);sonar(880,.12,"triangle",.06);cambio=true;}
-        if(j.n!==n){j.n=n;cambio=true;}j.visto=Date.now();if(!T.mando||!T.jug.some(x=>x.pid===T.mando)){T.mando=m.pid;cambio=true;}
+        if(j.n!==n){j.n=n;cambio=true;}if(m.pj==="hombre"||m.pj==="mujer")j.pj=m.pj;j.visto=Date.now();if(!T.mando||!T.jug.some(x=>x.pid===T.mando)){T.mando=m.pid;cambio=true;}
         if(cambio){pintar();difundir();}return;
       }
       const j=T.jug.find(x=>x.pid===m.pid);if(!j)return;j.visto=Date.now();
@@ -131,7 +131,8 @@
           <p class="tl-paso">En el celular entrá a</p><p class="tl-url">girayadivina.com/tele</p>
           <p class="tl-paso">y poné el código</p><div class="tl-codigo">${cod}</div>
           <ul class="tl-jugadores">${jug}</ul>
-          ${T.mando?`<p class="tl-ayuda">🎮 ${esc(nombreMando())} elige el juego desde su celular (o con el control remoto).</p>`:""}</section>
+          ${T.mando?`<p class="tl-ayuda">🎮 ${esc(nombreMando())} elige el juego desde su celular (o con el control remoto).</p>`:""}
+          ${navigator.userActivation&&!navigator.userActivation.hasBeenActive?`<p class="tl-ayuda tl-sonido">🔊 Para que suene la música y la voz de Giro: tocá la tele o apretá OK en el control una vez.</p>`:""}</section>
         <section class="tl-juegos">${JUEGOS.map((j,i)=>`<button type="button" class="tl-tarjeta${j.ok?"":" tl-pronto"}" data-j="${j.id}" ${j.ok?"":"disabled"}><img src="${j.icono}" alt="" onerror="this.style.visibility='hidden'"><b>${esc(j.nombre)}</b><small>${esc(j.desc)}</small></button>`).join("")}</section></div>`;
       raiz.querySelectorAll(".tl-tarjeta").forEach(b=>b.onclick=()=>{if(!T.jug.length){avisoTele("Primero uní un celular con el código 📱");return;}elegir(b.dataset.j);});
       const prim=raiz.querySelector(".tl-tarjeta:not([disabled])");if(prim&&!raiz.contains(document.activeElement))prim.focus({preventScroll:true});
@@ -144,14 +145,17 @@
       const paso=direction==="right"||direction==="down"?1:direction==="left"||direction==="up"?-1:0;
       if(paso)bs[(i<0?0:i+paso+bs.length)%bs.length].focus();
     };
-    window.gyaTVBack=()=>{if(T.fase!=="juego")return false;volverMenu();return true;};
+    const showGiro=()=>!!document.querySelector(".grp-apertura,.grp-overlay");
+    window.gyaTVBack=()=>{if(showGiro()){try{window.GiroRoscoPiloto.avanzar();}catch(e){}return true;}if(T.fase!=="juego")return false;volverMenu();return true;};
     /* Control remoto: flechas mueven entre botones, Enter elige (lo hace el navegador). */
     document.addEventListener("keydown",e=>{
-      if(e.key==="Backspace"||e.key==="Escape"){if(T.fase==="juego"){e.preventDefault();volverMenu();}return;}
+      if(e.key==="Backspace"||e.key==="Escape"){if(showGiro())return;if(T.fase==="juego"){e.preventDefault();volverMenu();}return;}
       const direction={ArrowRight:"right",ArrowDown:"down",ArrowLeft:"left",ArrowUp:"up"}[e.key];
       if(direction){e.preventDefault();window.gyaTVRemote(direction);}
     });
     pintar();
+    /* El navegador no deja sonar música hasta el primer toque: al tocar, se saca el aviso. */
+    ["pointerdown","keydown"].forEach(ev=>document.addEventListener(ev,()=>{if(T.fase==="menu")setTimeout(pintar,50);},{once:true}));
     conectar(cod,()=>{difundir();setInterval(difundir,2500);},()=>{avisoTele("No se pudo conectar. Revisá el internet de la tele y recargá.");},recibir);
   }
 
@@ -466,6 +470,16 @@
   }
 
   /* ---------- Rosco: juega uno, los demás miran ---------- */
+  /* Show de Giro (giro-rosco-piloto.js, el mismo del Rosco del celular): se carga al elegir el Rosco. */
+  function cargarGiro(cb){
+    if(window.GiroRoscoPiloto){cb(true);return;}
+    if(!document.querySelector('link[data-giro-rosco]')){const l=document.createElement("link");l.rel="stylesheet";l.href="giro-rosco-piloto.css?v=19";l.dataset.giroRosco="1";document.head.appendChild(l);}
+    let sc=document.querySelector('script[data-giro-rosco]');
+    if(!sc){sc=document.createElement("script");sc.src="giro-rosco-piloto.js?v=28";sc.async=true;sc.dataset.giroRosco="1";document.head.appendChild(sc);}
+    let listo=false;const fin=ok=>{if(listo)return;listo=true;cb(ok&&!!window.GiroRoscoPiloto);};
+    sc.addEventListener("load",()=>fin(true),{once:true});sc.addEventListener("error",()=>fin(false),{once:true});setTimeout(()=>fin(!!window.GiroRoscoPiloto),8000);
+  }
+  let giroAperturaVista=false;
   function juegoRosco(T,actualizar){
     const CANT=20,SEGUNDOS=160,LETRAS="ABCDEFGHIJLMNOPQRSTUVYZ";
     const norm=s=>sinTilde(s).replace(/\s+/g,"");
@@ -483,44 +497,90 @@
       Vistas.guardar("rosco",vistas);return items;
     }
     const items=armar(),est=items.map(()=>"pendiente"),resp=items.map(()=>"");
-    let actual=0,tiempo=SEGUNDOS*1000,fase="jugando",ultimo=null,cambio=0,angPrevio=0;
+    let actual=0,tiempo=SEGUNDOS*1000,fase="show",ultimo=null,cambio=0,angPrevio=0,muerto=false,etapaPrev="",etapaT=0;
+    const G=()=>window.GiroRoscoPiloto;
+    const jugador=()=>T.jug.find(j=>j.pid===T.mando)||{};
+    const aJugar=()=>{if(muerto||fase!=="show")return;fase="jugando";actualizar();};
+    /* Apertura con música → Giro presenta → participante en su atril → partida en el estudio. En la revancha, sin la apertura. */
+    cargarGiro(ok=>{
+      if(muerto)return;
+      if(!ok||!G().habilitado()){aJugar();return;}
+      const presentar=()=>{if(muerto)return;if(!G().presentarSolo(aJugar,{nombre:jugador().n||"Jugador",personaje:jugador().pj||""}))aJugar();};
+      if(giroAperturaVista){presentar();return;}
+      giroAperturaVista=true;if(!G().mostrarInicio(presentar))aJugar();
+    });
+    const reaccionar=tipo=>{try{const aro=document.querySelector("#teleTV .tl-aro");if(aro&&G())G().reaccion(tipo,aro);}catch(e){}};
     const pend=()=>est.map((s,i)=>s==="pendiente"?i:-1).filter(i=>i>=0);
     function avanzar(){const p=pend();if(!p.length){terminar();return;}actual=p.find(i=>i>actual)??p[0];}
-    function terminar(){if(fase==="fin")return;fase="fin";const ok=est.filter(s=>s==="ok").length;
+    function terminar(){if(fase==="fin"||fase==="cierre")return;const ok=est.filter(s=>s==="ok").length,mal=est.filter(s=>s==="mal").length;
       try{const r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");if(ok>(r.rosco||0)){r.rosco=ok;localStorage.setItem("gya_tele_records",JSON.stringify(r));}}catch(e){}
-      sfx(ok>=items.length/2?"aplausos":"abucheo");actualizar();}
+      sfx(ok>=items.length/2?"aplausos":"abucheo");
+      /* Cierre en el estudio (escena de ganador o de revancha con la voz de Giro); después, el resultado. */
+      if(G()&&G().habilitado()&&G().mostrarFinal({aciertos:ok,errores:mal,total:items.length,puntos:ok*10,estudio:true},()=>{if(!muerto&&fase==="cierre"){fase="fin";actualizar();}})){fase="cierre";actualizar();return;}
+      fase="fin";actualizar();}
     function accion(m){
+      if(m.a==="rs_seguir"){if(G()&&(fase==="show"||fase==="cierre"))G().avanzar();return;}
+      if(fase==="show"||fase==="cierre")return;
       if(fase==="fin"){if(m.a==="otra")T.otra();return;}
-      if(m.a==="pasar"){ultimo={i:actual,tipo:"paso"};cambio=Date.now();sonar(520,.08,"sine",.05);avanzar();actualizar();return;}
-      if(m.a==="responder"){const txt=limpio(m.txt,40);if(!txt)return;const d=items[actual],ok=vale(d,norm(txt));
-        est[actual]=ok?"ok":"mal";resp[actual]=txt;ultimo={i:actual,tipo:ok?"ok":"mal",palabra:d.palabra};cambio=Date.now();
-        if(ok){sonar(720,.13,"triangle",.08);setTimeout(()=>sonar(980,.2,"sine",.09),120);}else sonar(180,.3,"sawtooth",.05);
-        avanzar();actualizar();}
+      if(m.a==="pasar"){pasarLetra();return;}
+      if(m.a==="responder"){const txt=limpio(m.txt,40);if(txt)responder(txt);return;}
+      if(m.a==="dc_voz"){vozCelular(m.l);return;}
     }
-    function tic(dt){if(fase!=="jugando")return;tiempo-=dt;if(tiempo<=0){tiempo=0;terminar();return;}
+    function pasarLetra(){vozDesde=Date.now()+1200;ultimo={i:actual,tipo:"paso"};cambio=Date.now();sonar(520,.08,"sine",.05);avanzar();actualizar();if(fase==="jugando")reaccionar("pasar");}
+    function responder(txt){
+      const d=items[actual],ok=vale(d,norm(txt));vozDesde=Date.now()+1200;
+      est[actual]=ok?"ok":"mal";resp[actual]=txt;ultimo={i:actual,tipo:ok?"ok":"mal",palabra:d.palabra,dijo:txt};cambio=Date.now();
+      if(ok){sonar(720,.13,"triangle",.08);setTimeout(()=>sonar(980,.2,"sine",.09),120);}else sonar(180,.3,"sawtooth",.05);
+      avanzar();actualizar();if(fase==="jugando")reaccionar(ok?"acierto":"error");
+    }
+    /* Responder hablando al celular (como el Rosco del celular): el acierto se toma
+       al instante (aun parcial), «Pasar» pasa y una respuesta final equivocada es error
+       en el acto. Durante 1,2 s después de cada respuesta se ignora lo que llegue tarde. */
+    let vozDesde=0;
+    const INTRO=/^(?:(?:(?:la|mi)\s+)?(?:respuesta|palabra)\s+(?:es|ser[ií]a)|(?:yo\s+)?(?:creo|pienso)\s+que\s+es|(?:yo\s+)?digo|se\s+llama|(?:es|ser[ií]a))\s+/i;
+    function vozCelular(lista){
+      if(fase!=="jugando"||Date.now()<vozDesde||!Array.isArray(lista))return;
+      for(const res of lista.slice(0,5)){
+        const alts=(Array.isArray(res&&res.alts)?res.alts:[]).slice(0,5).map(x=>limpio(String(x||"").replace(/[¿¡!?,.;:]+$/g,""),60)).filter(Boolean);if(!alts.length)continue;
+        const oi=document.querySelector("#tlOi");if(oi)oi.textContent="🎙 Oí: «"+alts[0]+"»";
+        if(alts.some(t=>["PASAPALABRA","PASAR","PASO","PASA"].includes(sinTilde(t).replace(/[^A-Z]/g,"")))){if(res.isFinal||sinTilde(alts[0]).replace(/[^A-Z]/g,"")==="PASAR"){pasarLetra();return;}continue;}
+        const d=items[actual],cands=alts.flatMap(t=>{const a=t.replace(INTRO,"");return[t,a,a.replace(/^(?:el|la|los|las|un|una)\s+/i,"")];});
+        const buena=cands.find(t=>vale(d,norm(t)));if(buena){responder(buena);return;}
+        if(res.isFinal){responder(alts[0]);return;}
+      }
+    }
+    /* Si nadie toca "Siguiente" en el celular, el show avanza solo. */
+    const ESPERA={giro:14000,participantes:12000,cierre:11000};
+    function tic(dt){
+      if(fase==="show"||fase==="cierre"){const e=G()&&G().etapa?G().etapa():"";if(e!==etapaPrev){etapaPrev=e;etapaT=0;}else etapaT+=dt;
+        if(ESPERA[e]&&etapaT>ESPERA[e]){etapaT=-1e9;G().avanzar();}return;}
+      if(fase!=="jugando")return;tiempo-=dt;if(tiempo<=0){tiempo=0;reaccionar("tiempo");terminar();return;}
       const r=T.g&&document.querySelector("#tlReloj");if(r)r.textContent=reloj(tiempo);}
     const reloj=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0");};
     const regla=d=>(norm(d.palabra)[0]===d.letra?"Empieza con la ":"Contiene la ")+d.letra;
     function pintar(raiz,quien){
       const n=items.length,ok=est.filter(s=>s==="ok").length,mal=est.filter(s=>s==="mal").length;
-      if(fase==="fin"){
+      if(fase==="fin"||fase==="cierre"){
         raiz.innerHTML=`<div class="tl-centro tl-fin"><h1>${ok>=n*.7?"¡Tremendo rosco! 🎉":ok>=n/2?"¡Muy bien! 👏":"¡Se terminó!"}</h1>
           <div class="tl-res"><span class="tl-ok">✓ ${ok} aciertos</span><span class="tl-mal">✘ ${mal} errores</span><span>⏱ ${reloj(SEGUNDOS*1000-tiempo)}</span></div>
-          <div class="tl-palabras">${items.map((d,i)=>`<span class="tl-${est[i]}"><b>${d.letra}</b> ${esc(d.palabra.toLowerCase())}</span>`).join("")}</div>
+          <div class="tl-planilla">${items.map((d,i)=>`<div class="tl-pl-fila tl-pl-${est[i]}"><b>${d.letra}</b><span>${esc(d.palabra)}</span><small>${est[i]==="ok"?"✓ acertó":est[i]==="mal"?"✘ dijo «"+esc(resp[i])+"»":"⏭ sin responder"}</small></div>`).join("")}</div>
           <p class="tl-ayuda">${quien?esc(quien)+": desde el celular podés jugar otra vez o volver al menú.":""}</p></div>`;return;}
       const d=items[actual],paso=360/n;let ang=-actual*paso;while(ang-angPrevio>180)ang-=360;while(angPrevio-ang>180)ang+=360;
       const letras=items.map((x,i)=>`<div class="tl-rl tl-${est[i]}${i===actual?" tl-actual":""}" style="--p:${i*paso}deg">${x.letra}</div>`).join("");
-      const flash=ultimo&&Date.now()-cambio<1800?(ultimo.tipo==="ok"?`<div class="tl-flash tl-ok">¡Bien! ✓</div>`:ultimo.tipo==="mal"?`<div class="tl-flash tl-mal">Era ${esc(ultimo.palabra)}</div>`:`<div class="tl-flash tl-paso">Pasó ⏭</div>`):"";
-      raiz.innerHTML=`<div class="tl-rosco">
+      const flash=ultimo&&Date.now()-cambio<1800?(ultimo.tipo==="ok"?`<div class="tl-flash tl-ok">✓ ¡Bien! «${esc(ultimo.palabra)}»</div>`:ultimo.tipo==="mal"?`<div class="tl-flash tl-mal">✘ Dijo «${esc(ultimo.dijo||"")}» · Era ${esc(ultimo.palabra)}</div>`:`<div class="tl-flash tl-paso">Pasó ⏭</div>`):"";
+      raiz.innerHTML=`<div class="tl-rosco tl-estudio">
         <div class="tl-aro"><div class="tl-giro" style="--a:${angPrevio}deg">${letras}</div>
           <div class="tl-medio"><div class="tl-letra">${d.letra}</div><div class="tl-regla">${regla(d)}</div></div></div>
         <aside class="tl-panel"><p class="tl-quien">🎮 Juega ${esc(quien||"…")}</p>
           <div class="tl-def">${esc(d.definicion)}</div>
-          <div class="tl-hud"><span class="tl-ok">✓ ${ok}</span><span class="tl-mal">✘ ${mal}</span><span id="tlReloj">${reloj(tiempo)}</span></div>${flash}</aside></div>`;
+          <div class="tl-hud"><span class="tl-ok">✓ ${ok}</span><span class="tl-mal">✘ ${mal}</span><span id="tlReloj">${reloj(tiempo)}</span></div>
+          <p class="tl-oi" id="tlOi">🎙 Respondé hablando al celular o escribiendo · «Pasar» para pasar</p>${flash}</aside></div>`;
       /* El rosco gira hasta poner adelante la letra del turno. */
       const g=raiz.querySelector(".tl-giro");requestAnimationFrame(()=>requestAnimationFrame(()=>{if(g)g.style.setProperty("--a",ang+"deg");}));angPrevio=ang;
     }
-    return{accion,tic,pintar,fin(){},cel(){return fase==="fin"?{pantalla:"fin",juego:"rosco",resumen:est.filter(s=>s==="ok").length+" aciertos"}:{pantalla:"rosco",letra:items[actual].letra,regla:regla(items[actual])};}};
+    return{accion,tic,pintar,fin(){muerto=true;try{if(G())G().cerrar();}catch(e){}},cel(){
+      if(fase==="show"||fase==="cierre")return{pantalla:"rosco_show",fase};
+      return fase==="fin"?{pantalla:"fin",juego:"rosco",resumen:est.filter(s=>s==="ok").length+" aciertos"}:{pantalla:"rosco",letra:items[actual].letra,regla:regla(items[actual]),escucha:fase==="jugando"?T.mando:null,i:actual};}};
   }
 
   /* ---------- Ahorcado: la partida como en el celular; el celular es el teclado ---------- */
@@ -624,7 +684,7 @@
     }
     function entrar(){
       raiz.innerHTML=`<div class="tl-cel-caja"><h2>Conectando con la tele…</h2><p>Código <b>${codCel}</b></p></div>`;
-      conectar(codCel,()=>{conectado=true;const h=()=>mandar({t:"hola",n:nombre});h();hola=setInterval(h,4000);
+      conectar(codCel,()=>{conectado=true;const h=()=>{let pj="";try{pj=localStorage.getItem("gya_giro_personaje")||"";}catch(e){}mandar({t:"hola",n:nombre,pj});};h();hola=setInterval(h,4000);
         setTimeout(()=>{if(!ultimo)raiz.innerHTML=`<div class="tl-cel-caja"><h2>No encuentro la tele 🤔</h2><p>Revisá que el código <b>${codCel}</b> sea el que muestra la tele y que la tele siga abierta.</p><button type="button" class="tl-boton" onclick="location.reload()">Probar de nuevo</button><a class="tl-boton tl-chico" href="tele/?cambiar=1">Usar otra tele</a></div>`;},12000);},
         ()=>{raiz.innerHTML=`<div class="tl-cel-caja"><h2>Sin conexión</h2><p>No se pudo conectar (${esc(window.gyaFalloConexion||"sin respuesta")}). Probá con datos del celular.</p><button type="button" class="tl-boton" onclick="location.reload()">Reintentar</button></div>`;},
         m=>{if(m.t==="estado"&&m.cod===codCel){ultimo=m;visto=Date.now();try{localStorage.setItem("gya_tele_vinculada",codCel);}catch(e){}pintar();}});
@@ -804,7 +864,7 @@
     }
 
     /* ---------- Duelo en la tele: este celular es el micrófono del jugador ---------- */
-    let dcRec=null,dcOyendo=false,dcDebe=false,dcUltimo="",dcEnvio=0,dcPermiso=(()=>{try{return localStorage.getItem("gya_tele_mic")==="1";}catch(e){return false;}})();
+    let dcRec=null,dcOyendo=false,dcDebe=false,dcLetra=-1,dcParcial=null,dcParcialT=null,dcUltimo="",dcEnvio=0,dcPermiso=(()=>{try{return localStorage.getItem("gya_tele_mic")==="1";}catch(e){return false;}})();
     function dcVoz(debe){
       dcDebe=debe;
       if(!debe){dcOyendo=false;if(dcRec){const r=dcRec;dcRec=null;try{r.abort();}catch(e){}}return;}
@@ -815,10 +875,14 @@
       r.onresult=e=>{if(dcRec!==r)return;const l=[];let hayFinal=false;
         for(let i=e.resultIndex;i<e.results.length;i++){const x=e.results[i];l.push({alts:Array.from(x).map(a=>String(a.transcript||"")),isFinal:!!x.isFinal});if(x.isFinal)hayFinal=true;}
         const txt=(l[l.length-1]?.alts[0]||"").trim();const el=raiz.querySelector("#tlDcOi");if(el&&txt)el.textContent="Oí: «"+txt+"»";
+        /* Android a veces deja la frase "a medio escribir" y nunca la cierra: si queda quieta 1,5 s, se manda como final. */
+        clearTimeout(dcParcialT);dcParcial=null;
+        if(!hayFinal&&txt){dcParcial=txt;dcParcialT=setTimeout(()=>{if(dcRec===r&&dcParcial===txt){dcParcial=null;mandar({t:"accion",a:"dc_voz",l:[{alts:[txt],isFinal:true}]});}},1500);}
         const ahora=Date.now();if(!hayFinal&&(txt===dcUltimo||ahora-dcEnvio<250))return;dcUltimo=txt;dcEnvio=ahora;
         mandar({t:"accion",a:"dc_voz",l});};
       r.onerror=e=>{if(dcRec!==r)return;if(["not-allowed","service-not-allowed"].includes(e.error)){dcPermiso=false;try{localStorage.removeItem("gya_tele_mic");}catch(x){}pantallaPintada="";}};
-      r.onend=()=>{if(dcRec!==r)return;dcRec=null;dcOyendo=false;if(dcDebe)setTimeout(()=>{if(dcDebe&&!dcRec)dcVoz(true);},300);};
+      r.onend=()=>{if(dcRec!==r)return;dcRec=null;dcOyendo=false;
+        clearTimeout(dcParcialT);if(dcParcial&&dcDebe){mandar({t:"accion",a:"dc_voz",l:[{alts:[dcParcial],isFinal:true}]});}dcParcial=null;if(dcDebe)setTimeout(()=>{if(dcDebe&&!dcRec)dcVoz(true);},300);};
       try{r.start();}catch(e){dcRec=null;}
     }
     function pintarDuelo(c,cab,soyMando){
@@ -919,7 +983,8 @@
       if(c.pantalla==="ruleta"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎡 La Ruleta</h2><p>La Ruleta tiene su propia entrada. Cuando la tele muestre el código nuevo, tocá acá y ponelo:</p><a class="tl-boton tl-oro" href="tv.html">Entrar a la Ruleta</a></div>`;return;}
       if(c.pantalla==="tutti"){pintarTutti(c,cab,soyMando);return;}
       if(c.pantalla==="puzzle"){pintarPuzzle(c,cab,soyMando);return;}
-      if(c.pantalla!=="duelo")dcVoz(false);
+      if(c.pantalla!=="duelo"&&c.pantalla!=="rosco")dcVoz(false);
+      if(c.pantalla==="rosco"){const debe=c.escucha===yo&&soyMando;if(debe&&dcRec&&dcLetra!==c.i){try{dcRec.abort();}catch(e){}}dcLetra=c.i;dcVoz(debe);}
       if(c.pantalla==="duelo"){pintarDuelo(c,cab,soyMando);return;}
       if(c.pantalla==="quien"){pintarQuien(c,cab,soyMando);return;}
       if(c.pantalla==="numero"&&soyMando){pintarNumero(c,cab);return;}
@@ -931,21 +996,25 @@
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>¿A qué juegan?</h2><div class="tl-cel-juegos">${(c.juegos||[]).map(j=>`<button type="button" class="tl-boton${j.ok?"":" tl-pronto"}" data-j="${esc(j.id)}" ${j.ok?"":"disabled"}>${esc(j.nombre)}${j.ok?"":" · pronto"}</button>`).join("")}</div></div>`;
         raiz.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>accion("elegir",{juego:b.dataset.j}));return;}
       const menu=`<button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>`;
+      if(c.pantalla==="rosco_show"){
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎬 ${c.fase==="cierre"?"Giro cierra el programa":"Giro presenta el Rosco"}</h2><p>Mirá la tele 📺 · podés esperar o pasar a lo siguiente.</p><button type="button" class="tl-boton tl-oro" id="tlSeguir">⏭ Siguiente</button>${menu}</div>`;
+        raiz.querySelector("#tlSeguir").onclick=()=>accion("rs_seguir");raiz.querySelector("#tlMenu").onclick=()=>{if(confirm("¿Volver al menú?"))accion("menu");};return;}
       if(c.pantalla==="fin"){
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>¡Terminó! 🎉</h2><p>${esc(c.resumen||"")}</p><button type="button" class="tl-boton tl-oro" id="tlOtra">Jugar otra vez</button>${menu}</div>`;
         raiz.querySelector("#tlOtra").onclick=()=>accion("otra");raiz.querySelector("#tlMenu").onclick=()=>accion("menu");return;}
       if(c.pantalla==="rosco"||c.pantalla==="cien"){
         const rosco=c.pantalla==="rosco";
-        raiz.innerHTML=cab+`<div class="tl-cel-caja">${rosco?`<div class="tl-cel-letra">${esc(c.letra)}</div><p>${esc(c.regla||"")}</p>`:`<p class="tl-cel-preg">${esc(c.pregunta||"")}</p>`}
+        raiz.innerHTML=cab+`<div class="tl-cel-caja">${rosco?`<div class="tl-cel-letra">${esc(c.letra)}</div><p>${esc(c.regla||"")}</p>
+          ${dcPermiso?`<div class="tl-dc-mic${c.escucha===yo?" tl-dc-on":""}" id="tlDcMic">${dcOyendo?"🎙 Te escucho · decí la palabra o «Pasar»":"🎙 Activando micrófono…"}</div><p class="tl-dc-oi" id="tlDcOi"></p>`:`<button type="button" class="tl-boton tl-oro" id="tlDcPermiso">🎙 Responder hablando</button>`}`:`<p class="tl-cel-preg">${esc(c.pregunta||"")}</p>`}
           <input id="tlTexto" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${rosco?"Tu respuesta":"Lo que dice el grupo"}" ${!rosco&&!c.puede?"disabled":""}>
           <button type="button" class="tl-boton tl-oro" id="tlEnviar" ${!rosco&&!c.puede?"disabled":""}>Enviar</button>
           ${rosco?`<button type="button" class="tl-boton" id="tlPasar">⏭ Pasar</button>`:""}${menu}</div>`;
         const t=raiz.querySelector("#tlTexto");if(escribiendo)t.value=escribiendo;
         const enviar=()=>{const v=t.value.trim();if(!v)return;accion("responder",{txt:v});t.value="";t.focus();};
         raiz.querySelector("#tlEnviar").onclick=enviar;t.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();enviar();}};
-        if(rosco)raiz.querySelector("#tlPasar").onclick=()=>{accion("pasar");t.value="";t.focus();};
+        if(rosco){raiz.querySelector("#tlPasar").onclick=()=>{accion("pasar");t.value="";};raiz.querySelector("#tlDcPermiso")?.addEventListener("click",pedirPermisoDc);}
         raiz.querySelector("#tlMenu").onclick=()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");};
-        if(c.puede!==false)t.focus();return;}
+        if(c.puede!==false&&!(rosco&&dcPermiso))t.focus();return;}
       if(c.pantalla==="ahorcado"){
         const us=new Set(c.usadas||[]);
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>${c.puede?"Elegí una letra":"Mirá la tele…"}</h2><div class="tl-cel-teclado">${[...(c.letras||"")].map(l=>`<button type="button" data-l="${l}" ${us.has(l)||!c.puede?"disabled":""}>${l}</button>`).join("")}</div>${menu}</div>`;
