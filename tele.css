@@ -172,7 +172,7 @@ html.tele-modo body{background:#160B24}
 .tl-codigo{font-size:calc(var(--u)*5.2);letter-spacing:calc(var(--u)*.4);margin:0}
 .tl-jugadores li{font-size:calc(var(--u)*1.2);padding:calc(var(--u)*.4) calc(var(--u)*1)}
 .tl-sala .tl-ayuda{font-size:calc(var(--u)*1.1);margin:0}
-.tl-juegos{gap:calc(var(--u)*1.1);align-content:center}
+.tl-juegos{grid-template-columns:repeat(4,1fr);gap:calc(var(--u)*1.1);align-content:center}
 .tl-tarjeta{padding:calc(var(--u)*.8);gap:calc(var(--u)*.25);border-radius:calc(var(--u)*1.4)}
 .tl-tarjeta img{width:calc(var(--u)*8);height:calc(var(--u)*6)}
 .tl-tarjeta b{font-size:calc(var(--u)*1.45)}.tl-tarjeta small{font-size:calc(var(--u)*.9);line-height:1.2}

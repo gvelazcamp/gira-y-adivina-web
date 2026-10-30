@@ -2058,3 +2058,7 @@ Fecha: 30/10/2026 — Voz del locutor en la intro de la tele (grabada por Gonzal
 ```text
 Fecha: 30/10/2026 — Intro de la tele: se sacó el cartel negro "esto es…" (Gonzalo: "esto sacalo por otro juego más") y en su lugar va un corte más de ¿Quién soy? (tarjeta "China Zorrilla"); la voz del locutor sigue diciendo "esto es…" encima. Video ?v=3, giro-rosco-piloto.js v33, rosco-rioplatense.js v76, tele.js v28, sw v600.
 ```
+
+```text
+Fecha: 30/10/2026 — Menú de juegos de la tele en 4 columnas (antes 3): con 10 juegos la última fila (¿Qué número soy?) quedaba cortada abajo (Gonzalo: "ajustá los logos de la pantalla para que entre Qué número soy"). Probado en 1366×600, 1280×720 y 1920×1080: entra todo sin deslizar. tele.css v16, sw v601.
+```
