@@ -2062,3 +2062,7 @@ Fecha: 30/10/2026 — Intro de la tele: se sacó el cartel negro "esto es…" (G
 ```text
 Fecha: 30/10/2026 — Menú de juegos de la tele en 4 columnas (antes 3): con 10 juegos la última fila (¿Qué número soy?) quedaba cortada abajo (Gonzalo: "ajustá los logos de la pantalla para que entre Qué número soy"). Probado en 1366×600, 1280×720 y 1920×1080: entra todo sin deslizar. tele.css v16, sw v601.
 ```
+
+```text
+Fecha: 30/10/2026 — Intro de la tele: las tomas de los juegos (Rosco, 100 Rioplatenses, Mímica, ¿Quién soy?) se veían cortadas por el zoom (el Rosco perdía letras). Ahora cada toma entra entera (escala 0,95→1, bordes redondeados). Video ?v=4, giro-rosco-piloto.js v34, rosco-rioplatense.js v77, tele.js v29, sw v602.
+```
