@@ -2006,3 +2006,7 @@ Fecha: 31/10/2026 — Mímica: solo frases cortas, en el celular y en la tele (G
 ```text
 Fecha: 31/10/2026 — Mímica: frases todavía más cortas, sin artículos (Gonzalo: "que no haya un, la y esas cosas: Cebar Mate, Tender Ropa"). window.mimicaCortas (mimica.js, la usa también la tele) saca "un, una, unos, unas, el, la, los, las, al" y la "a" del medio, sin repetir, y deja las de hasta 3 palabras: CEBAR MATE, TENDER ROPA, PASEAR PERRO, JUGAR PLAYSTATION, REY LEÓN, CASA DE PAPEL, PEREZOSO… Quedan Fácil 77, Media 69, Difícil 57 (antes 67/54/48: al sacar artículos entran más). mimica-datos.js no se tocó (se acorta al jugar). mimica v9, tele.js v17, sw v588.
 ```
+
+```text
+Fecha: 31/10/2026 — Mímica (celular y tele): sin elegir dificultad y títulos completos (Gonzalo). (1) Ya no se elige Fácil/Media/Difícil: window.mimicaMazo arma un mazo mezclado e intercalado (una fácil, una media, una difícil…) para que a nadie le toquen todas difíciles seguidas; cada frase vale 1 punto. En el celular las metas pasaron a 5/10/15 puntos (antes 10/20/30, cuando valían +1/+2/+3) y se sacó la elección de dificultad del inicio; el juego sigue siendo de dos equipos. En la tele se sacó el selector de frases. (2) Las películas y series (principio de MIMICA_MEDIA, hasta "SALTO CON GARROCHA") quedan con su nombre completo (EL PADRINO, LOS INCREÍBLES); al resto se le sacan los artículos. Siguen hasta 3 palabras (199 frases). mimica v10, tele.js v18, sw v589.
+```
