@@ -117,9 +117,10 @@
     caja.append(h,p,fila);capa.appendChild(caja);document.body.appendChild(capa);
     eleccion={capa};fila.querySelector("button").focus({preventScroll:true});
   }
-  function mostrarParticipantes(modo,rival,siguiente){
+  function mostrarParticipantes(modo,rival,siguiente,opc){
     cortarParticipantes();
-    const nombre=miNombre(),est=ESTUDIOS[modo]||ESTUDIOS.solo,yo=miPersonaje()||"hombre",otro=yo==="mujer"?"hombre":"mujer";
+    /* opc (Juegos en la tele): nombre y personaje del jugador del celular. */
+    const nombre=String(opc&&opc.nombre||"").trim().slice(0,14)||miNombre(),est=ESTUDIOS[modo]||ESTUDIOS.solo,yo=(opc&&(opc.personaje==="mujer"||opc.personaje==="hombre")?opc.personaje:"")||miPersonaje()||"hombre",otro=yo==="mujer"?"hombre":"mujer";
     rival=String(rival||"").trim().slice(0,14);
     const capa=document.createElement("div");capa.className="grp-apertura grp-part grp-part-"+(modo==="duelo"?"duelo":"solo");
     capa.setAttribute("role","dialog");capa.setAttribute("aria-modal","true");capa.setAttribute("aria-label","Presentación de los participantes");
@@ -147,7 +148,7 @@
     const cartel=document.createElement("div");cartel.className="grp-part-cartel";
     const ir=document.createElement("button");ir.type="button";ir.className="grp-boton grp-accion";ir.textContent="¡A jugar!";
     cartel.append(dice,ir);cuadro.appendChild(cartel);
-    if(modo!=="duelo"){
+    if(modo!=="duelo"&&!opc){
       const cambiar=document.createElement("button");cambiar.type="button";cambiar.className="grp-part-cambiar";cambiar.textContent="👤 Cambiar personaje";
       cambiar.addEventListener("click",()=>elegirPersonaje(()=>mostrarParticipantes(modo,rival,siguiente)));
       cuadro.appendChild(cambiar);
@@ -209,9 +210,9 @@
     Object.values(REACCIONES).forEach(r=>r.poses.forEach(p=>cargarImagenReaccion(BASE+p)));
   }
   const ultimaFrase={};let reacAudio=null,reacTimer=null,reacSolicitud=0;
-  function reaccion(tipo){
+  function reaccion(tipo,contenedor){
     const r=REACCIONES[tipo];if(!r||!habilitado())return;
-    const rueda=document.querySelector(".rr-game.rr-estudio .rr-rueda");if(!rueda)return;
+    const rueda=contenedor||document.querySelector(".rr-game.rr-estudio .rr-rueda");if(!rueda)return;
     let opciones=r.frases.filter(f=>f!==ultimaFrase[tipo]);if(!opciones.length)opciones=r.frases;
     const frase=opciones[Math.floor(Math.random()*opciones.length)];ultimaFrase[tipo]=frase;
     rueda.querySelector(".grp-reac")?.remove();clearTimeout(reacTimer);
@@ -229,9 +230,10 @@
     try{if(reacAudio)reacAudio.pause();reacAudio=new Audio(BASE+"voz/reacciones/giro-"+frase+".mp3");reacAudio.play().catch(()=>{});}catch(e){}
   }
   /* Las llama el Rosco al tocar Jugar (solo) — siguiente() arranca la partida. */
-  function presentarSolo(siguiente){
+  function presentarSolo(siguiente,opc){
     if(!habilitado())return false;
     precargarReacciones();
+    if(opc)return mostrarParticipantes("solo","",siguiente,opc);
     if(!miPersonaje()){elegirPersonaje(()=>mostrarParticipantes("solo","",siguiente));return true;}
     return mostrarParticipantes("solo","",siguiente);
   }
@@ -377,12 +379,12 @@
     }
     return true;
   }
-  function mostrarInicio(){
+  function mostrarInicio(despues){
     if(!habilitado())return false;
-    mostrarApertura(presentarGiro);return true;
+    mostrarApertura(()=>presentarGiro(despues));return true;
   }
-  function presentarGiro(){
-    return presentar({
+  function presentarGiro(despues){
+    return presentar({continuar:typeof despues==="function"?despues:null,
       tipo:"inicio",
       titulo:"¡Bienvenidos al Rosco!",
       descripcion:"Giro presenta el desafío. Una letra, muchas categorías. Respondé las pistas, usá Pasar cuando lo necesites y completá la vuelta.",
@@ -397,7 +399,7 @@
      original del Rosco, que queda debajo. */
   let cierre=null;
   function cortarCierre(){if(!cierre)return;const c=cierre;cierre=null;c.capa.remove();document.removeEventListener("keydown",c.tecla);try{c.voz.pause();}catch(e){}}
-  function mostrarCierre(ok,errores,total,puntos){
+  function mostrarCierre(ok,errores,total,puntos,despues){
     cortarCierre();
     const perfecto=total>0&&ok===total,gano=total>0&&ok>=total/2;
     const capa=document.createElement("div");capa.className="grp-apertura grp-cierre grp-cierre-"+(gano?"victoria":"revancha");
@@ -415,13 +417,13 @@
     cartel.append(dice,ir);cuadro.append(fondo,caja,detalle,cartel);capa.appendChild(cuadro);document.body.appendChild(capa);
     const voz=new Audio(BASE+"voz/"+(perfecto?"giro-rosco-perfecto.mp3":gano?"giro-rosco-buena.mp3":"giro-rosco-revancha.mp3"));
     setTimeout(()=>{if(cierre&&cierre.capa===capa)voz.play().catch(()=>{});},500);
-    const terminar=()=>{if(!cierre||cierre.capa!==capa)return;capa.classList.add("grp-ap-fin");setTimeout(cortarCierre,650);};
+    const terminar=()=>{if(!cierre||cierre.capa!==capa)return;capa.classList.add("grp-ap-fin");setTimeout(cortarCierre,650);if(typeof despues==="function")despues();};
     const tecla=e=>{if(e.key==="Escape"||e.key==="Enter"){e.preventDefault();terminar();}};
     cierre={capa,tecla,voz};ir.addEventListener("click",terminar);document.addEventListener("keydown",tecla);
     ir.focus({preventScroll:true});return true;
   }
-  function mostrarFinal(resultado){
-    if(resultado&&resultado.estudio&&habilitado())return mostrarCierre(Number(resultado.aciertos)||0,Number(resultado.errores)||0,Number(resultado.total)||0,Number(resultado.puntos)||0);
+  function mostrarFinal(resultado,despues){
+    if(resultado&&resultado.estudio&&habilitado())return mostrarCierre(Number(resultado.aciertos)||0,Number(resultado.errores)||0,Number(resultado.total)||0,Number(resultado.puntos)||0,despues);
     const ok=Number(resultado&&resultado.aciertos)||0;
     const total=Number(resultado&&resultado.total)||0;
     const puntos=Number(resultado&&resultado.puntos)||0;
@@ -435,5 +437,12 @@
       imagen:perfecto?"festeja":ok?"presenta":"revancha"
     });
   }
-  window.GiroRoscoPiloto={mostrarInicio,mostrarFinal,presentarSolo,presentarDuelo,posLetra,reaccion,cerrar,habilitado};
+  /* Juegos en la tele: el celular con el control toca "Siguiente" y la tele avanza
+     la parte del show que esté a la vista (apertura, Giro, participantes o cierre). */
+  function avanzar(){
+    const b=document.querySelector(".grp-ap-saltar,.grp-part .grp-accion,.grp-cierre .grp-accion,.grp-overlay:not(.grp-saliendo) .grp-accion");
+    if(b&&!b.disabled){b.click();return true;}return false;
+  }
+  function etapa(){return apertura?"apertura":capa?"giro":participantes?"participantes":cierre?"cierre":eleccion?"eleccion":"";}
+  window.GiroRoscoPiloto={mostrarInicio,mostrarFinal,presentarSolo,presentarDuelo,posLetra,reaccion,cerrar,habilitado,avanzar,etapa};
 })();
