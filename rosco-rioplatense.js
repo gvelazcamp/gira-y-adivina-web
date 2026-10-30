@@ -174,9 +174,15 @@ const RoscoRioplatense=(()=>{
   function parcialAErrorVozG(){
     const p=vozParcialG;cancelarParcialVozG();
     if(!p||!vozG||vozLeyendoG||fase!=="resolver"||actual!==p.letra||vozGeneracionG!==p.generacion||vozErrorPendienteG)return;
-    vozErrorPendienteG={letra:p.letra,texto:p.texto,generacion:p.generacion};
-    mostrarEstadoVozG("Oí «"+p.texto.slice(0,30)+"» · si entendí mal, repetí ahora");
-    programarErrorVozG(2500);
+    errorVozYaG(p.texto);
+  }
+  /* Gonzalo (30/10/2026): "si dice mal es mal". Lo que se oye equivocado cuenta
+     como error en el acto, sin margen para repetir. */
+  function errorVozYaG(texto){
+    cancelarErrorVozG();vozSilenciosG=0;
+    if($("#rrEntrada").value.trim())return; // El jugador está escribiendo con teclado.
+    mostrarEstadoVozG("Oí «"+String(texto).slice(0,30)+"»");
+    $("#rrEntrada").value=texto;enviar();
   }
   function programarErrorVozG(ms){
     clearTimeout(vozErrorTimerG);
@@ -198,8 +204,8 @@ const RoscoRioplatense=(()=>{
     mostrarEstadoVozG("Micrófono apagado.");
   }
 
-  /* El acierto se acepta aun en parciales. Ante un resultado final incorrecto,
-     dar tiempo a corregir una transcripción equivocada antes de contar error. */
+  /* El acierto se acepta aun en parciales. Un resultado final incorrecto es
+     error al instante; un parcial incorrecto que queda quieto 1,5 s, también. */
   function procesarResultadoVozG(e){
     if(!vozG||vozLeyendoG||fase!=="resolver"||actual<0)return;
     const resultados=e.results||[];
@@ -243,28 +249,15 @@ const RoscoRioplatense=(()=>{
       });
       if(eco)continue;
       if(resultado.isFinal){
-        /* Android suele confundir palabras cortas como «untar» o «yuyo».
-           Si fue un error de transcripción, el jugador puede repetirla; si
-           no corrige, la respuesta oída cuenta como error igualmente. */
-        const texto=opciones[0].slice(0,60),letra=actual,generacion=vozGeneracionG;
-        cancelarParcialVozG();
-        if(vozErrorPendienteG?.letra===letra&&vozErrorPendienteG.generacion===generacion){
-          /* Ya hay un error esperando: lo nuevo que se oiga (ruido, "eh"…) no reinicia
-             la cuenta; si no corrige con la respuesta buena, el error llega igual. */
-          vozErrorPendienteG.texto=texto;continue;
-        }
-        cancelarErrorVozG();vozSilenciosG=0;
-        vozErrorPendienteG={letra,texto,generacion};
-        mostrarEstadoVozG("Oí «"+texto.slice(0,30)+"» · si entendí mal, repetí ahora");
-        programarErrorVozG(3000);
-        continue;
+        /* Respuesta final equivocada: error al instante (sin margen para repetir). */
+        errorVozYaG(opciones[0].slice(0,60));return;
       }
-      mostrarEstadoVozG("Oí «"+opciones[0].slice(0,45)+"» · seguí hablando");
+      mostrarEstadoVozG("Oí «"+opciones[0].slice(0,45)+"»");
       if(!vozErrorPendienteG){
         const texto=opciones[0].slice(0,60);
         if(!vozParcialG||vozParcialG.letra!==actual||vozParcialG.texto!==texto){
           vozParcialG={letra:actual,texto,generacion:vozGeneracionG};
-          clearTimeout(vozParcialTimerG);vozParcialTimerG=setTimeout(parcialAErrorVozG,2000);
+          clearTimeout(vozParcialTimerG);vozParcialTimerG=setTimeout(parcialAErrorVozG,1500);
         }
       }
     }
