@@ -637,34 +637,47 @@
       if(!libres.length){usadas=[...ya];libres=CIEN_PREGUNTAS.filter(p=>!ya.includes(p.id));}
       const p=libres[Math.floor(Math.random()*libres.length)];usadas.push(p.id);d.usadas=usadas;try{localStorage.setItem("gya_cien_rioplatenses",JSON.stringify(d));}catch(e){}return p;
     }
-    let ronda=0,puntos=0,preg=null,abiertas=new Set(),errores=0,fase="jugando",ya=[],timer=null,ultimo=null,cambio=0;
-    function nueva(){preg=elegir(ya);ya.push(preg.id);abiertas=new Set();errores=0;fase="jugando";actualizar();}
-    function cerrar(){fase="entre";preg.respuestas.forEach((_,i)=>abiertas.add(i));actualizar();clearTimeout(timer);
+    let ronda=0,puntos=0,preg=null,abiertas=new Set(),errores=0,fase="jugando",ya=[],timer=null,ultimo=null,cambio=0,recien=-1,pose="tarjetas",muerto=false;
+    /* El mismo programa que el Rosco: estudio de fondo y Giro en su atril que lee la
+       pregunta (voz de la tele, la más grave que tenga) y reacciona con sus frases grabadas. */
+    const GB="presentacion-y-locucion-extensiones/Giro/";
+    let audioGiro=null;
+    function hablar(t){try{if(!window.speechSynthesis||muerto)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="es-UY";u.rate=.95;
+      const vm=typeof obtenerVozMasculina==="function"?obtenerVozMasculina():null;if(vm){u.voice=vm;u.pitch=.9;}else u.pitch=.75;speechSynthesis.speak(u);}catch(e){}}
+    const ultimaFrase={};
+    function fraseGiro(tipo){const ops=[1,2,3,4].map(n=>tipo+"-"+n).filter(f=>f!==ultimaFrase[tipo]);const f=ops[Math.floor(Math.random()*ops.length)];ultimaFrase[tipo]=f;
+      try{if(audioGiro)audioGiro.pause();try{speechSynthesis.cancel();}catch(e){}audioGiro=new Audio(GB+"voz/reacciones/giro-"+f+".mp3");audioGiro.play().catch(()=>{});}catch(e){}}
+    function nueva(){preg=elegir(ya);ya.push(preg.id);abiertas=new Set();errores=0;fase="jugando";recien=-1;pose="tarjetas";actualizar();
+      setTimeout(()=>{if(!muerto&&fase==="jugando")hablar(`Ronda ${ronda+1}${MULT[ronda]>1?", vale por "+MULT[ronda]:""}. ${preg.pregunta}`);},600);}
+    function cerrar(){fase="entre";pose=abiertas.size===preg.respuestas.length?"festejando":"sorprendido";recien=-1;preg.respuestas.forEach((_,i)=>abiertas.add(i));actualizar();clearTimeout(timer);
       timer=setTimeout(()=>{ronda++;if(ronda>=MULT.length){fase="fin";try{const r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");if(puntos>(r.cien||0)){r.cien=puntos;localStorage.setItem("gya_tele_records",JSON.stringify(r));}}catch(e){}sfx("aplausos");actualizar();}else nueva();},4500);}
     function accion(m){
       if(fase==="fin"){if(m.a==="otra")T.otra();return;}
       if(m.a!=="responder"||fase!=="jugando")return;const v=norm(limpio(m.txt,40));if(!v)return;
       const i=preg.respuestas.findIndex(r=>[r.texto,...r.alias].some(a=>{const an=norm(a);return an&&(an===v||misma(an,v));}));
       cambio=Date.now();
-      if(i>=0&&!abiertas.has(i)){abiertas.add(i);puntos+=preg.respuestas[i].puntos*MULT[ronda];ultimo={tipo:"ok",i};sonar(660,.15,"sine",.08);setTimeout(()=>sonar(990,.22,"triangle",.06),140);
+      if(i>=0&&!abiertas.has(i)){abiertas.add(i);recien=i;pose="festejando";puntos+=preg.respuestas[i].puntos*MULT[ronda];ultimo={tipo:"ok",i};sonar(660,.15,"sine",.08);setTimeout(()=>sonar(990,.22,"triangle",.06),140);
+        hablar(`¡Está! ${preg.respuestas[i].texto}. ${preg.respuestas[i].puntos} puntos.`);
         if(abiertas.size===preg.respuestas.length){sfx("aplausos");cerrar();return;}}
-      else if(i>=0){ultimo={tipo:"repe",txt:preg.respuestas[i].texto};sonar(420,.1,"sine",.05);}
-      else{errores++;ultimo={tipo:"mal",txt:limpio(m.txt,24)};sonar(150,.4,"square",.06);if(errores>=ERRORES){cerrar();return;}}
+      else if(i>=0){ultimo={tipo:"repe",txt:preg.respuestas[i].texto};recien=-1;sonar(420,.1,"sine",.05);hablar(preg.respuestas[i].texto+" ya está en el tablero.");}
+      else{errores++;recien=-1;pose="confundido";ultimo={tipo:"mal",txt:limpio(m.txt,24)};sonar(150,.4,"square",.06);fraseGiro("error");if(errores>=ERRORES){cerrar();return;}}
       actualizar();
     }
     function pintar(raiz,quien){
       if(fase==="fin"){let r={};try{r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");}catch(e){}
         raiz.innerHTML=`<div class="tl-centro tl-fin"><h1>¡${puntos} puntos! 🎉</h1><p class="tl-ayuda">Récord del grupo en esta tele: ${r.cien||puntos} puntos</p><p class="tl-ayuda">${quien?esc(quien)+": desde el celular podés jugar otra vez o volver al menú.":""}</p></div>`;return;}
       const cat=(typeof CIEN_CATEGORIAS!=="undefined"?CIEN_CATEGORIAS:[]).find(c=>c.id===preg.categoria)||{icono:"💬",nombre:""};
-      const panel=preg.respuestas.map((r,i)=>abiertas.has(i)?`<div class="tl-resp tl-abierta"><b>${esc(r.texto)}</b><em>${r.puntos}</em></div>`:`<div class="tl-resp"><b>${i+1}</b></div>`).join("");
-      const flash=ultimo&&Date.now()-cambio<1600?(ultimo.tipo==="mal"?`<div class="tl-equis-grande">✘</div>`:ultimo.tipo==="repe"?`<div class="tl-flash tl-paso">${esc(ultimo.txt)} ya está</div>`:""):"";
-      raiz.innerHTML=`<div class="tl-cien"><div class="tl-cien-top"><span>${cat.icono} ${esc(cat.nombre)}</span><span>Ronda ${ronda+1}/3 · vale x${MULT[ronda]}</span><span>⭐ ${puntos}</span></div>
+      const panel=preg.respuestas.map((r,i)=>abiertas.has(i)?`<div class="tl-resp tl-abierta${i===recien?" tl-recien":""}"><span class="tl-resp-n">${i+1}</span><b>${esc(r.texto)}</b><em>${r.puntos}</em></div>`:`<div class="tl-resp"><span class="tl-resp-n">${i+1}</span></div>`).join("");
+      const flash=ultimo&&Date.now()-cambio<1600?(ultimo.tipo==="mal"?`<div class="tl-equis-grande">✘<small>«${esc(ultimo.txt)}» no está</small></div>`:ultimo.tipo==="repe"?`<div class="tl-flash tl-paso">${esc(ultimo.txt)} ya está</div>`:""):"";
+      raiz.innerHTML=`<div class="tl-cien tl-cien-estudio">
+        <div class="tl-cien-giro"><img class="tl-cien-pose" src="${GB}Giro_${pose}.png" alt="Giro"><img class="tl-cien-atril" src="${GB}elementos/Giro_atril_oficial_chico.webp" alt=""></div>
+        <div class="tl-cien-centro"><div class="tl-cien-top"><span>${cat.icono} ${esc(cat.nombre)}</span><span>RONDA ${ronda+1}/3 · VALE x${MULT[ronda]}</span><span class="tl-cien-pts">⭐ ${puntos}</span></div>
         <h1 class="tl-pregunta">${esc(preg.pregunta)}</h1><div class="tl-tablero">${panel}</div>
         <div class="tl-equis">${[0,1,2].map(i=>`<span class="${i<errores?"tl-on":""}">✘</span>`).join("")}</div>
-        <p class="tl-ayuda">🎮 ${esc(quien||"…")} escribe lo que dice el grupo</p>${flash}</div>`;
+        <p class="tl-ayuda">🎮 ${esc(quien||"…")} escribe lo que dice el grupo</p></div>${flash}</div>`;
     }
     nueva();
-    return{accion,pintar,fin(){clearTimeout(timer);},cel(){return fase==="fin"?{pantalla:"fin",juego:"cien",resumen:puntos+" puntos"}:{pantalla:"cien",puede:fase==="jugando",pregunta:preg.pregunta};}};
+    return{accion,pintar,fin(){muerto=true;clearTimeout(timer);try{speechSynthesis.cancel();}catch(e){}try{if(audioGiro)audioGiro.pause();}catch(e){}},cel(){return fase==="fin"?{pantalla:"fin",juego:"cien",resumen:puntos+" puntos"}:{pantalla:"cien",puede:fase==="jugando",pregunta:preg.pregunta};}};
   }
 
   /* =====================================================================
