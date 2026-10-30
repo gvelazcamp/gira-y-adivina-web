@@ -645,9 +645,9 @@
   /* Show de Giro (giro-rosco-piloto.js, el mismo del Rosco del celular): se carga al elegir el Rosco. */
   function cargarGiro(cb){
     if(window.GiroRoscoPiloto){cb(true);return;}
-    if(!document.querySelector('link[data-giro-rosco]')){const l=document.createElement("link");l.rel="stylesheet";l.href="giro-rosco-piloto.css?v=19";l.dataset.giroRosco="1";document.head.appendChild(l);}
+    if(!document.querySelector('link[data-giro-rosco]')){const l=document.createElement("link");l.rel="stylesheet";l.href="giro-rosco-piloto.css?v=20";l.dataset.giroRosco="1";document.head.appendChild(l);}
     let sc=document.querySelector('script[data-giro-rosco]');
-    if(!sc){sc=document.createElement("script");sc.src="giro-rosco-piloto.js?v=30";sc.async=true;sc.dataset.giroRosco="1";document.head.appendChild(sc);}
+    if(!sc){sc=document.createElement("script");sc.src="giro-rosco-piloto.js?v=31";sc.async=true;sc.dataset.giroRosco="1";document.head.appendChild(sc);}
     let listo=false;const fin=ok=>{if(listo)return;listo=true;cb(ok&&!!window.GiroRoscoPiloto);};
     sc.addEventListener("load",()=>fin(true),{once:true});sc.addEventListener("error",()=>fin(false),{once:true});setTimeout(()=>fin(!!window.GiroRoscoPiloto),8000);
   }
@@ -686,7 +686,8 @@
   function precargarGiro(){
     if(giroCargadas.length)return;
     GIRO_IMGS.forEach(src=>{const i=new Image();i.decoding="async";i.src=src;giroCargadas.push(i);});
-    ["voz/giro-apertura-musica.mp3","voz/giro-participantes-musica.mp3","voz/giro-rosco-inicio.mp3"].forEach(a=>{try{const au=new Audio();au.preload="auto";au.src=GIRO_B+a;giroCargadas.push(au);}catch(e){}});
+    try{const v=document.createElement("video");v.preload="auto";v.muted=true;v.src=GIRO_B+"video/giro-apertura-tele."+(v.canPlayType('video/mp4; codecs="avc1.64001F"')?"mp4":"webm");giroCargadas.push(v);}catch(e){}
+    ["voz/giro-participantes-musica.mp3","voz/giro-rosco-inicio.mp3"].forEach(a=>{try{const au=new Audio();au.preload="auto";au.src=GIRO_B+a;giroCargadas.push(au);}catch(e){}});
     cargarGiro(()=>{});
   }
   /* Antes de mostrar la apertura, esperar (máximo 6 s) a que estén las imágenes. */
