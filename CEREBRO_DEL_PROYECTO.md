@@ -2002,3 +2002,7 @@ Fecha: 31/10/2026 — Ahorcado (celular y tele): "después de mucha inactividad,
 ```text
 Fecha: 31/10/2026 — Mímica: solo frases cortas, en el celular y en la tele (Gonzalo: "un pirata con pata de palo… son frases muy largas para jugar y que adivinen"). Se usan solo las de hasta 3 palabras: Fácil 67 de 96, Media 54 de 72, Difícil 48 de 60 (169 en total). Las largas siguen en mimica-datos.js pero no salen. El juego del celular quedó igual (dos equipos, uno actúa y su equipo adivina); Gonzalo lo va a pensar. mimica v8, tele.js v16, sw v587.
 ```
+
+```text
+Fecha: 31/10/2026 — Mímica: frases todavía más cortas, sin artículos (Gonzalo: "que no haya un, la y esas cosas: Cebar Mate, Tender Ropa"). window.mimicaCortas (mimica.js, la usa también la tele) saca "un, una, unos, unas, el, la, los, las, al" y la "a" del medio, sin repetir, y deja las de hasta 3 palabras: CEBAR MATE, TENDER ROPA, PASEAR PERRO, JUGAR PLAYSTATION, REY LEÓN, CASA DE PAPEL, PEREZOSO… Quedan Fácil 77, Media 69, Difícil 57 (antes 67/54/48: al sacar artículos entran más). mimica-datos.js no se tocó (se acorta al jugar). mimica v9, tele.js v17, sw v588.
+```

@@ -3,6 +3,9 @@
    al azar de esas; el que actúa la hace sin hablar y su equipo adivina; el reloj corre todo el turno. Gana el primero que llega a
    la meta (al cerrar la vuelta, así los dos jugaron lo mismo).
    Pantalla fija (PantallaFija). Datos en gya_mimica. */
+/* Frase de mímica acortada: sin "un, una, el, la, los, las, al" (ni "a" en el medio). Compartida con la tele (tele.js). */
+window.mimicaCortas=lista=>{const ART=new Set(["UN","UNA","UNOS","UNAS","EL","LA","LOS","LAS","AL"]);
+  return [...new Set((lista||[]).map(t=>String(t).trim().split(/\s+/).filter((w,i)=>!ART.has(w)&&!(i>0&&w==="A")).join(" ")))].filter(t=>t&&t.split(" ").length<=3);};
 const Mimica=(()=>{
   const CLAVE="gya_mimica",TIEMPOS=[45,60],METAS=[10,20,30];
   const NIVELES=[
@@ -53,8 +56,8 @@ const Mimica=(()=>{
     q("mimWpp").onclick=()=>PantallaFija.invitar("mimica","Mímica rioplatense");
   }
   function empezar(){
-    /* Solo frases cortas (hasta 3 palabras), igual que en la tele (Gonzalo, 31/10/2026). */
-    mazos=NIVELES.map(n=>{const todas=n.lista().filter(t=>String(t).trim().split(/\s+/).length<=3),libres=Vistas.filtrar("mimica",todas,x=>x);return mezclar(libres).concat(mezclar(todas.filter(x=>!libres.includes(x))));});
+    /* Frases cortas y sin artículos ("CEBAR MATE", "TENDER ROPA"), hasta 3 palabras: igual que en la tele (Gonzalo, 31/10/2026). */
+    mazos=NIVELES.map(n=>{const todas=window.mimicaCortas(n.lista()),libres=Vistas.filtrar("mimica",todas,x=>x);return mezclar(libres).concat(mezclar(todas.filter(x=>!libres.includes(x))));});
     idx=[0,0,0];pts=[0,0];turno=0;turnos=0;PantallaFija.activar();previa();
   }
   function pantalla(html,clase){raiz.innerHTML=`<div class="qns-pantalla imp-juego mim-escena ${clase||""}" style="--c:${COLORES[turno]}"><button type="button" class="pf-salir" id="mimSalir">✕ Salir</button>${html}</div>`;PantallaFija.confirmar(q("mimSalir"),configurar);}
