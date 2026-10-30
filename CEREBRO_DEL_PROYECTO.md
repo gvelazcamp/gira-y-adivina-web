@@ -1958,3 +1958,7 @@ Fecha: 31/10/2026 — tele/index.html (girayadivina.com/tele) sin deslizar (Gonz
 ```text
 Fecha: 31/10/2026 — tele/index.html: en la compu o la tele (pantalla horizontal de 900 px o más) ya no se ven «Tu nombre» ni «Código» (Gonzalo: "sacá eso"; son para los celulares). Solo logo, título y el botón dorado «📺 Esta pantalla es la tele», más un enlace chico «Estoy en un celular o tablet: entrar con el código» que muestra el formulario (y con ?cambiar=1 sale el formulario directo). En el celular sigue igual. sw v576.
 ```
+
+```text
+Fecha: 31/10/2026 — Menú de la tele (index.html?tele=1) entero en la pantalla, sin deslizar y un poco más chico (Gonzalo). Antes las medidas iban en vw y en una pantalla baja (compu 1360×607) la tercera fila de juegos quedaba cortada. Ahora la sala (logo, girayadivina.com/tele, código, jugadores) y las 9 tarjetas usan --u = min(1vw, 2,2vh): en una tele 16:9 se ve igual que antes y en pantallas más bajas se achica. Comprobado: entra en 1360×607, 1280×720, 1920×1080 y 1024×600. tele.css v7, sw v577.
+```
