@@ -2102,3 +2102,7 @@ Fecha: 30/10/2026 — EN CURSO: "que cada uno juegue con su avatar" en la tele (
 ```text
 Fecha: 30/10/2026 — Juegos en la tele: cada uno juega con SU AVATAR (Gonzalo: "mi idea es que la persona juegue con su avatar"). Imágenes de atril (medio cuerpo, manos juntas, fondo transparente, hechas en ChatGPT de a 5 y recortadas) en assets/atril/ para los 35 avatars gratis (avatar-01..21, 33, 42..54) + avatar-22 (Gonzalo con su conejo). El celular manda su gya_avatar al unirse (hola.av) y la tele lo guarda por jugador. (1) Rosco: en la presentación del participante sale su avatar detrás del atril (opc.foto en presentarSolo; si no carga o no tiene, el participante hombre/mujer de siempre). (2) Podio (Tutti Frutti, Mímica, Silabario, Frases, ¿Quién soy?): arriba de cada escalón del top 3 sale su avatar festejando (assets/festejos vía RTV_AVATAR_FESTEJO; los 42..54 todavía no tienen festejo → muestran su pose de atril). Los avatars pagos (23..31, 34..41) no tienen atril: ven el genérico. PENDIENTE: festejos de avatar-42..54 (prompt ya pasado). giro-rosco-piloto.js v36, css v21, rosco-rioplatense.js v79, tele.js v35, tele.css v21, sw v608.
 ```
+
+```text
+Fecha: 30/10/2026 — Podio de la tele: cada avatar parado DETRÁS de su escalón (el escalón tapa el corte de la imagen) con nombre y puntos ARRIBA (Gonzalo: "los avatars tienen que estar encima del atril y nombres arriba, así se ve el corte"). En los de una sola persona (¿Quién soy?, etc.) el avatar va sobre una base dorada. Avatars más grandes. tele.js v36, tele.css v22, sw v610.
+```
