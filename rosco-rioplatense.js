@@ -165,7 +165,19 @@ const RoscoRioplatense=(()=>{
     if(stream)for(const track of stream.getTracks())try{track.stop();}catch(e){}
   }
   function cancelarPaseVozG(){clearTimeout(vozPaseTimerG);vozPaseTimerG=null;}
-  function cancelarErrorVozG(){clearTimeout(vozErrorTimerG);vozErrorTimerG=null;vozErrorPendienteG=null;}
+  function cancelarErrorVozG(){clearTimeout(vozErrorTimerG);vozErrorTimerG=null;vozErrorPendienteG=null;cancelarParcialVozG();}
+  /* Respuesta equivocada que Android deja "a medio escribir" (parcial, nunca final):
+     antes no contaba nunca como error y el micrófono seguía escuchando para siempre.
+     Si el parcial queda quieto 2 s, o el micrófono se corta, pasa a error pendiente. */
+  let vozParcialG=null,vozParcialTimerG=null;
+  function cancelarParcialVozG(){clearTimeout(vozParcialTimerG);vozParcialTimerG=null;vozParcialG=null;}
+  function parcialAErrorVozG(){
+    const p=vozParcialG;cancelarParcialVozG();
+    if(!p||!vozG||vozLeyendoG||fase!=="resolver"||actual!==p.letra||vozGeneracionG!==p.generacion||vozErrorPendienteG)return;
+    vozErrorPendienteG={letra:p.letra,texto:p.texto,generacion:p.generacion};
+    mostrarEstadoVozG("Oí «"+p.texto.slice(0,30)+"» · si entendí mal, repetí ahora");
+    programarErrorVozG(2500);
+  }
   function programarErrorVozG(ms){
     clearTimeout(vozErrorTimerG);
     const pendiente=vozErrorPendienteG;if(!pendiente)return;
@@ -235,7 +247,12 @@ const RoscoRioplatense=(()=>{
            Si fue un error de transcripción, el jugador puede repetirla; si
            no corrige, la respuesta oída cuenta como error igualmente. */
         const texto=opciones[0].slice(0,60),letra=actual,generacion=vozGeneracionG;
-        if(vozErrorPendienteG?.letra===letra&&vozErrorPendienteG.texto===texto)continue;
+        cancelarParcialVozG();
+        if(vozErrorPendienteG?.letra===letra&&vozErrorPendienteG.generacion===generacion){
+          /* Ya hay un error esperando: lo nuevo que se oiga (ruido, "eh"…) no reinicia
+             la cuenta; si no corrige con la respuesta buena, el error llega igual. */
+          vozErrorPendienteG.texto=texto;continue;
+        }
         cancelarErrorVozG();vozSilenciosG=0;
         vozErrorPendienteG={letra,texto,generacion};
         mostrarEstadoVozG("Oí «"+texto.slice(0,30)+"» · si entendí mal, repetí ahora");
@@ -243,6 +260,13 @@ const RoscoRioplatense=(()=>{
         continue;
       }
       mostrarEstadoVozG("Oí «"+opciones[0].slice(0,45)+"» · seguí hablando");
+      if(!vozErrorPendienteG){
+        const texto=opciones[0].slice(0,60);
+        if(!vozParcialG||vozParcialG.letra!==actual||vozParcialG.texto!==texto){
+          vozParcialG={letra:actual,texto,generacion:vozGeneracionG};
+          clearTimeout(vozParcialTimerG);vozParcialTimerG=setTimeout(parcialAErrorVozG,2000);
+        }
+      }
     }
   }
   /* Android puede detectar voz y quedarse sin entregar una transcripción.
@@ -308,6 +332,8 @@ const RoscoRioplatense=(()=>{
       if(reconocimiento!==r)return;
       clearTimeout(vozResultadoTimerG);vozResultadoTimerG=null;
       reconocimiento=null;escuchando=false;
+      /* Se cortó con una respuesta equivocada a medio escribir: cuenta como error pendiente. */
+      if(vozParcialG)parcialAErrorVozG();
       if(vozG&&!vozLeyendoG&&fase==="resolver"&&!document.hidden){
         const duro=performance.now()-inicioIntento;
         vozSilenciosG=huboResultado?0:duro<800?Math.min(vozSilenciosG+1,3):0;
