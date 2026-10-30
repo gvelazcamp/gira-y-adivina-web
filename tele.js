@@ -180,7 +180,7 @@
       if(direction){e.preventDefault();window.gyaTVRemote(direction);}
     });
     pintar();
-    setTimeout(precargarGiro,1500);
+    setTimeout(()=>{precargarGiro();precargarAhorcado();},1500);
     /* El navegador no deja sonar música hasta el primer toque: al tocar, se saca el aviso. */
     ["pointerdown","keydown"].forEach(ev=>document.addEventListener(ev,()=>{if(T.fase==="menu")setTimeout(pintar,50);},{once:true}));
     conectar(cod,()=>{difundir();setInterval(difundir,2500);},()=>{avisoTele("No se pudo conectar. Revisá el internet de la tele y recargá.");},recibir);
@@ -729,7 +729,11 @@
   }
 
   /* ---------- Ahorcado: la partida como en el celular; el celular es el teclado ---------- */
+  /* La tele también deja precargados los dibujos del Ahorcado (casilla con letra incluida). */
+  const AHORCADO_IMGS=["casilla","casilla_ok","horca","vida","vida_perdida","gano","perdio"].map(n=>"assets/ahorcado/"+n+".webp");let ahorcadoCargadas=[];
+  function precargarAhorcado(){if(ahorcadoCargadas.length)return;ahorcadoCargadas=AHORCADO_IMGS.map(src=>{const i=new Image();i.src=src;try{i.decode().catch(()=>{});}catch(e){}return i;});}
   function juegoAhorcado(T,actualizar){
+    precargarAhorcado();
     const C=typeof AHORCADO_CONFIG!=="undefined"?AHORCADO_CONFIG:{palabras:5,vidas:6,ptsPalabra:150,ptsVida:20};
     const LET=typeof AHORCADO_LETRAS!=="undefined"?AHORCADO_LETRAS:"ABCDEFGHIJKLMNOPQRSTUVYZ";
     const CATS=typeof AHORCADO_CATEGORIAS!=="undefined"?AHORCADO_CATEGORIAS:[];

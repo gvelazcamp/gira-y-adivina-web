@@ -264,3 +264,4 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-mm-lista span{background:#2A1A3C;border-radius:1.2vh;padding:.5vh 1vw;font:700 calc(var(--u)*1.4) Outfit}.tl-mm-lista .tl-ok{color:#4CD38A}.tl-mm-lista .tl-paso{color:#F5B301}
 .tl-mm-podio{display:flex;flex-direction:column;gap:.8vh;width:80%}
 .tl-mm-podio div{display:flex;justify-content:space-between;background:#2A1A3C;border-radius:1.4vh;padding:.8vh 1.6vw;font:900 calc(var(--u)*1.9) 'Archivo Black'}.tl-mm-podio div:first-child{background:#4A3110;color:#F5B301}
+#teleTV.tl-juego-ahorcado::after{content:"";position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none;background:url(assets/ahorcado/casilla_ok.webp),url(assets/ahorcado/casilla.webp)}

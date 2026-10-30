@@ -1994,3 +1994,7 @@ Fecha: 31/10/2026 — Juegos en la tele: todos arrancan con el programa (Gonzalo
 ```text
 Fecha: 31/10/2026 — Voz de Giro en la presentación de cada juego de la tele. Gonzalo grabó los 9 textos juntos en ElevenLabs (voz Cesar Rodriguez, la de Giro); se transcribió con Descript (proyecto "Giro intros tele" en su drive; ElevenLabs daba Forbidden) y se cortó por los tiempos de cada «Bienvenidos…» en presentacion-y-locucion-extensiones/Giro/voz/tele/giro-intro-<id>.mp3 (ahorcado 10,5 s, cien 12,2, ruleta 7,9, tutti 9,5, puzzle 7,4, duelo 10,9, quien 8,6, numero 9,0, mimica 10,0). Ya no hace falta la voz de la tele para las presentaciones (queda de respaldo si un audio no carga). El pendiente de esos audios quedó resuelto. sw v585.
 ```
+
+```text
+Fecha: 31/10/2026 — Ahorcado (celular y tele): "después de mucha inactividad, la primera letra que pongo hace como un negro y va apareciendo; después todas impecables" (Gonzalo). Causa: la casilla con letra (assets/ahorcado/casilla_ok.webp) es un fondo CSS que el navegador recién pedía con el primer acierto; después de un rato quieto esa primera carga tardaba y la casilla se veía vacía/oscura. Ahora: el Ahorcado del celular baja y decodifica sus 12 dibujos al abrir y los deja en memoria; la tele precarga los del Ahorcado al abrir el menú (junto con el show de Giro) y al elegirlo; y en los dos queda un pseudo-elemento invisible con casilla_ok/casilla para que estén ya dibujadas. Comprobado: casilla_ok se pide al abrir, antes de jugar. ahorcado v15, extensiones.css v150, tele.js v15, tele.css v13, sw v586.
+```

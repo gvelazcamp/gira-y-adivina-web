@@ -234,8 +234,13 @@ const AhorcadoRioplatense=(()=>{
     const c=quitarTildes(key).toUpperCase();
     if(c.length===1&&AHORCADO_LETRAS.includes(c))tocarLetra(c);
   }
+  /* Todos los dibujos del juego se bajan y decodifican al abrir, y quedan guardados en memoria:
+     antes la casilla con letra (casilla_ok) recién se pedía con el primer acierto y, después
+     de mucho rato quieto, se veía vacía/oscura un momento hasta cargar. */
+  const PRECARGA=["casilla","casilla_ok","horca","personaje","pista","vida","vida_perdida","gano","perdio","record","ruleta","logo"];let precargadas=[];
+  function precargar(){if(precargadas.length)return;precargadas=PRECARGA.map(n=>{const i=new Image();i.decoding="async";i.src=ARTE(n);try{i.decode().catch(()=>{});}catch(e){}return i;});}
   function abrir(contenedor){
-    salir();fase="inicio";
+    salir();fase="inicio";precargar();
     raiz=document.createElement("div");raiz.className="ah-game";
     raiz.innerHTML='<button type="button" class="ext-volver" id="ahVolver">⟵ Extensiones</button>'
       +'<div class="ah-titulo ah-titulo-arte"><h2 class="ah-logo-h"><img class="ah-logo" src="'+ARTE("logo")+'" alt="Ahorcado Rioplatense" draggable="false"></h2><p>La ruleta elige la categoría, vos adiviná la palabra.</p></div>'
