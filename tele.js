@@ -45,8 +45,8 @@
     el.innerHTML=`<img class="tl-podio-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
       <img class="tl-podio-giro" src="${GB}Giro_festejando_cuerpo.webp" alt="">
       <div class="tl-podio-caja"><p class="tl-podio-juego">${esc(o.juego||"")}</p><h1>${esc(o.titulo||"")}</h1>${o.sub?`<p class="tl-podio-sub">${esc(o.sub)}</p>`:""}
-        ${o.equipo?`<div class="tl-podio-equipo">${filas[0]&&filas[0].av&&fotoFestejo(filas[0].av)?`<img class="tl-podio-av" src="${fotoFestejo(filas[0].av)}" alt="" onerror="this.remove()">`:""}<b>${esc(filas[0]?filas[0].pts:"")}</b><span>${esc(filas[0]?filas[0].n:"")}</span></div>`:
-        `<div class="tl-podio-gradas">${orden.map((f,k)=>f?`<div class="tl-podio-col tl-podio-p${k===1?1:k===0?2:3}">${f.av&&fotoFestejo(f.av)?`<img class="tl-podio-av" src="${fotoFestejo(f.av)}" alt="" onerror="this.remove()">`:""}<span class="tl-podio-nom">${k===1?"👑 ":""}${esc(f.n)}</span><span class="tl-podio-pts">${esc(f.pts)}</span><div class="tl-podio-escalon">${k===1?1:k===0?2:3}</div></div>`:"<div></div>").join("")}</div>
+        ${o.equipo?`<div class="tl-podio-equipo">${filas[0]&&filas[0].av&&fotoFestejo(filas[0].av)?`<span>${esc(filas[0].n)}</span><img class="tl-podio-av" src="${fotoFestejo(filas[0].av)}" alt="" onerror="this.remove()"><div class="tl-podio-base"></div><b>${esc(filas[0].pts)}</b>`:`<b>${esc(filas[0]?filas[0].pts:"")}</b><span>${esc(filas[0]?filas[0].n:"")}</span>`}</div>`:
+        `<div class="tl-podio-gradas">${orden.map((f,k)=>f?`<div class="tl-podio-col tl-podio-p${k===1?1:k===0?2:3}"><span class="tl-podio-nom">${k===1?"👑 ":""}${esc(f.n)}</span><span class="tl-podio-pts">${esc(f.pts)}</span>${f.av&&fotoFestejo(f.av)?`<img class="tl-podio-av" src="${fotoFestejo(f.av)}" alt="" onerror="this.remove()">`:""}<div class="tl-podio-escalon">${k===1?1:k===0?2:3}</div></div>`:"<div></div>").join("")}</div>
         ${filas.length>3?`<p class="tl-podio-resto">${filas.slice(3).map((f,i)=>`${i+4}. ${esc(f.n)} · ${esc(f.pts)}`).join(" &nbsp; ")}</p>`:""}`}</div>
       <div class="tl-podio-conf">${conf}</div>`;
     document.body.appendChild(el);

@@ -361,3 +361,13 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-podio-equipo .tl-podio-av{width:calc(var(--u)*15);height:calc(var(--u)*17)}
 .tl-podio-caja:has(.tl-podio-av){padding-top:calc(var(--u)*1.2)}
 .tl-podio-caja:has(.tl-podio-av) h1{font-size:calc(var(--u)*3.8)}
+/* El avatar va parado detrás de su escalón: el escalón tapa el corte de la imagen; nombre y puntos arriba. */
+.tl-podio-col{gap:0}.tl-podio-col .tl-podio-pts{margin-bottom:.4vh}
+.tl-podio-av{position:relative;z-index:1;margin-bottom:calc(var(--u)*-1.6);animation-delay:1.6s}
+.tl-podio-escalon{position:relative;z-index:2}
+.tl-podio-equipo{gap:0}.tl-podio-equipo>span{margin-bottom:.4vh}
+.tl-podio-base{position:relative;z-index:2;width:calc(var(--u)*20);height:calc(var(--u)*3.2);margin-top:calc(var(--u)*-1.6);margin-bottom:1vh;border-radius:calc(var(--u)*.8) calc(var(--u)*.8) 0 0;background:linear-gradient(#FFE07A,#F5B301);box-shadow:inset 0 -.8vh 0 #0003}
+.tl-podio-gradas .tl-podio-av{width:calc(var(--u)*15);height:auto;max-height:calc(var(--u)*17)}
+.tl-podio-gradas .tl-podio-p1 .tl-podio-av{width:calc(var(--u)*18);max-height:calc(var(--u)*20)}
+.tl-podio-equipo .tl-podio-av{width:calc(var(--u)*18);height:auto;max-height:calc(var(--u)*20)}
+.tl-podio-gradas{margin-top:calc(var(--u)*1.2)}
