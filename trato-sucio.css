@@ -3,14 +3,44 @@
 .ts-panel{display:flex;flex-direction:column;gap:12px}
 .ts-panel h3,.ts-panel h4{margin:4px 0 0;text-align:center}
 .ts-cab{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:13px}
-.ts-cab b{color:#F5B301;font-family:'Archivo Black',system-ui;letter-spacing:.5px}
-.ts-cab span{margin-left:auto;opacity:.85}
-.ts-ver{border:1px solid #F5B30166;background:#2A1A3C;color:#fff;border-radius:999px;padding:6px 10px;font-size:12px}
+.ts-cab-logo{height:44px;width:auto}
+.ts-cab span{margin-left:auto;text-align:right;line-height:1.25;opacity:.9}
+.ts-ver{display:flex;flex-direction:column;align-items:center;gap:2px;border:1px solid #F5B30166;background:#2A1A3C;color:#fff;border-radius:10px;padding:4px 6px;font-size:10px}
+.ts-ver img{height:34px;width:auto;border-radius:3px}
+.ts-pasos{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;margin-bottom:12px}
+.ts-paso{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 1px;border-radius:10px;opacity:.38;filter:grayscale(.7)}
+.ts-paso img{width:30px;height:30px;object-fit:contain}
+.ts-paso small{font-size:9px;line-height:1.1;text-align:center}
+.ts-paso.ts-hecho{opacity:.65;filter:none}
+.ts-paso.ts-ahora{opacity:1;filter:none;background:#F5B30133;outline:2px solid #F5B301;transform:scale(1.08)}
+.ts-hacer{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#4A3110,#2A1A3C);border:2px solid #F5B301;border-radius:16px;padding:8px 12px}
+.ts-hacer img{width:58px;height:58px;object-fit:contain;flex:0 0 auto}
+.ts-hacer small{display:block;font-size:10px;letter-spacing:1px;color:#F5B301;font-weight:800}
+.ts-hacer b{font-size:15px;line-height:1.3}
+.ts-logo{width:min(300px,80%);align-self:center;filter:drop-shadow(0 6px 12px #0009)}
+.ts-hero{width:120px;align-self:center;filter:drop-shadow(0 6px 12px #0008)}
+.ts-sit{margin:0;text-align:center;font-size:14px;opacity:.85}
+.ts-gana{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ts-gana>div{background:#2A1A3C;border-radius:14px;padding:8px;text-align:center}
+.ts-gana img{width:70px;border-radius:6px}.ts-gana p{margin:4px 0 0;font-size:12px;line-height:1.3}
+.ts-carta-img{width:min(210px,60%);border-radius:12px;box-shadow:0 8px 20px #000a}
+.ts-mision{display:flex;align-items:center;gap:8px;text-align:left;background:#00000033;border-radius:12px;padding:8px;margin-top:10px}
+.ts-mision img{width:52px;flex:0 0 auto}.ts-mision p{margin:0}
+.ts-pacto-cartel{text-align:center;background:#123A2A;border:2px solid #4CD38A;border-radius:14px;padding:8px}
+.ts-pacto-cartel small{display:block;font-size:11px;letter-spacing:1px;color:#4CD38A;font-weight:800}.ts-pacto-cartel b{font-size:18px}
+.ts-traicion img{width:34px}
+.ts-reloj-fila img{width:30px}.ts-reloj-fila b{margin-right:auto;margin-left:6px}
+.ts-propio-cab{display:flex;align-items:center;gap:8px}.ts-propio-cab img{width:44px}
+.ts-revela-cartas{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.ts-revela-cartas div{width:62px;text-align:center}.ts-revela-cartas img{width:56px;border-radius:5px;animation:tsGiro .5s ease-out both}
+.ts-revela-cartas small{display:block;font-size:10px;line-height:1.1}.ts-revela-cartas .ts-yo small{color:#F5B301}
 .ts-giro{display:flex;align-items:flex-end;gap:8px}
 .ts-giro img{width:86px;height:auto;flex:0 0 auto;filter:drop-shadow(0 6px 10px #0008)}
 .ts-burbuja{position:relative;background:#fff;color:#1C1030;border-radius:16px 16px 16px 4px;padding:10px 12px;font-size:15px;line-height:1.35;box-shadow:0 4px 14px #0006}
 .ts-expl{background:#1E3A5F;border:1px solid #6FB3FF55;border-radius:12px;padding:9px 11px;font-size:13px;line-height:1.4;color:#DCEBFF}
-.ts-reglas{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.35}
+.ts-reglas{display:flex;flex-direction:column;gap:6px}
+.ts-reglas>div{display:flex;align-items:center;gap:10px;background:#2A1A3C;border-radius:12px;padding:6px 10px}
+.ts-reglas img{width:46px;height:46px;object-fit:contain;flex:0 0 auto}.ts-reglas p{margin:0;font-size:13px;line-height:1.35}
 .ts-fila{display:flex;align-items:center;justify-content:space-between;background:#2A1A3C;border-radius:14px;padding:10px 12px}
 .ts-cant{display:flex;align-items:center;gap:12px}.ts-cant button{width:38px;height:38px;border-radius:50%;border:0;background:#3A2650;color:#fff;font-size:20px}
 .ts-check{display:flex;align-items:center;gap:8px;font-size:14px}
@@ -29,9 +59,10 @@
 .ts-op.ts-pacto{border-color:#4CD38A}
 .ts-op:disabled{opacity:.35}
 .ts-mini .ts-op{min-height:48px;font-size:12px}.ts-mini .ts-op b{font-size:14px}
-.ts-dorso{align-self:center;width:190px;height:260px;border-radius:20px;border:3px solid #F5B301;background:repeating-linear-gradient(45deg,#3A1A5C 0 14px,#2A1240 14px 28px);color:#F5B301;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
-.ts-dorso span{font:900 90px 'Archivo Black',system-ui}.ts-dorso small{color:#fff;font-size:13px}
-.ts-carta{border-radius:20px;padding:18px;text-align:center;border:3px solid;animation:tsGiro .45s ease-out}
+.ts-dorso{align-self:center;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:8px;animation:tsLatido 1.6s ease-in-out infinite}
+.ts-dorso img{width:min(220px,62vw);border-radius:14px;box-shadow:0 10px 26px #000b}.ts-dorso small{color:#fff;font-size:14px}
+@keyframes tsLatido{50%{transform:scale(1.03)}}
+.ts-carta{border-radius:20px;padding:14px;text-align:center;border:2px solid;animation:tsGiro .45s ease-out;display:flex;flex-direction:column;align-items:center}
 .ts-carta p{margin:8px 0 0;line-height:1.4}
 .ts-carta-rol{font:900 26px 'Archivo Black',system-ui}
 .ts-leal{background:#123A2A;border-color:#4CD38A}.ts-sabo{background:#4A1520;border-color:#FF5A5A}.ts-comp{background:#3A2A10;border-color:#F5B301}
@@ -62,3 +93,5 @@
 .ts-capa-caja{width:min(420px,100%);display:flex;flex-direction:column;gap:12px;background:#1C1030;border:1px solid #F5B30166;border-radius:20px;padding:16px;text-align:center}
 .ts-oferta h3{margin:0}.ts-oferta p{margin:0;line-height:1.4}
 .ts-dos{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ts-oferta .ts-hero{width:110px}
+@media(prefers-reduced-motion:reduce){.ts-dorso,.ts-carta,.ts-revela-cartas img{animation:none}}
