@@ -2066,3 +2066,7 @@ Fecha: 30/10/2026 — Menú de juegos de la tele en 4 columnas (antes 3): con 10
 ```text
 Fecha: 30/10/2026 — Intro de la tele: las tomas de los juegos (Rosco, 100 Rioplatenses, Mímica, ¿Quién soy?) se veían cortadas por el zoom (el Rosco perdía letras). Ahora cada toma entra entera (escala 0,95→1, bordes redondeados). Video ?v=4, giro-rosco-piloto.js v34, rosco-rioplatense.js v77, tele.js v29, sw v602.
 ```
+
+```text
+Fecha: 30/10/2026 — Intro de la tele ahora de 11 s y con el Ahorcado entre los cortes (Gonzalo: "falta el ahorcado entre los juegos, capaz un poco más de segundos"). Cortes: ruleta, Rosco, Ahorcado ("PA_TAFRO_A" con letras usadas), 100 Rioplatenses, Mímica, ¿Quién soy?; el logo con golpe entra a los 7,6 s junto con "¡Girá y Adiviná!" del locutor. Video ?v=5, giro-rosco-piloto.js v35, rosco-rioplatense.js v78, tele.js v30, sw v603.
+```
