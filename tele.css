@@ -1,6 +1,6 @@
 /* Juegos en la tele (tele.js). Tele: todo en grande para ver desde el sillón. */
 @property --a{syntax:"<angle>";inherits:true;initial-value:0deg}
-html.tele-modo body>*:not(#teleTV):not(#teleCel):not(#splash):not(.grp-apertura):not(.grp-overlay){display:none!important}
+html.tele-modo body>*:not(#teleTV):not(#teleCel):not(#splash):not(.grp-apertura):not(.grp-overlay):not(.tl-podio){display:none!important}
 html.tele-modo body{background:#160B24}
 .tl-tv,.tl-cel{position:fixed;inset:0;z-index:2147482000;color:#F6EFE2;font-family:Outfit,system-ui,sans-serif;background:radial-gradient(ellipse at 50% 0%,#3a1a5c 0%,#160B24 62%)}
 .tl-tv{overflow:hidden;font-size:1.6vw}
@@ -294,3 +294,34 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-cast-dibujo{width:100%;border-radius:14px;box-shadow:0 8px 18px #0008}
 .tl-cast-pasos{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;font-size:15px;line-height:1.35}.tl-cast-pasos b{color:#F5B301}
 .tl-cast-pie{margin:0;font-size:13px;color:#4CD38A}
+/* Cierre con podio de todos los juegos de la tele (podioTele en tele.js). */
+.tl-podio{position:fixed;inset:0;z-index:2147482999;overflow:hidden;background:#000;display:grid;place-items:center;--u:min(1vw,1.78vh);font-family:Outfit,system-ui,sans-serif;color:#fff;animation:tlPodioEntra .5s ease both;cursor:pointer}
+.tl-podio.tl-podio-sale{animation:tlPodioSale .5s ease forwards}
+.tl-podio-fondo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.75)}
+.tl-podio-giro{position:absolute;left:2vw;bottom:0;height:78vh;max-width:30vw;object-fit:contain;filter:drop-shadow(0 2vh 3vh #000b);animation:tlPodioGiro .8s cubic-bezier(.2,1.5,.4,1) .2s both}
+.tl-podio-caja{position:relative;margin-left:22vw;width:calc(var(--u)*62);text-align:center;background:#0C0616D9;border:.5vh solid #F5B301;border-radius:calc(var(--u)*2.6);padding:calc(var(--u)*2) calc(var(--u)*2.4);box-shadow:0 0 6vh #F5B30166;animation:tlPodioCaja .7s cubic-bezier(.2,1.4,.4,1) .35s both}
+.tl-podio-juego{margin:0;font:900 calc(var(--u)*1.5) 'Archivo Black',sans-serif;letter-spacing:.3vw;color:#37D6C0}
+.tl-podio-caja h1{margin:.6vh 0 0;font:900 calc(var(--u)*4.6)/1.05 'Archivo Black',sans-serif;color:#F5B301;text-shadow:0 .7vh 0 #7a4b00}
+.tl-podio-sub{margin:.8vh 0 0;font-weight:700;font-size:calc(var(--u)*1.7);opacity:.9}
+.tl-podio-gradas{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:end;gap:calc(var(--u)*1.2);margin-top:calc(var(--u)*2)}
+.tl-podio-col{display:flex;flex-direction:column;align-items:center;gap:.5vh;min-width:0}
+.tl-podio-nom{font:900 calc(var(--u)*2) 'Archivo Black',sans-serif;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl-podio-pts{font-weight:800;font-size:calc(var(--u)*1.4);color:#F6EFE2;opacity:.9}
+.tl-podio-escalon{width:100%;display:grid;place-items:center;border-radius:calc(var(--u)*1) calc(var(--u)*1) 0 0;font:900 calc(var(--u)*4) 'Archivo Black',sans-serif;color:#160B24;box-shadow:inset 0 -1vh 0 #0003;animation:tlPodioSube .7s cubic-bezier(.2,1.3,.4,1) both}
+.tl-podio-p1 .tl-podio-escalon{height:calc(var(--u)*13);background:linear-gradient(#FFE07A,#F5B301);animation-delay:1.1s}
+.tl-podio-p2 .tl-podio-escalon{height:calc(var(--u)*9);background:linear-gradient(#F1F1F6,#AEB4C8);animation-delay:.8s}
+.tl-podio-p3 .tl-podio-escalon{height:calc(var(--u)*6.5);background:linear-gradient(#F3B98A,#C77B45);animation-delay:.6s}
+.tl-podio-p1 .tl-podio-nom{color:#F5B301;font-size:calc(var(--u)*2.5)}
+.tl-podio-resto{margin:1.4vh 0 0;font-weight:700;font-size:calc(var(--u)*1.4);opacity:.85}
+.tl-podio-equipo{margin-top:calc(var(--u)*2);display:flex;flex-direction:column;align-items:center;gap:.6vh}
+.tl-podio-equipo b{font:900 calc(var(--u)*6.4)/1 'Archivo Black',sans-serif;color:#fff;text-shadow:0 .8vh 0 #7a1030;animation:tlPodioCaja .7s cubic-bezier(.2,1.5,.4,1) .9s both}
+.tl-podio-equipo span{font:900 calc(var(--u)*2) 'Archivo Black',sans-serif;color:#37D6C0}
+.tl-podio-conf{position:absolute;inset:0;pointer-events:none}
+.tl-podio-conf i{position:absolute;top:-4vh;width:1vw;height:1.6vw;max-width:14px;max-height:22px;border-radius:2px;animation:tlPodioConf linear infinite}
+@keyframes tlPodioEntra{from{opacity:0}to{opacity:1}}
+@keyframes tlPodioSale{to{opacity:0}}
+@keyframes tlPodioGiro{from{transform:translateY(40vh)}to{transform:none}}
+@keyframes tlPodioCaja{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:none}}
+@keyframes tlPodioSube{from{transform:scaleY(0);transform-origin:bottom}to{transform:scaleY(1);transform-origin:bottom}}
+@keyframes tlPodioConf{from{transform:translateY(0) rotate(0)}to{transform:translateY(112vh) rotate(var(--g))}}
+@media(prefers-reduced-motion:reduce){.tl-podio-conf{display:none}}

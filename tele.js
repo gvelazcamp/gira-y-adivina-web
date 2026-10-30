@@ -20,6 +20,43 @@
   const sinTilde=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
   const sonar=(f,d,t,g)=>{try{if(typeof bip==="function")bip(f,d,t,g);}catch(e){}};
   const sfx=id=>{try{if(typeof sonarSFX==="function")sonarSFX(id);}catch(e){}};
+  /* Sonidos iguales en todos los juegos de la tele (30/10/2026): acierto, error, cuenta regresiva,
+     arranque, tiempo que se acaba y turno/palabra/ronda nueva. */
+  const SND={
+    ok(){sonar(720,.12,"triangle",.08);setTimeout(()=>sonar(980,.2,"sine",.08),110);},
+    mal(){sonar(170,.3,"sawtooth",.05);},
+    tic(){sonar(520,.06,"sine",.04);},
+    arranca(){sonar(880,.18,"triangle",.07);},
+    tiempo(){sonar(330,.18,"square",.05);setTimeout(()=>sonar(220,.5,"square",.05),190);},
+    turno(){sonar(660,.1,"sine",.05);setTimeout(()=>sonar(880,.16,"triangle",.06),100);}
+  };
+  /* Últimos 5 segundos del reloj: un tic por segundo. */
+  const ticFinal=(antes,ahora)=>{const a=Math.ceil(antes/1000),b=Math.ceil(ahora/1000);if(b!==a&&b>0&&b<=5)SND.tic();};
+  /* Cierre con podio para todos los juegos (30/10/2026), como el del Rosco: estudio, Giro festejando, ganador,
+     podio (1.º al medio), papelitos, aplausos y la voz de Giro. Se cierra solo a los 10 s, tocando o con OK. */
+  let podio=null;
+  function cerrarPodio(){if(!podio)return;const p=podio;podio=null;clearTimeout(p.t);document.removeEventListener("keydown",p.k,true);p.el.classList.add("tl-podio-sale");setTimeout(()=>p.el.remove(),500);}
+  function podioTele(o){
+    cerrarPodio();const GB="presentacion-y-locucion-extensiones/Giro/";
+    const filas=(o.filas||[]).slice(0,8),top=filas.slice(0,3),orden=[top[1],top[0],top[2]];
+    const el=document.createElement("div");el.className="tl-podio";el.setAttribute("role","dialog");el.setAttribute("aria-label",o.titulo||"Resultado");
+    const cols=["#F5B301","#E5197C","#37D6C0","#7B3FE4","#2F9BFF","#FF7A1A","#fff"];let conf="";
+    for(let i=0;i<110;i++)conf+=`<i style="left:${Math.random()*100}%;background:${cols[i%cols.length]};animation-delay:${(Math.random()*2.6).toFixed(2)}s;animation-duration:${(2.8+Math.random()*2.4).toFixed(2)}s;--g:${Math.round(Math.random()*720-360)}deg"></i>`;
+    el.innerHTML=`<img class="tl-podio-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
+      <img class="tl-podio-giro" src="${GB}Giro_festejando.png" alt="">
+      <div class="tl-podio-caja"><p class="tl-podio-juego">${esc(o.juego||"")}</p><h1>${esc(o.titulo||"")}</h1>${o.sub?`<p class="tl-podio-sub">${esc(o.sub)}</p>`:""}
+        ${o.equipo?`<div class="tl-podio-equipo"><b>${esc(filas[0]?filas[0].pts:"")}</b><span>${esc(filas[0]?filas[0].n:"")}</span></div>`:
+        `<div class="tl-podio-gradas">${orden.map((f,k)=>f?`<div class="tl-podio-col tl-podio-p${k===1?1:k===0?2:3}"><span class="tl-podio-nom">${k===1?"👑 ":""}${esc(f.n)}</span><span class="tl-podio-pts">${esc(f.pts)}</span><div class="tl-podio-escalon">${k===1?1:k===0?2:3}</div></div>`:"<div></div>").join("")}</div>
+        ${filas.length>3?`<p class="tl-podio-resto">${filas.slice(3).map((f,i)=>`${i+4}. ${esc(f.n)} · ${esc(f.pts)}`).join(" &nbsp; ")}</p>`:""}`}</div>
+      <div class="tl-podio-conf">${conf}</div>`;
+    document.body.appendChild(el);
+    sfx("aplausos");setTimeout(()=>sfx("festejo"),400);
+    try{const a=new Audio(GB+"voz/reacciones/giro-acierto-"+(1+Math.floor(Math.random()*4))+".mp3");setTimeout(()=>a.play().catch(()=>{}),900);}catch(e){}
+    const k=e=>{if(e.key==="Enter"||e.key==="Escape"||e.key===" "){e.preventDefault();e.stopPropagation();cerrarPodio();}};
+    el.addEventListener("click",cerrarPodio);document.addEventListener("keydown",k,true);
+    podio={el,k,t:setTimeout(cerrarPodio,10000)};
+  }
+  const nombreDe=(T,pid)=>{const j=T.jug.find(x=>x.pid===pid);return j?j.n:"Jugador";};
   const JUEGOS=[
     {id:"rosco",nombre:"El Rosco",icono:"assets/rosco/logo.webp",desc:"Juega uno, los demás miran",ok:true},
     {id:"ahorcado",nombre:"Ahorcado",icono:"assets/ahorcado/logo.webp",desc:"El celular es el teclado",ok:true},
@@ -144,7 +181,7 @@
        Desde el 30/10/2026 lo ven todos (antes solo Gonzalo). */
     b.hidden=false;b.onclick=compartirPantalla;
   }
-  window.Tele={abrir,salir,compartirPantalla};
+  window.Tele={abrir,salir,compartirPantalla,_podio:podioTele};
   if(!esTele&&!esCel){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",prepararBotonCast);else prepararBotonCast();return;}
   silenciarApp();
   document.documentElement.classList.add("tele-modo");
@@ -210,7 +247,7 @@
       arrancar(id);
     }
     function introTele(id,j,despues){
-      clearInterval(timerJuego);if(T.g&&T.g.fin)T.g.fin();T.g=null;T.fase="intro";T.juego=id;pintar();difundir();
+      cerrarPodio();clearInterval(timerJuego);if(T.g&&T.g.fin)T.g.fin();T.g=null;T.fase="intro";T.juego=id;pintar();difundir();
       const sigue=()=>T.fase==="intro"&&T.juego===id;
       cargarGiro(ok=>{
         if(!sigue())return;const G=window.GiroRoscoPiloto;
@@ -231,7 +268,7 @@
       timerJuego=setInterval(()=>{const a=performance.now(),dt=a-ultimoTic;ultimoTic=a;if(T.g&&T.g.tic)T.g.tic(dt);},200);
       actualizar();
     }
-    function volverMenu(){clearInterval(timerJuego);if(T.g&&T.g.fin)T.g.fin();T.fase="menu";T.juego=null;T.g=null;
+    function volverMenu(){cerrarPodio();clearInterval(timerJuego);if(T.g&&T.g.fin)T.g.fin();T.fase="menu";T.juego=null;T.g=null;
       try{if(window.GiroRoscoPiloto&&document.querySelector(".grp-apertura,.grp-overlay"))window.GiroRoscoPiloto.cerrar();}catch(e){}pintar();difundir();}
     function actualizar(){pintar();difundir();}
     T.volverMenu=volverMenu;T.otra=()=>elegir(T.juego,true);
@@ -307,7 +344,7 @@
       const l=libres[Math.floor(Math.random()*libres.length)];usadas.push(l);
       try{localStorage.setItem("gya_tf_letras_usadas",JSON.stringify(usadas));}catch(e){}return l;
     }
-    function nueva(){ronda++;letra=elegirLetra();restante=duracion*1000;fase="jugando";ganador=null;respuestas={};recibidas={};progreso={};marcas={};extra={};anuladas={};pendientes={};resueltas={};resolucionProgramada=false;}
+    function nueva(){ronda++;letra=elegirLetra();restante=duracion*1000;fase="jugando";if(ronda>1)SND.turno();ganador=null;respuestas={};recibidas={};progreso={};marcas={};extra={};anuladas={};pendientes={};resueltas={};resolucionProgramada=false;}
     const limpiar=r=>cats.map((_,i)=>{const v=limpio(Array.isArray(r)?r[i]:"",30);return v.length>=2&&sinTilde(v)[0]===letra?v:"";});
     function cortar(pid,r){if(fase!=="jugando")return;ganador=pid;fase="cortada";corteEn=Date.now();if(pid){respuestas[pid]=limpiar(r);recibidas[pid]=true;progreso[pid]=true;
         try{if(typeof sonidoErrorExt==="function")sonidoErrorExt();}catch(e){}}
@@ -321,7 +358,12 @@
     function cerrarRonda(){const pr=puntos(),sumas=Object.fromEntries(jugadores.map(j=>[j.pid,suma(pr[j.pid])]));
       historial.push({letra,puntos:sumas});const max=Math.max(...Object.values(sumas));
       jugadores.forEach(j=>{totales[j.pid]+=sumas[j.pid];if(max>0&&sumas[j.pid]===max)ganadas[j.pid]++;});
-      if(ronda>=RONDAS){fase="fin";sfx("aplausos");}else nueva();actualizar();}
+      if(ronda>=RONDAS){fase="fin";
+        const f=jugadores.map(j=>({n:j.n,g:ganadas[j.pid],t:totales[j.pid]})).sort((a,b)=>b.g-a.g||b.t-a.t);
+        const emp=f.length>1&&f[0].g===f[1].g&&f[0].t===f[1].t;
+        podioTele({juego:"TUTTI FRUTTI",titulo:emp?"¡EMPATE!":"¡GANÓ "+String(f[0]?f[0].n:"").toUpperCase()+"!",sub:emp?"Nadie se sacó ventaja":"El mejor de "+RONDAS+" rondas",
+          filas:f.map(x=>({n:x.n,pts:x.g+(x.g===1?" ronda":" rondas")+" · "+x.t+" pts"}))});
+      }else nueva();actualizar();}
     function accion(m){
       if(m.a==="otra"&&fase==="fin"&&m.pid===T.mando){T.otra();return;}
       if(m.a==="siguiente"&&fase==="resultado"&&m.pid===T.mando&&!Object.keys(pendientes).length){cerrarRonda();return;}
@@ -344,9 +386,9 @@
       }else{if(m.v!==true&&m.v!==false)return;if(m.v)anuladas[clave(p.a,p.i)]=true;}
       delete pendientes[id];resueltas[id]=true;actualizar();
     }
-    function tic(dt){if(fase!=="jugando")return;restante=Math.max(0,restante-dt);
+    function tic(dt){if(fase!=="jugando")return;const antes=restante;restante=Math.max(0,restante-dt);ticFinal(antes,restante);
       const el=document.querySelector("#tlTuttiReloj");if(el){el.textContent=String(Math.ceil(restante/1000));el.classList.toggle("tl-urgente",restante<=10000);}
-      if(restante<=0)cortar(null,null);}
+      if(restante<=0){SND.tiempo();cortar(null,null);}}
     function pintar(raiz){
       if(fase==="jugando"){
         raiz.innerHTML=`<div class="tl-tutti"><header><img src="assets/tutti/logo.webp" alt=""><h1>RONDA ${ronda} DE ${RONDAS}</h1></header>
@@ -384,7 +426,7 @@
     const RANGOS=[10,50,100];
     let max=100,numero=0,fase="config",cuenta=0,oculto=false;
     try{const d=JSON.parse(localStorage.getItem("gya_que_numero_soy"))||{};if(RANGOS.includes(d.max))max=d.max;}catch(e){}
-    function nuevo(){let n;do{n=1+Math.floor(Math.random()*max);}while(n===numero&&max>1);numero=n;fase="cuenta";cuenta=3000;oculto=false;sonar(660,.1,"sine",.05);actualizar();}
+    function nuevo(){let n;do{n=1+Math.floor(Math.random()*max);}while(n===numero&&max>1);numero=n;fase="cuenta";cuenta=3000;oculto=false;SND.turno();actualizar();}
     function accion(m){
       if(m.pid!==T.mando)return;
       if(m.a==="qn_rango"&&RANGOS.includes(Number(m.max))){max=Number(m.max);try{const d=JSON.parse(localStorage.getItem("gya_que_numero_soy"))||{};d.max=max;localStorage.setItem("gya_que_numero_soy",JSON.stringify(d));}catch(e){}actualizar();return;}
@@ -392,8 +434,8 @@
       if(m.a==="qn_ocultar"&&fase==="numero"){oculto=!oculto;actualizar();}
     }
     function tic(dt){if(fase!=="cuenta")return;const antes=Math.ceil(cuenta/1000);cuenta-=dt;const ahora=Math.ceil(cuenta/1000);
-      if(cuenta<=0){fase="numero";sonar(880,.18,"triangle",.07);actualizar();return;}
-      if(ahora!==antes){sonar(520,.06,"sine",.04);const el=document.querySelector("#tlQnCuenta");if(el)el.textContent=ahora;}}
+      if(cuenta<=0){fase="numero";SND.arranca();actualizar();return;}
+      if(ahora!==antes){SND.tic();const el=document.querySelector("#tlQnCuenta");if(el)el.textContent=ahora;}}
     function pintar(raiz,quien){
       if(fase==="config"){raiz.innerHTML=`<div class="tl-centro tl-qn"><img class="tl-qn-logo" src="assets/que-numero-soy/logo.webp" alt="¿Qué número soy?"><h1>¿Qué número soy?</h1>
         <p>El que juega se pone <b>de espaldas a la tele</b>. Los demás ven el número y le dan pistas.</p><p>Números del <b>1 al ${max}</b> · ${quien?esc(quien)+" elige desde el celular":""}</p></div>`;return;}
@@ -421,11 +463,13 @@
     function empezar(){palabras=armar();if(!palabras.length)return;idx=0;resultados=[];restante=tiempo*1000;cuenta=3000;fase="cuenta";actualizar();}
     function marcar(ok){if(fase!=="jugando"||idx>=palabras.length)return;
       resultados.push({w:palabras[idx],ok});try{Vistas.marcar("quien_soy",palabras[idx]);}catch(e){}idx++;
-      if(ok){sonar(720,.12,"triangle",.08);setTimeout(()=>sonar(980,.18,"sine",.08),110);}else sonar(300,.12,"sine",.05);
+      if(ok)SND.ok();else SND.mal();
       if(idx>=palabras.length){terminar();return;}actualizar();}
     function terminar(){fase="fin";const ok=resultados.filter(r=>r.ok).length;
       try{const r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");if(ok>(r.quien||0)){r.quien=ok;localStorage.setItem("gya_tele_records",JSON.stringify(r));}}catch(e){}
-      sfx(ok>=5?"aplausos":"abucheo");actualizar();}
+      const nq=nombreDe(T,quien);
+      if(ok>0)podioTele({juego:"¿QUIÉN SOY?",titulo:"¡"+String(nq).toUpperCase()+" ADIVINÓ "+ok+"!",sub:ok>=5?"¡Una máquina!":"Buen intento",equipo:true,filas:[{n:nq,pts:ok+(ok===1?" acierto":" aciertos")}]});
+      else sfx("abucheo");actualizar();}
     function accion(m){
       if((m.a==="qs_ok"||m.a==="qs_paso")&&fase==="jugando"&&Number(m.i)===idx){marcar(m.a==="qs_ok");return;}
       if(m.pid!==T.mando)return;
@@ -437,11 +481,11 @@
       if(m.a==="qs_config"&&fase==="fin"){fase="config";actualizar();}
     }
     function tic(dt){
-      if(fase==="cuenta"){const antes=Math.ceil(cuenta/1000);cuenta-=dt;if(cuenta<=0){fase="jugando";sonar(880,.18,"triangle",.07);actualizar();return;}
-        if(Math.ceil(cuenta/1000)!==antes){sonar(520,.06,"sine",.04);const el=document.querySelector("#tlQsCuenta");if(el)el.textContent=Math.ceil(cuenta/1000);}return;}
-      if(fase!=="jugando")return;restante=Math.max(0,restante-dt);
+      if(fase==="cuenta"){const antes=Math.ceil(cuenta/1000);cuenta-=dt;if(cuenta<=0){fase="jugando";SND.arranca();actualizar();return;}
+        if(Math.ceil(cuenta/1000)!==antes){SND.tic();const el=document.querySelector("#tlQsCuenta");if(el)el.textContent=Math.ceil(cuenta/1000);}return;}
+      if(fase!=="jugando")return;const antesR=restante;restante=Math.max(0,restante-dt);ticFinal(antesR,restante);
       const el=document.querySelector("#tlQsReloj");if(el){el.textContent=Math.ceil(restante/1000);el.classList.toggle("tl-urgente",restante<=10000);}
-      if(restante<=0)terminar();
+      if(restante<=0){SND.tiempo();terminar();}
     }
     function pintar(raiz){
       const ok=resultados.filter(r=>r.ok).length,pasos=resultados.length-ok;
@@ -527,12 +571,14 @@
     function empezar(){orden=T.jug.map(j=>j.pid);if(orden.length<2)return;marcador={};orden.forEach(p=>marcador[p]=0);turno=0;mazo=armarMazo();idx=0;prepararTurno();}
     function prepararTurno(){hechas=[];restante=tiempo*1000;cuenta=4000;fase="cuenta";actualizar();}
     function marcar(ok){if(fase!=="jugando"||!mazo.length)return;const t=mazo[idx%mazo.length];hechas.push({t,ok});try{Vistas.marcar("mimica",t);}catch(e){}idx++;
-      if(ok){marcador[orden[turno]]++;sonar(720,.12,"triangle",.08);setTimeout(()=>sonar(980,.18,"sine",.08),110);}else sonar(300,.12,"sine",.05);actualizar();}
+      if(ok){marcador[orden[turno]]++;SND.ok();}else SND.mal();actualizar();}
     function finTurno(){fase="resumen";sfx("aplausos");actualizar();}
     function siguiente(){turno++;if(turno>=orden.length){fase="fin";
         const mejor=Math.max(0,...Object.values(marcador));try{const r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");if(mejor>(r.mimica||0)){r.mimica=mejor;localStorage.setItem("gya_tele_records",JSON.stringify(r));}}catch(e){}
-        sfx("aplausos");actualizar();return;}
-      prepararTurno();}
+        const f=orden.map(pid=>({n:nombreDe(T,pid),v:marcador[pid]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
+        podioTele({juego:"MÍMICA",titulo:emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",sub:"El que más adivinó en su turno",filas:f.map(x=>({n:x.n,pts:x.v+(x.v===1?" acierto":" aciertos")}))});
+        actualizar();return;}
+      SND.turno();prepararTurno();}
     function accion(m){
       if((m.a==="mm_ok"||m.a==="mm_paso")&&fase==="jugando"&&Number(m.i)===idx&&m.pid!==orden[turno]){marcar(m.a==="mm_ok");return;}
       if(m.pid!==T.mando)return;
@@ -544,11 +590,11 @@
       if(m.a==="mm_config"&&fase==="fin"){fase="config";actualizar();}
     }
     function tic(dt){
-      if(fase==="cuenta"){const antes=Math.ceil(cuenta/1000);cuenta-=dt;if(cuenta<=0){fase="jugando";sonar(880,.18,"triangle",.07);actualizar();return;}
-        const ahora=Math.ceil(cuenta/1000);if(ahora!==antes&&ahora<=3){sonar(520,.06,"sine",.04);const el=document.querySelector("#tlMmCuenta");if(el)el.textContent=ahora;}return;}
-      if(fase!=="jugando")return;restante=Math.max(0,restante-dt);
+      if(fase==="cuenta"){const antes=Math.ceil(cuenta/1000);cuenta-=dt;if(cuenta<=0){fase="jugando";SND.arranca();actualizar();return;}
+        const ahora=Math.ceil(cuenta/1000);if(ahora!==antes&&ahora<=3){SND.tic();const el=document.querySelector("#tlMmCuenta");if(el)el.textContent=ahora;}return;}
+      if(fase!=="jugando")return;const antesR=restante;restante=Math.max(0,restante-dt);ticFinal(antesR,restante);
       const el=document.querySelector("#tlMmReloj");if(el){el.textContent=Math.ceil(restante/1000);el.parentElement.style.setProperty("--p",(restante/(tiempo*1000)*100)+"%");el.parentElement.classList.toggle("tl-urgente",restante<=10000);}
-      if(restante<=0)finTurno();
+      if(restante<=0){SND.tiempo();finTurno();}
     }
     /* La frase nunca se corta a mitad de palabra: si una palabra es larga, la letra se achica. */
     const tamFrase=f=>{const largo=Math.max(1,...String(f).split(/\s+/).map(w=>w.length));return Math.min(6.4,56/(largo*.78)).toFixed(2);};
@@ -595,7 +641,8 @@
     function mensaje(e){if(muerto||!iframe||e.source!==iframe.contentWindow||e.origin!==location.origin||e.data?.t!=="gya-tv-puzzle")return;
       const m=e.data;
       if(m.a==="listo"){catalogo=m.catalogo||{};guardado=!!m.guardado;listo=true;indice=0;actualizar();return;}
-      if(m.a==="estado"){estado={n:Number(m.n)||0,pct:Number(m.pct)||0,tiempo:Number(m.tiempo)||0,ganado:!!m.ganado};if(estado.ganado){fase="fin";dueno=null;guardado=false;}actualizar();return;}
+      if(m.a==="estado"){estado={n:Number(m.n)||0,pct:Number(m.pct)||0,tiempo:Number(m.tiempo)||0,ganado:!!m.ganado};if(estado.ganado&&fase!=="fin"){fase="fin";dueno=null;guardado=false;
+        const s=Math.round(estado.tiempo>1000?estado.tiempo/1000:estado.tiempo);podioTele({juego:"PUZZLE",titulo:"¡PUZZLE COMPLETO!",sub:"Lo armaron entre todos",equipo:true,filas:[{n:"Todo el grupo",pts:s>0?Math.floor(s/60)+":"+String(s%60).padStart(2,"0"):"🧩"}]});}actualizar();return;}
       if(m.a==="error"){fase="config";errorTexto=String(m.texto||"No se pudo abrir el puzzle");actualizar();}
     }
     window.addEventListener("message",mensaje);
@@ -761,11 +808,11 @@
       if(m.a==="responder"){const txt=limpio(m.txt,40);if(txt)responder(txt);return;}
       if(m.a==="dc_voz"){vozCelular(m.l);return;}
     }
-    function pasarLetra(){vozDesde=Date.now()+1200;ultimo={i:actual,tipo:"paso"};cambio=Date.now();sonar(520,.08,"sine",.05);avanzar();actualizar();if(fase==="jugando")reaccionar("pasar");}
+    function pasarLetra(){vozDesde=Date.now()+1200;ultimo={i:actual,tipo:"paso"};cambio=Date.now();SND.turno();avanzar();actualizar();if(fase==="jugando")reaccionar("pasar");}
     function responder(txt){
       const d=items[actual],ok=vale(d,norm(txt));vozDesde=Date.now()+1200;
       est[actual]=ok?"ok":"mal";resp[actual]=txt;ultimo={i:actual,tipo:ok?"ok":"mal",palabra:d.palabra,dijo:txt};cambio=Date.now();
-      if(ok){sonar(720,.13,"triangle",.08);setTimeout(()=>sonar(980,.2,"sine",.09),120);}else sonar(180,.3,"sawtooth",.05);
+      if(ok)SND.ok();else SND.mal();
       avanzar();actualizar();if(fase==="jugando")reaccionar(ok?"acierto":"error");
     }
     /* Responder hablando al celular (como el Rosco del celular): el acierto se toma
@@ -789,7 +836,7 @@
     function tic(dt){
       if(fase==="show"||fase==="cierre"){const e=G()&&G().etapa?G().etapa():"";if(e!==etapaPrev){etapaPrev=e;etapaT=0;}else etapaT+=dt;
         if(ESPERA[e]&&etapaT>ESPERA[e]){etapaT=-1e9;G().avanzar();}return;}
-      if(fase!=="jugando")return;tiempo-=dt;if(tiempo<=0){tiempo=0;reaccionar("tiempo");terminar();return;}
+      if(fase!=="jugando")return;const antesR=tiempo;tiempo-=dt;ticFinal(antesR,Math.max(0,tiempo));if(tiempo<=0){tiempo=0;SND.tiempo();reaccionar("tiempo");terminar();return;}
       const r=T.g&&document.querySelector("#tlReloj");if(r)r.textContent=reloj(tiempo);}
     const reloj=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0");};
     const regla=d=>(norm(d.palabra)[0]===d.letra?"Empieza con la ":"Contiene la ")+d.letra;
@@ -835,15 +882,17 @@
       const cats=[...new Set(libres.map(d=>d.categoria))],cat=cats[Math.floor(Math.random()*cats.length)];
       const ops=libres.filter(d=>d.categoria===cat),d=ops[Math.floor(Math.random()*ops.length)];Vistas.marcar("ahorcado",d.palabra);return d;
     }
-    function nueva(){n++;pal=elegir();usadas=new Set();errores=0;fase="giro";sonar(400,.5,"triangle",.04);actualizar();clearTimeout(timer);timer=setTimeout(()=>{fase="jugando";actualizar();},1800);}
+    function nueva(){n++;pal=elegir();usadas=new Set();errores=0;fase="giro";SND.turno();actualizar();clearTimeout(timer);timer=setTimeout(()=>{fase="jugando";actualizar();},1800);}
     const completa=()=>[...pal.palabra].every(c=>usadas.has(c));
     function cerrarPalabra(gano){fase="entre";if(gano){ganadas++;puntos+=C.ptsPalabra+C.ptsVida*(C.vidas-errores);sfx("aplausos");}else sfx("abucheo");actualizar();
-      clearTimeout(timer);timer=setTimeout(()=>{if(n>=C.palabras){fase="fin";try{const r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");if(puntos>(r.ahorcado||0)){r.ahorcado=puntos;localStorage.setItem("gya_tele_records",JSON.stringify(r));}}catch(e){}actualizar();}else nueva();},3000);}
+      clearTimeout(timer);timer=setTimeout(()=>{if(n>=C.palabras){fase="fin";try{const r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");if(puntos>(r.ahorcado||0)){r.ahorcado=puntos;localStorage.setItem("gya_tele_records",JSON.stringify(r));}}catch(e){}
+        podioTele({juego:"AHORCADO",titulo:ganadas>=Math.ceil(C.palabras*.6)?"¡LO LOGRARON!":"¡SE TERMINÓ!",sub:ganadas+" de "+C.palabras+" palabras adivinadas",equipo:true,filas:[{n:"Todo el grupo",pts:puntos+" puntos"}]});
+        actualizar();}else nueva();},3000);}
     function accion(m){
       if(fase==="fin"){if(m.a==="otra")T.otra();return;}
       if(m.a!=="letra"||fase!=="jugando")return;const l=String(m.l||"");if(!LET.includes(l)||usadas.has(l))return;usadas.add(l);
-      if(pal.palabra.includes(l)){sonar(720,.1,"triangle",.07);if(completa()){cerrarPalabra(true);return;}}
-      else{errores++;sonar(170,.25,"sawtooth",.05);if(errores>=C.vidas){cerrarPalabra(false);return;}}
+      if(pal.palabra.includes(l)){SND.ok();if(completa()){cerrarPalabra(true);return;}}
+      else{errores++;SND.mal();if(errores>=C.vidas){cerrarPalabra(false);return;}}
       actualizar();
     }
     function munieco(){const partes=['<circle cx="245" cy="98" r="22"/>','<path d="M245 120V185"/>','<path d="M245 138L210 168"/>','<path d="M245 138L280 168"/>','<path d="M245 185L215 235"/>','<path d="M245 185L275 235"/>'];
@@ -891,17 +940,19 @@
     function nueva(){preg=elegir(ya);ya.push(preg.id);abiertas=new Set();errores=0;fase="jugando";recien=-1;pose="tarjetas";actualizar();
       setTimeout(()=>{if(!muerto&&fase==="jugando")hablar(`Ronda ${ronda+1}${MULT[ronda]>1?", vale por "+MULT[ronda]:""}. ${preg.pregunta}`);},600);}
     function cerrar(){fase="entre";pose=abiertas.size===preg.respuestas.length?"festejando":"sorprendido";recien=-1;preg.respuestas.forEach((_,i)=>abiertas.add(i));actualizar();clearTimeout(timer);
-      timer=setTimeout(()=>{ronda++;if(ronda>=MULT.length){fase="fin";try{const r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");if(puntos>(r.cien||0)){r.cien=puntos;localStorage.setItem("gya_tele_records",JSON.stringify(r));}}catch(e){}sfx("aplausos");actualizar();}else nueva();},4500);}
+      timer=setTimeout(()=>{ronda++;if(ronda>=MULT.length){fase="fin";try{const r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");if(puntos>(r.cien||0)){r.cien=puntos;localStorage.setItem("gya_tele_records",JSON.stringify(r));}}catch(e){}
+        podioTele({juego:"100 RIOPLATENSES",titulo:"¡LO LOGRARON!",sub:"Lo que dijo la gente, en "+MULT.length+" rondas",equipo:true,filas:[{n:"Todo el grupo",pts:puntos+" puntos"}]});
+        actualizar();}else{SND.turno();nueva();}},4500);}
     function accion(m){
       if(fase==="fin"){if(m.a==="otra")T.otra();return;}
       if(m.a!=="responder"||fase!=="jugando")return;const v=norm(limpio(m.txt,40));if(!v)return;
       const i=preg.respuestas.findIndex(r=>[r.texto,...r.alias].some(a=>{const an=norm(a);return an&&(an===v||misma(an,v));}));
       cambio=Date.now();
-      if(i>=0&&!abiertas.has(i)){abiertas.add(i);recien=i;pose="festejando";puntos+=preg.respuestas[i].puntos*MULT[ronda];ultimo={tipo:"ok",i};sonar(660,.15,"sine",.08);setTimeout(()=>sonar(990,.22,"triangle",.06),140);
+      if(i>=0&&!abiertas.has(i)){abiertas.add(i);recien=i;pose="festejando";puntos+=preg.respuestas[i].puntos*MULT[ronda];ultimo={tipo:"ok",i};SND.ok();
         hablar(`¡Está! ${preg.respuestas[i].texto}. ${preg.respuestas[i].puntos} puntos.`);
         if(abiertas.size===preg.respuestas.length){sfx("aplausos");cerrar();return;}}
       else if(i>=0){ultimo={tipo:"repe",txt:preg.respuestas[i].texto};recien=-1;sonar(420,.1,"sine",.05);hablar(preg.respuestas[i].texto+" ya está en el tablero.");}
-      else{errores++;recien=-1;pose="confundido";ultimo={tipo:"mal",txt:limpio(m.txt,24)};sonar(150,.4,"square",.06);fraseGiro("error");if(errores>=ERRORES){cerrar();return;}}
+      else{errores++;recien=-1;pose="confundido";ultimo={tipo:"mal",txt:limpio(m.txt,24)};SND.mal();fraseGiro("error");if(errores>=ERRORES){cerrar();return;}}
       actualizar();
     }
     function pintar(raiz,quien){
