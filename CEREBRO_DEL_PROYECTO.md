@@ -1974,3 +1974,7 @@ Fecha: 31/10/2026 — 100 Rioplatenses en la tele: el mismo programa que el Rosc
 ```text
 Fecha: 31/10/2026 — Rosco en la tele: pantalla negra al arrancar y la presentación del jugador que no cargaba (Gonzalo). Causas: la escena de Giro presentando era un PNG de 1,7 MB (Giro_presentacion_plano_general_16x9.png) y la tele recién empezaba a bajar el show al elegir el Rosco. Ahora: la escena está en .webp (147 KB; giro-rosco-piloto.js v29 la usa también en el celular), la tele precarga en el menú (1,5 s después de abrir) el script del show, sus 17 imágenes y las 3 músicas/voces, y antes de la apertura espera a que estén (máx. 6 s) mostrando «Preparando el estudio…» sobre el estudio en vez de negro. Probado: la apertura aparece a los 73 ms de elegir el Rosco. (El negro corto del principio de la apertura —1,3 s antes de que se prendan las luces— es parte del diseño del show.) tele.js v11, rosco v72, sw v580.
 ```
+
+```text
+Fecha: 31/10/2026 — Rosco en la tele: la presentación de Giro ("¡Bienvenidos al Rosco!") mostraba la barra de desplazamiento con flechitas al costado (Gonzalo, captura en la compu 1366×607): no entraba en la pantalla porque el cartel con los botones iba debajo del estudio. Solo en la tele (html.tele-modo, tele.css): el estudio ocupa todo el alto posible y el cartel va encima, abajo, con el título y los botones (sin la descripción). Comprobado sin desplazamiento en 1366×607, 1280×720 y 1920×1080. El celular no cambia. tele.css v10, sw v581.
+```

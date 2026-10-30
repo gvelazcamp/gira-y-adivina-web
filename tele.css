@@ -213,3 +213,12 @@ html.tele-modo body{background:#160B24}
 .tl-equis-grande small{display:block;font:900 min(3vw,5vh) 'Archivo Black';text-align:center;color:#fff;margin-top:-6vh}
 .tl-cien-estudio .tl-ayuda{background:#0C0616AA;border-radius:99vw;padding:.4vh 1.6vw}
 @media(prefers-reduced-motion:reduce){.tl-cien-pose,.tl-resp.tl-recien{animation:none}}
+/* En la tele, la presentación de Giro entra entera en la pantalla (sin barra de desplazamiento):
+   el estudio ocupa todo el alto posible y el cartel con los botones va encima, abajo. */
+html.tele-modo .grp-overlay{overflow:hidden;padding:0}
+html.tele-modo .grp-contenido{position:relative;display:block;width:min(100vw,calc(100vh*16/9));max-width:none;max-height:100vh;border-radius:0}
+html.tele-modo .grp-escenario{width:100%;height:auto;aspect-ratio:16/9;min-height:0}
+html.tele-modo .grp-panel{position:absolute;left:0;right:0;bottom:0;padding:1.6vh 2vw;background:linear-gradient(180deg,transparent,#06143ae6 35%);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.6vh 2vw}
+html.tele-modo .grp-panel .grp-descripcion,html.tele-modo .grp-panel .grp-aviso,html.tele-modo .grp-panel .grp-etiqueta{display:none}
+html.tele-modo .grp-panel h2{margin:0;font-size:min(2.4vw,4.2vh)}
+html.tele-modo .grp-acciones{margin:0}
