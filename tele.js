@@ -121,7 +121,8 @@
   function prepararBotonCast(){
     const b=document.getElementById("btnTeleCast");if(!b)return;
     const ver=()=>{let ok=false;try{ok=typeof esGonzalo==="function"&&esGonzalo();}catch(e){}b.hidden=!ok;};
-    ver();setInterval(ver,3000);b.onclick=compartirPantalla;
+    /* Gonzalo (31/10/2026): el 📺 lleva directo a girayadivina.com/tele (la ventana de transmitir queda en Tele.compartirPantalla por si se vuelve a usar). */
+    ver();setInterval(ver,3000);b.onclick=()=>{location.href="tele/";};
   }
   window.Tele={abrir,salir,compartirPantalla};
   if(!esTele&&!esCel){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",prepararBotonCast);else prepararBotonCast();return;}
