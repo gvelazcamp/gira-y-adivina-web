@@ -2026,3 +2026,7 @@ Fecha: 31/10/2026 — El botón 📺 del inicio (solo Gonzalo) volvió a abrir l
 ```text
 Fecha: 31/10/2026 — El 📺 del inicio (solo Gonzalo) va directo a girayadivina.com/tele (Gonzalo: "apretar el ícono va a /tele, miro el cel, me uno a lo que dice la tele y arranco a jugar"). Flujo: en la tele girayadivina.com/tele → «Esta pantalla es la tele» (muestra el código); en el celular 📺 → nombre + código → menú de juegos. La ventana de Chromecast quedó guardada en Tele.compartirPantalla. tele.js v22, sw v593.
 ```
+
+```text
+Fecha: 31/10/2026 — El 📺 del inicio (solo Gonzalo) busca la tele directo por Chromecast (Gonzalo: "por si no tengo navegador en la tele"; su Panavox con Play Store = Android TV con Chromecast incorporado). Un toque → Chrome muestra las teles del wifi → se elige → la tele abre index.html?tele=1&cod=… sola (sin navegador ni código) y el celular entra a la sala sin recargar. Si no hay teles con Chromecast o el celular no lo permite (p. ej. dentro de la app), se abre la ventana con «Con un código» y «Duplicar la pantalla». Si cancela la lista, no pasa nada. Probado con tele simulada (con tele: el celular queda en la sala; sin tele: abre la ventana). Falta probar con la Panavox real. tele.js v23, sw v594.
+```
