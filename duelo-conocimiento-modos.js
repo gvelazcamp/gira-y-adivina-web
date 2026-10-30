@@ -69,7 +69,7 @@ function micFallback(message){
  $dc("feedback").className="feedback fail";$dc("feedback").textContent=message+" Podés responder escribiendo.";
  if(phase==="playing"&&canAnswer())$dc("answer-input").focus();
 }
-async function startMic(){
+async function startMic(){if(phase==='finished')return;
  if(answerSel.value!=="voice"||micWanted||micBlocked||(phase==="announcing"&&!online?.micWaiting)||(phase==="playing"&&!canAnswer()))return;
  if(!window.SpeechRecognition&&!window.webkitSpeechRecognition){micFallback("Este navegador no tiene reconocimiento de voz.");return;}
  if(!window.isSecureContext){micFallback("El micrófono necesita HTTPS.");return;}
@@ -182,7 +182,7 @@ window.dueloPreparaTurno=()=>mode==="bot"||(mode==="online"&&!!online?.host);
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 function cancelNarration(){try{window.speechSynthesis?.cancel()}catch(e){}}
 function speak(text,maxMs=5500){
- if(!soundOn||!window.speechSynthesis||!window.SpeechSynthesisUtterance)return Promise.resolve();
+ if(!soundOn||!window.speechSynthesis||!window.SpeechSynthesisUtterance||phase==='finished')return Promise.resolve();
  return new Promise(resolve=>{
    let done=false;const complete=()=>{if(done)return;done=true;clearTimeout(timeout);resolve()};
    const timeout=setTimeout(()=>{cancelNarration();complete()},maxMs);
@@ -366,7 +366,8 @@ passTurn=function(wrongValue=''){
 };
 const baseFinish=finish;
 finish=function(winner,reason){
- clearTimeout(botHandle);cancelNarration();baseFinish(winner,reason);
+ /* Al terminar se apaga TODO el audio: también este micrófono (antes seguía escuchando). */
+ clearTimeout(botHandle);cancelNarration();stopMic();baseFinish(winner,reason);
  if(mode==="online"&&online&&online.host){
    const resultado=decidirResultadoDuelo();
    sendOnline("finish",{winner:resultado.winner,reason:resultado.reason,players:players.map(p=>({name:p.name,ms:p.ms,score:p.score,errors:p.errors||0})),history:roundHistory});
