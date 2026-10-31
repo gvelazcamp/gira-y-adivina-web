@@ -2186,3 +2186,7 @@ Fecha: 31/10/2026 — Rosco en la tele: (1) De a dos tiene un MARCADOR en vivo (
 ```text
 Fecha: 31/10/2026 — Tele: el Puzzle sale del menú de juegos (no andaba bien; su código juegoPuzzle queda) y entra Sopa Fugaz. El que tiene el control elige Clásica (letras quietas) o Giratoria (cada 14 s la sopa gira y las palabras que faltan se mudan), como en el celular. Sopa 10×10 en la tele, 4 rondas de 6 palabras de un tema de SOPA_DATOS (memoria "sopa_tele" para no repetir); cada uno marca desde su celular tocando la primera y la última letra; 100 puntos por palabra para el que la encuentra primero, ranking en vivo y podio al final. Locución de la intro: no hay mp3 (giro-intro-sopa.mp3), usa la voz del navegador hasta que Gonzalo lo pase.
 ```
+
+```text
+Fecha: 31/10/2026 — Rosco (celular y tele): ahora ~1 de cada 5 letras es "Contiene la X" (antes todas eran "Empieza con"): se usa una palabra del banco de otra letra que lleva esa letra adentro (roscoConContiene en rosco-rioplatense-datos.js), sin repetir dentro del mismo rosco y respetando la memoria de vistas. No se agregaron palabras (no hace falta auditoría). También se sacó la palabra "Pasapalabra" de los textos del Rosco del celular (ahora dice "Pasar").
+```
