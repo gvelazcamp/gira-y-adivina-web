@@ -473,3 +473,13 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-sp-real .sf-acciones{margin-top:12px}
 .tl-sp-real .sf-celda.sel{background:#E5197C;color:#fff;border-radius:6px}
 .tl-sp-real .tl-sp-aviso{margin:6px 0 0}
+/* Rosco de a dos: cada rosco con su color (dorado / violeta) y el nombre en el medio */
+.tl-rd-j0{--rd:#F5B301}.tl-rd-j1{--rd:#9B6BFF}
+:is(.tl-rd-j0,.tl-rd-j1) .tl-medio{border:.9vh solid var(--rd);box-shadow:0 0 5vh var(--rd)}
+:is(.tl-rd-j0,.tl-rd-j1) .tl-rl{box-shadow:0 0 0 .5vh var(--rd),0 .3vh 0 #0005}
+:is(.tl-rd-j0,.tl-rd-j1) .tl-rl.tl-actual{outline-color:var(--rd);box-shadow:0 0 3vh var(--rd)}
+.tl-rd-nombre{max-width:80%;font:900 3.4vh 'Archivo Black',sans-serif;color:var(--rd);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.6vh}
+.tl-rd-fila.tl-rd-c0{--fc:#F5B301}.tl-rd-fila.tl-rd-c1{--fc:#9B6BFF}
+.tl-rd-fila.tl-rd-c0,.tl-rd-fila.tl-rd-c1{border-left:.7vw solid var(--fc)}
+.tl-rd-fila.tl-rd-activo.tl-rd-c1{border-color:#9B6BFF;background:#9B6BFF22;box-shadow:0 0 1.6vw #9B6BFF66}
+.tl-rd-fila.tl-rd-activo.tl-rd-c1 b{color:#C7AEFF}

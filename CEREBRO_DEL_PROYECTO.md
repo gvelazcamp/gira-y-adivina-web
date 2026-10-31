@@ -2198,3 +2198,7 @@ Fecha: 31/10/2026 — Sopa Fugaz en la tele: el celular ahora se ve como el jueg
 ```text
 Fecha: 31/10/2026 — Botón 📺 "Jugar en la tele": se ocultó la forma "📡 Transmitir" (Gonzalo la probó con la Panavox desde la app y desde Chrome: "No encontré teles", aunque YouTube sí la veía). En Android la Presentation API no abre una página web en la tele sin una app registrada en Google Cast (Custom Receiver en cast.google.com, 5 USD); Gonzalo no quiso hacerlo. Ahora la primera es "🌐 Navegador de la tele" (con código) como "LA MÁS FÁCIL"; queda "📱 Un celular de tele". El código de Transmitir sigue (oculto:true en FORMAS_TELE).
 ```
+
+```text
+Fecha: 31/10/2026 — Rosco de a dos en la tele: el padre de Gonzalo creyó que los dos jugaban el mismo rosco; auditado con partida de prueba: son distintos (20 palabras propias cada uno, letras también al azar). Para que se note: el rosco de cada uno tiene su color (1.º dorado, 2.º violeta) en el círculo del medio y las letras, con el NOMBRE de quien juega arriba de la letra; el marcador tiene una franja del mismo color. Reglas (sin cambio): cada uno su reloj; gana más aciertos, si empatan menos errores, si siguen empatados más tiempo sobrante. Dejar correr el reloj no sirve para ganar: solo gastás tu tiempo y el otro sigue con el suyo.
+```

@@ -965,7 +965,7 @@
       return{f,emp:f[0].ok===f[1].ok&&f[0].mal===f[1].mal};}
     function marcadorDos(){const{f,emp}=tablaDos();
       return`<div class="tl-rd-rank"><div class="tl-rd-rank-cab"><span>🏆 MARCADOR</span><em>${emp?"¡Van empatados!":"Va ganando "+esc(nombrePid(f[0].j.pid))}</em></div>${f.map((x,pos)=>{const av=avDe(T,x.j.pid);
-        return`<div class="tl-rd-fila${x.k===turno?" tl-rd-activo":""}${x.j.fin?" tl-rd-listo":""}"><span class="tl-rd-pos">${emp?"=":pos+1+"º"}</span><img src="assets/avatars/${av||"avatar-01"}.webp" alt="" onerror="this.style.visibility='hidden'"><b>${x.k===turno?"🎙 ":""}${esc(nombrePid(x.j.pid))}</b><span class="tl-ok">✓ ${x.ok}</span><span class="tl-mal">✘ ${x.mal}</span><small>${x.j.fin?"terminó":x.q+" letras"}</small><span class="tl-rd-reloj" ${x.k===turno?'id="tlReloj"':""}>${reloj(x.k===turno?tiempo:x.j.tiempo)}</span></div>`;}).join("")}</div>`;}
+        return`<div class="tl-rd-fila tl-rd-c${x.k}${x.k===turno?" tl-rd-activo":""}${x.j.fin?" tl-rd-listo":""}"><span class="tl-rd-pos">${emp?"=":pos+1+"º"}</span><img src="assets/avatars/${av||"avatar-01"}.webp" alt="" onerror="this.style.visibility='hidden'"><b>${x.k===turno?"🎙 ":""}${esc(nombrePid(x.j.pid))}</b><span class="tl-ok">✓ ${x.ok}</span><span class="tl-mal">✘ ${x.mal}</span><small>${x.j.fin?"terminó":x.q+" letras"}</small><span class="tl-rd-reloj" ${x.k===turno?'id="tlReloj"':""}>${reloj(x.k===turno?tiempo:x.j.tiempo)}</span></div>`;}).join("")}</div>`;}
     function pintar(raiz,quien){
       const n=items.length,ok=est.filter(s=>s==="ok").length,mal=est.filter(s=>s==="mal").length;
       if(fase==="show"&&!document.querySelector(".grp-apertura,.grp-overlay")){
@@ -982,9 +982,10 @@
       const d=items[actual],paso=360/n;let ang=-actual*paso;while(ang-angPrevio>180)ang-=360;while(angPrevio-ang>180)ang+=360;
       const letras=items.map((x,i)=>`<div class="tl-rl tl-${est[i]}${i===actual?" tl-actual":""}" style="--p:${i*paso}deg">${x.letra}</div>`).join("");
       const flash=ultimo&&Date.now()-cambio<1800?(ultimo.tipo==="ok"?`<div class="tl-flash tl-ok">✓ ¡Bien! «${esc(ultimo.palabra)}»</div>`:ultimo.tipo==="mal"?`<div class="tl-flash tl-mal">✘ Dijo «${esc(ultimo.dijo||"")}» · Era ${esc(ultimo.palabra)}</div>`:`<div class="tl-flash tl-paso">Pasó ⏭</div>`):"";
-      raiz.innerHTML=`<div class="tl-rosco tl-estudio">
+      /* De a dos: el rosco de cada uno con su color y su nombre en el medio (31/10/2026). */
+      raiz.innerHTML=`<div class="tl-rosco tl-estudio${DOS?" tl-rd-j"+turno:""}">
         <div class="tl-aro"><div class="tl-giro" style="--a:${angPrevio}deg">${letras}</div>
-          <div class="tl-medio"><div class="tl-letra">${d.letra}</div><div class="tl-regla">${regla(d)}</div></div></div>
+          <div class="tl-medio">${DOS?`<div class="tl-rd-nombre">${esc(nombrePid(J().pid))}</div>`:""}<div class="tl-letra">${d.letra}</div><div class="tl-regla">${regla(d)}</div></div></div>
         <aside class="tl-panel">${DOS?marcadorDos():""}
           <p class="tl-quien">🎮 Juega ${esc(DOS?nombrePid(J().pid):(quien||"…"))}</p>${aviso&&Date.now()-aviso.t<2600?`<div class="tl-flash tl-paso tl-rd-aviso">${esc(aviso.txt)}</div>`:""}
           <div class="tl-def">${esc(d.definicion)}</div>
