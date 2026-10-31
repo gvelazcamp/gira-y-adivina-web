@@ -2170,3 +2170,7 @@ Fecha: 31/10/2026 — Pantalla siempre encendida (Gonzalo: "en el Rosco, como es
 ```text
 Fecha: 31/10/2026 — Silabario y Frases en Giro en la tele: lo que cada uno toca en el celular se ve en la tele AL INSTANTE (Gonzalo: "que se transmita lo que selecciono; solo aparece al enviar"). El celular manda "or_arma" con cada pieza que toca o borra. Si juega uno solo, las piezas se van poniendo en los casilleros grandes (borde turquesa) y las usadas se apagan abajo; si juegan varios, cada uno ve su armado chiquito debajo de su nombre (para no mezclar). Si erra, se limpia. tele.js v46, tele.css v24, sw v631.
 ```
+
+```text
+Fecha: 31/10/2026 — Rosco por voz (celular y tele): acepta lo que el reconocimiento oye "casi igual" (Gonzalo: dijo "uva" y el celular escuchó "Cuba" → lo marcaba mal). Se compara cómo suena (b/v, s/z/c, h muda, ll/y…) y se tolera: palabras de hasta 5 letras, solo una letra de más al principio o al final (uva/cuba, oso/osos; "pato" NO vale por GATO ni "cosa" por CASA); de 6 a 7 letras, 1 letra distinta; 8 o más, 2. Solo por voz (escribiendo sigue exacto). En la tele, si el parecido es por voz, cuenta como acierto. rosco-rioplatense.js v87, tele.js v47, sw v632.
+```

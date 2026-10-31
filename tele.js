@@ -814,6 +814,17 @@
       const base=norm(d.palabra),resto=valor.startsWith(base)?valor.slice(base.length):"";
       return resto.length>0&&resto.length<=12&&/^(DEL?|DELA|DELOS|DELAS)[A-Z]{3,}$/.test(resto);
     }
+    /* Voz: el reconocimiento a veces oye casi lo mismo ("uva" → "Cuba", 31/10/2026). Se acepta si suena casi igual:
+       1 letra de diferencia (2 si la palabra es larga), comparando cómo suena (b/v, s/z/c, h muda, etc.). */
+    const distancia=(a,b)=>{const m=a.length,n=b.length;let pr=Array.from({length:n+1},(_,j)=>j);
+      for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(pr[j]+1,c[j-1]+1,pr[j-1]+(a[i-1]===b[j-1]?0:1));pr=c;}return pr[n];};
+    const casiIgual=(a,b)=>{if(!a||!b)return false;const l=Math.max(a.length,b.length);if(Math.min(a.length,b.length)<3)return a===b;
+    /* Palabras cortas: solo una letra de más al principio o al final ("uva"/"cuba"); así "pato" no vale por GATO. */
+    if(l<=5){const[c,g]=a.length<b.length?[a,b]:[b,a];return a===b||(g.length===c.length+1&&(g.slice(1)===c||g.slice(0,-1)===c));}
+    return distancia(a,b)<=(l>=8?2:1);};
+    const sonido=s=>norm(s).replace(/[^A-Z]/g,"").replace(/CH/g,"@").replace(/LL/g,"Y").replace(/GU(?=[EI])/g,"#").replace(/QU(?=[EI])/g,"K")
+      .replace(/G(?=[EI])/g,"J").replace(/C(?=[EI])/g,"S").replace(/C/g,"K").replace(/Z/g,"S").replace(/V/g,"B").replace(/H/g,"").replace(/@/g,"CH").replace(/#/g,"G");
+    const suenaIgual=(d,t)=>{const s=sonido(t);return s.length>=3&&[d.palabra,...(d.alternativas||[])].some(x=>{const o=sonido(x);return o===s||casiIgual(o,s);});};
     /* Misma memoria que el Rosco del celular: primero las que nunca salieron. */
     function armar(){
       const banco=typeof ROSCO_DATOS!=="undefined"?ROSCO_DATOS:[],vistas=Vistas.cargar("rosco");
@@ -897,8 +908,8 @@
       if(m.a==="dc_voz"){vozCelular(m.l,m.turno);return;}
     }
     function pasarLetra(){vozDesde=Date.now()+1200;vozBloqueada=true;vozRonda++;ultimo={i:actual,tipo:"paso"};cambio=Date.now();SND.turno();avanzar();if(fase==="jugando"){cambiarTurno();pausarPorGiro("pasar");}else actualizar();}
-    function responder(txt){
-      const d=items[actual],ok=vale(d,norm(txt));vozDesde=Date.now()+1200;vozBloqueada=true;vozRonda++;
+    function responder(txt,porVoz){
+      const d=items[actual],ok=vale(d,norm(txt))||!!porVoz;vozDesde=Date.now()+1200;vozBloqueada=true;vozRonda++;
       est[actual]=ok?"ok":"mal";resp[actual]=txt;ultimo={i:actual,tipo:ok?"ok":"mal",palabra:d.palabra,dijo:txt};cambio=Date.now();
       if(ok)SND.ok();else SND.mal();
       avanzar();if(fase==="jugando"){if(!ok)cambiarTurno();pausarPorGiro(ok?"acierto":"error");}else actualizar();
@@ -918,6 +929,7 @@
         if(alts.some(t=>["PASAPALABRA","PASAR","PASO","PASA"].includes(sinTilde(t).replace(/[^A-Z]/g,"")))){if(res.isFinal||sinTilde(alts[0]).replace(/[^A-Z]/g,"")==="PASAR"){pasarLetra();return;}continue;}
         const d=items[actual],cands=alts.flatMap(t=>{const a=t.replace(INTRO,"");return[t,a,a.replace(/^(?:el|la|los|las|un|una)\s+/i,"")];});
         const buena=cands.find(t=>vale(d,norm(t)));if(buena){responder(buena);return;}
+        const parecida=cands.find(t=>suenaIgual(d,t));if(parecida){responder(parecida,true);return;}
         if(alts.every(t=>ecoGiro.has(sinTilde(t).replace(/[^A-Z]/g,"")))){
           if(oi)oi.textContent="🔇 Giro habló; no cuenta como respuesta";
           continue;
