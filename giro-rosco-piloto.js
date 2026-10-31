@@ -149,9 +149,13 @@
     };
     const dice=document.createElement("p");
     if(modo==="duelo"){
-      jugador("izq",PERSONAJES[yo],nombre,1.9);
-      jugador("der",PERSONAJES[otro],rival||"Rival",2.7);
-      dice.textContent="🎙 Giro: ¡Hoy se enfrentan "+nombre+" y "+(rival||"su rival")+"! 24 letras, una vuelta. ¿Quién gana?";
+      /* Tele (Rosco de a dos): cada uno con su avatar si tiene pose de atril (si no carga, el personaje). */
+      const pr=opc&&(opc.personajeRival==="mujer"||opc.personajeRival==="hombre")?opc.personajeRival:otro;
+      jugador("izq",opc&&opc.foto||PERSONAJES[yo],nombre,1.9);
+      jugador("der",opc&&opc.fotoRival||PERSONAJES[pr],rival||"Rival",2.7);
+      if(opc&&opc.foto){const f=cuadro.querySelector(".grp-part-persona.grp-part-izq");if(f){f.dataset.resp=PERSONAJES[yo];f.classList.add("grp-part-avatar");}}
+      if(opc&&opc.fotoRival){const f=cuadro.querySelector(".grp-part-persona.grp-part-der");if(f){f.dataset.resp=PERSONAJES[pr];f.classList.add("grp-part-avatar");}}
+      dice.textContent="🎙 Giro: ¡Hoy se enfrentan "+nombre+" y "+(rival||"su rival")+"! "+(opc&&opc.letras||24)+" letras cada uno. ¿Quién gana?";
     }else{
       /* En la tele, si el jugador tiene avatar con pose de atril, aparece él (si no carga, el personaje de siempre). */
       /* En el celular también: si tu avatar tiene pose de atril (assets/atril), salís vos. */
@@ -264,7 +268,7 @@
     if(!miPersonaje()){elegirPersonaje(()=>mostrarParticipantes("solo","",siguiente));return true;}
     return mostrarParticipantes("solo","",siguiente);
   }
-  function presentarDuelo(rival,siguiente){if(!habilitado())return false;precargarReacciones();return mostrarParticipantes("duelo",rival,siguiente);}
+  function presentarDuelo(rival,siguiente,opc){if(!habilitado())return false;precargarReacciones();return mostrarParticipantes("duelo",rival,siguiente,opc);}
   function limpiar(){
     detenerReaccion();
     cortarApertura();cortarCierre();cortarEleccion();
