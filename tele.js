@@ -72,6 +72,7 @@
     {id:"ruleta",nombre:"La Ruleta",icono:"assets/logo.webp",desc:"Cada uno con su celular",ok:true},
     {id:"tutti",nombre:"Tutti Frutti",icono:"assets/tutti/logo.webp",desc:"Todos juegan desde su celular",ok:true},
     {id:"sopa",nombre:"Sopa Fugaz",icono:"logo-sopa-fugaz.svg",desc:"Encontrá las palabras antes que los demás",ok:true},
+    {id:"puzzle",nombre:"Puzzle",icono:"assets/puzzle-arte/icono.webp",desc:"Armalo en tu celular y se ve en la tele",ok:true},
     /* El Puzzle no andaba bien en la tele (31/10/2026): se cambió por Sopa Fugaz. Su código (juegoPuzzle) queda por si vuelve. */
     {id:"palabra",nombre:"Palabra Secreta",icono:"logo-palabra-secreta.svg",desc:"Adiviná la palabra de 5 letras entre todos",ok:true},
     {id:"memoria",nombre:"Memoria en Giro",icono:"logo-memoria-en-giro.svg",desc:"Encontrá los pares por turnos",ok:true},
@@ -312,7 +313,7 @@
       /* La Ruleta es el juego principal (Sala TV): la tele la abre y, cuando tiene el código, se lo pasa a los
          celulares de esta sala, que entran solos (31/10/2026: "que no haya que poner otro código"). */
       if(id==="ruleta"){T.fase="ruleta";T.juego="ruleta";pintar();difundir();setTimeout(()=>{location.href="index.html?tvhost=1&avisar="+cod+(P.get("telered")==="local"?"&telered=local":"");},1500);return;}
-      T.fase="juego";T.juego=id;T.g=(id==="silabario"||id==="frases"?(T,a)=>juegoOrdenar(T,a,id):id==="mimica"?juegoMimica:id==="numero"?juegoNumero:id==="quien"?juegoQuien:id==="duelo"?juegoDuelo:id==="puzzle"?juegoPuzzle:id==="sopa"?juegoSopa:id==="palabra"?juegoPalabra:id==="memoria"?juegoMemoria:id==="rueda"?juegoRueda:id==="tutti"?juegoTutti:id==="rosco"?juegoRosco:id==="ahorcado"?juegoAhorcado:juegoCien)(T,actualizar);
+      T.fase="juego";T.juego=id;T.g=(id==="silabario"||id==="frases"?(T,a)=>juegoOrdenar(T,a,id):id==="mimica"?juegoMimica:id==="numero"?juegoNumero:id==="quien"?juegoQuien:id==="duelo"?juegoDuelo:id==="puzzle"?juegoPzEspejo:id==="sopa"?juegoSopa:id==="palabra"?juegoPalabra:id==="memoria"?juegoMemoria:id==="rueda"?juegoRueda:id==="tutti"?juegoTutti:id==="rosco"?juegoRosco:id==="ahorcado"?juegoAhorcado:juegoCien)(T,actualizar);
       ultimoTic=performance.now();clearInterval(timerJuego);
       timerJuego=setInterval(()=>{const a=performance.now(),dt=a-ultimoTic;ultimoTic=a;if(T.g&&T.g.tic)T.g.tic(dt);},200);
       actualizar();
@@ -788,7 +789,7 @@
     sopa:{titulo:"¡Sopa Fugaz!",descripcion:"Encuentren las palabras en la sopa antes que los demás. ¡Ojo que las letras se mudan!",
       locucion:"¡Bienvenidos a Sopa Fugaz! En la tele hay una sopa de letras. Desde el celular deslizan el dedo sobre cada palabra. Cada tanto las letras se mudan de lugar. ¡El que encuentra más, gana!"},
     puzzle:{titulo:"¡El Puzzle!",descripcion:"Armen el mismo rompecabezas entre todos.",
-      locucion:"¡Bienvenidos al Puzzle! Elijan una imagen y ármenla entre todos moviendo las piezas desde el celular. ¡Trabajo en equipo!"},
+      locucion:"¡Bienvenidos al Puzzle! Uno arma el puzzle en su celular y todo lo que hace se ve acá en la tele. ¡Los demás, a ayudar con los ojos!"},
     duelo:{titulo:"¡Duelo de Conocimiento!",descripcion:"Respondan hablando al celular. El reloj corre.",
       locucion:"¡Bienvenidos al Duelo de Conocimiento! Banderas, cuentas, famosos y mucho más. Respondan hablando al celular antes de que se termine el reloj. ¡Que gane el que más sabe!"},
     quien:{titulo:"¡¿Quién soy?!",descripcion:"Uno de espaldas a la tele; los demás le dan pistas.",
@@ -1489,6 +1490,32 @@
     nueva();
     return{accion,tic,pintar,cel,fin(){muerto=true;clearTimeout(timer);}};
   }
+  /* ---------- Puzzle espejo (31/10/2026) ----------
+     Gonzalo: "quiero que se vea igual en el cel como en la tele: juego desde el cel pero reproduzco en la tele".
+     El del control arma el puzzle de siempre en su celular (puzzle.html?espejo=1) y cada movimiento llega a la
+     tele, que lo muestra con el mismo motor (puzzle.html?tvpuzzle=1&ver=1) sin poder tocarlo. */
+  function juegoPzEspejo(T,actualizar){
+    let iframe=null,listo=false,ultimoTodo=null,muerto=false,hay=false,armado=false;const dueno=T.mando;
+    const enviar=m=>{if(listo&&iframe&&iframe.contentWindow)iframe.contentWindow.postMessage({t:"gya-tv-puzzle",a:"espejo",m},location.origin);};
+    function mensaje(e){if(muerto||!iframe||e.source!==iframe.contentWindow||e.origin!==location.origin||!e.data||e.data.t!=="gya-tv-puzzle")return;
+      if(e.data.a==="listo"){listo=true;if(ultimoTodo)enviar(ultimoTodo);}}
+    addEventListener("message",mensaje);
+    function accion(m){
+      if(m.a==="pz_espejo"&&m.pid===dueno&&m.m&&typeof m.m==="object"){const x=m.m;
+        if(x.k==="todo"){ultimoTodo=x;if(!hay){hay=true;actualizar();}
+          if(x.gano&&!armado){armado=true;podioTele({juego:"PUZZLE",titulo:"¡PUZZLE ARMADO!",sub:"Lo armó "+nombreDe(T,dueno)+" desde su celular",equipo:true,filas:[{n:nombreDe(T,dueno),av:avDe(T,dueno),pts:"🧩 completo"}]});}
+          else if(!x.gano)armado=false;}
+        enviar(x);return;}
+    }
+    function pintar(raiz){
+      if(!iframe||!raiz.contains(iframe)){listo=false;
+        raiz.innerHTML=`<div class="tl-pze"><iframe id="tlPzeFrame" src="puzzle.html?tvpuzzle=1&amp;ver=1&amp;v=52" title="Puzzle"></iframe><div class="tl-pze-cartel" id="tlPzeCartel"></div></div>`;
+        iframe=raiz.querySelector("#tlPzeFrame");}
+      const c=raiz.querySelector("#tlPzeCartel");if(c){c.hidden=hay;c.innerHTML=`<img src="assets/puzzle-arte/icono.webp" alt=""><h1>🧩 Puzzle</h1><p>📱 <b>${esc(nombreDe(T,dueno))}</b> elige y arma el puzzle en su celular…</p><p class="tl-ayuda">Todo lo que arma se ve acá en la tele, en vivo.</p>`;}
+    }
+    function cel(){return{pantalla:"pz_espejo",dueno,nombre:nombreDe(T,dueno)};}
+    return{accion,pintar,cel,fin(){muerto=true;removeEventListener("message",mensaje);}};
+  }
   function juegoOrdenar(T,actualizar,id){
     const SIL=id==="silabario";
     const CFG=SIL?{nombre:"SILABARIO",icono:"🔤",rondas:8,seg:40,unir:"",niveles:[3,3,2],etiqueta:"ARMÁ LA PALABRA"}
@@ -1904,6 +1931,20 @@
     }
     /* Silabario / Frases en Giro: cada uno arma la respuesta tocando las piezas. */
     let orClave="",orSel=[],orMalVisto=0,orAviso="";
+    /* Puzzle espejo en el celular: el del control arma el puzzle de siempre a pantalla completa y cada
+       movimiento se manda a la tele; los demás miran la tele. */
+    let pzeMarco=null,pzeOyendo=false;
+    function pintarPzEspejo(c,cab,soyMando){
+      if(c.dueno!==yo){if(pzeMarco){pzeMarco.remove();pzeMarco=null;}raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🧩 Puzzle</h2><p><b>${esc(c.nombre||"")}</b> está armando el puzzle en su celular. ¡Mirá la tele 📺 y ayudá!</p></div>`;return;}
+      if(pzeMarco&&document.body.contains(pzeMarco))return;
+      raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🧩 Armando el puzzle…</h2><p>Se ve en la tele 📺</p></div>`;
+      pzeMarco=document.createElement("iframe");pzeMarco.src="puzzle.html?espejo=1&v=52";pzeMarco.className="tl-pze-cel";pzeMarco.title="Puzzle";
+      pzeMarco.style.cssText="position:fixed;left:0;right:0;bottom:0;top:env(safe-area-inset-top,0px);width:100%;height:calc(100% - env(safe-area-inset-top,0px));border:0;z-index:2147483000;background:#160B24";
+      document.body.appendChild(pzeMarco);
+      if(!pzeOyendo){pzeOyendo=true;addEventListener("message",e=>{if(!pzeMarco||e.source!==pzeMarco.contentWindow||e.origin!==location.origin||!e.data||e.data.t!=="gya-pz-espejo")return;
+        const m=e.data;if(m.k==="salir"){pzeMarco.remove();pzeMarco=null;accion("menu");return;}
+        const{t,...resto}=m;accion("pz_espejo",{m:resto});});}
+    }
     /* ---------- Palabra Secreta / Memoria en Giro / Rueda de Letras en el celular (31/10/2026) ---------- */
     let xUltT={},xUltVisto={};
     const avisoX=(c,clave)=>{const u=(c.ult||{})[yo];if(u&&u.t!==xUltT[clave]){xUltT[clave]=u.t;xUltVisto[clave]=Date.now();}
@@ -2118,6 +2159,7 @@
       if(c.pantalla==="mimica"){pintarMimica(c,cab,soyMando);return;}
       if(c.pantalla==="ordenar"){pintarOrdenar(c,cab,soyMando);return;}
       if(c.pantalla==="sopa"){pintarSopa(c,cab,soyMando);return;}
+      if(c.pantalla==="pz_espejo"){pintarPzEspejo(c,cab,soyMando);return;}
       if(c.pantalla==="palabra"){pintarPalabra(c,cab,soyMando);return;}
       if(c.pantalla==="memoria"){pintarMemoria(c,cab,soyMando);return;}
       if(c.pantalla==="rueda"){pintarRueda(c,cab,soyMando);return;}

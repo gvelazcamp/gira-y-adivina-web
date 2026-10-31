@@ -1,6 +1,6 @@
 /* Juegos en la tele (tele.js). Tele: todo en grande para ver desde el sillón. */
 @property --a{syntax:"<angle>";inherits:true;initial-value:0deg}
-html.tele-modo body>*:not(#teleTV):not(#teleCel):not(#splash):not(.grp-apertura):not(.grp-overlay):not(.tl-podio):not(.tl-rd-presenta){display:none!important}
+html.tele-modo body>*:not(#teleTV):not(#teleCel):not(#splash):not(.grp-apertura):not(.grp-overlay):not(.tl-podio):not(.tl-rd-presenta):not(.tl-pze-cel){display:none!important}
 html.tele-modo body{background:#160B24}
 .tl-tv,.tl-cel{position:fixed;inset:0;z-index:2147482000;color:#F6EFE2;font-family:Outfit,system-ui,sans-serif;background:radial-gradient(ellipse at 50% 0%,#3a1a5c 0%,#160B24 62%)}
 .tl-tv{overflow:hidden;font-size:1.6vw}
@@ -633,3 +633,6 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-rlc-rueda button{position:absolute;transform:translate(-50%,-50%);width:23%;aspect-ratio:1;border:0;border-radius:50%;background:#F6EFE2;color:#160B24;font:900 1.5rem 'Archivo Black',system-ui,sans-serif;padding:0;box-shadow:0 4px 0 #b9a98a;cursor:pointer}
 .tl-rlc-rueda button.tl-rlc-sel{background:#F5B301;box-shadow:0 0 0 3px #fff inset}
 .tl-rlc-armada{position:absolute;inset:0;display:grid;place-items:center;font:900 1.4rem 'Archivo Black',system-ui,sans-serif;color:#F5B301;letter-spacing:.08em;pointer-events:none}
+/* Puzzle espejo (31/10/2026): la tele muestra el puzzle que se arma en el celular */
+.tl-pze{position:absolute;inset:0;background:#160B24}.tl-pze iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.tl-pze-cartel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1vw;background:#160B24;color:#F6EFE2;text-align:center;font-family:Outfit,system-ui,sans-serif}.tl-pze-cartel[hidden]{display:none}.tl-pze-cartel img{width:12vw;border-radius:2vw}.tl-pze-cartel h1{font-size:4vw;margin:0}.tl-pze-cartel p{font-size:2vw;margin:0}

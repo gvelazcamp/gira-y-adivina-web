@@ -197,6 +197,8 @@ button:disabled,select:disabled{opacity:.4;cursor:default}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:30}
 /* La tele usa el mismo motor de piezas, sin menús ni botones táctiles encima. */
 body.tv-puzzle>header,body.tv-puzzle .zoom,body.tv-puzzle #hint,body.tv-puzzle #tuto,body.tv-puzzle #pareja,body.tv-puzzle #invitar,body.tv-puzzle #elegir,body.tv-puzzle #seguir,body.tv-puzzle #chatBtn,body.tv-puzzle #chat,body.tv-puzzle #chatBurbuja,body.tv-puzzle #gente,body.tv-puzzle #winShare,body.tv-puzzle #again{display:none!important}
+body.pz-espejo #bTutoPareja,body.pz-espejo #modo,body.pz-espejo #gente,body.pz-espejo #chatBtn,body.pz-espejo #pareja,body.pz-espejo #invitar{display:none!important}
+body.tv-ver canvas{pointer-events:none!important}body.tv-ver #tvPuzzleCursor{display:none!important}
 body.tv-puzzle .stats{font-size:clamp(18px,1.5vw,30px);padding:.5vw 1vw;top:1vw!important;left:1vw;background:#160B24DD}
 body.tv-puzzle #mini{width:clamp(105px,8vw,160px)}
 body.tv-puzzle #win .card{max-width:min(50vw,760px)}body.tv-puzzle #win h2{font-size:clamp(26px,3vw,58px)}body.tv-puzzle #win p{font-size:clamp(18px,1.4vw,30px)}body.tv-puzzle #winImg{max-width:min(35vw,520px)}
@@ -268,6 +270,10 @@ body.tv-puzzle #win .card{max-width:min(50vw,760px)}body.tv-puzzle #win h2{font-
 <script>
 const $=s=>document.querySelector(s);
 const ES_TV_PUZZLE=new URLSearchParams(location.search).get('tvpuzzle')==='1';
+/* Puzzle espejo (31/10/2026, Gonzalo: "juego desde el cel pero reproduzco en la tele"):
+   ?espejo=1 = el celular arma su puzzle normal y le pasa cada movimiento a la página de la tele;
+   ?tvpuzzle=1&ver=1 = la tele solo muestra (no se toca) lo que arma el celular. */
+const ES_ESPEJO=new URLSearchParams(location.search).get('espejo')==='1',ES_VER=ES_TV_PUZZLE&&new URLSearchParams(location.search).get('ver')==='1';
 /* Puzzles 3D: OCULTOS mientras se terminan de armar bien (pedido de Gonzalo, 25/10/2026). Solo los ve Gonzalo para probarlos. */
 function ver3D(){try{return !!(parent&&parent!==window&&typeof parent.esGonzalo==="function"&&parent.esGonzalo());}catch(_){return false}}
 document.addEventListener('DOMContentLoaded',()=>{if(!ver3D()){const o=document.querySelector('#img option[value="p3d"]');if(o)o.remove();}});
@@ -622,7 +628,7 @@ addEventListener('keydown',e=>{const k=e.key.toLowerCase();
 function toggleGuide(){ghost=!ghost;$('#guide').classList.toggle('on',ghost);dirty=true}
 
 /* ---------- ui ---------- */
-$('#volver').onclick=()=>{try{musica.pause()}catch(_){}guardar();if(coop)salirSalaSilencio();try{if(parent!==window&&parent.Extensiones){parent.Extensiones.abrirLobby();return}}catch(_){}location.href='index.html'};
+$('#volver').onclick=()=>{if(ES_ESPEJO){guardar();espejo({k:'salir'});return}try{musica.pause()}catch(_){}guardar();if(coop)salirSalaSilencio();try{if(parent!==window&&parent.Extensiones){parent.Extensiones.abrirLobby();return}}catch(_){}location.href='index.html'};
 $('#new').onclick=()=>abrirElegirSolo();$('#winImg').onclick=()=>verPrevia(true);
 /* El puzzle armado "estilo puzzle": la imagen con el corte de cada pieza
    marcado (relieve claro/oscuro como en el tablero). */
@@ -756,8 +762,8 @@ function recibir(pl){
    jugada y solo acepta jugadas más nuevas: así los mensajes repetidos o que
    llegan tarde por otro servidor no hacen "bailar" ni separar piezas. */
 function tick(){coop.reloj=Math.max(Date.now(),(coop.reloj||0)+1);return coop.reloj}
-function cambio(g){guardarLuego();if(!coop||!g||!coop.elegido)return;const t=tick();coop.act=t;for(const p of g.pieces)p.t=t;mandar({k:'gr',act:t,l:g.locked?1:0,p:g.pieces.map(p=>[p.i,r1(p.x),r1(p.y),p.r])});guardarSalaLuego()}
-function enviarMov(g){if(!coop||!coop.online)return;const n=performance.now();if(n-tMv<110)return;tMv=n;const t=tick();for(const p of g.pieces)p.t=t;mandar({k:'mv',act:t,p:g.pieces.map(p=>[p.i,Math.round(p.x),Math.round(p.y),p.r])})}
+function cambio(g){guardarLuego();if(ES_ESPEJO&&g)espejo({k:'gr',l:g.locked?1:0,p:g.pieces.map(p=>[p.i,r1(p.x),r1(p.y),p.r])});if(!coop||!g||!coop.elegido)return;const t=tick();coop.act=t;for(const p of g.pieces)p.t=t;mandar({k:'gr',act:t,l:g.locked?1:0,p:g.pieces.map(p=>[p.i,r1(p.x),r1(p.y),p.r])});guardarSalaLuego()}
+function enviarMov(g){if(ES_ESPEJO){const n=performance.now();if(n-tMvE>120){tMvE=n;espejo({k:'mv',p:g.pieces.map(p=>[p.i,Math.round(p.x),Math.round(p.y),p.r])})}}if(!coop||!coop.online)return;const n=performance.now();if(n-tMv<110)return;tMv=n;const t=tick();for(const p of g.pieces)p.t=t;mandar({k:'mv',act:t,p:g.pieces.map(p=>[p.i,Math.round(p.x),Math.round(p.y),p.r])})}
 /* Llega un grupo que la pareja soltó o unió: esas piezas pasan a formar
    exactamente ese grupo (saliendo de los grupos donde estaban acá). */
 function aplicarGrupo(m){
@@ -1111,7 +1117,17 @@ function tvPost(a,datos={}){if(ES_TV_PUZZLE&&parent!==window)parent.postMessage(
 function tvEstado(){if(!ES_TV_PUZZLE)return;const N=pieces.length;
   tvPost('estado',{n:N,pct:N>1?Math.round((N-groups.length)/(N-1)*100):0,tiempo:Math.round(elapsed),ganado:won,imagen:fuente.archivo||fuente.ciudad||''})}
 const tvCatalogo={dibujo:DIBUJOS,aventura:AVENTURAS,heroe:HEROES,ciudad:CIUDADES,gigante:GIGANTES};
+let tMvE=0,espF='',espT=0;
+function espejo(m){if(ES_ESPEJO&&parent!==window)try{parent.postMessage(Object.assign({t:'gya-pz-espejo'},m),location.origin)}catch(_){}}
+/* Cada vez que cambia el puzzle (o cada 6 s) va el estado completo, por si se perdió algún movimiento. */
+if(ES_ESPEJO)setInterval(()=>{if(!pieces.length)return;const f=(fuente.archivo||fuente.ciudad||'')+'|'+pieces.length,n=Date.now();if(f!==espF||n-espT>6000){espF=f;espT=n;espejo({k:'todo',d:estadoCompleto(),gano:won?1:0})}},800);
 function tvEntrada(m){if(!ES_TV_PUZZLE||!m||m.t!=='gya-tv-puzzle')return;
+  if(m.a==='espejo'&&ES_VER){const x=m.m||{};
+    if(x.k==='todo'&&x.d&&x.d.p){const d=x.d,mismo=pieces.length&&d.p.length===pieces.length&&(d.archivo||null)===(fuente.archivo||null)&&(d.ciudad||null)===(fuente.ciudad||null);
+      if(mismo){if(!won)aplicarTodo(d)}else{won=false;$('#win').classList.add('hide');busy=false;seguir(d,true).then(()=>{try{fit()}catch(_){}tvEstado()}).catch(()=>{})}}
+    else if(x.k==='gr'&&pieces.length)aplicarGrupo(x);
+    else if(x.k==='mv'&&pieces.length&&Array.isArray(x.p))moverRemoto(x.p,0);
+    return;}
   if(m.a==='iniciar'){
     const cat=String(m.cat||''),slug=String(m.slug||''),n=Number(m.n),lista=tvCatalogo[cat];
     if(!lista||!lista.includes(slug)||![12,25,49,70,100,150,300,500,1000].includes(n))return;
@@ -1139,10 +1155,12 @@ function tvEntrada(m){if(!ES_TV_PUZZLE||!m||m.t!=='gya-tv-puzzle')return;
   else if(m.a==='guia')toggleGuide();
   else if(m.a==='imagen')$('#prev').classList.toggle('hide');
 }
+if(ES_ESPEJO)document.body.classList.add('pz-espejo');
+if(ES_VER){const _t=toast;toast=function(){};document.body.classList.add('tv-ver');}
 if(ES_TV_PUZZLE){
   document.body.classList.add('tv-puzzle');const cursor=document.createElement('div');cursor.id='tvPuzzleCursor';document.body.appendChild(cursor);
   addEventListener('message',e=>{if(e.source===parent&&e.origin===location.origin)tvEntrada(e.data)});
-  resize();tvPost('listo',{catalogo:tvCatalogo,guardado:!!leerGuardado()});
+  resize();tvPost('listo',{catalogo:tvCatalogo,guardado:ES_VER?false:!!leerGuardado()});
 }else{
   resize();const d=leerGuardado();let inv=null;try{inv=parent.gyaPuzzleInvitacion;parent.gyaPuzzleInvitacion=null}catch(_){}if(inv){abrirPj();$('#pjCodigo').value=inv;unirse(inv)}else if(d)ofrecerSeguir(d);else newGame();
   /* "Cómo jugar" sale siempre al entrar (regla de Gonzalo), salvo con invitación. */
