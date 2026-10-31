@@ -13,6 +13,7 @@ body.solo-tele .intro img{width:clamp(80px,20vh,180px);height:clamp(80px,20vh,18
 body.solo-tele .tv-link{font-size:clamp(18px,4vh,34px);padding:2.6vh;background:#f5b301;color:#160b24;border:0}
 .soy-cel{display:none;background:none;border:0;color:#d7c8e5;text-decoration:underline;font:600 clamp(13px,2.2vh,18px) system-ui;margin-top:2.4vh;width:auto;margin-inline:auto;padding:6px}
 body.solo-tele .soy-cel{display:block}
+.avs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-height:190px;overflow-y:auto;padding:4px;border-radius:12px}.avs.falta{outline:2px solid #ff6b81}.av{margin:0!important;padding:0!important;background:none!important;border:3px solid transparent!important;border-radius:50%!important;aspect-ratio:1}.av img{width:100%;height:100%;border-radius:50%;display:block}.av.sel{border-color:#f5b301!important;box-shadow:0 0 10px #f5b301}
 .yo{display:flex;align-items:center;justify-content:center;gap:12px;margin:12px 0 4px;font-size:1.05em}.yo img{width:56px;height:56px;border-radius:50%;border:2px solid #f5b301}.yo b{color:#f5b301}
 .pasos{text-align:left;margin:10px 0 4px;padding-left:22px;line-height:1.4;font-size:.92em;color:#e8dcf3}.pasos li{margin:4px 0}
 form>strong,section>strong{display:block;font-size:1.1em;color:#f5b301}
@@ -22,7 +23,7 @@ body.solo-tele .tv-pregunta{display:none}body.solo-tele .tv-box .tv-link{font-si
 <body><main><div class="intro"><img src="../icono-192.png" alt="Girá y Adiviná"><h1>Juegos en la tele</h1><p>La tele muestra el juego y cada uno responde desde su celular.</p></div>
 <div class="panel"><section id="linked" hidden><strong>📱 Unirme a mi tele</strong><div class="yo" id="yo2" hidden><img id="yoAv2" alt=""><span>Entrás como <b id="yoN2"></b></span></div><p id="linkedInfo"></p><button type="button" id="quickStart">▶ Unirme a la tele</button><button type="button" class="sec" id="changeTv">Otra tele u otro nombre</button></section>
 <form id="f"><strong>📱 Unirme desde este celular</strong><ol class="pasos"><li>En la tele abrí <b>girayadivina.com/tele</b> y tocá «Esta pantalla es la tele».</li><li>Escaneá el QR de la tele o escribí acá el código.</li></ol><div class="yo" id="yo" hidden><img id="yoAv" alt=""><span>Entrás como <b id="yoN"></b></span></div><label for="n" id="nLbl">Tu nombre</label><input id="n" maxlength="14" required autocomplete="nickname" placeholder="¿Cómo te llamás?">
-<label for="c">Código de la tele</label><input id="c" minlength="4" maxlength="6" required autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Ej.: K7RQ2">
+<div id="elegirAv" hidden><label>Elegí tu avatar</label><div class="avs" id="avs"></div></div><label for="c">Código de la tele</label><input id="c" minlength="4" maxlength="6" required autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Ej.: K7RQ2">
 <button>▶ Unirme a la tele</button></form></div>
 <div class="tv-box"><p class="tv-pregunta">¿Esta pantalla es la tele?</p><a class="tv-link" id="tvLink" href="../index.html?tele=1">📺 Esta pantalla es la tele</a><button type="button" class="soy-cel" id="soyCel">Estoy en un celular o tablet: unirme con el código</button></div>
 <small>La tele y los celulares necesitan internet.</small></main>
@@ -32,6 +33,12 @@ document.getElementById("soyCel").onclick=()=>document.body.classList.remove("so
 const q=new URLSearchParams(location.search),nombre=document.getElementById("n"),codigo=document.getElementById("c"),form=document.getElementById("f"),linked=document.getElementById("linked");
 let guardado="",perfilN="",perfilAv="";try{perfilN=(localStorage.getItem("gya_nombre")||"").trim();perfilAv=localStorage.getItem("gya_avatar")||"";nombre.value=perfilN||localStorage.getItem("gya_tele_nombre")||"";guardado=localStorage.getItem("gya_tele_vinculada")||"";}catch(e){}
 /* Con perfil en el juego no se pide el nombre: entra con su nombre y su avatar (31/10/2026). */
+/* Si nunca jugó (sin perfil): nombre + avatar gratis, guardado en gya_tele_avatar (no toca el perfil del juego). */
+const AV_GRATIS=[...Array.from({length:21},(_,i)=>"avatar-"+String(i+1).padStart(2,"0")),"avatar-33",...Array.from({length:13},(_,i)=>"avatar-"+(42+i))];
+let avElegido="";try{avElegido=localStorage.getItem("gya_tele_avatar")||"";}catch(e){}if(!AV_GRATIS.includes(avElegido))avElegido="";
+if(!perfilN){document.getElementById("elegirAv").hidden=false;const cont=document.getElementById("avs");
+  AV_GRATIS.forEach(a=>{const b=document.createElement("button");b.type="button";b.className="av"+(a===avElegido?" sel":"");b.innerHTML='<img src="../assets/avatars/'+a+'.webp" alt="" loading="lazy">';
+    b.onclick=()=>{avElegido=a;cont.classList.remove("falta");cont.querySelectorAll(".av").forEach(x=>x.classList.toggle("sel",x===b));try{localStorage.setItem("gya_tele_avatar",a);}catch(e){}};cont.appendChild(b);});}
 if(perfilN){nombre.hidden=true;nombre.required=false;document.getElementById("nLbl").hidden=true;
   for(const k of ["",2]){document.getElementById("yo"+k).hidden=false;document.getElementById("yoN"+k).textContent=perfilN;
     document.getElementById("changeTv").textContent="Usar otra tele";
@@ -48,5 +55,5 @@ if(guardado&&!indicado&&!q.has("cambiar")&&nombre.value.trim()){
 }
 document.getElementById("quickStart").onclick=()=>entrar(guardado,nombre.value.trim().slice(0,14));
 document.getElementById("changeTv").onclick=()=>{linked.hidden=true;form.hidden=false;codigo.focus();};
-form.onsubmit=e=>{e.preventDefault();const c=codigo.value.toUpperCase().replace(/[^A-Z0-9]/g,""),n=nombre.value.replace(/[<>&"']/g,"").trim().slice(0,14);if(c.length<4||!n)return;try{localStorage.setItem("gya_tele_nombre",n);}catch(e){}entrar(c,n);};
+form.onsubmit=e=>{e.preventDefault();const c=codigo.value.toUpperCase().replace(/[^A-Z0-9]/g,""),n=nombre.value.replace(/[<>&"']/g,"").trim().slice(0,14);if(c.length<4||!n)return;if(!perfilN&&!avElegido){const e=document.getElementById("avs");e.classList.add("falta");e.scrollIntoView({block:"center",behavior:"smooth"});return;}try{localStorage.setItem("gya_tele_nombre",n);}catch(e){}entrar(c,n);};
 </script></body></html>

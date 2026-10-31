@@ -2114,3 +2114,7 @@ Fecha: 31/10/2026 — girayadivina.com/tele más claro en el celular (Gonzalo: "
 ```text
 Fecha: 31/10/2026 — /tele en el celular ya no pide el nombre si hay perfil (Gonzalo: "tu nombre no, va a traer el avatar y nombre"): muestra "Entrás como <nombre>" con la foto del avatar (gya_nombre/gya_avatar) y solo pide el código; el botón de cambiar dice "Usar otra tele". Sin perfil (celular nuevo) sigue pidiendo el nombre. sw v614.
 ```
+
+```text
+Fecha: 31/10/2026 — /tele: si la persona nunca jugó (sin perfil), pide nombre y que elija un avatar gratis (grilla de los 35, se marca en dorado; sin elegir no deja entrar). Se guarda en gya_tele_avatar (no toca el perfil del juego) y el celular lo manda a la tele (hola.av = gya_avatar || gya_tele_avatar), así sale con su avatar en el atril y el podio. tele.js v37, sw v615.
+```
