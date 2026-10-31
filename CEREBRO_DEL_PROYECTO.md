@@ -2106,3 +2106,7 @@ Fecha: 30/10/2026 — Juegos en la tele: cada uno juega con SU AVATAR (Gonzalo: 
 ```text
 Fecha: 30/10/2026 — Podio de la tele: cada avatar parado DETRÁS de su escalón (el escalón tapa el corte de la imagen) con nombre y puntos ARRIBA (Gonzalo: "los avatars tienen que estar encima del atril y nombres arriba, así se ve el corte"). En los de una sola persona (¿Quién soy?, etc.) el avatar va sobre una base dorada. Avatars más grandes. tele.js v36, tele.css v22, sw v610.
 ```
+
+```text
+Fecha: 31/10/2026 — girayadivina.com/tele más claro en el celular (Gonzalo: "está confuso: pongo esta pantalla es la tele y en el cel veo lo mismo, y para entrar del cel tengo que poner crear sala en mi tele"). Ahora en el celular lo primero es "📱 Unirme desde este celular" con 2 pasos (1: en la tele abrir girayadivina.com/tele y tocar «Esta pantalla es la tele»; 2: escanear el QR o escribir el código), nombre, código y botón "▶ Unirme a la tele". Si ya se usó esa tele: "📱 Unirme a mi tele · Código X · Nombre" con "▶ Unirme a la tele" y "Otra tele u otro nombre" (antes decía "Crear sala en mi tele"). «Esta pantalla es la tele» pasó abajo, chico, con "¿Esta pantalla es la tele?"; en la tele/compu (horizontal) sigue siendo lo único y grande. Si viene del QR, no aparece. sw v613.
+```

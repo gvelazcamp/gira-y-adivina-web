@@ -12,13 +12,19 @@ body.solo-tele main{display:block;max-width:760px}body.solo-tele .panel,body.sol
 body.solo-tele .intro img{width:clamp(80px,20vh,180px);height:clamp(80px,20vh,180px)}body.solo-tele h1{font-size:clamp(28px,8vh,72px)}
 body.solo-tele .tv-link{font-size:clamp(18px,4vh,34px);padding:2.6vh;background:#f5b301;color:#160b24;border:0}
 .soy-cel{display:none;background:none;border:0;color:#d7c8e5;text-decoration:underline;font:600 clamp(13px,2.2vh,18px) system-ui;margin-top:2.4vh;width:auto;margin-inline:auto;padding:6px}
-body.solo-tele .soy-cel{display:block}</style></head>
-<body><main><div class="intro"><img src="../icono-192.png" alt="Girá y Adiviná"><h1>Juegos en la tele</h1><p>Creá la sala desde tu celular. La tele muestra el juego y los celulares responden.</p><a class="tv-link" id="tvLink" href="../index.html?tele=1">📺 Esta pantalla es la tele</a><button type="button" class="soy-cel" id="soyCel">Estoy en un celular o tablet: entrar con el código</button></div>
-<div class="panel"><section id="linked" hidden><strong>Tu tele ya está vinculada</strong><p id="linkedInfo"></p><button type="button" id="quickStart">Crear sala en mi tele</button><button type="button" class="sec" id="changeTv">Usar otra tele o cambiar nombre</button></section>
-<form id="f"><p>La primera vez, abrí esta página en la tele y tocá «Esta pantalla es la tele». Después escribí acá el código que aparezca.</p><label for="n">Tu nombre</label><input id="n" maxlength="14" required autocomplete="nickname" placeholder="¿Cómo te llamás?">
-<label for="c">Código que aparece en la tele</label><input id="c" minlength="4" maxlength="6" required autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Ej.: K7RQ2">
-<button>Vincular tele y crear sala</button></form></div>
-<small>La tele debe tener el juego abierto y ambos dispositivos necesitan internet. El enlace anterior con ?tele=1 también sigue funcionando.</small></main>
+body.solo-tele .soy-cel{display:block}
+.pasos{text-align:left;margin:10px 0 4px;padding-left:22px;line-height:1.4;font-size:.92em;color:#e8dcf3}.pasos li{margin:4px 0}
+form>strong,section>strong{display:block;font-size:1.1em;color:#f5b301}
+.tv-box{margin-top:6px}.tv-pregunta{margin:0;font-size:.85em;color:#bfafd1}.tv-box .tv-link{margin-top:6px;font-size:.92em;padding:12px}
+body.solo-tele .tv-pregunta{display:none}body.solo-tele .tv-box .tv-link{font-size:clamp(18px,4vh,34px);padding:2.6vh}
+@media(orientation:landscape) and (min-width:700px){.tv-box{grid-column:1/-1}}</style></head>
+<body><main><div class="intro"><img src="../icono-192.png" alt="Girá y Adiviná"><h1>Juegos en la tele</h1><p>La tele muestra el juego y cada uno responde desde su celular.</p></div>
+<div class="panel"><section id="linked" hidden><strong>📱 Unirme a mi tele</strong><p id="linkedInfo"></p><button type="button" id="quickStart">▶ Unirme a la tele</button><button type="button" class="sec" id="changeTv">Otra tele u otro nombre</button></section>
+<form id="f"><strong>📱 Unirme desde este celular</strong><ol class="pasos"><li>En la tele abrí <b>girayadivina.com/tele</b> y tocá «Esta pantalla es la tele».</li><li>Escaneá el QR de la tele o escribí acá el código.</li></ol><label for="n">Tu nombre</label><input id="n" maxlength="14" required autocomplete="nickname" placeholder="¿Cómo te llamás?">
+<label for="c">Código de la tele</label><input id="c" minlength="4" maxlength="6" required autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Ej.: K7RQ2">
+<button>▶ Unirme a la tele</button></form></div>
+<div class="tv-box"><p class="tv-pregunta">¿Esta pantalla es la tele?</p><a class="tv-link" id="tvLink" href="../index.html?tele=1">📺 Esta pantalla es la tele</a><button type="button" class="soy-cel" id="soyCel">Estoy en un celular o tablet: unirme con el código</button></div>
+<small>La tele y los celulares necesitan internet.</small></main>
 <script>
 if(matchMedia("(orientation:landscape) and (min-width:900px)").matches&&!new URLSearchParams(location.search).has("cambiar"))document.body.classList.add("solo-tele");
 document.getElementById("soyCel").onclick=()=>document.body.classList.remove("solo-tele");
@@ -27,7 +33,7 @@ let guardado="";try{nombre.value=localStorage.getItem("gya_tele_nombre")||localS
 if(!/^[A-Z0-9]{4,6}$/.test(guardado))guardado="";
 const indicado=(q.get("codigo")||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
 /* Si vino del QR de la tele, el código ya está: se oculta "Esta pantalla es la tele" y solo falta el nombre. */
-if(indicado){codigo.value=indicado;document.getElementById("tvLink").hidden=true;if(!nombre.value.trim())setTimeout(()=>nombre.focus(),300);}
+if(indicado){codigo.value=indicado;document.querySelector(".tv-box").hidden=true;if(!nombre.value.trim())setTimeout(()=>nombre.focus(),300);}
 if(q.get("telered")==="local")document.getElementById("tvLink").href+="&telered=local";
 function entrar(c,n){const destino=new URL("../index.html",location.href);destino.searchParams.set("telecel",c);destino.searchParams.set("n",n);if(q.get("telered")==="local")destino.searchParams.set("telered","local");location.href=destino.href;}
 if(guardado&&!indicado&&!q.has("cambiar")&&nombre.value.trim()){
