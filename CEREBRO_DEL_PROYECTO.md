@@ -2130,3 +2130,7 @@ Fecha: 31/10/2026 — Inicio: el ⚙️ (Más opciones) había desaparecido en e
 ```text
 Fecha: 31/10/2026 — Inicio: la fila 🔥/🪙/❤️/📺/🔊/⚙️ siempre en UNA línea (Gonzalo: "que no quede en una segunda línea, que se achique lo que dice monedas"). En celulares (≤480 px) se oculta la palabra "monedas" (queda 🪙 y el número, span .txt-monedas) y se achican pastillas y botones redondos (24 px). Entra en 360 px. sw v618.
 ```
+
+```text
+Fecha: 31/10/2026 — Textos de la cuenta de Google más claros (Gonzalo: "¿es guardar mi progreso o continuar?… algo más claro"). En ⚙️: "Vincular con Google" (antes "Guardar mi progreso") y, ya vinculado, "Cuenta de Google ✓" (antes "Partida vinculada"); el aviso explica que es la misma partida en celular, app y compu y que se hace en cada aparato. Cartel cuando hay dos partidas: "☁️ Usar la de mi cuenta (traerla acá)" y "📱 Usar la de este aparato (subirla a mi cuenta)", con la ayuda "si es donde más jugás, la de este aparato; si es uno nuevo, la de tu cuenta" (la otra queda como respaldo gya_cuenta_respaldo_*). cuenta.js v6, sw v619.
+```
