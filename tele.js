@@ -790,9 +790,11 @@
     }
     const items=armar(),est=items.map(()=>"pendiente"),resp=items.map(()=>"");
     let actual=0,tiempo=SEGUNDOS*1000,fase="show",ultimo=null,cambio=0,angPrevio=0,muerto=false,etapaPrev="",etapaT=0;
+    let vozBloqueada=true,vozRonda=0,vozBloqueoId=0,vozRespaldo=null,vozReanudar=null;
     const G=()=>window.GiroRoscoPiloto;
     const jugador=()=>T.jug.find(j=>j.pid===T.mando)||{};
-    const aJugar=()=>{if(muerto||fase!=="show")return;fase="jugando";actualizar();};
+    const aJugar=()=>{if(muerto||fase!=="show")return;fase="jugando";const id=++vozBloqueoId;
+      actualizar();vozReanudar=setTimeout(()=>reanudarVoz(id),600);};
     /* Apertura con música → Giro presenta → participante en su atril → partida en el estudio. En la revancha, sin la apertura. */
     cargarGiro(ok=>{
       if(muerto)return;
@@ -805,7 +807,21 @@
       if(giroAperturaVista){presentar();return;}
       giroAperturaVista=true;if(!G().mostrarInicio(presentar))aJugar();
     }
-    const reaccionar=tipo=>{try{const aro=document.querySelector("#teleTV .tl-aro");if(aro&&G())G().reaccion(tipo,aro);}catch(e){}};
+    const reaccionar=(tipo,fin)=>{try{const aro=document.querySelector("#teleTV .tl-aro");if(aro&&G())G().reaccion(tipo,aro,fin);else fin?.();}catch(e){fin?.();}};
+    function reanudarVoz(id){
+      if(muerto||fase!=="jugando"||id!==vozBloqueoId)return;
+      clearTimeout(vozRespaldo);clearTimeout(vozReanudar);vozRespaldo=vozReanudar=null;
+      vozBloqueada=false;vozDesde=Date.now();actualizar();
+    }
+    function pausarPorGiro(tipo){
+      vozBloqueada=true;const id=++vozBloqueoId;clearTimeout(vozRespaldo);clearTimeout(vozReanudar);
+      actualizar();
+      const fin=()=>{if(muerto||id!==vozBloqueoId)return;clearTimeout(vozRespaldo);
+        vozReanudar=setTimeout(()=>reanudarVoz(id),600);};
+      /* Si el navegador no avisa que terminó el audio, la partida se recupera. */
+      vozRespaldo=setTimeout(fin,4200);
+      reaccionar(tipo,fin);
+    }
     const pend=()=>est.map((s,i)=>s==="pendiente"?i:-1).filter(i=>i>=0);
     function avanzar(){const p=pend();if(!p.length){terminar();return;}actual=p.find(i=>i>actual)??p[0];}
     function terminar(){if(fase==="fin"||fase==="cierre")return;const ok=est.filter(s=>s==="ok").length,mal=est.filter(s=>s==="mal").length;
@@ -818,30 +834,37 @@
       if(m.a==="rs_seguir"){if(G()&&(fase==="show"||fase==="cierre"))G().avanzar();return;}
       if(fase==="show"||fase==="cierre")return;
       if(fase==="fin"){if(m.a==="otra")T.otra();return;}
+      if(vozBloqueada)return;
       if(m.a==="pasar"){pasarLetra();return;}
       if(m.a==="responder"){const txt=limpio(m.txt,40);if(txt)responder(txt);return;}
-      if(m.a==="dc_voz"){vozCelular(m.l);return;}
+      if(m.a==="dc_voz"){vozCelular(m.l,m.turno);return;}
     }
-    function pasarLetra(){vozDesde=Date.now()+1200;ultimo={i:actual,tipo:"paso"};cambio=Date.now();SND.turno();avanzar();actualizar();if(fase==="jugando")reaccionar("pasar");}
+    function pasarLetra(){vozDesde=Date.now()+1200;vozBloqueada=true;vozRonda++;ultimo={i:actual,tipo:"paso"};cambio=Date.now();SND.turno();avanzar();if(fase==="jugando")pausarPorGiro("pasar");else actualizar();}
     function responder(txt){
-      const d=items[actual],ok=vale(d,norm(txt));vozDesde=Date.now()+1200;
+      const d=items[actual],ok=vale(d,norm(txt));vozDesde=Date.now()+1200;vozBloqueada=true;vozRonda++;
       est[actual]=ok?"ok":"mal";resp[actual]=txt;ultimo={i:actual,tipo:ok?"ok":"mal",palabra:d.palabra,dijo:txt};cambio=Date.now();
       if(ok)SND.ok();else SND.mal();
-      avanzar();actualizar();if(fase==="jugando")reaccionar(ok?"acierto":"error");
+      avanzar();if(fase==="jugando")pausarPorGiro(ok?"acierto":"error");else actualizar();
     }
-    /* Responder hablando al celular (como el Rosco del celular): el acierto se toma
-       al instante (aun parcial), «Pasar» pasa y una respuesta final equivocada es error
-       en el acto. Durante 1,2 s después de cada respuesta se ignora lo que llegue tarde. */
+    /* Los aciertos y Pasar entran al instante; una respuesta final equivocada
+       cuenta como error. Mientras habla Giro el celular deja de escuchar. */
     let vozDesde=0;
     const INTRO=/^(?:(?:(?:la|mi)\s+)?(?:respuesta|palabra)\s+(?:es|ser[ií]a)|(?:yo\s+)?(?:creo|pienso)\s+que\s+es|(?:yo\s+)?digo|se\s+llama|(?:es|ser[ií]a))\s+/i;
-    function vozCelular(lista){
-      if(fase!=="jugando"||Date.now()<vozDesde||!Array.isArray(lista))return;
+    /* Respaldo por si el altavoz de la tele llega al celular con retraso. */
+    const ecoGiro=new Set(["Correcto","Muy bien","Eso es","Excelente","Uy no era esa","Uh casi","No no no","Qué lástima","Pasamos","Seguimos con otra","Se termina el tiempo","Rápido rápido"]
+      .map(t=>sinTilde(t).replace(/[^A-Z]/g,"")));
+    function vozCelular(lista,turno){
+      if(fase!=="jugando"||vozBloqueada||Date.now()<vozDesde||turno!==undefined&&turno!==vozRonda||!Array.isArray(lista))return;
       for(const res of lista.slice(0,5)){
         const alts=(Array.isArray(res&&res.alts)?res.alts:[]).slice(0,5).map(x=>limpio(String(x||"").replace(/[¿¡!?,.;:]+$/g,""),60)).filter(Boolean);if(!alts.length)continue;
         const oi=document.querySelector("#tlOi");if(oi)oi.textContent="🎙 Oí: «"+alts[0]+"»";
         if(alts.some(t=>["PASAPALABRA","PASAR","PASO","PASA"].includes(sinTilde(t).replace(/[^A-Z]/g,"")))){if(res.isFinal||sinTilde(alts[0]).replace(/[^A-Z]/g,"")==="PASAR"){pasarLetra();return;}continue;}
         const d=items[actual],cands=alts.flatMap(t=>{const a=t.replace(INTRO,"");return[t,a,a.replace(/^(?:el|la|los|las|un|una)\s+/i,"")];});
         const buena=cands.find(t=>vale(d,norm(t)));if(buena){responder(buena);return;}
+        if(alts.every(t=>ecoGiro.has(sinTilde(t).replace(/[^A-Z]/g,"")))){
+          if(oi)oi.textContent="🔇 Giro habló; no cuenta como respuesta";
+          continue;
+        }
         if(res.isFinal){responder(alts[0]);return;}
       }
     }
@@ -850,7 +873,7 @@
     function tic(dt){
       if(fase==="show"||fase==="cierre"){const e=G()&&G().etapa?G().etapa():"";if(e!==etapaPrev){etapaPrev=e;etapaT=0;}else etapaT+=dt;
         if(ESPERA[e]&&etapaT>ESPERA[e]){etapaT=-1e9;G().avanzar();}return;}
-      if(fase!=="jugando")return;const antesR=tiempo;tiempo-=dt;ticFinal(antesR,Math.max(0,tiempo));if(tiempo<=0){tiempo=0;SND.tiempo();reaccionar("tiempo");terminar();return;}
+      if(fase!=="jugando"||vozBloqueada)return;const antesR=tiempo;tiempo-=dt;ticFinal(antesR,Math.max(0,tiempo));if(tiempo<=0){tiempo=0;SND.tiempo();reaccionar("tiempo");terminar();return;}
       const r=T.g&&document.querySelector("#tlReloj");if(r)r.textContent=reloj(tiempo);}
     const reloj=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0");};
     const regla=d=>(norm(d.palabra)[0]===d.letra?"Empieza con la ":"Contiene la ")+d.letra;
@@ -876,9 +899,9 @@
       /* El rosco gira hasta poner adelante la letra del turno. */
       const g=raiz.querySelector(".tl-giro");requestAnimationFrame(()=>requestAnimationFrame(()=>{if(g)g.style.setProperty("--a",ang+"deg");}));angPrevio=ang;
     }
-    return{accion,tic,pintar,fin(){muerto=true;try{if(G())G().cerrar();}catch(e){}},cel(){
+    return{accion,tic,pintar,fin(){muerto=true;clearTimeout(vozRespaldo);clearTimeout(vozReanudar);try{if(G())G().cerrar();}catch(e){}},cel(){
       if(fase==="show"||fase==="cierre")return{pantalla:"rosco_show",fase};
-      return fase==="fin"?{pantalla:"fin",juego:"rosco",resumen:est.filter(s=>s==="ok").length+" aciertos"}:{pantalla:"rosco",letra:items[actual].letra,regla:regla(items[actual]),escucha:fase==="jugando"?T.mando:null,i:actual};}};
+      return fase==="fin"?{pantalla:"fin",juego:"rosco",resumen:est.filter(s=>s==="ok").length+" aciertos"}:{pantalla:"rosco",letra:items[actual].letra,regla:regla(items[actual]),escucha:fase==="jugando"&&!vozBloqueada?T.mando:null,puede:!vozBloqueada,turno:vozRonda,i:actual};}};
   }
 
   /* ---------- Ahorcado: la partida como en el celular; el celular es el teclado ---------- */
@@ -1260,10 +1283,10 @@
     }
 
     /* ---------- Duelo en la tele: este celular es el micrófono del jugador ---------- */
-    let dcRec=null,dcOyendo=false,dcDebe=false,dcLetra=-1,dcParcial=null,dcParcialT=null,dcUltimo="",dcEnvio=0,dcPermiso=(()=>{try{return localStorage.getItem("gya_tele_mic")==="1";}catch(e){return false;}})();
+    let dcRec=null,dcOyendo=false,dcDebe=false,dcLetra=-1,dcTurno=-1,dcParcial=null,dcParcialT=null,dcUltimo="",dcEnvio=0,dcPermiso=(()=>{try{return localStorage.getItem("gya_tele_mic")==="1";}catch(e){return false;}})();
     function dcVoz(debe){
       dcDebe=debe;
-      if(!debe){dcOyendo=false;if(dcRec){const r=dcRec;dcRec=null;try{r.abort();}catch(e){}}return;}
+      if(!debe){dcOyendo=false;clearTimeout(dcParcialT);dcParcial=null;dcUltimo="";if(dcRec){const r=dcRec;dcRec=null;try{r.abort();}catch(e){}}return;}
       if(dcRec||!dcPermiso)return;
       const Ctor=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Ctor)return;
       const r=new Ctor();dcRec=r;r.lang="es-UY";r.continuous=true;r.interimResults=true;r.maxAlternatives=5;
@@ -1273,12 +1296,12 @@
         const txt=(l[l.length-1]?.alts[0]||"").trim();const el=raiz.querySelector("#tlDcOi");if(el&&txt)el.textContent="Oí: «"+txt+"»";
         /* Android a veces deja la frase "a medio escribir" y nunca la cierra: si queda quieta 1,5 s, se manda como final. */
         clearTimeout(dcParcialT);dcParcial=null;
-        if(!hayFinal&&txt){dcParcial=txt;dcParcialT=setTimeout(()=>{if(dcRec===r&&dcParcial===txt){dcParcial=null;mandar({t:"accion",a:"dc_voz",l:[{alts:[txt],isFinal:true}]});}},1500);}
+        if(!hayFinal&&txt){dcParcial=txt;dcParcialT=setTimeout(()=>{if(dcRec===r&&dcParcial===txt){dcParcial=null;mandar({t:"accion",a:"dc_voz",turno:dcTurno,l:[{alts:[txt],isFinal:true}]});}},1500);}
         const ahora=Date.now();if(!hayFinal&&(txt===dcUltimo||ahora-dcEnvio<250))return;dcUltimo=txt;dcEnvio=ahora;
-        mandar({t:"accion",a:"dc_voz",l});};
+        mandar({t:"accion",a:"dc_voz",turno:dcTurno,l});};
       r.onerror=e=>{if(dcRec!==r)return;if(["not-allowed","service-not-allowed"].includes(e.error)){dcPermiso=false;try{localStorage.removeItem("gya_tele_mic");}catch(x){}pantallaPintada="";}};
       r.onend=()=>{if(dcRec!==r)return;dcRec=null;dcOyendo=false;
-        clearTimeout(dcParcialT);if(dcParcial&&dcDebe){mandar({t:"accion",a:"dc_voz",l:[{alts:[dcParcial],isFinal:true}]});}dcParcial=null;if(dcDebe)setTimeout(()=>{if(dcDebe&&!dcRec)dcVoz(true);},300);};
+        clearTimeout(dcParcialT);if(dcParcial&&dcDebe){mandar({t:"accion",a:"dc_voz",turno:dcTurno,l:[{alts:[dcParcial],isFinal:true}]});}dcParcial=null;if(dcDebe)setTimeout(()=>{if(dcDebe&&!dcRec)dcVoz(true);},300);};
       try{r.start();}catch(e){dcRec=null;}
     }
     function pintarDuelo(c,cab,soyMando){
@@ -1424,7 +1447,9 @@
       if(c.pantalla==="tutti"){pintarTutti(c,cab,soyMando);return;}
       if(c.pantalla==="puzzle"){pintarPuzzle(c,cab,soyMando);return;}
       if(c.pantalla!=="duelo"&&c.pantalla!=="rosco")dcVoz(false);
-      if(c.pantalla==="rosco"){const debe=c.escucha===yo&&soyMando;if(debe&&dcRec&&dcLetra!==c.i){try{dcRec.abort();}catch(e){}}dcLetra=c.i;dcVoz(debe);}
+      if(c.pantalla==="rosco"){const debe=c.escucha===yo&&soyMando;
+        if(dcRec&&(dcLetra!==c.i||dcTurno!==c.turno))dcVoz(false);
+        dcLetra=c.i;dcTurno=c.turno;dcVoz(debe);}
       if(c.pantalla==="duelo"){pintarDuelo(c,cab,soyMando);return;}
       if(c.pantalla==="quien"){pintarQuien(c,cab,soyMando);return;}
       if(c.pantalla==="mimica"){pintarMimica(c,cab,soyMando);return;}
@@ -1453,10 +1478,10 @@
       if(c.pantalla==="rosco"||c.pantalla==="cien"){
         const rosco=c.pantalla==="rosco";
         raiz.innerHTML=cab+`<div class="tl-cel-caja">${rosco?`<div class="tl-cel-letra">${esc(c.letra)}</div><p>${esc(c.regla||"")}</p>
-          ${dcPermiso?`<div class="tl-dc-mic${c.escucha===yo?" tl-dc-on":""}" id="tlDcMic">${dcOyendo?"🎙 Te escucho · decí la palabra o «Pasar»":"🎙 Activando micrófono…"}</div><p class="tl-dc-oi" id="tlDcOi"></p>`:`<button type="button" class="tl-boton tl-oro" id="tlDcPermiso">🎙 Responder hablando</button>`}`:`<p class="tl-cel-preg">${esc(c.pregunta||"")}</p>`}
-          <input id="tlTexto" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${rosco?"Tu respuesta":"Lo que dice el grupo"}" ${!rosco&&!c.puede?"disabled":""}>
-          <button type="button" class="tl-boton tl-oro" id="tlEnviar" ${!rosco&&!c.puede?"disabled":""}>Enviar</button>
-          ${rosco?`<button type="button" class="tl-boton" id="tlPasar">⏭ Pasar</button>`:""}${menu}</div>`;
+          ${dcPermiso?`<div class="tl-dc-mic${c.escucha===yo?" tl-dc-on":""}" id="tlDcMic">${c.puede===false?"🔇 Giro está hablando · esperá":dcOyendo?"🎙 Te escucho · decí la palabra o «Pasar»":"🎙 Activando micrófono…"}</div><p class="tl-dc-oi" id="tlDcOi"></p>`:`<button type="button" class="tl-boton tl-oro" id="tlDcPermiso">🎙 Responder hablando</button>`}`:`<p class="tl-cel-preg">${esc(c.pregunta||"")}</p>`}
+          <input id="tlTexto" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${rosco?"Tu respuesta":"Lo que dice el grupo"}" ${c.puede===false?"disabled":""}>
+          <button type="button" class="tl-boton tl-oro" id="tlEnviar" ${c.puede===false?"disabled":""}>Enviar</button>
+          ${rosco?`<button type="button" class="tl-boton" id="tlPasar" ${c.puede===false?"disabled":""}>⏭ Pasar</button>`:""}${menu}</div>`;
         const t=raiz.querySelector("#tlTexto");if(escribiendo)t.value=escribiendo;
         const enviar=()=>{const v=t.value.trim();if(!v)return;accion("responder",{txt:v});t.value="";t.focus();};
         raiz.querySelector("#tlEnviar").onclick=enviar;t.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();enviar();}};

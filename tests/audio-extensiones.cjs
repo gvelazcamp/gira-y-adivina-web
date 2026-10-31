@@ -59,7 +59,7 @@ const server=http.createServer((req,res)=>{
     });
     assert.deepEqual(estado,{principal:true,sopa:true,rosco:true});
     await page.evaluate(()=>{window.GIRO_ROSCO_PILOTO=true;});
-    await page.addScriptTag({url:base+"/giro-rosco-piloto.js?v=38"});
+    await page.addScriptTag({url:base+"/giro-rosco-piloto.js?v=39"});
     const giro=await page.evaluate(()=>{
       document.querySelector(".rr-game")?.classList.add("rr-estudio");
       GiroRoscoPiloto.reaccion("acierto");

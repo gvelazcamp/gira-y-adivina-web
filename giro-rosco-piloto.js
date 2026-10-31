@@ -231,9 +231,9 @@
     if(reacAudio){try{reacAudio.pause();reacAudio.currentTime=0;}catch(e){}reacAudio=null;}
     document.querySelector(".rr-game.rr-estudio .grp-reac,#teleTV .grp-reac")?.remove();
   }
-  function reaccion(tipo,contenedor){
-    const r=REACCIONES[tipo];if(!r||!habilitado())return;
-    const rueda=contenedor||document.querySelector(".rr-game.rr-estudio .rr-rueda");if(!rueda)return;
+  function reaccion(tipo,contenedor,alTerminar){
+    const r=REACCIONES[tipo];if(!r||!habilitado()){alTerminar?.();return;}
+    const rueda=contenedor||document.querySelector(".rr-game.rr-estudio .rr-rueda");if(!rueda){alTerminar?.();return;}
     let opciones=r.frases.filter(f=>f!==ultimaFrase[tipo]);if(!opciones.length)opciones=r.frases;
     const frase=opciones[Math.floor(Math.random()*opciones.length)];ultimaFrase[tipo]=frase;
     rueda.querySelector(".grp-reac")?.remove();clearTimeout(reacTimer);
@@ -248,7 +248,13 @@
       caja.append(giro,atril);rueda.appendChild(caja);
       reacTimer=setTimeout(()=>caja.remove(),1700);
     });
-    try{if(reacAudio)reacAudio.pause();reacAudio=new Audio(BASE+"voz/reacciones/giro-"+frase+".mp3");reacAudio.play().catch(()=>{});}catch(e){}
+    try{
+      if(reacAudio)reacAudio.pause();
+      const audio=new Audio(BASE+"voz/reacciones/giro-"+frase+".mp3");reacAudio=audio;
+      const terminar=()=>{if(reacAudio!==audio)return;reacAudio=null;alTerminar?.();};
+      audio.onended=terminar;audio.onerror=terminar;
+      audio.play().catch(terminar);
+    }catch(e){alTerminar?.();}
   }
   /* Las llama el Rosco al tocar Jugar (solo) — siguiente() arranca la partida. */
   function presentarSolo(siguiente,opc){
