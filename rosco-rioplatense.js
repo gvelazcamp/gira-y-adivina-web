@@ -56,9 +56,13 @@ const RoscoRioplatense=(()=>{
   const normalizar=s=>String(s??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]/g,"");
   /* Vale la palabra, sus alternativas, y también la palabra con un complemento corto "de/del…"
      (ej. "pronóstico del tiempo" para PRONOSTICO): reclamos de jugadores, 22/10/2026. */
+  /* Singular o plural cuenta igual (31/10/2026, Gonzalo: "uñas" por UÑA, "departamentos" por DEPARTAMENTO):
+     +S, +ES y Z→CES (lápiz/lápices), en las dos direcciones. */
+  const mismoNumero=(a,b)=>{if(a===b)return true;const[c,l]=a.length<b.length?[a,b]:[b,a];if(c.length<3)return false;
+    return l===c+"S"||l===c+"ES"||(c.endsWith("Z")&&l===c.slice(0,-1)+"CES");};
   function vale(d,valor){
     const opciones=[d.palabra,...(d.alternativas||[])].map(normalizar);
-    if(opciones.includes(valor))return true;
+    if(opciones.some(o=>mismoNumero(o,valor)))return true;
     const base=normalizar(d.palabra),resto=valor.startsWith(base)?valor.slice(base.length):"";
     return resto.length>0&&resto.length<=12&&/^(DEL?|DELA|DELOS|DELAS)[A-Z]{3,}$/.test(resto);
   }

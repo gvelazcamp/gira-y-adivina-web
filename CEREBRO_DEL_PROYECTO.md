@@ -2150,3 +2150,7 @@ Fecha: 31/10/2026 — Auditoría del arranque del Rosco con Giro (Gonzalo: "algo
 ```text
 Fecha: 31/10/2026 — Oculta la tarjeta "Juegos en la tele · 📺 Prueba" de Juegos de previa (Gonzalo: "ocultalo, no sé qué es"). Quedaba de la etapa de prueba (solo Andrés/Romina/Gonzalo/Vale); ahora soloUsuarios:[] → nadie la ve. A la tele se entra con el 📺 del inicio o con Sala TV / Familia. extensiones.js v117, sw v623.
 ```
+
+```text
+Fecha: 31/10/2026 — Rosco (celular y tele): singular o plural cuenta igual (Gonzalo: le marcaba mal "uñas" por UÑA y "departamentos" por DEPARTAMENTO). mismoNumero() en vale(): acepta +S, +ES y Z→CES (lápiz/lápices) en las dos direcciones (palabras de 3+ letras). No acepta abreviaturas (foto ≠ fotografía). rosco-rioplatense.js v84, tele.js v42, sw v627.
+```
