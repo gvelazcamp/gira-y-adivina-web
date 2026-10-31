@@ -2242,3 +2242,7 @@ Fecha: 31/10/2026 — Auditoría de la carga del Rosco de a dos en la tele (prue
 ```text
 Fecha: 31/10/2026 — Auditoría del cambio de turno en el Rosco de a dos (error → pasa → pasa → error): cada vez se carga bien el rosco de quien juega (sus letras, su color dorado/violeta, su nombre, la letra que le toca —la siguiente pendiente—, su pregunta, su ángulo de giro y su reloj); las letras erradas quedan en rojo y las pasadas pendientes; marcador y celulares correctos; sin errores. Único ajuste: el aviso corto ahora dice quién fue ("Papa pasó ⏭", "✘ Gonzalo dijo «…»", "✓ ¡Bien Papa!") porque aparecía ya en el turno del otro.
 ```
+
+```text
+Fecha: 31/10/2026 — Rosco de a dos: cuando uno termina su rosco (completó o se quedó sin tiempo) la tele avisa "🏁 X terminó su rosco · sigue Y" y su fila del marcador queda en gris con "🏁 TERMINADO"; en su celular aparece "🏁 ¡Rosco terminado! Esperá a que Y termine el suyo" con la pantalla en gris (sin "te toca a vos"). El otro sigue jugando solo hasta terminar; después, el final con la planilla.
+```

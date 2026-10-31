@@ -519,3 +519,9 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-ap-vivo{display:block;width:100%;margin:0 0 10px;padding:10px 12px;border:2px solid #F5B301;border-radius:12px;background:#F5B3011A;color:#F6EFE2;font:700 .9rem Outfit,system-ui;text-align:left;cursor:pointer}
 .tl-ap-vivo b{color:#F5B301}
 .tl-rev-nota{margin:8px 0 0;font-size:.82rem;opacity:.8}
+/* Rosco de a dos: el que terminó queda en gris (tele y celular) */
+.tl-rd-fila.tl-rd-listo{opacity:.5;filter:grayscale(1)}
+.tl-rd-fila.tl-rd-listo small{font-weight:900;opacity:1}
+.tl-rd-cel>div.tl-rd-cel-fin{opacity:.5;filter:grayscale(1)}
+.tl-rd-termine{filter:grayscale(.9)}
+.tl-rd-termine h2{color:#D9D2E3}
