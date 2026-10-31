@@ -371,3 +371,14 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-podio-gradas .tl-podio-p1 .tl-podio-av{width:calc(var(--u)*18);max-height:calc(var(--u)*20)}
 .tl-podio-equipo .tl-podio-av{width:calc(var(--u)*18);height:auto;max-height:calc(var(--u)*20)}
 .tl-podio-gradas{margin-top:calc(var(--u)*1.2)}
+/* Rosco de a dos */
+.tl-rd-marcador{display:grid;grid-template-columns:1fr 1fr;gap:1vw}
+.tl-rd-marcador>div{display:flex;flex-wrap:wrap;align-items:center;gap:.4vw .9vw;background:#0C0616CC;border:.25vw solid #ffffff22;border-radius:1.2vw;padding:.8vw 1vw;font:800 1.3vw Outfit,system-ui;opacity:.7}
+.tl-rd-marcador>div b{flex:1 0 100%;font-size:1.5vw;color:#fff}
+.tl-rd-marcador .tl-rd-activo{opacity:1;border-color:#F5B301;box-shadow:0 0 2vw #F5B30166}
+.tl-rd-marcador .tl-rd-activo b{color:#F5B301}
+.tl-rd-marcador .tl-rd-listo{opacity:.45}
+.tl-rd-aviso{position:static!important;align-self:flex-start}
+.tl-rd-fin{display:flex;gap:3vw;justify-content:center;margin:3vh 0}
+.tl-rd-card{display:flex;flex-direction:column;gap:1vh;align-items:center;background:#0C0616CC;border:.3vw solid #F5B30188;border-radius:2vw;padding:2.5vh 3vw;font:800 2vw Outfit,system-ui}
+.tl-rd-card b{font:900 3vw 'Archivo Black',sans-serif;color:#F5B301}

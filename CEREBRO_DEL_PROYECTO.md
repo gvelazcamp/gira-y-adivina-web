@@ -2154,3 +2154,7 @@ Fecha: 31/10/2026 — Oculta la tarjeta "Juegos en la tele · 📺 Prueba" de Ju
 ```text
 Fecha: 31/10/2026 — Rosco (celular y tele): singular o plural cuenta igual (Gonzalo: le marcaba mal "uñas" por UÑA y "departamentos" por DEPARTAMENTO). mismoNumero() en vale(): acepta +S, +ES y Z→CES (lápiz/lápices) en las dos direcciones (palabras de 3+ letras). No acepta abreviaturas (foto ≠ fotografía). rosco-rioplatense.js v84, tele.js v42, sw v627.
 ```
+
+```text
+Fecha: 31/10/2026 — EL ROSCO DE A DOS en la tele (Gonzalo: "el rosco no se puede jugar de a dos en tv"; Codex lo había empezado en su nube pero nunca lo subió, se hizo de nuevo). Con 2+ celulares, al elegir el Rosco el que tiene el control elige "👤 Solo yo" o "⚔️ Contra <otro>". De a dos: cada uno con su propio rosco (20 letras), reloj (160 s) y puntaje; responde uno por vez hasta que erra o pasa (o completa o se le acaba el tiempo) y ahí aparece el rosco del otro (cartel "🔄 Le toca a X"); la tele solo escucha/acepta respuestas del celular del jugador de turno y el otro ve "Le toca a X · mirá la tele". Arriba, marcador de los dos (✓, ✘, reloj; el de turno resaltado). Presentación de Giro con los dos atriles (presentarDuelo con opc: nombres y avatars de cada uno). Final: podio "¡GANÓ X!" (más aciertos; si empatan, menos errores) y tarjetas con aciertos, errores y tiempo de cada uno. El Rosco solo queda igual. tele.js v43, tele.css v23, giro-rosco-piloto.js v40 (unificado en tele.js/rosco/sw), rosco-rioplatense.js v85, sw v628.
+```
