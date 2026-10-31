@@ -71,7 +71,8 @@
     {id:"cien",nombre:"100 Rioplatenses",icono:"assets/cien/logo.webp",desc:"Un celular, juega el grupo",ok:true},
     {id:"ruleta",nombre:"La Ruleta",icono:"assets/logo.webp",desc:"Cada uno con su celular",ok:true},
     {id:"tutti",nombre:"Tutti Frutti",icono:"assets/tutti/logo.webp",desc:"Todos juegan desde su celular",ok:true},
-    {id:"puzzle",nombre:"Puzzle",icono:"assets/puzzle-arte/icono.webp",desc:"Armen el mismo puzzle desde sus celulares",ok:true},
+    {id:"sopa",nombre:"Sopa Fugaz",icono:"logo-sopa-fugaz.svg",desc:"Encontrá las palabras antes que los demás",ok:true},
+    /* El Puzzle no andaba bien en la tele (31/10/2026): se cambió por Sopa Fugaz. Su código (juegoPuzzle) queda por si vuelve. */
     {id:"duelo",nombre:"Duelo de Conocimiento",icono:"logo-duelo-conocimiento.webp",desc:"Respondé hablando al celular",ok:true},
     {id:"quien",nombre:"¿Quién soy?",icono:"assets/quien-soy/icono.webp",desc:"La tele muestra quién sos: adiviná de espaldas",ok:true},
     {id:"mimica",nombre:"Mímica",icono:"assets/mimica/icono.webp",desc:"Uno de espaldas adivina, los demás actúan",ok:true},
@@ -264,7 +265,7 @@
       if(m.t==="chau"){T.jug=T.jug.filter(x=>x.pid!==m.pid);if(T.mando===m.pid)T.mando=T.jug[0]?T.jug[0].pid:null;pintar();difundir();return;}
       if(m.t==="tomar"){if(T.juego==="tutti"&&T.g&&!T.g.participa(m.pid))return;T.mando=m.pid;pintar();difundir();return;}
       if(m.t!=="accion")return;
-      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
+      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="sopa"&&m.a==="sp_marca")||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
       if(m.a==="elegir"&&T.fase==="menu"){elegir(String(m.juego||""));return;}
       if(m.a==="rosco_modo"&&T.fase==="rosco_modo"){const r=String(m.rival||"");
         T.roscoModo=m.modo==="dos"&&T.jug.some(j=>j.pid===r&&r!==T.mando)?{dos:true,rival:r}:null;T.roscoListo=true;elegir("rosco");return;}
@@ -303,7 +304,7 @@
       /* La Ruleta es el juego principal (Sala TV): la tele la abre y, cuando tiene el código, se lo pasa a los
          celulares de esta sala, que entran solos (31/10/2026: "que no haya que poner otro código"). */
       if(id==="ruleta"){T.fase="ruleta";T.juego="ruleta";pintar();difundir();setTimeout(()=>{location.href="index.html?tvhost=1&avisar="+cod+(P.get("telered")==="local"?"&telered=local":"");},1500);return;}
-      T.fase="juego";T.juego=id;T.g=(id==="silabario"||id==="frases"?(T,a)=>juegoOrdenar(T,a,id):id==="mimica"?juegoMimica:id==="numero"?juegoNumero:id==="quien"?juegoQuien:id==="duelo"?juegoDuelo:id==="puzzle"?juegoPuzzle:id==="tutti"?juegoTutti:id==="rosco"?juegoRosco:id==="ahorcado"?juegoAhorcado:juegoCien)(T,actualizar);
+      T.fase="juego";T.juego=id;T.g=(id==="silabario"||id==="frases"?(T,a)=>juegoOrdenar(T,a,id):id==="mimica"?juegoMimica:id==="numero"?juegoNumero:id==="quien"?juegoQuien:id==="duelo"?juegoDuelo:id==="puzzle"?juegoPuzzle:id==="sopa"?juegoSopa:id==="tutti"?juegoTutti:id==="rosco"?juegoRosco:id==="ahorcado"?juegoAhorcado:juegoCien)(T,actualizar);
       ultimoTic=performance.now();clearInterval(timerJuego);
       timerJuego=setInterval(()=>{const a=performance.now(),dt=a-ultimoTic;ultimoTic=a;if(T.g&&T.g.tic)T.g.tic(dt);},200);
       actualizar();
@@ -770,6 +771,8 @@
       locucion:"¡Bienvenidos a La Ruleta! Giren, compren vocales y adivinen el panel antes que los demás. ¡Que la suerte esté de su lado!"},
     tutti:{titulo:"¡Tutti Frutti!",descripcion:"Sale una letra y todos completan las categorías.",
       locucion:"¡Bienvenidos al Tutti Frutti! Sale una letra y cada uno completa las categorías desde su celular. El primero que termina grita ¡basta! ¿Están listos?"},
+    sopa:{titulo:"¡Sopa Fugaz!",descripcion:"Encuentren las palabras en la sopa antes que los demás. ¡Ojo que las letras se mudan!",
+      locucion:"¡Bienvenidos a Sopa Fugaz! En la tele hay una sopa de letras. Desde el celular tocan la primera y la última letra de cada palabra. Cada tanto las letras se mudan de lugar. ¡El que encuentra más, gana!"},
     puzzle:{titulo:"¡El Puzzle!",descripcion:"Armen el mismo rompecabezas entre todos.",
       locucion:"¡Bienvenidos al Puzzle! Elijan una imagen y ármenla entre todos moviendo las piezas desde el celular. ¡Trabajo en equipo!"},
     duelo:{titulo:"¡Duelo de Conocimiento!",descripcion:"Respondan hablando al celular. El reloj corre.",
@@ -1045,6 +1048,121 @@
   /* Silabario y Frases en Giro en la tele (30/10/2026): la tele muestra la pista y las piezas mezcladas
      (sílabas o palabras, con alguna trampa de más); cada uno arma la respuesta tocando las piezas en su celular.
      El primero que la arma suma 10, después 8, 6, 5, 4 y 3. Al final de las rondas, podio. */
+  /* ---------- Sopa Fugaz (31/10/2026, reemplaza al Puzzle en el menú de la tele) ----------
+     La sopa se ve en la tele y cada uno marca desde su celular tocando la primera y la última letra.
+     Gana el que encuentra más palabras (100 c/u). Como en el celular se elige Clásica (letras quietas)
+     o Giratoria: cada 14 s la grilla gira y las palabras que faltan cambian de lugar (las encontradas no vuelven). */
+  function juegoSopa(T,actualizar){
+    const N=10,RONDAS=4,PAL=6,MUDA=14000,PTS=100,GB="presentacion-y-locucion-extensiones/Giro/";
+    const DIRS=[[0,1],[1,0],[1,1],[-1,1],[0,-1],[-1,0],[-1,-1],[1,-1]];
+    const COL=["#F5B301","#37D6C0","#E5197C","#9B6BFF","#2ED18A","#FF8A3D","#3DA5FF","#FFFFFF"];
+    const jugadores=T.jug.map(j=>({pid:j.pid,n:j.n})),puntos={},color={};
+    jugadores.forEach((j,i)=>{puntos[j.pid]=0;color[j.pid]=COL[i%COL.length];});
+    const lim=w=>String(w||"").toUpperCase().replace(/[^A-ZÑ]/g,"");
+    const temas=mezclar((typeof SOPA_DATOS!=="undefined"&&SOPA_DATOS.categorias||[]).map(c=>({nombre:c.nombre,
+      palabras:[...new Set((c.palabras||[]).map(lim))].filter(w=>w.length>=4&&w.length<=N)})).filter(c=>c.palabras.length>=PAL)).slice(0,RONDAS);
+    let ronda=0,tema=null,objetivos=[],halladas={},ubic={},grid=[],gen=0,prev=null,cambioGen=0,restante=0,proxMuda=MUDA,fase="config",timer=null,muerto=false,ult={},mudo=false,giratoria=true;
+    function armarGrilla(){
+      const faltan=mezclar(objetivos.filter(w=>!halladas[w])).sort((a,b)=>b.length-a.length);
+      for(let intento=0;intento<80;intento++){
+        const g=Array(N*N).fill(""),pos={};let bien=true;
+        for(const w of faltan){let puesto=false;
+          for(let k=0;k<400&&!puesto;k++){
+            const[dr,dc]=DIRS[Math.floor(Math.random()*8)],r0=Math.floor(Math.random()*N),c0=Math.floor(Math.random()*N),L=[...w].length;
+            const rf=r0+dr*(L-1),cf=c0+dc*(L-1);if(rf<0||rf>=N||cf<0||cf>=N)continue;
+            const cel=Array.from({length:L},(_,i)=>(r0+dr*i)*N+c0+dc*i),le=[...w];
+            if(cel.some((x,i)=>g[x]&&g[x]!==le[i]))continue;
+            cel.forEach((x,i)=>g[x]=le[i]);pos[w]=cel;puesto=true;}
+          if(!puesto){bien=false;break;}}
+        if(!bien)continue;
+        /* Relleno con letras de las mismas palabras: así hay señuelos. */
+        const letras=[...(objetivos.join("")+"AEIOUSRNLTCMDP")];
+        for(let i=0;i<g.length;i++)if(!g[i])g[i]=letras[Math.floor(Math.random()*letras.length)];
+        ubic=pos;return g;}
+      return null;
+    }
+    function nueva(){
+      ronda++;tema=temas[ronda-1];if(!tema){terminar();return;}
+      let pool=tema.palabras;try{pool=Vistas.filtrar("sopa_tele",pool,x=>x);}catch(e){}
+      objetivos=mezclar(pool).slice(0,PAL);
+      if(objetivos.length<PAL)objetivos=objetivos.concat(mezclar(tema.palabras.filter(w=>!objetivos.includes(w))).slice(0,PAL-objetivos.length));
+      halladas={};ult={};prev=null;let g=armarGrilla();if(!g){objetivos=objetivos.slice(0,4);g=armarGrilla();}
+      try{Vistas.marcar("sopa_tele",objetivos);}catch(e){}
+      grid=g||Array(N*N).fill("A");gen++;cambioGen=Date.now();mudo=false;
+      restante=Math.round(objetivos.reduce((s,w)=>s+7+1.3*w.length,0)*(giratoria?1:.87)*1000);proxMuda=MUDA;fase="jugando";
+      if(ronda>1)SND.turno();actualizar();
+    }
+    function mudar(){
+      const g=armarGrilla();if(!g)return;
+      prev={g:grid,gen};grid=g;gen++;cambioGen=Date.now();mudo=true;
+      Object.values(halladas).forEach(h=>h.cel=null);SND.turno();actualizar();
+    }
+    function revelar(){if(fase!=="jugando")return;fase="revela";actualizar();clearTimeout(timer);
+      timer=setTimeout(()=>{if(muerto)return;if(ronda>=temas.length)terminar();else nueva();},5500);}
+    function terminar(){fase="fin";clearTimeout(timer);
+      const f=jugadores.map(j=>({n:nombreDe(T,j.pid),av:avDe(T,j.pid),v:puntos[j.pid]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
+      podioTele({juego:"SOPA FUGAZ",titulo:f.length<2?"¡"+String(f[0]?f[0].n:"").toUpperCase()+" SUMÓ "+(f[0]?f[0].v:0)+"!":emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",
+        sub:"100 puntos por cada palabra encontrada",equipo:f.length<2,filas:f.map(x=>({n:x.n,av:x.av,pts:x.v+" pts"}))});
+      actualizar();}
+    function marcar(m){
+      if(fase!=="jugando")return;const pid=m.pid;
+      if(!(pid in puntos)){puntos[pid]=0;color[pid]=COL[Object.keys(color).length%COL.length];jugadores.push({pid,n:nombreDe(T,pid)});}
+      /* La marca vale contra la grilla que tenía en pantalla (hasta 3 s después de una mudanza). */
+      let g=null;if(m.g===gen)g=grid;else if(prev&&m.g===prev.gen&&Date.now()-cambioGen<3000)g=prev.g;
+      if(!g){ult[pid]={ok:false,t:Date.now(),txt:"Se mudaron las letras, probá de nuevo"};actualizar();return;}
+      const a=Number(m.x),b=Number(m.y);if(!(a>=0&&a<N*N&&b>=0&&b<N*N)||a===b)return;
+      const r1=Math.floor(a/N),c1=a%N,r2=Math.floor(b/N),c2=b%N,dr=Math.sign(r2-r1),dc=Math.sign(c2-c1),L=Math.max(Math.abs(r2-r1),Math.abs(c2-c1))+1;
+      if(!(r1===r2||c1===c2||Math.abs(r2-r1)===Math.abs(c2-c1))){ult[pid]={ok:false,t:Date.now(),txt:"Tiene que ser en línea recta"};SND.mal();actualizar();return;}
+      const cel=Array.from({length:L},(_,i)=>(r1+dr*i)*N+c1+dc*i),s=cel.map(k=>g[k]).join(""),rev=[...s].reverse().join("");
+      const w=objetivos.find(x=>!halladas[x]&&(x===s||x===rev));
+      if(!w){const ya=objetivos.find(x=>halladas[x]&&(x===s||x===rev));
+        ult[pid]={ok:false,t:Date.now(),txt:ya?"«"+ya+"» ya la encontró "+nombreDe(T,halladas[ya].pid):"«"+s+"» no está en la lista"};SND.mal();actualizar();return;}
+      halladas[w]={pid,cel:g===grid?cel:null};puntos[pid]+=PTS;ult[pid]={ok:true,t:Date.now(),txt:"¡"+w+"! +"+PTS};SND.ok();
+      if(objetivos.every(x=>halladas[x]))revelar();else actualizar();
+    }
+    function accion(m){
+      if(m.a==="otra"&&fase==="fin"&&m.pid===T.mando){T.otra();return;}
+      /* Como en el celular: Clásica (letras quietas) o Giratoria (las letras se mudan). */
+      if(m.a==="sp_modo"&&fase==="config"&&m.pid===T.mando){giratoria=m.modo!=="clasica";nueva();return;}
+      if(m.a==="sp_marca"){marcar(m);return;}
+      if(m.a==="sp_saltar"&&m.pid===T.mando&&fase==="jugando"){revelar();return;}
+    }
+    function tic(dt){if(fase!=="jugando")return;const a=restante;restante=Math.max(0,restante-dt);ticFinal(a,restante);
+      if(restante<=0){SND.tiempo();revelar();return;}
+      if(giratoria){proxMuda-=dt;if(proxMuda<=0){proxMuda=MUDA;mudar();return;}}
+      const r=document.querySelector("#tlSpReloj");if(r){const s=Math.ceil(restante/1000);r.textContent=s;r.classList.toggle("tl-urgente",s<=10);}
+      const b=document.querySelector("#tlSpMuda");if(b)b.style.width=(100*proxMuda/MUDA).toFixed(1)+"%";}
+    function pintar(raiz){
+      if(fase==="config"){raiz.innerHTML=`<div class="tl-sp"><img class="tl-or-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
+        <div class="tl-sp-modos"><h1>🔎 Sopa Fugaz</h1><p>${esc(nombreDe(T,T.mando))} elige el modo desde su celular</p>
+          <div><div class="tl-sp-modo"><b>🧩 Clásica</b><span>Las letras quedan quietas</span></div><div class="tl-sp-modo"><b>🌀 Giratoria</b><span>Cada 14 s la sopa gira y las letras se mudan</span></div></div></div></div>`;return;}
+      if(!tema){raiz.innerHTML=`<div class="tl-centro"><h1>Preparando…</h1></div>`;return;}
+      const rev=fase==="revela",marca={};
+      Object.entries(halladas).forEach(([w,h])=>(h.cel||[]).forEach(k=>marca[k]=color[h.pid]));
+      if(rev)objetivos.filter(w=>!halladas[w]).forEach(w=>(ubic[w]||[]).forEach(k=>{if(!marca[k])marca[k]="falta";}));
+      /* Si se repinta durante el giro, sigue desde donde iba (no vuelve a empezar). */
+      const giro=Date.now()-cambioGen,gira=mudo&&giro<1100;
+      const celdas=grid.map((l,k)=>{const c=marca[k];return`<span class="${c==="falta"?"tl-sp-falta":c?"tl-sp-h":""}"${c&&c!=="falta"?` style="--c:${c}"`:""}>${esc(l)}</span>`;}).join("");
+      const ranking=[...jugadores].sort((a,b)=>puntos[b.pid]-puntos[a.pid]).map(j=>`<span style="--c:${color[j.pid]}"><i></i>${esc(nombreDe(T,j.pid))} <b>${puntos[j.pid]}</b></span>`).join("");
+      raiz.innerHTML=`<div class="tl-sp"><img class="tl-or-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
+        <div class="tl-or-top"><span>🔎 SOPA FUGAZ${giratoria?" 🌀":""}</span><span>RONDA ${ronda}/${temas.length}</span><span class="tl-or-reloj" id="tlSpReloj">${Math.ceil(restante/1000)}</span></div>
+        <div class="tl-sp-cuerpo">
+          <div class="tl-sp-tablero${gira?" tl-sp-gira":""}" style="--n:${N}${gira?";animation-delay:-"+giro+"ms":""}">${celdas}</div>
+          <aside class="tl-sp-panel"><small>TEMA</small><div class="tl-sp-tema">${esc(tema.nombre)}</div>
+            ${rev?`<div class="tl-sp-fin">${objetivos.every(w=>halladas[w])?"🎉 ¡Encontraron todas!":"⏱ ¡Tiempo! En rojo, las que faltaron"}</div>`:!giratoria?"":`<div class="tl-sp-muda"><i id="tlSpMuda" style="width:${(100*proxMuda/MUDA).toFixed(1)}%"></i><em>🌀 Las letras se mudan</em></div>`}
+            <div class="tl-sp-lista">${objetivos.map(w=>{const h=halladas[w];return h?`<span class="tl-sp-ok" style="--c:${color[h.pid]}">${esc(w)}<small>${esc(nombreDe(T,h.pid))}</small></span>`:`<span class="${rev?"tl-sp-falto":""}">${esc(w)}</span>`;}).join("")}</div>
+            <div class="tl-sp-rank">${ranking}</div></aside></div>
+        <p class="tl-or-ayuda">${rev?"⏳ Ya viene la siguiente…":"📱 En tu celular: tocá la primera y la última letra de la palabra"}</p></div>`;
+      if(gira){const t=raiz.querySelector(".tl-sp-tablero");setTimeout(()=>{if(t)t.classList.remove("tl-sp-gira");},Math.max(0,1150-giro));}
+    }
+    function cel(){
+      if(fase==="fin")return{pantalla:"fin",juego:"sopa",resumen:"Mirá el podio en la tele 🏆"};
+      if(fase==="config")return{pantalla:"sopa",fase,quien:nombreDe(T,T.mando)};
+      const h=[];Object.values(halladas).forEach(x=>(x.cel||[]).forEach(k=>h.push(k)));
+      return{pantalla:"sopa",fase,ronda,tema:tema?tema.nombre:"",n:N,g:gen,grid:grid.join(""),h,pal:objetivos.map(w=>[w,halladas[w]?nombreDe(T,halladas[w].pid):""]),pts:puntos,ult};
+    }
+    return{accion,tic,pintar,cel,fin(){muerto=true;clearTimeout(timer);}};
+  }
   function juegoOrdenar(T,actualizar,id){
     const SIL=id==="silabario";
     const CFG=SIL?{nombre:"SILABARIO",icono:"🔤",rondas:8,seg:40,unir:"",niveles:[3,3,2],etiqueta:"ARMÁ LA PALABRA"}
@@ -1460,6 +1578,34 @@
     }
     /* Silabario / Frases en Giro: cada uno arma la respuesta tocando las piezas. */
     let orClave="",orSel=[],orMalVisto=0,orAviso="";
+    /* Sopa Fugaz en el celular: la misma grilla que la tele; se toca la primera y la última letra. */
+    let spSel=null,spGen=-1,spUltT=0,spUltVisto=0;
+    function pintarSopa(c,cab,soyMando){
+      if(c.g!==spGen){spGen=c.g;spSel=null;}
+      const u=(c.ult||{})[yo];if(u&&u.t!==spUltT){spUltT=u.t;spUltVisto=Date.now();}
+      const aviso=u&&Date.now()-spUltVisto<3500?`<p class="tl-sp-aviso${u.ok?" tl-sp-bien":""}">${u.ok?"✅ ":"❌ "}${esc(u.txt)}</p>`:"";
+      const menu=soyMando?`<button type="button" class="tl-boton tl-chico" id="tlSpSaltar">⏭ Terminar esta ronda</button><button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>`:"";
+      const enlazar=()=>{raiz.querySelector("#tlSpSaltar")?.addEventListener("click",()=>{if(confirm("¿Terminar esta ronda?"))accion("sp_saltar");});const b=raiz.querySelector("#tlMenu");if(b)b.onclick=()=>{if(confirm("¿Volver al menú?"))accion("menu");};};
+      if(c.fase==="config"){
+        if(!soyMando){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🔎 Sopa Fugaz</h2><p>${esc(c.quien||"El que tiene el control")} está eligiendo el modo.</p></div>`;return;}
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🔎 Sopa Fugaz</h2><p>¿Cómo la juegan?</p>
+          <button type="button" class="tl-boton tl-oro" data-modo="clasica">🧩 Clásica<br><small>Las letras quedan quietas</small></button>
+          <button type="button" class="tl-boton tl-oro" data-modo="giratoria">🌀 Giratoria<br><small>La sopa gira y las letras se mudan</small></button><button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button></div>`;
+        raiz.querySelectorAll("[data-modo]").forEach(b=>b.onclick=()=>accion("sp_modo",{modo:b.dataset.modo}));enlazar();return;}
+      const mios=(c.pts||{})[yo]||0;
+      if(c.fase==="revela"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏱ ¡Terminó la ronda!</h2><p>Mirá la tele 📺 · ya viene la siguiente.</p><p>Tus puntos: <b>${mios}</b></p>${menu}</div>`;enlazar();return;}
+      const h=new Set(c.h||[]),ayuda=()=>spSel==null?"Tocá la primera letra de una palabra":"Ahora tocá la última letra";
+      raiz.innerHTML=cab+`<div class="tl-cel-caja tl-sp-cel"><div class="tl-sp-cel-cab"><b>🔎 ${esc(c.tema)}</b><span>⭐ ${mios}</span></div>
+        <div class="tl-sp-cel-lista">${(c.pal||[]).map(([w,q])=>`<span class="${q?"tl-sp-tachada":""}">${esc(w)}</span>`).join("")}</div>
+        <div class="tl-sp-cel-grilla" style="grid-template-columns:repeat(${c.n},1fr)">${[...c.grid].map((l,i)=>`<button type="button" data-k="${i}" class="${h.has(i)?"tl-sp-hall":""}${spSel===i?" tl-sp-sel":""}">${esc(l)}</button>`).join("")}</div>
+        <p class="tl-sp-cel-ayuda">${ayuda()}</p>${aviso}${menu}</div>`;
+      if(aviso)setTimeout(()=>{const e=raiz.querySelector(".tl-sp-aviso");if(e&&Date.now()-spUltVisto>=3400)e.remove();},3600);
+      raiz.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{const k=Number(b.dataset.k);
+        if(spSel==null)spSel=k;else if(spSel===k)spSel=null;else{accion("sp_marca",{g:c.g,x:spSel,y:k});spSel=null;}
+        raiz.querySelectorAll(".tl-sp-sel").forEach(x=>x.classList.remove("tl-sp-sel"));if(spSel!=null)b.classList.add("tl-sp-sel");
+        const ay=raiz.querySelector(".tl-sp-cel-ayuda");if(ay)ay.textContent=ayuda();});
+      enlazar();
+    }
     function pintarOrdenar(c,cab,soyMando){
       const k=c.juego+"-"+c.ronda;if(k!==orClave){orClave=k;orSel=[];orMalVisto=(c.mal||{})[yo]||0;orAviso="";}
       const malAhora=(c.mal||{})[yo]||0;if(malAhora>orMalVisto){orMalVisto=malAhora;orSel=[];orAviso="❌ No era así, probá de nuevo";}
@@ -1557,6 +1703,7 @@
       if(c.pantalla==="quien"){pintarQuien(c,cab,soyMando);return;}
       if(c.pantalla==="mimica"){pintarMimica(c,cab,soyMando);return;}
       if(c.pantalla==="ordenar"){pintarOrdenar(c,cab,soyMando);return;}
+      if(c.pantalla==="sopa"){pintarSopa(c,cab,soyMando);return;}
       if(c.pantalla==="numero"&&soyMando){pintarNumero(c,cab);return;}
       if(!soyMando&&!(c.pantalla==="rosco"&&c.dos)){
         const mando=(m.jug.find(j=>j.pid===m.mando)||{}).n||"otro";
