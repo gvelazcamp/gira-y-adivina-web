@@ -984,10 +984,10 @@
       if(m.a==="responder"){const txt=limpio(m.txt,40);if(txt)responder(txt);return;}
       if(m.a==="dc_voz"){vozCelular(m.l,m.turno);return;}
     }
-    function pasarLetra(){vozDesde=Date.now()+1200;vozBloqueada=true;vozRonda++;ultimo={i:actual,tipo:"paso"};cambio=Date.now();SND.turno();avanzar();if(fase==="jugando"){cambiarTurno();pausarPorGiro("pasar");}else actualizar();}
+    function pasarLetra(){vozDesde=Date.now()+1200;vozBloqueada=true;vozRonda++;ultimo={i:actual,tipo:"paso",n:nombrePid(J().pid)};cambio=Date.now();SND.turno();avanzar();if(fase==="jugando"){cambiarTurno();pausarPorGiro("pasar");}else actualizar();}
     function responder(txt,porVoz){
       const d=items[actual],ok=vale(d,norm(txt))||!!porVoz;vozDesde=Date.now()+1200;vozBloqueada=true;vozRonda++;
-      est[actual]=ok?"ok":"mal";resp[actual]=txt;if(!ok)J().ultErr=actual;ultimo={i:actual,tipo:ok?"ok":"mal",palabra:d.palabra,dijo:txt};cambio=Date.now();
+      est[actual]=ok?"ok":"mal";resp[actual]=txt;if(!ok)J().ultErr=actual;ultimo={i:actual,tipo:ok?"ok":"mal",palabra:d.palabra,dijo:txt,n:nombrePid(J().pid)};cambio=Date.now();
       if(ok)SND.ok();else SND.mal();
       const kErr=turno,iErr=actual;
       avanzar();if(fase==="jugando"){if(!ok)cambiarTurno();pausarPorGiro(ok?"acierto":"error");
@@ -1064,7 +1064,9 @@
           <p class="tl-ayuda">${quien?esc(quien)+": desde el celular podés jugar otra vez, volver al menú o «Apelar» si el micrófono entendió mal.":""}</p></div>`;return;}
       const d=items[actual],paso=360/n;let ang=-actual*paso;while(ang-angPrevio>180)ang-=360;while(angPrevio-ang>180)ang+=360;
       const letras=items.map((x,i)=>`<div class="tl-rl tl-${est[i]}${i===actual?" tl-actual":""}" style="--p:${i*paso}deg">${x.letra}</div>`).join("");
-      const flash=ultimo&&Date.now()-cambio<1800?(ultimo.tipo==="ok"?`<div class="tl-flash tl-ok">✓ ¡Bien! «${esc(ultimo.palabra)}»</div>`:ultimo.tipo==="mal"?`<div class="tl-flash tl-mal">✘ Dijo «${esc(ultimo.dijo||"")}»${DOS?"":" · Era "+esc(ultimo.palabra)}</div>`:`<div class="tl-flash tl-paso">Pasó ⏭</div>`):"";
+      /* De a dos el aviso dice quién fue (auditoría 31/10/2026: "Pasó" aparecía ya en el turno del otro). */
+      const qn=DOS&&ultimo&&ultimo.n?esc(ultimo.n)+" ":"";
+      const flash=ultimo&&Date.now()-cambio<1800?(ultimo.tipo==="ok"?`<div class="tl-flash tl-ok">✓ ¡Bien${DOS&&ultimo.n?" "+esc(ultimo.n):""}! «${esc(ultimo.palabra)}»</div>`:ultimo.tipo==="mal"?`<div class="tl-flash tl-mal">✘ ${qn?qn+"dijo":"Dijo"} «${esc(ultimo.dijo||"")}»${DOS?"":" · Era "+esc(ultimo.palabra)}</div>`:`<div class="tl-flash tl-paso">${qn?qn+"pasó":"Pasó"} ⏭</div>`):"";
       /* De a dos: el rosco de cada uno con su color y su nombre en el medio (31/10/2026). */
       raiz.innerHTML=`<div class="tl-rosco tl-estudio${DOS?" tl-rd-j"+turno:""}">
         <div class="tl-aro"><div class="tl-giro" style="--a:${angPrevio}deg">${letras}</div>

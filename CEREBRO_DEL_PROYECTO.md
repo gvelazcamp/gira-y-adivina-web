@@ -2238,3 +2238,7 @@ Fecha: 31/10/2026 — Rosco de a dos, final en vivo (como el Tutti Frutti): si s
 ```text
 Fecha: 31/10/2026 — Auditoría de la carga del Rosco de a dos en la tele (prueba sin tocar nada): video de apertura 11 s → Giro presenta (voz ~9,5 s) → los dos en sus atriles con música y "¡Hoy se enfrentan X y Y! 20 letras cada uno" (~8,5 s) → arranca. Sin errores ni voces encimadas; las fallas de red de la prueba eran Supabase bloqueado y precargas canceladas. Había ~4 s muertos después de cada voz: se bajó la espera automática (giro 14→11 s, participantes 12→10 s); total 39 s → 34 s. El que tiene el control puede saltar con "Siguiente". Ojo: si un jugador no tiene avatar con atril ni personaje elegido, el rival sale con el personaje genérico opuesto al del primero (puede no coincidir con la persona).
 ```
+
+```text
+Fecha: 31/10/2026 — Auditoría del cambio de turno en el Rosco de a dos (error → pasa → pasa → error): cada vez se carga bien el rosco de quien juega (sus letras, su color dorado/violeta, su nombre, la letra que le toca —la siguiente pendiente—, su pregunta, su ángulo de giro y su reloj); las letras erradas quedan en rojo y las pasadas pendientes; marcador y celulares correctos; sin errores. Único ajuste: el aviso corto ahora dice quién fue ("Papa pasó ⏭", "✘ Gonzalo dijo «…»", "✓ ¡Bien Papa!") porque aparecía ya en el turno del otro.
+```
