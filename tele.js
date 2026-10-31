@@ -73,6 +73,9 @@
     {id:"tutti",nombre:"Tutti Frutti",icono:"assets/tutti/logo.webp",desc:"Todos juegan desde su celular",ok:true},
     {id:"sopa",nombre:"Sopa Fugaz",icono:"logo-sopa-fugaz.svg",desc:"Encontrá las palabras antes que los demás",ok:true},
     /* El Puzzle no andaba bien en la tele (31/10/2026): se cambió por Sopa Fugaz. Su código (juegoPuzzle) queda por si vuelve. */
+    {id:"palabra",nombre:"Palabra Secreta",icono:"logo-palabra-secreta.svg",desc:"Adiviná la palabra de 5 letras entre todos",ok:true},
+    {id:"memoria",nombre:"Memoria en Giro",icono:"logo-memoria-en-giro.svg",desc:"Encontrá los pares por turnos",ok:true},
+    {id:"rueda",nombre:"Rueda de Letras",icono:"logo-rueda-de-letras.svg",desc:"Armá palabras con la rueda",ok:true},
     {id:"duelo",nombre:"Duelo de Conocimiento",icono:"logo-duelo-conocimiento.webp",desc:"Respondé hablando al celular",ok:true},
     {id:"quien",nombre:"¿Quién soy?",icono:"assets/quien-soy/icono.webp",desc:"La tele muestra quién sos: adiviná de espaldas",ok:true},
     {id:"mimica",nombre:"Mímica",icono:"assets/mimica/icono.webp",desc:"Uno de espaldas adivina, los demás actúan",ok:true},
@@ -267,7 +270,7 @@
       if(m.t==="chau"){T.jug=T.jug.filter(x=>x.pid!==m.pid);if(T.mando===m.pid)T.mando=T.jug[0]?T.jug[0].pid:null;pintar();difundir();return;}
       if(m.t==="tomar"){if(T.juego==="tutti"&&T.g&&!T.g.participa(m.pid))return;T.mando=m.pid;pintar();difundir();return;}
       if(m.t!=="accion")return;
-      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="sopa"&&m.a==="sp_marca")||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz","rs_apelar","rs_ver","rs_voto","rs_pausa","rs_reanudar","rs_rev"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
+      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="sopa"&&m.a==="sp_marca")||(T.juego==="palabra"&&m.a==="ps_intento")||(T.juego==="memoria"&&m.a==="mg_carta")||(T.juego==="rueda"&&m.a==="rl_palabra")||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz","rs_apelar","rs_ver","rs_voto","rs_pausa","rs_reanudar","rs_rev"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
       if(m.a==="elegir"&&T.fase==="menu"){elegir(String(m.juego||""));return;}
       if(m.a==="rosco_modo"&&T.fase==="rosco_modo"){
         /* De a 2, 3 o 4 (31/10/2026): el del control elige con quiénes juega (hasta 3 más). */
@@ -309,7 +312,7 @@
       /* La Ruleta es el juego principal (Sala TV): la tele la abre y, cuando tiene el código, se lo pasa a los
          celulares de esta sala, que entran solos (31/10/2026: "que no haya que poner otro código"). */
       if(id==="ruleta"){T.fase="ruleta";T.juego="ruleta";pintar();difundir();setTimeout(()=>{location.href="index.html?tvhost=1&avisar="+cod+(P.get("telered")==="local"?"&telered=local":"");},1500);return;}
-      T.fase="juego";T.juego=id;T.g=(id==="silabario"||id==="frases"?(T,a)=>juegoOrdenar(T,a,id):id==="mimica"?juegoMimica:id==="numero"?juegoNumero:id==="quien"?juegoQuien:id==="duelo"?juegoDuelo:id==="puzzle"?juegoPuzzle:id==="sopa"?juegoSopa:id==="tutti"?juegoTutti:id==="rosco"?juegoRosco:id==="ahorcado"?juegoAhorcado:juegoCien)(T,actualizar);
+      T.fase="juego";T.juego=id;T.g=(id==="silabario"||id==="frases"?(T,a)=>juegoOrdenar(T,a,id):id==="mimica"?juegoMimica:id==="numero"?juegoNumero:id==="quien"?juegoQuien:id==="duelo"?juegoDuelo:id==="puzzle"?juegoPuzzle:id==="sopa"?juegoSopa:id==="palabra"?juegoPalabra:id==="memoria"?juegoMemoria:id==="rueda"?juegoRueda:id==="tutti"?juegoTutti:id==="rosco"?juegoRosco:id==="ahorcado"?juegoAhorcado:juegoCien)(T,actualizar);
       ultimoTic=performance.now();clearInterval(timerJuego);
       timerJuego=setInterval(()=>{const a=performance.now(),dt=a-ultimoTic;ultimoTic=a;if(T.g&&T.g.tic)T.g.tic(dt);},200);
       actualizar();
@@ -776,6 +779,12 @@
       locucion:"¡Bienvenidos a La Ruleta! Giren, compren vocales y adivinen el panel antes que los demás. ¡Que la suerte esté de su lado!"},
     tutti:{titulo:"¡Tutti Frutti!",descripcion:"Sale una letra y todos completan las categorías.",
       locucion:"¡Bienvenidos al Tutti Frutti! Sale una letra y cada uno completa las categorías desde su celular. El primero que termina grita ¡basta! ¿Están listos?"},
+    palabra:{titulo:"¡Palabra Secreta!",descripcion:"Descubran la palabra de 5 letras entre todos. Verde: en su lugar; amarillo: está pero en otro lado.",
+      locucion:"¡Bienvenidos a Palabra Secreta! Hay una palabra escondida de cinco letras. Escribila o decila desde tu celular. Verde es que la letra está en su lugar, amarillo que está pero en otro lado. ¡El que la descubre, suma!"},
+    memoria:{titulo:"¡Memoria en Giro!",descripcion:"Por turnos, den vuelta dos cartas y encuentren los pares. ¡Ojo que el tablero gira!",
+      locucion:"¡Bienvenidos a Memoria en Giro! Memoricen dónde está cada carta. Por turnos, den vuelta dos desde el celular. Si es par, seguís jugando. ¡Y cuidado, que cada tanto el tablero gira!"},
+    rueda:{titulo:"¡Rueda de Letras!",descripcion:"Armen palabras con las letras de la rueda y completen el crucigrama.",
+      locucion:"¡Bienvenidos a Rueda de Letras! Con las letras de la rueda armen palabras desde el celular. Cada palabra que encuentran se destapa en el crucigrama. ¡A ver quién encuentra más!"},
     sopa:{titulo:"¡Sopa Fugaz!",descripcion:"Encuentren las palabras en la sopa antes que los demás. ¡Ojo que las letras se mudan!",
       locucion:"¡Bienvenidos a Sopa Fugaz! En la tele hay una sopa de letras. Desde el celular deslizan el dedo sobre cada palabra. Cada tanto las letras se mudan de lugar. ¡El que encuentra más, gana!"},
     puzzle:{titulo:"¡El Puzzle!",descripcion:"Armen el mismo rompecabezas entre todos.",
@@ -1307,6 +1316,179 @@
     }
     return{accion,tic,pintar,cel,fin(){muerto=true;clearTimeout(timer);}};
   }
+  /* ---------- Palabra Secreta en la tele (31/10/2026) ----------
+     Tablero compartido: todos adivinan la MISMA palabra de 5 letras desde su celular (escribiendo o hablando).
+     Cada intento aparece en la tele con su color y el nombre de quien lo dijo. Hay 6 intentos entre todos;
+     el que la descubre suma (7 − fila) × 10 puntos. 3 palabras. */
+  function juegoPalabra(T,actualizar){
+    const RONDAS=3,MAX=6,COL=["#F5B301","#9B6BFF","#3DA5FF","#FF8A3D","#2ED18A","#E5197C","#37D6C0","#FFFFFF"];
+    const jugadores=T.jug.map(j=>({pid:j.pid,n:j.n})),puntos={},color={};jugadores.forEach((j,i)=>{puntos[j.pid]=0;color[j.pid]=COL[i%COL.length];});
+    const banco=typeof PALABRA_SECRETAS!=="undefined"?PALABRA_SECRETAS:["MATES"],validas=typeof PALABRA_VALIDAS!=="undefined"?PALABRA_VALIDAS:new Set();
+    const evaluar=(a,b)=>{try{return PalabraSecreta.evaluar(a,b);}catch(e){const r=Array(5).fill("ausente"),s={};for(let i=0;i<5;i++){if(a[i]===b[i])r[i]="exacta";else s[b[i]]=(s[b[i]]||0)+1;}for(let i=0;i<5;i++)if(r[i]!=="exacta"&&s[a[i]]){r[i]="presente";s[a[i]]--;}return r;}};
+    let ronda=0,objetivo="",intentos=[],fase="jugando",timer=null,muerto=false,ult={},ganador=null;
+    function nueva(){ronda++;if(ronda>RONDAS){terminar();return;}
+      let libres=banco;try{libres=Vistas.filtrar("palabra_tele",banco,x=>x);}catch(e){}
+      objetivo=libres[Math.floor(Math.random()*libres.length)];try{Vistas.marcar("palabra_tele",objetivo);}catch(e){}
+      intentos=[];ult={};ganador=null;fase="jugando";if(ronda>1)SND.turno();actualizar();}
+    function cerrar(){fase="revela";actualizar();clearTimeout(timer);timer=setTimeout(()=>{if(!muerto)nueva();},5200);}
+    function terminar(){fase="fin";clearTimeout(timer);
+      const f=jugadores.map(j=>({n:nombreDe(T,j.pid),av:avDe(T,j.pid),v:puntos[j.pid]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
+      podioTele({juego:"PALABRA SECRETA",titulo:f.length<2?"¡"+String(f[0]?f[0].n:"").toUpperCase()+" SUMÓ "+(f[0]?f[0].v:0)+"!":emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",
+        sub:"El que descubre la palabra suma más si la saca en menos intentos",equipo:f.length<2,filas:f.map(x=>({n:x.n,av:x.av,pts:x.v+" pts"}))});actualizar();}
+    function intento(m){
+      if(fase!=="jugando")return;const pid=m.pid;
+      if(!(pid in puntos)){puntos[pid]=0;color[pid]=COL[Object.keys(color).length%COL.length];jugadores.push({pid,n:nombreDe(T,pid)});}
+      const w=String(m.txt||"").toUpperCase().replace(/Ñ/g,"\u0001").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\u0001/g,"Ñ").replace(/[^A-ZÑ]/g,"");
+      if(w.length!==5){ult[pid]={ok:false,t:Date.now(),txt:"Tiene que tener 5 letras"};actualizar();return;}
+      if(!validas.has(w)&&!banco.includes(w)){ult[pid]={ok:false,t:Date.now(),txt:"«"+w+"» no está en el diccionario"};SND.mal();actualizar();return;}
+      if(intentos.some(x=>x.w===w)){ult[pid]={ok:false,t:Date.now(),txt:"«"+w+"» ya la probaron"};actualizar();return;}
+      const c=evaluar(w,objetivo);intentos.push({w,c,pid,t:Date.now()});ult[pid]={ok:true,t:Date.now(),txt:"¡Mandaste "+w+"!"};
+      if(w===objetivo){ganador=pid;const pts=(7-intentos.length)*10;puntos[pid]+=pts;ult[pid]={ok:true,t:Date.now(),txt:"¡La descubriste! +"+pts};SND.ok();setTimeout(()=>sfx("aplausos"),600);cerrar();return;}
+      SND.turno();if(intentos.length>=MAX){SND.mal();cerrar();return;}actualizar();}
+    function accion(m){
+      if(m.a==="otra"&&fase==="fin"&&m.pid===T.mando){T.otra();return;}
+      if(m.a==="ps_intento"){intento(m);return;}
+      if(m.a==="ps_saltar"&&m.pid===T.mando&&fase==="jugando"){cerrar();return;}
+    }
+    const teclas=()=>{const e={};intentos.forEach(x=>[...x.w].forEach((l,i)=>{const v=x.c[i],o=e[l];if(!o||({ausente:0,presente:1,exacta:2})[v]>({ausente:0,presente:1,exacta:2})[o])e[l]=v;}));return e;};
+    function pintar(raiz){
+      if(!objetivo){raiz.innerHTML=`<div class="tl-centro"><h1>Preparando…</h1></div>`;return;}
+      const rev=fase==="revela",te=teclas(),nuevo=intentos.length&&Date.now()-intentos[intentos.length-1].t<900;
+      const filas=Array.from({length:MAX},(_,f)=>{const x=intentos[f];
+        if(x)return`<div class="tl-ps-fila${nuevo&&f===intentos.length-1?" tl-ps-nueva":""}">${[...x.w].map((l,i)=>`<span class="tl-ps-${x.c[i]}" style="--d:${i*.12}s">${l}</span>`).join("")}<em style="--c:${color[x.pid]||"#fff"}">${esc(nombreDe(T,x.pid))}</em></div>`;
+        return`<div class="tl-ps-fila">${"<span></span>".repeat(5)}<em></em></div>`;}).join("");
+      const ranking=[...jugadores].sort((a,b)=>puntos[b.pid]-puntos[a.pid]).map(j=>`<span style="--c:${color[j.pid]}"><i></i>${esc(nombreDe(T,j.pid))} <b>${puntos[j.pid]}</b></span>`).join("");
+      raiz.innerHTML=`<div class="tl-ps"><img class="tl-or-fondo" src="presentacion-y-locucion-extensiones/Giro/estudios/Giro_estudio_principal_16x9.webp" alt="">
+        <div class="tl-or-top"><span>🟩 PALABRA SECRETA</span><span>PALABRA ${ronda}/${RONDAS}</span><span>${MAX-intentos.length} intentos</span></div>
+        <div class="tl-ps-cuerpo"><div class="tl-ps-tablero">${filas}</div>
+          <aside class="tl-ps-panel">${rev?`<div class="tl-ps-fin">${ganador?`🎉 ¡La descubrió <b>${esc(nombreDe(T,ganador))}</b>!`:"😮 ¡Nadie la sacó!"}<div class="tl-ps-sol">${objetivo.split("").map(l=>`<span>${l}</span>`).join("")}</div></div>`
+            :`<p class="tl-ps-ayuda">📱 Escribí o decí una palabra de <b>5 letras</b> en tu celular</p>`}
+            <div class="tl-ps-teclado">${["QWERTYUIOP","ASDFGHJKLÑ","ZXCVBNM"].map(f=>`<div>${[...f].map(l=>`<span class="tl-ps-t-${te[l]||"nada"}">${l}</span>`).join("")}</div>`).join("")}</div>
+            <div class="tl-sp-rank">${ranking}</div></aside></div>
+        <p class="tl-or-ayuda">🟩 en su lugar · 🟨 está pero en otro lugar · ⬛ no está</p></div>`;
+    }
+    function cel(){
+      if(fase==="fin")return{pantalla:"fin",juego:"palabra",resumen:"Mirá el podio en la tele 🏆"};
+      return{pantalla:"palabra",fase,ronda,max:MAX,intentos:intentos.map(x=>({w:x.w,c:x.c,n:nombreDe(T,x.pid)})),pts:puntos,ult,sol:fase==="revela"?objetivo:"",ganador:ganador?nombreDe(T,ganador):""};
+    }
+    nueva();
+    return{accion,pintar,cel,fin(){muerto=true;clearTimeout(timer);}};
+  }
+
+  /* ---------- Memoria en Giro en la tele (31/10/2026) ----------
+     Por turnos: el que juega da vuelta 2 cartas desde su celular (que muestra el mismo tablero que la tele).
+     Si es par, suma y sigue; si no, le toca al siguiente. Cada 3 fallos el tablero GIRA: las pendientes
+     se muestran 2 s y se mezclan. Al empezar se ven todas unos segundos para memorizar. */
+  function juegoMemoria(T,actualizar){
+    const SIM=typeof MEMORIA_GIRO_SIMBOLOS!=="undefined"?MEMORIA_GIRO_SIMBOLOS:["🌟","🦋","🍓","🐚","🌈","🎈","🍋","🐝","🌻","🐬"];
+    const orden=T.jug.map(j=>j.pid),N=orden.length>2?10:8,COLS=N===10?5:4,VISTA=4500,GIRO_CADA=3;
+    const COL=["#F5B301","#9B6BFF","#3DA5FF","#FF8A3D","#2ED18A","#E5197C","#37D6C0","#FFFFFF"],color={};orden.forEach((p,i)=>color[p]=COL[i%COL.length]);
+    const pares={};orden.forEach(p=>pares[p]=0);
+    let cartas=mezclar(mezclar(SIM).slice(0,N).flatMap((s,i)=>[{s,par:i,de:null},{s,par:i,de:null}]));
+    let fase="vista",turno=0,abiertas=[],fallos=0,timer=null,muerto=false,giro=0,aviso=null;
+    function arrancarVista(ms){fase="vista";clearTimeout(timer);actualizar();timer=setTimeout(()=>{if(muerto)return;fase="juego";SND.turno();actualizar();},ms);}
+    function siguiente(){turno=(turno+1)%orden.length;aviso={txt:"🔄 Le toca a "+nombreDe(T,orden[turno]),t:Date.now()};}
+    function girar(){fase="giro";giro++;aviso={txt:"🌀 ¡EL TABLERO GIRA!",t:Date.now()};SND.turno();actualizar();clearTimeout(timer);
+      timer=setTimeout(()=>{if(muerto)return;const pend=cartas.map((c,i)=>c.de?null:i).filter(i=>i!=null),mez=mezclar(pend.map(i=>cartas[i]));pend.forEach((i,k)=>cartas[i]=mez[k]);
+        fase="juego";actualizar();},2400);}
+    function elegirCarta(m){
+      if(fase!=="juego"||m.pid!==orden[turno])return;const i=Number(m.i);if(!(i>=0&&i<cartas.length)||cartas[i].de||abiertas.includes(i)||abiertas.length>=2)return;
+      abiertas.push(i);SND.tic();
+      if(abiertas.length<2){actualizar();return;}
+      const[a,b]=abiertas;
+      if(cartas[a].par===cartas[b].par){cartas[a].de=cartas[b].de=orden[turno];pares[orden[turno]]++;abiertas=[];SND.ok();aviso={txt:"✨ ¡Par para "+nombreDe(T,orden[turno])+"! Sigue jugando",t:Date.now()};
+        if(cartas.every(c=>c.de)){actualizar();clearTimeout(timer);timer=setTimeout(()=>{if(!muerto)terminar();},1400);return;}actualizar();return;}
+      fase="fallo";SND.mal();actualizar();clearTimeout(timer);
+      timer=setTimeout(()=>{if(muerto)return;abiertas=[];fallos++;siguiente();
+        if(fallos%GIRO_CADA===0&&cartas.filter(c=>!c.de).length>=4){girar();return;}fase="juego";actualizar();},1400);
+    }
+    function terminar(){fase="fin";clearTimeout(timer);
+      const f=orden.map(p=>({n:nombreDe(T,p),av:avDe(T,p),v:pares[p]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
+      podioTele({juego:"MEMORIA EN GIRO",titulo:f.length<2?"¡LOS ENCONTRASTE TODOS!":emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",sub:"Gana el que encontró más pares",equipo:f.length<2,filas:f.map(x=>({n:x.n,av:x.av,pts:x.v+" pares"}))});actualizar();}
+    function accion(m){
+      if(m.a==="otra"&&fase==="fin"&&m.pid===T.mando){T.otra();return;}
+      if(m.a==="mg_carta"){elegirCarta(m);return;}
+    }
+    const visible=(c,i)=>fase==="vista"||fase==="giro"||!!c.de||abiertas.includes(i);
+    function pintar(raiz){
+      const ranking=orden.map((p,k)=>`<span class="${k===turno&&fase!=="fin"?"tl-mg-ahora":""}" style="--c:${color[p]}"><i></i>${k===turno&&fase!=="fin"?"🎮 ":""}${esc(nombreDe(T,p))} <b>${pares[p]}</b></span>`).join("");
+      const msg=fase==="vista"?"👀 ¡Memorizá dónde está cada una!":fase==="giro"?"🌀 ¡El tablero gira! Mirá bien…":aviso&&Date.now()-aviso.t<2600?aviso.txt:"🎮 Juega "+nombreDe(T,orden[turno]);
+      raiz.innerHTML=`<div class="tl-mg"><img class="tl-or-fondo" src="presentacion-y-locucion-extensiones/Giro/estudios/Giro_estudio_principal_16x9.webp" alt="">
+        <div class="tl-or-top"><span>🃏 MEMORIA EN GIRO</span><span>${cartas.filter(c=>c.de).length/2}/${N} pares</span><span>🌀 gira cada ${GIRO_CADA} fallos</span></div>
+        <div class="tl-mg-cuerpo"><div class="tl-mg-tablero${fase==="giro"?" tl-mg-girando":""}" style="--cols:${COLS}">${cartas.map((c,i)=>`<div class="tl-mg-carta${visible(c,i)?" tl-mg-abierta":""}${c.de?" tl-mg-par":""}${fase==="fallo"&&abiertas.includes(i)?" tl-mg-mal":""}" style="${c.de?"--c:"+color[c.de]:""}"><span class="tl-mg-dorso">?</span><span class="tl-mg-cara">${c.s}</span></div>`).join("")}</div>
+          <aside class="tl-mg-panel"><div class="tl-mg-msg">${esc(msg)}</div><div class="tl-sp-rank tl-mg-rank">${ranking}</div></aside></div>
+        <p class="tl-or-ayuda">📱 El que juega toca dos cartas en su celular · par = sigue jugando</p></div>`;
+    }
+    function cel(){
+      if(fase==="fin")return{pantalla:"fin",juego:"memoria",resumen:"Mirá el podio en la tele 🏆"};
+      return{pantalla:"memoria",fase,cols:COLS,turno:orden[turno],nombreTurno:nombreDe(T,orden[turno]),cartas:cartas.map((c,i)=>visible(c,i)?{s:c.s,de:c.de?color[c.de]:"",ab:abiertas.includes(i)}:null),pares,giro};
+    }
+    arrancarVista(VISTA);
+    return{accion,pintar,cel,fin(){muerto=true;clearTimeout(timer);}};
+  }
+
+  /* ---------- Rueda de Letras en la tele (31/10/2026) ----------
+     Todos a la vez: la tele y los celulares muestran la misma rueda y el mismo crucigrama. Cada uno arma
+     palabras tocando letras de la rueda; las que están en el crucigrama se destapan con el color de quien
+     las encontró (10 puntos por letra); otras palabras válidas suman 5 por letra. 3 ruedas de 90 s. */
+  function juegoRueda(T,actualizar){
+    const RONDAS=3,SEG=90000,COL=["#F5B301","#9B6BFF","#3DA5FF","#FF8A3D","#2ED18A","#E5197C","#37D6C0","#FFFFFF"];
+    const jugadores=T.jug.map(j=>({pid:j.pid,n:j.n})),puntos={},color={};jugadores.forEach((j,i)=>{puntos[j.pid]=0;color[j.pid]=COL[i%COL.length];});
+    let ronda=0,r=null,letras=[],halladas={},extras={},restante=SEG,fase="jugando",timer=null,muerto=false,ult={};
+    function nueva(){ronda++;if(ronda>RONDAS){terminar();return;}
+      try{r=RuedaDeLetras.elegir(ronda===1?1:3);}catch(e){r=null;}
+      if(!r){terminar();return;}
+      letras=mezclar([...r.base]);halladas={};extras={};ult={};restante=SEG;fase="jugando";if(ronda>1)SND.turno();actualizar();}
+    function cerrar(){fase="revela";actualizar();clearTimeout(timer);timer=setTimeout(()=>{if(!muerto)nueva();},5500);}
+    function terminar(){fase="fin";clearTimeout(timer);
+      const f=jugadores.map(j=>({n:nombreDe(T,j.pid),av:avDe(T,j.pid),v:puntos[j.pid]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
+      podioTele({juego:"RUEDA DE LETRAS",titulo:f.length<2?"¡"+String(f[0]?f[0].n:"").toUpperCase()+" SUMÓ "+(f[0]?f[0].v:0)+"!":emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",
+        sub:"10 puntos por letra de cada palabra del crucigrama",equipo:f.length<2,filas:f.map(x=>({n:x.n,av:x.av,pts:x.v+" pts"}))});actualizar();}
+    const alcanza=w=>{const q={};[...r.base].forEach(l=>q[l]=(q[l]||0)+1);return[...w].every(l=>q[l]-->0);};
+    function palabra(m){
+      if(fase!=="jugando"||!r)return;const pid=m.pid;
+      if(!(pid in puntos)){puntos[pid]=0;color[pid]=COL[Object.keys(color).length%COL.length];jugadores.push({pid,n:nombreDe(T,pid)});}
+      const w=String(m.txt||"").toUpperCase().replace(/Ñ/g,"\u0001").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\u0001/g,"Ñ").replace(/[^A-ZÑ]/g,"");
+      if(w.length<3||!alcanza(w)){ult[pid]={ok:false,t:Date.now(),txt:"Usá las letras de la rueda (3 o más)"};actualizar();return;}
+      if(halladas[w]||extras[w]){ult[pid]={ok:false,t:Date.now(),txt:"«"+w+"» ya la encontró "+nombreDe(T,halladas[w]||extras[w])};actualizar();return;}
+      if(r.palabras.includes(w)){halladas[w]=pid;const p=w.length*10;puntos[pid]+=p;ult[pid]={ok:true,t:Date.now(),txt:"¡"+w+"! +"+p};SND.ok();
+        if(r.palabras.every(x=>halladas[x])){sfx("aplausos");cerrar();return;}actualizar();return;}
+      if((r.todas||[]).includes(w)){extras[w]=pid;const p=w.length*5;puntos[pid]+=p;ult[pid]={ok:true,t:Date.now(),txt:"Palabra extra «"+w+"» +"+p};SND.turno();actualizar();return;}
+      ult[pid]={ok:false,t:Date.now(),txt:"«"+w+"» no está"};SND.mal();actualizar();
+    }
+    function accion(m){
+      if(m.a==="otra"&&fase==="fin"&&m.pid===T.mando){T.otra();return;}
+      if(m.a==="rl_palabra"){palabra(m);return;}
+      if(m.a==="rl_saltar"&&m.pid===T.mando&&fase==="jugando"){cerrar();return;}
+    }
+    function tic(dt){if(fase!=="jugando")return;const a=restante;restante=Math.max(0,restante-dt);ticFinal(a,restante);if(restante<=0){SND.tiempo();cerrar();return;}
+      const e=document.querySelector("#tlRlReloj");if(e)e.textContent=Math.ceil(restante/1000);}
+    /* Crucigrama: null = sin casilla, "" = tapada, letra = destapada; color de quien la encontró. */
+    function grilla(todo){const g=Array.from({length:r.cruz.filas},()=>Array(r.cruz.cols).fill(null)),c=Array.from({length:r.cruz.filas},()=>Array(r.cruz.cols).fill(""));
+      r.cruz.puestas.forEach(p=>{const ok=halladas[p.w]||todo;for(let i=0;i<p.w.length;i++){const rr=p.h?p.r:p.r+i,cc=p.h?p.c+i:p.c;if(g[rr][cc]==null)g[rr][cc]="";if(ok){g[rr][cc]=p.w[i];if(halladas[p.w])c[rr][cc]=color[halladas[p.w]];}}});
+      return{g,c};}
+    function pintar(raiz){
+      if(!r){raiz.innerHTML=`<div class="tl-centro"><h1>Preparando…</h1></div>`;return;}
+      const rev=fase==="revela",{g,c}=grilla(rev),n=letras.length;
+      const cruz=`<div class="tl-rl-cruz" style="--f:${r.cruz.filas};--c:${r.cruz.cols}">${g.map((fila,i)=>fila.map((x,j)=>x==null?"<i></i>":`<span class="${x?"tl-rl-ok":""}${rev&&!c[i][j]&&x?" tl-rl-falto":""}" style="${c[i][j]?"--k:"+c[i][j]:""}">${x}</span>`).join("")).join("")}</div>`;
+      const rueda=`<div class="tl-rl-rueda">${letras.map((l,i)=>{const a=-Math.PI/2+i*2*Math.PI/n;return`<b style="left:${50+36*Math.cos(a)}%;top:${50+36*Math.sin(a)}%">${l}</b>`;}).join("")}<em>${esc(r.tema||"")}</em></div>`;
+      const ranking=[...jugadores].sort((a,b)=>puntos[b.pid]-puntos[a.pid]).map(j=>`<span style="--c:${color[j.pid]}"><i></i>${esc(nombreDe(T,j.pid))} <b>${puntos[j.pid]}</b></span>`).join("");
+      const hechas=r.palabras.filter(w=>halladas[w]).length;
+      raiz.innerHTML=`<div class="tl-rdl"><img class="tl-or-fondo" src="presentacion-y-locucion-extensiones/Giro/estudios/Giro_estudio_principal_16x9.webp" alt="">
+        <div class="tl-or-top"><span>🔠 RUEDA DE LETRAS</span><span>RUEDA ${ronda}/${RONDAS} · ${hechas}/${r.palabras.length}</span><span class="tl-or-reloj" id="tlRlReloj">${Math.ceil(restante/1000)}</span></div>
+        <div class="tl-rl-cuerpo">${rueda}${cruz}<aside class="tl-rl-panel">${rev?`<div class="tl-sp-fin">${hechas===r.palabras.length?"🎉 ¡Completaron el crucigrama!":"⏱ ¡Tiempo! En rojo, las que faltaron"}</div>`:""}
+          ${Object.keys(extras).length?`<div class="tl-rl-extras">✨ Extras: ${Object.keys(extras).map(esc).join(" · ")}</div>`:""}<div class="tl-sp-rank">${ranking}</div></aside></div>
+        <p class="tl-or-ayuda">${rev?"⏳ Ya viene la siguiente rueda…":"📱 Tocá las letras en tu celular para armar palabras"}</p></div>`;
+    }
+    function cel(){
+      if(fase==="fin")return{pantalla:"fin",juego:"rueda",resumen:"Mirá el podio en la tele 🏆"};
+      if(!r)return{pantalla:"rueda",fase:"espera"};
+      const{g,c}=grilla(fase==="revela");
+      return{pantalla:"rueda",fase,ronda,tema:r.tema||"",letras:letras.join(""),g:g.map(f=>f.map(x=>x==null?"#":x||"_").join("")),k:c,hechas:r.palabras.filter(w=>halladas[w]).length,total:r.palabras.length,pts:puntos,ult};
+    }
+    nueva();
+    return{accion,tic,pintar,cel,fin(){muerto=true;clearTimeout(timer);}};
+  }
   function juegoOrdenar(T,actualizar,id){
     const SIL=id==="silabario";
     const CFG=SIL?{nombre:"SILABARIO",icono:"🔤",rondas:8,seg:40,unir:"",niveles:[3,3,2],etiqueta:"ARMÁ LA PALABRA"}
@@ -1722,6 +1904,63 @@
     }
     /* Silabario / Frases en Giro: cada uno arma la respuesta tocando las piezas. */
     let orClave="",orSel=[],orMalVisto=0,orAviso="";
+    /* ---------- Palabra Secreta / Memoria en Giro / Rueda de Letras en el celular (31/10/2026) ---------- */
+    let xUltT={},xUltVisto={};
+    const avisoX=(c,clave)=>{const u=(c.ult||{})[yo];if(u&&u.t!==xUltT[clave]){xUltT[clave]=u.t;xUltVisto[clave]=Date.now();}
+      return u&&Date.now()-(xUltVisto[clave]||0)<3500?`<p class="tl-sp-aviso${u.ok?" tl-sp-bien":""}">${u.ok?"✅ ":"❌ "}${esc(u.txt)}</p>`:"";};
+    const menuX=(soyMando,saltar)=>soyMando?`<div class="tl-x-menu">${saltar?`<button type="button" class="tl-boton tl-chico" id="tlXSaltar">⏭ Terminar ronda</button>`:""}<button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú</button></div>`:"";
+    const enlazarX=(saltar)=>{raiz.querySelector("#tlXSaltar")?.addEventListener("click",()=>{if(confirm("¿Terminar esta ronda?"))accion(saltar);});const b=raiz.querySelector("#tlMenu");if(b)b.onclick=()=>{if(confirm("¿Volver al menú?"))accion("menu");};};
+    const mayus=s=>String(s||"").toUpperCase().replace(/Ñ/g,"\u0001").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/\u0001/g,"Ñ");
+    /* Hablar una vez: el celular escucha y devuelve lo que entendió. */
+    function escucharUnaVez(cb){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){alert("Este celular no permite hablar acá. Escribila.");cb([]);return;}
+      let r;try{r=new R();}catch(e){cb([]);return;}r.lang="es-UY";r.interimResults=false;r.maxAlternatives=5;let listo=false;
+      r.onresult=e=>{listo=true;cb([...e.results[0]].map(x=>x.transcript));};r.onerror=()=>{if(!listo){listo=true;cb([]);}};r.onend=()=>{if(!listo){listo=true;cb([]);}};
+      try{r.start();}catch(e){cb([]);}}
+    function pintarPalabra(c,cab,soyMando){
+      const mios=(c.pts||{})[yo]||0,aviso=avisoX(c,"ps");
+      const filas=Array.from({length:c.max},(_,f)=>{const x=(c.intentos||[])[f];return`<div class="tl-psc-fila">${x?[...x.w].map((l,i)=>`<span class="tl-ps-${x.c[i]}">${l}</span>`).join("")+`<em>${esc(x.n)}</em>`:"<span></span>".repeat(5)+"<em></em>"}</div>`;}).join("");
+      if(c.fase==="revela"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>${c.ganador?"🎉 ¡La descubrió "+esc(c.ganador)+"!":"😮 Nadie la sacó"}</h2><p>Era <b class="tl-psc-sol">${esc(c.sol)}</b></p><div class="tl-psc-tab">${filas}</div><p>Tus puntos: <b>${mios}</b></p>${menuX(soyMando,false)}</div>`;enlazarX();return;}
+      const prevT=raiz.querySelector("#tlTexto"),prevV=prevT?prevT.value:"",prevF=document.activeElement===prevT;
+      raiz.innerHTML=cab+`<div class="tl-cel-caja tl-psc"><div class="tl-sp-cel-cab"><b>🟩 Palabra ${c.ronda}/3</b><span>⭐ ${mios}</span></div>
+        <div class="tl-psc-tab">${filas}</div>
+        <input id="tlTexto" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="5 letras">
+        <div class="tl-psc-bot"><button type="button" class="tl-boton" id="tlPsMic">🎙️ Decila</button><button type="button" class="tl-boton tl-oro" id="tlPsEnviar">Enviar</button></div>
+        ${aviso}${menuX(soyMando,true)}</div>`;
+      const t=raiz.querySelector("#tlTexto");t.value=prevV;if(prevF)t.focus();
+      const enviar=v=>{v=mayus(v).replace(/[^A-ZÑ]/g,"");if(v.length!==5){t.value=v;t.focus();return;}accion("ps_intento",{txt:v});t.value="";};
+      raiz.querySelector("#tlPsEnviar").onclick=()=>enviar(t.value);t.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();enviar(t.value);}};
+      raiz.querySelector("#tlPsMic").onclick=e=>{const b=e.currentTarget;b.textContent="🎙️ Escuchando…";b.disabled=true;
+        escucharUnaVez(alts=>{b.textContent="🎙️ Decila";b.disabled=false;const w=alts.map(a=>mayus(a).replace(/[^A-ZÑ]/g,"")).find(a=>a.length===5)||mayus(alts[0]||"").replace(/[^A-ZÑ]/g,"");
+          if(!w){alert("No te escuché. Probá de nuevo o escribila.");return;}if(w.length===5)enviar(w);else{t.value=w;alert("Escuché «"+w+"». Tiene que tener 5 letras.");}});};
+      enlazarX("ps_saltar");
+    }
+    function pintarMemoria(c,cab,soyMando){
+      const mio=c.turno===yo,puedo=mio&&c.fase==="juego";
+      const tit=c.fase==="vista"?"👀 ¡Memorizá!":c.fase==="giro"?"🌀 ¡El tablero gira!":mio?"🎮 ¡Te toca! Tocá dos cartas":"⏳ Le toca a "+esc(c.nombreTurno||"");
+      raiz.innerHTML=cab+`<div class="tl-cel-caja tl-mgc"><h2 class="${mio&&c.fase==="juego"?"tl-mgc-mio":""}">${tit}</h2>
+        <div class="tl-mgc-tab" style="grid-template-columns:repeat(${c.cols},1fr)">${(c.cartas||[]).map((x,i)=>x?`<button type="button" class="tl-mgc-c tl-mgc-ab" style="${x.de?"border-color:"+x.de+";background:"+x.de+"33":""}" disabled>${x.s}</button>`:`<button type="button" class="tl-mgc-c" data-i="${i}" ${puedo?"":"disabled"}>?</button>`).join("")}</div>
+        <p class="tl-mgc-pares">Tus pares: <b>${(c.pares||{})[yo]||0}</b></p>${menuX(soyMando,false)}</div>`;
+      raiz.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{b.disabled=true;b.classList.add("tl-mgc-toc");accion("mg_carta",{i:Number(b.dataset.i)});});
+      enlazarX();
+    }
+    let rlSel=[],rlClave="",rlOrden=null;
+    function pintarRueda(c,cab,soyMando){
+      if(c.fase==="espera"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Preparando…</h2></div>`;return;}
+      const k=c.ronda+"|"+c.letras;if(k!==rlClave){rlClave=k;rlSel=[];rlOrden=[...c.letras].map((_,i)=>i);}
+      const L=[...c.letras],mios=(c.pts||{})[yo]||0,aviso=avisoX(c,"rl"),n=L.length,armada=rlSel.map(i=>L[i]).join("");
+      const cruz=`<div class="tl-rlc-cruz" style="grid-template-columns:repeat(${(c.g[0]||"").length},1fr)">${c.g.map((f,i)=>[...f].map((x,j)=>x==="#"?"<i></i>":`<span class="${x!=="_"?"tl-rl-ok":""}" style="${c.k[i][j]?"--k:"+c.k[i][j]:""}">${x==="_"?"":x}</span>`).join("")).join("")}</div>`;
+      if(c.fase==="revela"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏱ ¡Terminó la rueda!</h2>${cruz}<p>Tus puntos: <b>${mios}</b></p>${menuX(soyMando,false)}</div>`;enlazarX();return;}
+      const rueda=`<div class="tl-rlc-rueda">${rlOrden.map((idx,p)=>{const a=-Math.PI/2+p*2*Math.PI/n;return`<button type="button" data-l="${idx}" class="${rlSel.includes(idx)?"tl-rlc-sel":""}" style="left:${50+36*Math.cos(a)}%;top:${50+36*Math.sin(a)}%">${L[idx]}</button>`;}).join("")}<span class="tl-rlc-armada">${armada||"·"}</span></div>`;
+      raiz.innerHTML=cab+`<div class="tl-cel-caja tl-rlc"><div class="tl-sp-cel-cab"><b>🔠 ${esc(c.tema)} · ${c.hechas}/${c.total}</b><span>⭐ ${mios}</span></div>${cruz}${rueda}
+        <div class="tl-psc-bot"><button type="button" class="tl-boton" id="tlRlBorrar">⌫</button><button type="button" class="tl-boton" id="tlRlMezclar">🔀</button><button type="button" class="tl-boton tl-oro" id="tlRlEnviar" ${armada.length>=3?"":"disabled"}>✔ Enviar</button></div>
+        ${aviso}${menuX(soyMando,true)}</div>`;
+      const repinta=()=>{rlClave=k;pintarRueda(c,cab,soyMando);};
+      raiz.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{const i=Number(b.dataset.l);if(rlSel.includes(i)){if(rlSel[rlSel.length-1]===i)rlSel.pop();}else rlSel.push(i);repinta();});
+      raiz.querySelector("#tlRlBorrar").onclick=()=>{rlSel.pop();repinta();};
+      raiz.querySelector("#tlRlMezclar").onclick=()=>{rlOrden=mezclar(rlOrden);repinta();};
+      raiz.querySelector("#tlRlEnviar").onclick=()=>{if(armada.length>=3){accion("rl_palabra",{txt:armada});rlSel=[];repinta();}};
+      enlazarX("rl_saltar");
+    }
     /* Sopa Fugaz en el celular (31/10/2026): igual que el juego del celular (tablero crema, cápsulas, lista y barras);
        se marca deslizando el dedo de la primera a la última letra (o tocando las dos). La tele manda el estado
        cada 2,5 s: si solo cambió el reloj no se redibuja, y mientras arrastrás el dedo el repintado espera. */
@@ -1879,6 +2118,9 @@
       if(c.pantalla==="mimica"){pintarMimica(c,cab,soyMando);return;}
       if(c.pantalla==="ordenar"){pintarOrdenar(c,cab,soyMando);return;}
       if(c.pantalla==="sopa"){pintarSopa(c,cab,soyMando);return;}
+      if(c.pantalla==="palabra"){pintarPalabra(c,cab,soyMando);return;}
+      if(c.pantalla==="memoria"){pintarMemoria(c,cab,soyMando);return;}
+      if(c.pantalla==="rueda"){pintarRueda(c,cab,soyMando);return;}
       if(c.pantalla==="numero"&&soyMando){pintarNumero(c,cab);return;}
       /* Rosco: apelación en curso → el que apeló espera; los demás votan si vale. */
       if((c.pantalla==="rosco"||c.pantalla==="fin")&&c.apel){const a=c.apel;dcVoz(false);
