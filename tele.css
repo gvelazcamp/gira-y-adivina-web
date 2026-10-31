@@ -487,3 +487,22 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-rd-j0 .tl-rl:not(.tl-ok):not(.tl-mal):not(.tl-actual){background:#F5B301;color:#160B24;box-shadow:0 0 0 .4vh #FFE08A,0 .3vh 0 #0005}
 .tl-rd-j1 .tl-rl:not(.tl-ok):not(.tl-mal):not(.tl-actual){background:#7B3FE4;color:#fff;box-shadow:0 0 0 .4vh #C7AEFF,0 .3vh 0 #0005}
 .tl-rd-j1 .tl-medio{background:#1E0F3ADD}
+/* Rosco: final con la planilla de cada uno (◀ ▶ desde el celular) y apelaciones */
+.tl-rd-final{gap:1.6vh}
+.tl-rd-final h1{margin:0}
+.tl-rd-tabs{display:flex;align-items:center;gap:1.2vw;flex-wrap:wrap;justify-content:center}
+.tl-rd-flecha{font:900 3vh 'Archivo Black',sans-serif;color:#F5B301;opacity:.8}
+.tl-rd-tab{padding:1vh 1.6vw;border-radius:99px;background:#0C0616CC;border:.3vh solid #ffffff22;font:800 min(1.5vw,2.6vh) Outfit,system-ui;opacity:.55}
+.tl-rd-tab b{font-family:'Archivo Black',sans-serif}
+.tl-rd-tab.tl-rd-t0 b{color:#F5B301}.tl-rd-tab.tl-rd-t1 b{color:#C7AEFF}
+.tl-rd-tab.tl-rd-tab-on{opacity:1;border-color:#F5B301;box-shadow:0 0 2vh #F5B30166}
+.tl-rd-tab.tl-rd-t1.tl-rd-tab-on{border-color:#9B6BFF;box-shadow:0 0 2vh #9B6BFF66}
+.tl-pl-apelada b{background:#F5B301!important;color:#160B24!important}.tl-pl-apelada small{color:#F5B301}
+.tl-rd-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0}
+.tl-rd-nav .tl-boton{width:auto;margin:0;padding:10px 18px}
+.tl-ap{text-align:left;margin:10px 0}
+.tl-ap-t{margin:0 0 6px;font-weight:800;color:#F5B301;font-size:.9rem}
+.tl-ap-b{display:flex;align-items:center;gap:8px;width:100%;margin:0 0 6px;padding:9px 10px;border:1px solid #FF8FA355;border-radius:12px;background:#0C0616;color:#fff;font:700 .9rem Outfit,system-ui;text-align:left;cursor:pointer}
+.tl-ap-b b{display:grid;place-items:center;min-width:26px;height:26px;border-radius:50%;background:#FF5A5A;color:#fff}
+.tl-ap-b small{flex:1;color:#FF9A9A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl-ap-b em{font-style:normal;font-weight:900;color:#160B24;background:#F5B301;border-radius:99px;padding:4px 10px}

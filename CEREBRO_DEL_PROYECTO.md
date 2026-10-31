@@ -2210,3 +2210,7 @@ Fecha: 31/10/2026 — Rosco de a dos en la tele: las letras del rosco van entera
 ```text
 Fecha: 31/10/2026 — Rosco por voz (celular y tele): Gonzalo dijo "lluvia" y el reconocimiento escribió "chubia" (sheísmo). Ahora al comparar cómo suena, LL, Y, SH y CH cuentan como el mismo sonido (lluvia = chubia = shuvia). Solo para voz; escribiendo sigue exacto.
 ```
+
+```text
+Fecha: 31/10/2026 — Rosco en la tele, final: muestra la planilla de palabras (acertó / dijo «…» / sin responder). De a dos: arriba "Ganó X" o "¡Empate!" y dos pestañas (nombre ✓ ✘ ⏱); con ◀ ▶ en el celular (cualquiera de los dos) se cambia qué planilla se ve en la tele. Botón «Apelar» en el celular para cada error (si el micrófono entendió mal): pasa a acierto, queda marcado "⚖️ apelada" en la tele y se recalcula el ganador. Cada uno apela los suyos; el que tiene el control puede apelar los de cualquiera. Solo (uno): la misma planilla y apelar desde su celular.
+```

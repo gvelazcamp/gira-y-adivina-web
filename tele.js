@@ -267,7 +267,7 @@
       if(m.t==="chau"){T.jug=T.jug.filter(x=>x.pid!==m.pid);if(T.mando===m.pid)T.mando=T.jug[0]?T.jug[0].pid:null;pintar();difundir();return;}
       if(m.t==="tomar"){if(T.juego==="tutti"&&T.g&&!T.g.participa(m.pid))return;T.mando=m.pid;pintar();difundir();return;}
       if(m.t!=="accion")return;
-      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="sopa"&&m.a==="sp_marca")||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
+      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="sopa"&&m.a==="sp_marca")||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz","rs_apelar","rs_ver"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
       if(m.a==="elegir"&&T.fase==="menu"){elegir(String(m.juego||""));return;}
       if(m.a==="rosco_modo"&&T.fase==="rosco_modo"){const r=String(m.rival||"");
         T.roscoModo=m.modo==="dos"&&T.jug.some(j=>j.pid===r&&r!==T.mando)?{dos:true,rival:r}:null;T.roscoListo=true;elegir("rosco");return;}
@@ -850,7 +850,7 @@
        pasa al otro cuando erra, pasa, completa o se le acaba el tiempo (como el programa). Solo: un jugador. */
     const DOS=!!(T.roscoModo&&T.roscoModo.dos&&T.jug.some(j=>j.pid===T.roscoModo.rival));
     const P=(DOS?[T.mando,T.roscoModo.rival]:[T.mando]).map(pid=>{const it=armar(pid);return{pid,items:it,est:it.map(()=>"pendiente"),resp:it.map(()=>""),actual:0,tiempo:SEGUNDOS*1000,fin:false,ang:0};});
-    let turno=0;const J=()=>P[turno];
+    let turno=0,verFin=0;const J=()=>P[turno];const apeladas=new Set();
     let items=P[0].items,est=P[0].est,resp=P[0].resp,actual=0,tiempo=SEGUNDOS*1000;
     const guardarJ=()=>{const j=J();j.actual=actual;j.tiempo=tiempo;j.ang=angPrevio;};
     const cargarJ=()=>{const j=J();items=j.items;est=j.est;resp=j.resp;actual=j.actual;tiempo=j.tiempo;angPrevio=j.ang;};
@@ -898,9 +898,12 @@
     function cambiarTurno(){if(!DOS)return false;const otro=P[1-turno];if(otro.fin)return false;
       guardarJ();turno=1-turno;cargarJ();aviso={txt:"🔄 Le toca a "+nombrePid(J().pid),t:Date.now()};return true;}
     function finJugador(){J().fin=true;if(DOS&&cambiarTurno())return;terminar();}
+    /* Resultado de a dos (también después de apelar): más aciertos, menos errores, más tiempo sobrante. */
+    const resDos=()=>P.map((j,k)=>({k,n:nombrePid(j.pid),av:avDe(T,j.pid),ok:j.est.filter(s=>s==="ok").length,mal:j.est.filter(s=>s==="mal").length,t:j.tiempo}))
+      .sort((a,b)=>b.ok-a.ok||a.mal-b.mal||b.t-a.t);
+    const empDos=r=>r.length>1&&r[0].ok===r[1].ok&&r[0].mal===r[1].mal&&r[0].t===r[1].t;
     function terminar(){if(fase==="fin"||fase==="cierre")return;guardarJ();
-      if(DOS){fase="fin";const res=P.map(j=>({n:nombrePid(j.pid),av:avDe(T,j.pid),ok:j.est.filter(s=>s==="ok").length,mal:j.est.filter(s=>s==="mal").length,t:j.tiempo}))
-          .sort((a,b)=>b.ok-a.ok||a.mal-b.mal||b.t-a.t);const emp=res[0].ok===res[1].ok&&res[0].mal===res[1].mal;
+      if(DOS){fase="fin";const res=resDos(),emp=empDos(res);
         podioTele({juego:"EL ROSCO DE A DOS",titulo:emp?"¡EMPATE!":"¡GANÓ "+String(res[0].n).toUpperCase()+"!",sub:"Más aciertos (y si empatan, menos errores)",
           filas:res.map(x=>({n:x.n,av:x.av,pts:x.ok+" ✓ · "+x.mal+" ✘"}))});
         actualizar();return;}
@@ -913,7 +916,13 @@
     function accion(m){
       if(m.a==="rs_seguir"){if(G()&&(fase==="show"||fase==="cierre"))G().avanzar();return;}
       if(fase==="show"||fase==="cierre")return;
-      if(fase==="fin"){if(m.a==="otra")T.otra();return;}
+      if(fase==="fin"){
+        /* Final (31/10/2026): ver la planilla de cada uno y apelar si el micrófono entendió mal. Cada uno apela
+           sus errores; el que tiene el control puede apelar los de cualquiera. */
+        if(m.a==="rs_ver"){verFin=((Number(m.k)||0)%P.length+P.length)%P.length;actualizar();return;}
+        if(m.a==="rs_apelar"){const own=P.findIndex(j=>j.pid===m.pid),k=m.pid===T.mando&&m.k!=null?Number(m.k):own,j=P[k],i=Number(m.i);
+          if(j&&j.est[i]==="mal"){j.est[i]="ok";apeladas.add(k+"-"+i);SND.ok();verFin=k;actualizar();}return;}
+        if(m.a==="otra")T.otra();return;}
       if(vozBloqueada)return;
       if(["pasar","responder","dc_voz"].includes(m.a)&&m.pid!==J().pid)return;
       if(m.a==="pasar"){pasarLetra();return;}
@@ -967,19 +976,23 @@
     function marcadorDos(){const{f,emp}=tablaDos();
       return`<div class="tl-rd-rank"><div class="tl-rd-rank-cab"><span>🏆 MARCADOR</span><em>${emp?"¡Van empatados!":"Va ganando "+esc(nombrePid(f[0].j.pid))}</em></div>${f.map((x,pos)=>{const av=avDe(T,x.j.pid);
         return`<div class="tl-rd-fila tl-rd-c${x.k}${x.k===turno?" tl-rd-activo":""}${x.j.fin?" tl-rd-listo":""}"><span class="tl-rd-pos">${emp?"=":pos+1+"º"}</span><img src="assets/avatars/${av||"avatar-01"}.webp" alt="" onerror="this.style.visibility='hidden'"><b>${x.k===turno?"🎙 ":""}${esc(nombrePid(x.j.pid))}</b><span class="tl-ok">✓ ${x.ok}</span><span class="tl-mal">✘ ${x.mal}</span><small>${x.j.fin?"terminó":x.q+" letras"}</small><span class="tl-rd-reloj" ${x.k===turno?'id="tlReloj"':""}>${reloj(x.k===turno?tiempo:x.j.tiempo)}</span></div>`;}).join("")}</div>`;}
+    const planilla=(j,k)=>`<div class="tl-planilla">${j.items.map((d,i)=>{const a=apeladas.has(k+"-"+i);
+      return`<div class="tl-pl-fila tl-pl-${j.est[i]}${a?" tl-pl-apelada":""}"><b>${d.letra}</b><span>${esc(d.palabra)}</span><small>${a?"⚖️ apelada · dijo «"+esc(j.resp[i])+"»":j.est[i]==="ok"?"✓ acertó":j.est[i]==="mal"?"✘ dijo «"+esc(j.resp[i])+"»":"⏭ sin responder"}</small></div>`;}).join("")}</div>`;
     function pintar(raiz,quien){
       const n=items.length,ok=est.filter(s=>s==="ok").length,mal=est.filter(s=>s==="mal").length;
       if(fase==="show"&&!document.querySelector(".grp-apertura,.grp-overlay")){
         raiz.innerHTML=`<div class="tl-centro tl-rosco tl-estudio"><img class="tl-logo" src="assets/logo.webp" alt=""><h1>Preparando el estudio…</h1></div>`;return;}
-      if(DOS&&fase==="fin"){
-        raiz.innerHTML=`<div class="tl-centro tl-fin"><h1>El Rosco de a dos</h1><div class="tl-rd-fin">${P.map(j=>{const o=j.est.filter(s=>s==="ok").length,m=j.est.filter(s=>s==="mal").length;
-          return`<div class="tl-rd-card"><b>${esc(nombrePid(j.pid))}</b><span class="tl-ok">✓ ${o} aciertos</span><span class="tl-mal">✘ ${m} errores</span><span>⏱ ${reloj(SEGUNDOS*1000-j.tiempo)}</span></div>`;}).join("")}</div>
-          <p class="tl-ayuda">${quien?esc(quien)+": desde el celular podés jugar otra vez o volver al menú.":""}</p></div>`;return;}
+      if(DOS&&fase==="fin"){const r=resDos(),emp=empDos(r),j=P[verFin];
+        raiz.innerHTML=`<div class="tl-centro tl-fin tl-rd-final"><h1>${emp?"¡Empate!":"🏆 Ganó "+esc(r[0].n)}</h1>
+          <div class="tl-rd-tabs"><span class="tl-rd-flecha">◀</span>${P.map((x,k)=>{const o=x.est.filter(s=>s==="ok").length,m=x.est.filter(s=>s==="mal").length;
+            return`<span class="tl-rd-tab tl-rd-t${k}${k===verFin?" tl-rd-tab-on":""}"><b>${esc(nombrePid(x.pid))}</b> ✓ ${o} · ✘ ${m} · ⏱ ${reloj(SEGUNDOS*1000-x.tiempo)}</span>`;}).join("")}<span class="tl-rd-flecha">▶</span></div>
+          ${planilla(j,verFin)}
+          <p class="tl-ayuda">📱 En el celular: ◀ ▶ para ver las palabras de cada uno · «Apelar» si el micrófono entendió mal</p></div>`;return;}
       if(fase==="fin"||fase==="cierre"){
         raiz.innerHTML=`<div class="tl-centro tl-fin"><h1>${ok>=n*.7?"¡Tremendo rosco! 🎉":ok>=n/2?"¡Muy bien! 👏":"¡Se terminó!"}</h1>
           <div class="tl-res"><span class="tl-ok">✓ ${ok} aciertos</span><span class="tl-mal">✘ ${mal} errores</span><span>⏱ ${reloj(SEGUNDOS*1000-tiempo)}</span></div>
-          <div class="tl-planilla">${items.map((d,i)=>`<div class="tl-pl-fila tl-pl-${est[i]}"><b>${d.letra}</b><span>${esc(d.palabra)}</span><small>${est[i]==="ok"?"✓ acertó":est[i]==="mal"?"✘ dijo «"+esc(resp[i])+"»":"⏭ sin responder"}</small></div>`).join("")}</div>
-          <p class="tl-ayuda">${quien?esc(quien)+": desde el celular podés jugar otra vez o volver al menú.":""}</p></div>`;return;}
+          ${planilla(P[0],0)}
+          <p class="tl-ayuda">${quien?esc(quien)+": desde el celular podés jugar otra vez, volver al menú o «Apelar» si el micrófono entendió mal.":""}</p></div>`;return;}
       const d=items[actual],paso=360/n;let ang=-actual*paso;while(ang-angPrevio>180)ang-=360;while(angPrevio-ang>180)ang+=360;
       const letras=items.map((x,i)=>`<div class="tl-rl tl-${est[i]}${i===actual?" tl-actual":""}" style="--p:${i*paso}deg">${x.letra}</div>`).join("");
       const flash=ultimo&&Date.now()-cambio<1800?(ultimo.tipo==="ok"?`<div class="tl-flash tl-ok">✓ ¡Bien! «${esc(ultimo.palabra)}»</div>`:ultimo.tipo==="mal"?`<div class="tl-flash tl-mal">✘ Dijo «${esc(ultimo.dijo||"")}» · Era ${esc(ultimo.palabra)}</div>`:`<div class="tl-flash tl-paso">Pasó ⏭</div>`):"";
@@ -997,7 +1010,8 @@
     }
     return{accion,tic,pintar,fin(){muerto=true;clearTimeout(vozRespaldo);clearTimeout(vozReanudar);try{if(G())G().cerrar();}catch(e){}},cel(){
       if(fase==="show"||fase==="cierre")return{pantalla:"rosco_show",fase};
-      if(fase==="fin")return{pantalla:"fin",juego:"rosco",resumen:DOS?P.map(j=>nombrePid(j.pid)+": "+j.est.filter(s=>s==="ok").length+" ✓").join(" · "):est.filter(s=>s==="ok").length+" aciertos"};
+      if(fase==="fin")return{pantalla:"fin",juego:"rosco",resumen:DOS?P.map(j=>nombrePid(j.pid)+": "+j.est.filter(s=>s==="ok").length+" ✓").join(" · "):est.filter(s=>s==="ok").length+" aciertos",
+        rosco:{dos:DOS,ver:verFin,jug:P.map(j=>({pid:j.pid,n:nombrePid(j.pid),err:j.est.map((x,i)=>x==="mal"?{i,l:j.items[i].letra,p:j.items[i].palabra,d:j.resp[i]}:null).filter(Boolean)}))}};
       return{pantalla:"rosco",letra:items[actual].letra,regla:regla(items[actual]),escucha:fase==="jugando"&&!vozBloqueada?J().pid:null,puede:!vozBloqueada,turno:vozRonda,i:actual+(DOS?turno*100:0),
         dos:DOS,activo:J().pid,nombreActivo:nombrePid(J().pid),marcador:DOS?tablaDos().f.map(x=>({n:nombrePid(x.j.pid),ok:x.ok,mal:x.mal,juega:x.k===turno})):null};}};
   }
@@ -1742,7 +1756,7 @@
       if(c.pantalla==="ordenar"){pintarOrdenar(c,cab,soyMando);return;}
       if(c.pantalla==="sopa"){pintarSopa(c,cab,soyMando);return;}
       if(c.pantalla==="numero"&&soyMando){pintarNumero(c,cab);return;}
-      if(!soyMando&&!(c.pantalla==="rosco"&&c.dos)){
+      if(!soyMando&&!(c.pantalla==="rosco"&&c.dos)&&!(c.pantalla==="fin"&&c.rosco&&c.rosco.dos)){
         const mando=(m.jug.find(j=>j.pid===m.mando)||{}).n||"otro";
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2><p>El control lo tiene <b>${esc(mando)}</b>. Ayudalo con las respuestas 😉</p><button type="button" class="tl-boton" id="tlTomar">Tomar el control</button></div>`;
         raiz.querySelector("#tlTomar").onclick=()=>mandar({t:"tomar"});return;}
@@ -1760,8 +1774,15 @@
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎬 ${c.fase==="cierre"?"Giro cierra el programa":"Giro presenta el Rosco"}</h2><p>Mirá la tele 📺 · podés esperar o pasar a lo siguiente.</p><button type="button" class="tl-boton tl-oro" id="tlSeguir">⏭ Siguiente</button>${menu}</div>`;
         raiz.querySelector("#tlSeguir").onclick=()=>accion("rs_seguir");raiz.querySelector("#tlMenu").onclick=()=>{if(confirm("¿Volver al menú?"))accion("menu");};return;}
       if(c.pantalla==="fin"){
-        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>¡Terminó! 🎉</h2><p>${esc(c.resumen||"")}</p><button type="button" class="tl-boton tl-oro" id="tlOtra">Jugar otra vez</button>${menu}</div>`;
-        raiz.querySelector("#tlOtra").onclick=()=>accion("otra");raiz.querySelector("#tlMenu").onclick=()=>accion("menu");return;}
+        /* Rosco: ◀ ▶ para ver en la tele las palabras de cada uno y «Apelar» los errores que el micrófono entendió mal. */
+        const R=c.rosco;let extra="";
+        if(R){const yoK=R.jug.findIndex(j=>j.pid===yo),puede=k=>k===yoK||soyMando;
+          const lista=R.jug.map((j,k)=>puede(k)&&j.err.length?`<div class="tl-ap"><p class="tl-ap-t">⚖️ ${R.jug.length>1?"Errores de "+esc(j.n):"Tus errores"}: si el micrófono entendió mal, apelá</p>${j.err.map(e=>`<button type="button" class="tl-ap-b" data-ap="${k}-${e.i}"><b>${esc(e.l)}</b> ${esc(e.p)} <small>dijo «${esc(e.d)}»</small><em>Apelar</em></button>`).join("")}</div>`:"").join("");
+          extra=(R.dos?`<div class="tl-rd-nav"><button type="button" class="tl-boton tl-chico" data-ver="${R.ver-1}">◀</button><span>En la tele: <b>${esc((R.jug[R.ver]||{}).n||"")}</b></span><button type="button" class="tl-boton tl-chico" data-ver="${R.ver+1}">▶</button></div>`:"")+lista;}
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>¡Terminó! 🎉</h2><p>${esc(c.resumen||"")}</p>${extra}${soyMando?'<button type="button" class="tl-boton tl-oro" id="tlOtra">Jugar otra vez</button>'+menu:`<p>${esc((m.jug.find(j=>j.pid===m.mando)||{}).n||"El que tiene el control")} elige si juegan otra vez.</p>`}</div>`;
+        raiz.querySelectorAll("[data-ver]").forEach(b=>b.onclick=()=>accion("rs_ver",{k:Number(b.dataset.ver)}));
+        raiz.querySelectorAll("[data-ap]").forEach(b=>b.onclick=()=>{const[k,i]=b.dataset.ap.split("-").map(Number);if(confirm("¿Apelar «"+b.querySelector("b").textContent+"»? Pasa a contar como acierto."))accion("rs_apelar",{k,i});});
+        raiz.querySelector("#tlOtra")?.addEventListener("click",()=>accion("otra"));raiz.querySelector("#tlMenu")?.addEventListener("click",()=>accion("menu"));return;}
       if(c.pantalla==="rosco_modo"){
         if(!soyMando){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🔤 El Rosco</h2><p>${esc((m.jug.find(j=>j.pid===m.mando)||{}).n||"El que tiene el control")} está eligiendo si juega solo o de a dos.</p></div>`;return;}
         const otros=(c.jug||[]).filter(j=>j.pid!==yo);
