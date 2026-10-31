@@ -2218,3 +2218,7 @@ Fecha: 31/10/2026 — Rosco en la tele, final: muestra la planilla de palabras (
 ```text
 Fecha: 31/10/2026 — Rosco en la tele: apelación con VOTACIÓN y durante la partida. En el celular, debajo del marcador, aparece "⚖️ Apelar la X: dijiste «…»" para tu último error (también en la pantalla de espera cuando el turno pasó al rival). Al apelar el Rosco se PAUSA (reloj y micrófono), la tele muestra "¡X apela! dijo «…», la palabra era …" con cuenta de 30 s, y los demás votan en su celular ✔ Sí vale / ✘ No vale (decide el primer voto; si nadie vota en 30 s, no vale; si está solo en la sala, se acepta). Si se acepta: la letra pasa a acierto y, si ese error le había pasado el turno al rival, vuelve a jugar el que apeló; después sigue el reloj y el micrófono. En el final, las apelaciones de la planilla también van a votación.
 ```
+
+```text
+Fecha: 31/10/2026 — Rosco en la tele: botón "⏸️ Pausa" en el celular (al lado de Pasar, y en la pantalla de espera del rival). Frena reloj y micrófono; la tele muestra "⏸️ Pausa"; en el celular "▶ Seguir" y, si tu último error es apelable, "⚖️ Apelar" (la apelación sigue con votación y al decidirse el Rosco vuelve a andar). Pueden pausar los que juegan y el que tiene el control.
+```
