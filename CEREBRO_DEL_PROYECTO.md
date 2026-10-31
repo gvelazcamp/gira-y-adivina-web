@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 31/10/2026 — Memoria en Giro (tele) por niveles, cada vez más difícil
+- Qué: 4 niveles. Nivel 1: 8 pares (4x4), 5 s para memorizar, gira cada 3 fallos. Nivel 2: 10 pares (5x4), 4,5 s. Nivel 3: 12 pares (6x4), 4 s, gira cada 2 fallos y cartas parecidas (corazones de colores, manzanas, perro/lobo, gato/tigre, lunas). Nivel 4: 15 pares (6x5), 3,5 s, cartas parecidas y 12 s por turno (si no, pierde el turno). Entre niveles, cartel grande "NIVEL X de 4". Los pares se suman y gana el que más tiene al final.
+- Dónde: tele.js (juegoMemoria, pintarMemoria), tele.css (.tl-mg-nivel, .tl-mg-reloj, cartas con tamaño --tam).
+
 ### 31/10/2026 — Voces de Giro para Sopa Fugaz, Palabra Secreta, Memoria en Giro, Rueda de Letras y Puzzle (tele)
 - Qué: Gonzalo grabó en ElevenLabs las 5 presentaciones en un solo audio (voz Cesar Rodriguez); se cortó en los silencios y quedaron giro-intro-sopa/palabra/memoria/rueda/puzzle.mp3 (el de puzzle se reemplazó por el texto nuevo del puzzle espejo).
 - Dónde: presentacion-y-locucion-extensiones/Giro/voz/tele/.
