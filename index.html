@@ -1156,6 +1156,13 @@ html.rueda-prueba-boreal .centro{background:radial-gradient(circle at 38% 30%,#E
 .rtv-placa-3 .rtv-nombre{font-size:.8rem}
 .rtv-placa-3 .rtv-monto{font-size:.72rem}
 .rtv-resto{position:relative;z-index:1;display:flex;flex-direction:column;gap:6px;margin-top:6px;max-height:160px;overflow-y:auto}
+/* Tele: el podio se achica según el alto de la pantalla para que todo (podio + botones) entre sin scroll */
+#capaResultadosTV .rtv-caja{--rtvFotoW:min(788px,calc((min(86vh,100dvh - var(--safe-top) - var(--safe-bottom) - 40px) - 212px) * 1.777));max-width:calc(var(--rtvFotoW) + 32px)}
+#capaResultadosTV .rtv-placa-1 .rtv-nombre{font-size:min(1rem,calc(var(--rtvFotoW)*.02))}
+#capaResultadosTV .rtv-placa-1 .rtv-monto{font-size:min(.9rem,calc(var(--rtvFotoW)*.018))}
+#capaResultadosTV :is(.rtv-placa-2,.rtv-placa-3) .rtv-nombre{font-size:min(.8rem,calc(var(--rtvFotoW)*.016))}
+#capaResultadosTV :is(.rtv-placa-2,.rtv-placa-3) .rtv-monto{font-size:min(.72rem,calc(var(--rtvFotoW)*.0145))}
+#capaResultadosTV .rtv-resto{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));max-height:none;overflow:visible}
 .rtv-resto-fila{display:flex;align-items:center;gap:8px;background:#00000030;border-radius:10px;padding:6px 10px;text-align:left}
 .rtv-resto-fila .rtv-resto-puesto{color:#B49FCE;font-weight:800;font-size:.75rem;width:18px;flex:0 0 auto}
 .rtv-resto-fila img{width:26px;height:26px;border-radius:50%;flex:0 0 auto}
@@ -12072,8 +12079,8 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="tutti-frutti.js?v=97"></script>
 <script src="extensiones.js?v=118"></script>
 <script src="sala-tv.js?v=1"></script>
-<link rel="stylesheet" href="tele.css?v=24">
-<script src="tele.js?v=47"></script>
+<link rel="stylesheet" href="tele.css?v=25">
+<script src="tele.js?v=48"></script>
 </body>
 </html>
 

@@ -386,3 +386,13 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-or-slots span.tl-or-puesta{border:.35vh solid #37D6C0;background:#37D6C033;color:#fff;animation:tlPodioCaja .25s ease-out both}
 .tl-or-fichas span.tl-or-usada{opacity:.25;box-shadow:none}
 .tl-or-mini{display:block;font-style:normal;font:800 calc(var(--u)*1.3) Outfit,system-ui;color:#37D6C0;margin-top:.2vh}
+
+/* Silabario: tablero completo de 6 columnas como en el juego del celular, entra sin scroll */
+.tl-or-sil .tl-or-card{top:11vh;padding:calc(var(--u)*1.3) calc(var(--u)*2)}
+.tl-or-sil .tl-or-pista{margin:.6vh 0 1.2vh;font-size:calc(var(--u)*2.5)}
+.tl-or-sil .tl-or-slots{margin-bottom:1.4vh}
+.tl-or-sil .tl-or-slots span{min-width:calc(var(--u)*7);height:calc(var(--u)*5.4);font-size:calc(var(--u)*2.6)}
+.tl-or-sil .tl-or-fichas{display:grid;grid-template-columns:repeat(6,1fr);gap:calc(var(--u)*.8);max-width:calc(var(--u)*66);margin:0 auto}
+.tl-or-sil .tl-or-fichas span{padding:calc(var(--u)*.55) 0;font-size:calc(var(--u)*2.2);box-shadow:0 .45vh 0 #b9a98a}
+.tl-or-cel-sil .tl-or-cel-fichas{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.tl-or-cel-sil .tl-or-cel-fichas button{padding:11px 0;font-size:.85rem;border-radius:10px;min-width:0}

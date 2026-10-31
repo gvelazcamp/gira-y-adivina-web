@@ -2174,3 +2174,7 @@ Fecha: 31/10/2026 — Silabario y Frases en Giro en la tele: lo que cada uno toc
 ```text
 Fecha: 31/10/2026 — Rosco por voz (celular y tele): acepta lo que el reconocimiento oye "casi igual" (Gonzalo: dijo "uva" y el celular escuchó "Cuba" → lo marcaba mal). Se compara cómo suena (b/v, s/z/c, h muda, ll/y…) y se tolera: palabras de hasta 5 letras, solo una letra de más al principio o al final (uva/cuba, oso/osos; "pato" NO vale por GATO ni "cosa" por CASA); de 6 a 7 letras, 1 letra distinta; 8 o más, 2. Solo por voz (escribiendo sigue exacto). En la tele, si el parecido es por voz, cuenta como acierto. rosco-rioplatense.js v87, tele.js v47, sw v632.
 ```
+
+```text
+Fecha: 31/10/2026 — Tele: Silabario con tablero lleno de 6×5 sílabas (las de la palabra + relleno) en la tele y en el celular, como el juego del celular, sin scroll. Sala TV (ruleta): la pantalla de Resultados/festejos achica el podio según el alto de la tele para que podio + "Jugar de nuevo" + "Abandonar partida" entren sin scroll (probado 960×540, 1280×720, 1920×1080).
+```
