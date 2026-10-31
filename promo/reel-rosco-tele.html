@@ -68,29 +68,20 @@ body.limpio #ctrl,body.limpio #escenas{display:none}
 </head>
 <body>
 <div id="escenario" class="barras">
-  <!-- 0 · Gancho: noche aburrida -->
+  <!-- 0 · Gancho: noche aburrida (misma imagen que el video "Girá y Adiviná en la tele") -->
   <section class="esc" id="e0">
-    <div class="living"></div>
-    <div class="ventana"><div class="luna"></div></div>
-    <div class="tele capa" id="e0tele" style="left:10cqw;top:30cqw;width:52cqw"><div class="capa" style="inset:0;background:linear-gradient(130deg,#1a1626,#050308)"></div></div>
-    <div class="pata" style="left:30cqw;width:12cqw;top:60.5cqw"></div>
-    <div class="sofa"><div class="resp"></div><div class="asiento"></div></div>
-    <div class="persona capa" id="e0p1" style="left:6cqw">😑<i>📱</i><div class="brillo"></div></div>
-    <div class="persona capa" id="e0p2" style="left:28cqw">🥱<i>📱</i><div class="brillo"></div></div>
-    <div class="persona capa" id="e0p3" style="left:50cqw">😐<i>📱</i><div class="brillo"></div></div>
-    <div class="persona capa" id="e0p4" style="left:72cqw">😴<i>📱</i><div class="brillo"></div></div>
-    <div class="zzz capa" id="e0z" style="left:84cqw;top:86cqw">z<small>z</small>Z</div>
-    <div class="titulo" id="e0h" style="top:10cqw;font-size:5.4cqw;color:#BFAFD1">VIERNES · 22:30 🛋️</div>
-    <div class="titulo" id="e0a" style="top:70cqw;font-size:8.6cqw">OTRA NOCHE<br><span class="mag">ABURRIDA…</span> 😴</div>
-    <div class="titulo" id="e0b" style="top:158cqw;font-size:5.6cqw;color:#E4D8EB">cada uno con su celu, nadie habla</div>
+    <img class="capa" id="e0img" src="rosco-tele/00-aburridos.webp" style="left:0;top:0;width:100cqw;height:177.8cqw;object-fit:cover">
+    <div class="capa" style="inset:0;background:linear-gradient(#000a 0%,transparent 30%,transparent 70%,#000a 100%)"></div>
+    <div class="titulo" id="e0h" style="top:12cqw;font-size:5.6cqw;color:#E4D8EB">VIERNES · 22:30 🛋️</div>
+    <div class="titulo" id="e0a" style="top:132cqw;font-size:9.4cqw">OTRA NOCHE<br><span class="mag">ABURRIDA…</span> 😴</div>
   </section>
-  <!-- 1 · La tele se prende -->
+  <!-- 1 · Tocás la tele en el celu → Giro en el living -->
   <section class="esc" id="e1">
-    <div class="capa" style="inset:0;background:radial-gradient(circle at 50% 42%,#3a1a5c,#0b0614 70%)"></div>
-    <div class="rayos capa" id="e1rayos" style="left:50%;top:74cqw;width:170cqw;height:170cqw;margin:-85cqw"></div>
-    <div class="titulo" id="e1a" style="top:12cqw;font-size:7.6cqw">¿Y SI LA <span class="oro">TELE</span><br>SE VUELVE UN<br><span class="tur">PROGRAMA DE JUEGOS?</span></div>
-    <div class="tele capa" id="e1tele" style="left:4cqw;top:62cqw;width:92cqw"><img src="rosco-tele/05-giro.webp"></div>
-    <div class="titulo" id="e1b" style="top:128cqw;font-size:6.4cqw">📺 Giro conduce <span class="oro">en tu living</span></div>
+    <img class="capa" id="e1img" src="rosco-tele/00-tocar-tele.webp" style="left:0;top:0;width:100cqw;height:177.8cqw;object-fit:cover">
+    <img class="capa" id="e1img2" src="rosco-tele/00-giro-living.webp" style="left:0;top:0;width:100cqw;height:177.8cqw;object-fit:cover">
+    <div class="capa" style="inset:0;background:linear-gradient(#000b 0%,transparent 34%,transparent 72%,#000a 100%)"></div>
+    <div class="titulo" id="e1a" style="top:11cqw;font-size:7.4cqw">¿Y SI LA <span class="oro">TELE</span><br>SE VUELVE UN<br><span class="tur">PROGRAMA DE JUEGOS?</span></div>
+    <div class="titulo" id="e1b" style="top:146cqw;font-size:7cqw">📺 Giro conduce<br><span class="oro">en tu living</span></div>
   </section>
   <!-- 2 · Te unís con el celu -->
   <section class="esc" id="e2">
@@ -208,20 +199,14 @@ const zoom=(id,s)=>{const i=document.querySelector("#"+id+" img");if(i)i.style.t
 
 /* 0 · Gancho: otra noche aburrida */
 escena("e0","Gancho",3.2,t=>{
-  set("e0h",{o:pr(t,0,.3)});
-  ["e0p1","e0p2","e0p3","e0p4"].forEach((id,i)=>set(id,{o:1,y:Math.sin(t*1.6+i)*.5,r:i===3?Math.sin(t*2)*4:0}));
-  set("e0z",{o:.4+.4*Math.sin(t*3),y:-t*2});
-  set("e0tele",{o:1});
-  golpe("e0a",t,.35);golpe("e0b",t,1.6);
+  set("e0img",{o:1,s:1.12-.1*pr(t,0,3.2)});
+  set("e0h",{o:pr(t,0,.3)});golpe("e0a",t,.5);
 });
-/* 1 · ¿Y si la tele…? se prende */
-escena("e1","La tele",2.8,t=>{
-  golpe("e1a",t,0);
-  const on=pr(t,.5,.8);set("e1tele",{o:1,s:lerp(.86,1,eOut(on))});
-  document.querySelector("#e1tele img").style.opacity=on;document.querySelector("#e1tele img").style.filter="brightness("+(1+1.5*(1-on))+")";
-  zoom("e1tele",1+.04*pr(t,.8,2.8));
-  set("e1rayos",{o:on*.9,r:t*30});golpe("e1b",t,1.2);
-  $("flash").style.opacity=t>=.5&&t<.75?.8*(1-pr(t,.5,.75)):0;
+/* 1 · Tocás la tele en el celu → Giro en el living */
+escena("e1","La tele",3.0,t=>{
+  const c=t>=1.5;set("e1img",{o:c?0:1,s:1.04+.06*pr(t,0,1.5)});set("e1img2",{o:c?1:0,s:lerp(1.12,1.02,eOut(pr(t,1.5,3)))});
+  golpe("e1a",t,0,1.4);golpe("e1b",t,1.7);
+  $("flash").style.opacity=t>=1.5&&t<1.75?.85*(1-pr(t,1.5,1.75)):0;
 });
 /* 2 · Te unís con el celu */
 escena("e2","Unirse",3.4,t=>{
