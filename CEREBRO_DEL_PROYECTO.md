@@ -2126,3 +2126,7 @@ Fecha: 31/10/2026 — Botón "🔄 ¿Ya jugás en otro celular, en la app o en l
 ```text
 Fecha: 31/10/2026 — Inicio: el ⚙️ (Más opciones) había desaparecido en el celular de Gonzalo: con el 📺 visible para todos la fila racha/monedas/vidas/📺/🔊/⚙️ no entraba y el ⚙️ quedaba afuera de la pantalla. Ahora la fila baja a otra línea si no entra (nunca se corta) y en celulares de hasta 480 px las pastillas son un poco más chicas. Probado en 360, 412 y 480 px. sw v617.
 ```
+
+```text
+Fecha: 31/10/2026 — Inicio: la fila 🔥/🪙/❤️/📺/🔊/⚙️ siempre en UNA línea (Gonzalo: "que no quede en una segunda línea, que se achique lo que dice monedas"). En celulares (≤480 px) se oculta la palabra "monedas" (queda 🪙 y el número, span .txt-monedas) y se achican pastillas y botones redondos (24 px). Entra en 360 px. sw v618.
+```
