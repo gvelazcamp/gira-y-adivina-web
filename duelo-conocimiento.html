@@ -137,6 +137,17 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
 </style>
 <link rel="stylesheet" href="duelo-conocimiento-entrada.css?v=2" />
 <link rel="stylesheet" href="duelo-conocimiento-horizontal.css?v=2" />
+<script>/* En la tele (?tv=1, 31/10/2026): se responde desde el celular, así que la tele muestra la foto GRANDE y no los botones. */
+try{if(new URLSearchParams(location.search).get("tv")==="1")document.documentElement.classList.add("dc-tv");}catch(e){}</script>
+<style>
+html.dc-tv .mic-panel button,html.dc-tv .mic-panel form,html.dc-tv .mic-panel a,html.dc-tv .demo-response-hint,html.dc-tv .help-strip{display:none!important}
+html.dc-tv body:has(#setup-overlay.hidden) .flag-box.photo-mode,
+html.dc-tv body:has(#setup-overlay.hidden) .flag-box.image-mode{width:auto!important;height:min(52dvh,300px)!important;max-height:none!important;aspect-ratio:.82!important;padding:4px!important;margin:2px auto 4px!important}
+html.dc-tv body:has(#setup-overlay.hidden) .flag-box.photo-mode img#portrait-img{object-fit:cover;object-position:center 22%}
+html.dc-tv body:has(#setup-overlay.hidden) .flag-box:not(.photo-mode):not(.image-mode):not(.math-mode){width:auto!important;height:min(36dvh,200px)!important;max-height:none!important;aspect-ratio:1.6!important}
+html.dc-tv body:has(#setup-overlay.hidden) .flag-box.math-mode{height:min(26dvh,140px)!important;max-height:none!important}
+html.dc-tv body:has(#setup-overlay.hidden) .mic-panel{padding:4px 8px!important;min-height:0!important}
+</style>
 </head>
 <body>
 <div class="app">

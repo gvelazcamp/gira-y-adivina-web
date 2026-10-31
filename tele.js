@@ -589,7 +589,7 @@
     }
     function pintar(raiz){
       if(!iframe||!raiz.contains(iframe)){
-        raiz.innerHTML=`<div class="tl-duelo"><iframe id="tlDcFrame" src="duelo-conocimiento.html?tv=1&amp;v=28" title="Duelo de Conocimiento" allow="autoplay"></iframe><div id="tlDcConfig" class="tl-dc-config"></div></div>`;
+        raiz.innerHTML=`<div class="tl-duelo"><iframe id="tlDcFrame" src="duelo-conocimiento.html?tv=1&amp;v=29" title="Duelo de Conocimiento" allow="autoplay"></iframe><div id="tlDcConfig" class="tl-dc-config"></div></div>`;
         iframe=raiz.querySelector("#tlDcFrame");
       }
       const conf=raiz.querySelector("#tlDcConfig");conf.hidden=fase!=="config";
