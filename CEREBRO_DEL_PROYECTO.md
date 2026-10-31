@@ -2262,3 +2262,7 @@ Fecha: 31/10/2026 — Rosco, planilla del final: la letra apelada (aceptada) que
 ```text
 Fecha: 31/10/2026 — REEL "Rosco en la tele": promo/reel-rosco-tele.html (≈35 s, 9:16, mismo motor; música reel-previa-musica.mp3). Gancho: "VIERNES · 22:30 · OTRA NOCHE ABURRIDA… 😴" (living, tele apagada, la familia en el sillón cada uno con su celu) → "¿Y SI LA TELE SE VUELVE UN PROGRAMA DE JUEGOS?" (se prende con Giro) → cada uno entra con su celu (QR/código, sin instalar nada) → ¡hasta 4 jugadores! → cada uno con su rosco (dorado/violeta/celeste/naranja) → respondés hablando → ¡Apelá! (votan los demás) → Fue ruido → marcador en vivo → ¡GANÓ PAPÁ! (podio) → "JUGÁ EN TU TELE · GRATIS · girayadivina.com/tele". Las pantallas son capturas reales del juego (promo/rosco-tele/, partida de prueba Gonzalo/Papá/Mamá/Sofi). Exportado a MP4 1080×1920 30 fps cuadro por cuadro (Playwright + ffmpeg).
 ```
+
+```text
+Fecha: 31/10/2026 — Rosco en la tele (de a 2, 3 o 4): festejo cuando alguien COMPLETA su rosco (responde todas las letras; no cuando se le acaba el tiempo). ~5 s con reloj y micrófono en pausa: el rosco da 3 vueltas y frena con todas las letras brillando, el centro muestra 🎉 "¡Completado!" (🏆 "¡Perfecto!" si no erró ninguna), papelitos, aplausos + festejo + voz de Giro, y el cartel "🎉 ¡FELICITACIONES, X! · ¡ROSCO COMPLETADO!" (o "¡ROSCO PERFECTO!") con aciertos/errores. En su celular: "🎉 ¡Completaste el rosco!"; en los demás: "¡X completó el rosco!". Después sigue el siguiente (o el final con el podio).
+```

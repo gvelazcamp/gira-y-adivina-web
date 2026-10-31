@@ -548,3 +548,17 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-rd-pres-j b{font:900 3.6vh 'Archivo Black',sans-serif;color:var(--pc)}
 .tl-rd-pres-j span{font:700 2vh Outfit,system-ui;opacity:.8}
 .tl-rd-pc1{--pc:#9B6BFF}.tl-rd-pc2{--pc:#3DA5FF}.tl-rd-pc3{--pc:#FF8A3D}
+/* ¡Rosco completado! — el rosco brilla, gira y salen papelitos */
+.tl-rd-completo .tl-rl{animation:tlRdBrilla .45s ease-in-out infinite alternate}
+@keyframes tlRdBrilla{from{filter:brightness(1);box-shadow:0 0 1vh #F5B301}to{filter:brightness(1.35);box-shadow:0 0 4vh #FFE08A,0 0 8vh #F5B301}}
+.tl-rd-completo .tl-medio{animation:tlRdLatido .6s ease-in-out infinite alternate;border-color:#F5B301!important}
+@keyframes tlRdLatido{from{box-shadow:0 0 3vh #F5B301}to{box-shadow:0 0 12vh #FFE08A,0 0 22vh #F5B30199}}
+.tl-rd-fest{position:absolute;inset:0;z-index:25;pointer-events:none}
+.tl-rd-fest-caja{position:absolute;right:3vw;top:50%;transform:translateY(-50%);width:44vw;text-align:center;background:#0C0616EE;border:.6vh solid #F5B301;border-radius:3vh;padding:4vh 2vw;box-shadow:0 0 10vh #F5B30188;animation:tlPodioCaja .6s cubic-bezier(.2,1.5,.4,1) both}
+.tl-rd-fest-caja small{display:block;font:900 2.6vh 'Archivo Black',sans-serif;letter-spacing:.3vh;color:#37D6C0}
+.tl-rd-fest-caja h1{margin:1.5vh 0;font:900 6.4vh/1.05 'Archivo Black',sans-serif;color:#F5B301;text-shadow:0 .8vh 0 #7a4b00,0 0 5vh #F5B30199;animation:tlRdLatido2 .7s ease-in-out infinite alternate}
+@keyframes tlRdLatido2{from{transform:scale(1)}to{transform:scale(1.06)}}
+.tl-rd-fest-caja p{margin:0;font:800 3.2vh Outfit,system-ui}
+.tl-rd-fest-cel .tl-rd-fest-emoji{font-size:4.5rem;line-height:1;animation:tlRdLatido2 .6s ease-in-out infinite alternate}
+.tl-rd-fest-cel h2{color:#F5B301}
+@media(prefers-reduced-motion:reduce){.tl-rd-completo .tl-rl,.tl-rd-completo .tl-medio,.tl-rd-fest-caja h1{animation:none}}
