@@ -1057,8 +1057,8 @@
       const todas=[...new Set(base().flatMap(x=>x.piezas))].filter(x=>!it.piezas.includes(x));
       /* En la tele el tablero es compartido: sumamos opciones cada dos rondas.
          Las pistas también pasan de nivel 1 a 3 durante la partida. */
-      const extras=(it.piezas.length>=4?2:3)+Math.floor((ronda-1)/2);
-      return mezclar(todas).slice(0,extras);
+      /* Como en el celular: tablero lleno de 6×5 sílabas (las de la palabra + de relleno). */
+      return mezclar(todas).slice(0,Math.max(0,30-it.piezas.length));
     }
     function nueva(){
       ronda++;item=items[ronda-1];if(!item){terminar();return;}
@@ -1454,7 +1454,7 @@
       if(c.fase==="revela"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>${(c.resueltos||[]).includes(yo)?"✅ ¡Bien!":"⏱ ¡Tiempo!"}</h2><p>Era:</p><p class="tl-or-cel-resp">${esc(c.respuesta)}</p>${menu}</div>`;enlazar();return;}
       if((c.resueltos||[]).includes(yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>✅ ¡Lo armaste!</h2><p>Mirá la tele 📺 mientras los demás terminan.</p>${menu}</div>`;enlazar();return;}
       const armado=orSel.map(i=>c.fichas[i]).join(c.unir);
-      raiz.innerHTML=cab+`<div class="tl-cel-caja tl-or-cel"><p class="tl-or-cel-pista">${esc(c.pista)}</p>
+      raiz.innerHTML=cab+`<div class="tl-cel-caja tl-or-cel${c.juego==="silabario"?" tl-or-cel-sil":""}"><p class="tl-or-cel-pista">${esc(c.pista)}</p>
         <div class="tl-or-cel-armado">${armado?esc(armado):"<span>Tocá las piezas en orden</span>"}</div>
         ${orAviso?`<p class="tl-or-cel-aviso">${orAviso}</p>`:""}
         <div class="tl-or-cel-fichas">${c.fichas.map((f,i)=>`<button type="button" data-f="${i}" ${orSel.includes(i)?"disabled":""}>${esc(f)}</button>`).join("")}</div>
