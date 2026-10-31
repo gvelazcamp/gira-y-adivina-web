@@ -772,7 +772,7 @@
     tutti:{titulo:"¡Tutti Frutti!",descripcion:"Sale una letra y todos completan las categorías.",
       locucion:"¡Bienvenidos al Tutti Frutti! Sale una letra y cada uno completa las categorías desde su celular. El primero que termina grita ¡basta! ¿Están listos?"},
     sopa:{titulo:"¡Sopa Fugaz!",descripcion:"Encuentren las palabras en la sopa antes que los demás. ¡Ojo que las letras se mudan!",
-      locucion:"¡Bienvenidos a Sopa Fugaz! En la tele hay una sopa de letras. Desde el celular tocan la primera y la última letra de cada palabra. Cada tanto las letras se mudan de lugar. ¡El que encuentra más, gana!"},
+      locucion:"¡Bienvenidos a Sopa Fugaz! En la tele hay una sopa de letras. Desde el celular deslizan el dedo sobre cada palabra. Cada tanto las letras se mudan de lugar. ¡El que encuentra más, gana!"},
     puzzle:{titulo:"¡El Puzzle!",descripcion:"Armen el mismo rompecabezas entre todos.",
       locucion:"¡Bienvenidos al Puzzle! Elijan una imagen y ármenla entre todos moviendo las piezas desde el celular. ¡Trabajo en equipo!"},
     duelo:{titulo:"¡Duelo de Conocimiento!",descripcion:"Respondan hablando al celular. El reloj corre.",
@@ -1062,7 +1062,7 @@
     const lim=w=>String(w||"").toUpperCase().replace(/[^A-ZÑ]/g,"");
     const temas=mezclar((typeof SOPA_DATOS!=="undefined"&&SOPA_DATOS.categorias||[]).map(c=>({nombre:c.nombre,
       palabras:[...new Set((c.palabras||[]).map(lim))].filter(w=>w.length>=4&&w.length<=N)})).filter(c=>c.palabras.length>=PAL)).slice(0,RONDAS);
-    let ronda=0,tema=null,objetivos=[],halladas={},ubic={},grid=[],gen=0,prev=null,cambioGen=0,restante=0,proxMuda=MUDA,fase="config",timer=null,muerto=false,ult={},mudo=false,giratoria=true;
+    let ronda=0,tema=null,objetivos=[],halladas={},ubic={},grid=[],gen=0,prev=null,cambioGen=0,restante=0,proxMuda=MUDA,fase="config",timer=null,muerto=false,ult={},mudo=false,giratoria=true,durRonda=1;
     function armarGrilla(){
       const faltan=mezclar(objetivos.filter(w=>!halladas[w])).sort((a,b)=>b.length-a.length);
       for(let intento=0;intento<80;intento++){
@@ -1090,7 +1090,7 @@
       halladas={};ult={};prev=null;let g=armarGrilla();if(!g){objetivos=objetivos.slice(0,4);g=armarGrilla();}
       try{Vistas.marcar("sopa_tele",objetivos);}catch(e){}
       grid=g||Array(N*N).fill("A");gen++;cambioGen=Date.now();mudo=false;
-      restante=Math.round(objetivos.reduce((s,w)=>s+7+1.3*w.length,0)*(giratoria?1:.87)*1000);proxMuda=MUDA;fase="jugando";
+      restante=Math.round(objetivos.reduce((s,w)=>s+7+1.3*w.length,0)*(giratoria?1:.87)*1000);durRonda=restante;proxMuda=MUDA;fase="jugando";
       if(ronda>1)SND.turno();actualizar();
     }
     function mudar(){
@@ -1153,14 +1153,15 @@
             ${rev?`<div class="tl-sp-fin">${objetivos.every(w=>halladas[w])?"🎉 ¡Encontraron todas!":"⏱ ¡Tiempo! En rojo, las que faltaron"}</div>`:!giratoria?"":`<div class="tl-sp-muda"><i id="tlSpMuda" style="width:${(100*proxMuda/MUDA).toFixed(1)}%"></i><em>🌀 Las letras se mudan</em></div>`}
             <div class="tl-sp-lista">${objetivos.map(w=>{const h=halladas[w];return h?`<span class="tl-sp-ok" style="--c:${color[h.pid]}">${esc(w)}<small>${esc(nombreDe(T,h.pid))}</small></span>`:`<span class="${rev?"tl-sp-falto":""}">${esc(w)}</span>`;}).join("")}</div>
             <div class="tl-sp-rank">${ranking}</div></aside></div>
-        <p class="tl-or-ayuda">${rev?"⏳ Ya viene la siguiente…":"📱 En tu celular: tocá la primera y la última letra de la palabra"}</p></div>`;
+        <p class="tl-or-ayuda">${rev?"⏳ Ya viene la siguiente…":"📱 En tu celular: deslizá el dedo sobre la palabra"}</p></div>`;
       if(gira){const t=raiz.querySelector(".tl-sp-tablero");setTimeout(()=>{if(t)t.classList.remove("tl-sp-gira");},Math.max(0,1150-giro));}
     }
     function cel(){
       if(fase==="fin")return{pantalla:"fin",juego:"sopa",resumen:"Mirá el podio en la tele 🏆"};
       if(fase==="config")return{pantalla:"sopa",fase,quien:nombreDe(T,T.mando)};
-      const h=[];Object.values(halladas).forEach(x=>(x.cel||[]).forEach(k=>h.push(k)));
-      return{pantalla:"sopa",fase,ronda,tema:tema?tema.nombre:"",n:N,g:gen,grid:grid.join(""),h,pal:objetivos.map(w=>[w,halladas[w]?nombreDe(T,halladas[w].pid):""]),pts:puntos,ult};
+      const hc=Object.values(halladas).filter(x=>x.cel).map(x=>({c:x.cel,col:color[x.pid]}));
+      return{pantalla:"sopa",fase,ronda,rondas:temas.length,giratoria,tema:tema?tema.nombre:"",n:N,g:gen,grid:grid.join(""),hc,pal:objetivos.map(w=>[w,halladas[w]?nombreDe(T,halladas[w].pid):""]),pts:puntos,ult,
+        rest:Math.round(restante),dur:durRonda,muda:giratoria&&fase==="jugando"?Math.round(proxMuda):null,MUDA};
     }
     return{accion,tic,pintar,cel,fin(){muerto=true;clearTimeout(timer);}};
   }
@@ -1579,32 +1580,63 @@
     }
     /* Silabario / Frases en Giro: cada uno arma la respuesta tocando las piezas. */
     let orClave="",orSel=[],orMalVisto=0,orAviso="";
-    /* Sopa Fugaz en el celular: la misma grilla que la tele; se toca la primera y la última letra. */
-    let spSel=null,spGen=-1,spUltT=0,spUltVisto=0;
+    /* Sopa Fugaz en el celular (31/10/2026): igual que el juego del celular (tablero crema, cápsulas, lista y barras);
+       se marca deslizando el dedo de la primera a la última letra (o tocando las dos). La tele manda el estado
+       cada 2,5 s: si solo cambió el reloj no se redibuja, y mientras arrastrás el dedo el repintado espera. */
+    let spSel=null,spGen=-1,spUltT=0,spUltVisto=0,spClave="",spArr=null,spPend=null,spT={rest:0,dur:1,muda:null,MUDA:1,t:0};
+    function spLinea(n,a,b){const r1=Math.floor(a/n),c1=a%n,r2=Math.floor(b/n),c2=b%n,dr=Math.sign(r2-r1),dc=Math.sign(c2-c1);
+      if(!(r1===r2||c1===c2||Math.abs(r2-r1)===Math.abs(c2-c1)))return null;const L=Math.max(Math.abs(r2-r1),Math.abs(c2-c1))+1;
+      return Array.from({length:L},(_,i)=>(r1+dr*i)*n+c1+dc*i);}
+    function spTrazo(n,ind,color){return`<polyline points="${ind.map(k=>(k%n+.5)+","+(Math.floor(k/n)+.5)).join(" ")}" fill="none" stroke="${color}" stroke-width=".8" stroke-linecap="round" stroke-linejoin="round"/>`;}
+    function spReloj(){const el=raiz.querySelector("#tlSpCelT");if(!el)return;const pas=Date.now()-spT.t,r=Math.max(0,spT.rest-pas),s=Math.ceil(r/1000);
+      el.textContent=Math.floor(s/60)+":"+String(s%60).padStart(2,"0");const b=raiz.querySelector("#tlSpCelBar");if(b)b.style.width=(100*r/spT.dur).toFixed(1)+"%";
+      if(spT.muda!=null){const m=Math.max(0,spT.muda-pas),mt=raiz.querySelector("#tlSpCelMudaT"),mb=raiz.querySelector("#tlSpCelMudaBar");
+        if(mt)mt.textContent="Las letras se mudan en "+Math.ceil(m/1000)+" s";if(mb)mb.style.width=(100*m/spT.MUDA).toFixed(1)+"%";}}
+    setInterval(spReloj,250);
     function pintarSopa(c,cab,soyMando){
+      spT={rest:c.rest||0,dur:c.dur||1,muda:c.muda==null?null:c.muda,MUDA:c.MUDA||1,t:Date.now()};
+      if(spArr){spPend=[c,cab,soyMando];return;}
+      const{rest,muda,...fijo}=c,clave=JSON.stringify([fijo,soyMando]);
+      if(clave===spClave&&raiz.querySelector(".tl-sp-real")){spReloj();return;}spClave=clave;
       if(c.g!==spGen){spGen=c.g;spSel=null;}
       const u=(c.ult||{})[yo];if(u&&u.t!==spUltT){spUltT=u.t;spUltVisto=Date.now();}
       const aviso=u&&Date.now()-spUltVisto<3500?`<p class="tl-sp-aviso${u.ok?" tl-sp-bien":""}">${u.ok?"✅ ":"❌ "}${esc(u.txt)}</p>`:"";
-      const menu=soyMando?`<button type="button" class="tl-boton tl-chico" id="tlSpSaltar">⏭ Terminar esta ronda</button><button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>`:"";
       const enlazar=()=>{raiz.querySelector("#tlSpSaltar")?.addEventListener("click",()=>{if(confirm("¿Terminar esta ronda?"))accion("sp_saltar");});const b=raiz.querySelector("#tlMenu");if(b)b.onclick=()=>{if(confirm("¿Volver al menú?"))accion("menu");};};
       if(c.fase==="config"){
         if(!soyMando){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🔎 Sopa Fugaz</h2><p>${esc(c.quien||"El que tiene el control")} está eligiendo el modo.</p></div>`;return;}
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🔎 Sopa Fugaz</h2><p>¿Cómo la juegan?</p>
-          <button type="button" class="tl-boton tl-oro" data-modo="clasica">🧩 Clásica<br><small>Las letras quedan quietas</small></button>
-          <button type="button" class="tl-boton tl-oro" data-modo="giratoria">🌀 Giratoria<br><small>La sopa gira y las letras se mudan</small></button><button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button></div>`;
+          <button type="button" class="tl-boton tl-oro" data-modo="clasica">🔎 Sopa clásica<br><small>Las letras quedan quietas</small></button>
+          <button type="button" class="tl-boton tl-oro" data-modo="giratoria">🌀 Sopa giratoria<br><small>La sopa gira y las letras se mudan</small></button><button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button></div>`;
         raiz.querySelectorAll("[data-modo]").forEach(b=>b.onclick=()=>accion("sp_modo",{modo:b.dataset.modo}));enlazar();return;}
-      const mios=(c.pts||{})[yo]||0;
-      if(c.fase==="revela"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏱ ¡Terminó la ronda!</h2><p>Mirá la tele 📺 · ya viene la siguiente.</p><p>Tus puntos: <b>${mios}</b></p>${menu}</div>`;enlazar();return;}
-      const h=new Set(c.h||[]),ayuda=()=>spSel==null?"Tocá la primera letra de una palabra":"Ahora tocá la última letra";
-      raiz.innerHTML=cab+`<div class="tl-cel-caja tl-sp-cel"><div class="tl-sp-cel-cab"><b>🔎 ${esc(c.tema)}</b><span>⭐ ${mios}</span></div>
-        <div class="tl-sp-cel-lista">${(c.pal||[]).map(([w,q])=>`<span class="${q?"tl-sp-tachada":""}">${esc(w)}</span>`).join("")}</div>
-        <div class="tl-sp-cel-grilla" style="grid-template-columns:repeat(${c.n},1fr)">${[...c.grid].map((l,i)=>`<button type="button" data-k="${i}" class="${h.has(i)?"tl-sp-hall":""}${spSel===i?" tl-sp-sel":""}">${esc(l)}</button>`).join("")}</div>
-        <p class="tl-sp-cel-ayuda">${ayuda()}</p>${aviso}${menu}</div>`;
+      const pts=c.pts||{},mios=pts[yo]||0,puesto=1+Object.values(pts).filter(v=>v>mios).length;
+      const menu=soyMando?`<div class="sf-acciones"><button type="button" id="tlSpSaltar">⏭ Terminar ronda</button><button type="button" id="tlMenu">⟵ Menú</button></div>`:"";
+      if(c.fase==="revela"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏱ ¡Terminó la ronda!</h2><p>Mirá la tele 📺 · ya viene la siguiente.</p><p>Tus puntos: <b>${mios}</b> · vas ${puesto}º</p>${menu}</div>`;enlazar();return;}
+      const n=c.n,hechas=(c.pal||[]).filter(x=>x[1]).length;
+      raiz.innerHTML=cab+`<div class="sf-game tl-sp-real${c.giratoria?" giratoria":""}">
+        <div class="sf-cabeza"><img src="logo-sopa-fugaz.svg" alt=""><div><small>${c.giratoria?"Sopa giratoria 🌀":"Sopa clásica"} · Ronda ${c.ronda}/${c.rondas||4}</small><b>${esc(c.tema)}</b></div><span class="sf-cuenta">${hechas}/${(c.pal||[]).length}</span></div>
+        <div class="sf-hud"><div><small>Ronda</small><b>${c.ronda}</b></div><div><small>Puntos</small><b>${mios}</b></div><div><small>Puesto</small><b>${puesto}º</b></div><div><small>Tiempo</small><b id="tlSpCelT">–</b></div></div>
+        <div class="sf-bar"><i id="tlSpCelBar"></i></div>
+        <div class="sf-grid-caja"><div class="sf-tablero"><div class="sf-grid" id="tlSpGrid" style="--sf-n:${n}">${[...c.grid].map((l,i)=>`<div class="sf-celda${spSel===i?" sel":""}" data-k="${i}">${esc(l)}</div>`).join("")}
+          <svg class="sf-caps" viewBox="0 0 ${n} ${n}" preserveAspectRatio="none">${(c.hc||[]).map(x=>spTrazo(n,x.c,x.col+"99")).join("")}</svg></div></div></div>
+        <div class="sf-mudanza"><div class="sf-mudanza-texto" id="tlSpCelMudaT"></div><div class="sf-bar mudanza"><i id="tlSpCelMudaBar"></i></div></div>
+        ${aviso}
+        <div class="sf-lista">${(c.pal||[]).map(([w,q])=>`<span class="sf-palabra${q?" hecho":""}">${esc(w)}</span>`).join("")}</div>${menu}</div>`;
+      spReloj();
       if(aviso)setTimeout(()=>{const e=raiz.querySelector(".tl-sp-aviso");if(e&&Date.now()-spUltVisto>=3400)e.remove();},3600);
-      raiz.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{const k=Number(b.dataset.k);
-        if(spSel==null)spSel=k;else if(spSel===k)spSel=null;else{accion("sp_marca",{g:c.g,x:spSel,y:k});spSel=null;}
-        raiz.querySelectorAll(".tl-sp-sel").forEach(x=>x.classList.remove("tl-sp-sel"));if(spSel!=null)b.classList.add("tl-sp-sel");
-        const ay=raiz.querySelector(".tl-sp-cel-ayuda");if(ay)ay.textContent=ayuda();});
+      const grid=raiz.querySelector("#tlSpGrid"),svg=grid.querySelector("svg"),base=svg.innerHTML;
+      const celda=e=>{const el=document.elementFromPoint(e.clientX,e.clientY);const d=el&&el.closest?el.closest(".sf-celda"):null;return d&&grid.contains(d)?Number(d.dataset.k):null;};
+      const marcarSel=ind=>{grid.querySelectorAll(".sf-celda.sel").forEach(x=>x.classList.remove("sel"));(ind||[]).forEach(k=>grid.children[k]&&grid.children[k].classList.add("sel"));
+        svg.innerHTML=base+(ind&&ind.length>1?spTrazo(n,ind,"#E5197C99"):"");};
+      const soltar=()=>{const a=spArr;spArr=null;
+        if(a&&a.fin!=null&&a.fin!==a.ini){accion("sp_marca",{g:c.g,x:a.ini,y:a.fin});spSel=null;marcarSel(null);}
+        else if(a){/* Toque sin arrastrar: primera letra, después la última. */
+          if(spSel==null||spSel===a.ini){spSel=spSel===a.ini&&a.previo===a.ini?null:a.ini;marcarSel(spSel==null?null:[spSel]);}
+          else{const l=spLinea(n,spSel,a.ini);accion("sp_marca",{g:c.g,x:spSel,y:a.ini});spSel=null;marcarSel(l);setTimeout(()=>marcarSel(null),300);}}
+        if(spPend){const p=spPend;spPend=null;spClave="";pintarSopa(...p);}};
+      grid.addEventListener("pointerdown",e=>{const k=celda(e);if(k==null)return;e.preventDefault();try{grid.setPointerCapture(e.pointerId);}catch(_){}
+        spArr={ini:k,fin:null,previo:spSel};if(spSel==null)marcarSel([k]);});
+      grid.addEventListener("pointermove",e=>{if(!spArr)return;const k=celda(e);if(k==null||k===spArr.ini)return;const l=spLinea(n,spArr.ini,k);if(!l)return;spArr.fin=k;spSel=null;marcarSel(l);});
+      grid.addEventListener("pointerup",soltar);grid.addEventListener("pointercancel",()=>{spArr=null;marcarSel(spSel==null?null:[spSel]);if(spPend){const p=spPend;spPend=null;spClave="";pintarSopa(...p);}});
       enlazar();
     }
     function pintarOrdenar(c,cab,soyMando){
@@ -1687,9 +1719,9 @@
 
     function pintar(){
       const m=ultimo;if(!m)return;const soyMando=m.mando===yo,c=m.cel||{},clave=JSON.stringify([soyMando,c,m.jug.length]);
-      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&c.pantalla!=="ruleta_nativa"&&clave===pantallaPintada)return;
+      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&c.pantalla!=="ruleta_nativa"&&c.pantalla!=="sopa"&&clave===pantallaPintada)return;
       const escribiendo=document.activeElement&&document.activeElement.id==="tlTexto"?document.activeElement.value:"";
-      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&c.pantalla!=="ruleta_nativa")pantallaPintada=clave;
+      if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&c.pantalla!=="ruleta_nativa"&&c.pantalla!=="sopa")pantallaPintada=clave;
       const cab=`<div class="tl-cel-cab">📺 Sala ${esc(m.cod)} · ${esc(nombre)}${soyMando?" · 🎮":""}</div>`;
       if(!m.jug.some(j=>j.pid===yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Entrando…</h2></div>`;return;}
       if(c.pantalla==="ruleta_nativa"){pintarRuletaNativa(c,cab,soyMando,yo);return;}
