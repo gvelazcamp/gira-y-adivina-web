@@ -718,6 +718,12 @@ const RoscoRioplatense=(()=>{
       document.head.appendChild(script);
     }else script.addEventListener("load",activar,{once:true});
   }
+  /* Pantalla siempre encendida mientras el Rosco está abierto (se juega por voz y sin tocar). */
+  let wakeR=null;
+  async function pedirWakeR(){try{if(raiz&&"wakeLock" in navigator&&!wakeR&&document.visibilityState==="visible"){wakeR=await navigator.wakeLock.request("screen");wakeR.addEventListener("release",()=>{wakeR=null;});}}catch(e){wakeR=null;}}
+  function soltarWakeR(){try{if(wakeR)wakeR.release();}catch(e){}wakeR=null;}
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")pedirWakeR();});
+  ["pointerdown","keydown"].forEach(ev=>document.addEventListener(ev,()=>{if(raiz&&!wakeR)pedirWakeR();},{passive:true}));
   function abrir(contenedor){
     salir();datos=cargar();nivel=datos.nivelMax;config=configNivel(nivel);fase="inicio";usadasSesion=new Set();
     raiz=document.createElement("div");raiz.className="rr-game";raiz.dataset.fase="inicio";altoLibre=0;
@@ -747,9 +753,10 @@ const RoscoRioplatense=(()=>{
     document.addEventListener("visibilitychange",visibilidad);ultimo=performance.now();intervalo=setInterval(tic,ROSCO_CONFIG.ticMs);iniciarMusicaJuego();
     mostrarMenu();
     cargarEscenaGiroG(raiz);
+    pedirWakeR();
   }
   function salir(){
-    cortinaG(false);
+    cortinaG(false);soltarWakeR();
     cerrarConsultaVozG();vozConsultadaG=false;
     if(window.GiroRoscoPiloto)window.GiroRoscoPiloto.cerrar();
     if(pruebaG)pararVozG();

@@ -102,7 +102,13 @@
     try{if(typeof cortarSFX==="function")cortarSFX();}catch(e){}
     ["tutChequearBienvenida","ptChequearAutoPopup","mostrarPromptIOS","pdChequearAutoPopup"].forEach(f=>{try{if(typeof window[f]==="function")window[f]=()=>{};}catch(e){}});
   }
-  function despierta(){try{if(navigator.wakeLock)navigator.wakeLock.request("screen").catch(()=>{});}catch(e){}}
+  /* Pantalla siempre encendida (31/10/2026, Gonzalo: "se nos apaga por inactividad jugando por audio"): en la tele
+     y en los celulares de la sala se pide el Wake Lock y se vuelve a pedir cada vez que la app vuelve a primer plano. */
+  let wakeTele=null,wakeOn=false;
+  async function pedirWakeTele(){try{if(wakeOn&&"wakeLock" in navigator&&!wakeTele&&document.visibilityState==="visible"){wakeTele=await navigator.wakeLock.request("screen");wakeTele.addEventListener("release",()=>{wakeTele=null;});}}catch(e){wakeTele=null;}}
+  function despierta(){wakeOn=true;pedirWakeTele();}
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")pedirWakeTele();});
+  ["pointerdown","keydown"].forEach(ev=>document.addEventListener(ev,()=>{if(wakeOn&&!wakeTele)pedirWakeTele();},{passive:true}));
 
   /* ---------- Entrada desde Extensiones ---------- */
   function abrir(contenedor){
@@ -228,6 +234,7 @@
     return qrCache[cod];
   }
   function iniciarTele(){
+    despierta();
     let cod="";
     const pedido=(P.get("cod")||"").toUpperCase();if(pedido.length===5&&[...pedido].every(c=>CHARS.includes(c))){cod=pedido;try{localStorage.setItem("gya_tele_codigo",cod);}catch(e){}}
     if(!cod)try{const guardado=localStorage.getItem("gya_tele_codigo")||"";if(guardado.length===5&&[...guardado].every(c=>CHARS.includes(c)))cod=guardado;}catch(e){}
@@ -1151,6 +1158,7 @@
      CELULAR: solo manda lo que toca el jugador y muestra lo que le toca.
      ===================================================================== */
   function iniciarCel(nombreDirecto){
+    despierta();
     const raiz=document.createElement("div");raiz.id="teleCel";raiz.className="tl-cel";document.body.appendChild(raiz);
     let nombre=limpio(P.get("n")||"",14);try{if(!nombre)nombre=limpio(localStorage.getItem("gya_tele_nombre")||localStorage.getItem("gya_nombre")||"",14);}catch(e){}
     let ultimo=null,conectado=false,visto=0,hola=null,pantallaPintada="";
