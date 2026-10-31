@@ -112,10 +112,38 @@ const Cuenta=(()=>{
       location.reload();
     }catch(e){Object.entries(antes.localStorage).forEach(([k,v])=>localStorage.setItem(k,v));throw e;}
   }
+  /* Cuánto avanzó una partida (31/10/2026, Gonzalo: "la partida más avanzada es la que se tiene que trasladar"):
+     ciudades ganadas, pasos del mapa, cosas compradas, logros y monedas. */
+  function avance(p){
+    let n=0;const ls=(p&&p.localStorage)||{};
+    const js=v=>{try{return JSON.parse(v);}catch(e){return null;}};
+    const cant=x=>Array.isArray(x)?x.length:x&&typeof x==="object"?Object.keys(x).length:0;
+    for(const [k,v] of Object.entries(ls)){
+      if(typeof v!=="string")continue;
+      if(k.startsWith("larueda_mundo"))n+=cant(js(v))*50;
+      else if(k.startsWith("larueda_pasos")){const o=js(v)||{};for(const x of Object.values(o))n+=(typeof x==="number"?x:cant(x))*5;}
+      else if(/_owned$/.test(k))n+=cant(js(v))*10;
+      else if(k==="gya_logros")n+=cant(js(v))*10;
+      else if(k==="gya_mundo_meta"){const m=js(v)||{};n+=Math.floor((Number(m.monedas)||0)/100);}
+    }
+    return n;
+  }
+  const enInicio=()=>{const s=document.getElementById("setup");return !!s&&getComputedStyle(s).display!=="none";};
   function conflicto(local,nube,desdeAjustes=false){
-    // No interrumpir ninguna partida: ofrecer una elección únicamente
-    // cuando el usuario entra por el engranaje.
     pendienteConflicto={local,nube};ocupado=false;pospuesto=true;
+    /* Se queda sola la partida MÁS AVANZADA (la otra queda de respaldo). Solo se pregunta si están parejas. */
+    const aL=avance(partidaLocal()),aN=avance(nube.estado_juego);
+    if(aL!==aN){
+      if(aL>aN){(async()=>{try{ocupado=true;const actual=partidaLocal(),remota=await leer();if(remota)respaldo("nube",remota.estado_juego);
+        const ok=await subir(actual,remota?.revision||0);ocupado=false;pendienteConflicto=null;pospuesto=false;
+        if(ok){try{window.mostrarToast&&mostrarToast("☁️","Tu cuenta quedó con la partida más avanzada (la de este aparato)");}catch(e){}}else await revisar();
+      }catch(e){fallo(e);}})();return;}
+      /* La de la cuenta está más avanzada: se trae, pero sin cortar una partida en juego (espera a estar en el inicio). */
+      const traer=async()=>{try{const actual=await leer();if(!actual)return;sessionStorage.setItem("gya_cuenta_aviso","1");bajar(actual.estado_juego,actual.revision);}catch(e){fallo(e);}};
+      if(enInicio()||desdeAjustes){traer();return;}
+      const t=setInterval(()=>{if(!pendienteConflicto){clearInterval(t);return;}if(enInicio()){clearInterval(t);traer();}},3000);
+      return;
+    }
     if(!desdeAjustes)return;
     mostrar("Elegí tu partida",`En este aparato: ${nombre(partidaLocal())}. En tu cuenta: ${nombre(nube.estado_juego)}. Elegí con cuál seguir: la otra queda guardada por las dudas. Si este es el aparato donde más jugás, elegí la de este aparato; si es uno nuevo, la de tu cuenta.`,[
       {texto:"☁️ Usar la de mi cuenta (traerla acá)",principal:true,accion:async()=>{
@@ -203,6 +231,7 @@ const Cuenta=(()=>{
     if(inicioPendiente)return inicioPendiente;
     inicioPendiente=(async()=>{
       if(!document.getElementById("cuentaCapa"))interfaz();
+      try{if(sessionStorage.getItem("gya_cuenta_aviso")){sessionStorage.removeItem("gya_cuenta_aviso");setTimeout(()=>{try{window.mostrarToast&&mostrarToast("☁️","Trajimos tu partida más avanzada de tu cuenta de Google");}catch(e){}},1500);}}catch(e){}
       habilitado=await disponible();pintar();if(!habilitado)return;
       try{const r=await cliente().auth.getUser();usuario=r.data?.user||null;if(usuario){pintar();await revisar();}}
       catch(e){fallo(e);}
