@@ -185,6 +185,19 @@
     silenciarApp();document.documentElement.classList.add("tele-modo");
     iniciarCel(nombre);
   }
+  /* Celular: entrar a la Ruleta (Sala TV) con el código que mandó la tele, con su nombre, sin tocar nada. */
+  let yendoRuleta=false;
+  function irRuleta(sala,nombre){if(yendoRuleta)return;yendoRuleta=true;
+    const u=new URL("index.html",location.href);u.searchParams.set("tv",sala);u.searchParams.set("tvname",nombre||"");u.searchParams.set("tvauto","1");location.href=u.href;}
+  /* Tele en la Ruleta (index.html?tvhost=1&avisar=<código de Juegos en la tele>): apenas la Sala TV tiene
+     código, se lo avisa a los celulares que estaban en la sala de la tele (durante 90 s). */
+  function avisarRuleta(codTele){
+    if(!/^[A-Z0-9]{5}$/.test(codTele))return;let n=0;
+    const t=setInterval(()=>{let s="",ok=false;try{s=typeof sala==="string"?sala:"";ok=typeof modo!=="undefined"&&modo==="tvhost";}catch(e){}
+      if(++n>60){clearInterval(t);return;}if(!ok||!/^[0-9A-Z]{4,6}$/.test(s))return;clearInterval(t);
+      conectar(codTele,()=>{let k=0;const env=()=>{red&&red.mandar({t:"ruleta_sala",cod:codTele,sala:s});if(++k>=45){clearInterval(rep);setTimeout(()=>{try{red.cerrar();}catch(e){}},500);}};const rep=setInterval(env,2000);env();},()=>{},()=>{});
+    },1000);
+  }
   function prepararBotonCast(){
     const b=document.getElementById("btnTeleCast");if(!b)return;
     /* Gonzalo (31/10/2026): el 📺 abre el menú con las 3 formas (transmitir, código, celular de tele).
@@ -192,6 +205,7 @@
     b.hidden=false;b.onclick=compartirPantalla;
   }
   window.Tele={abrir,salir,compartirPantalla,_podio:podioTele};
+  if(!esTele&&!esCel&&P.get("tvhost")==="1"&&P.get("avisar"))avisarRuleta(String(P.get("avisar")).toUpperCase());
   if(!esTele&&!esCel){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",prepararBotonCast);else prepararBotonCast();return;}
   silenciarApp();
   document.documentElement.classList.add("tele-modo");
@@ -278,7 +292,9 @@
       });
     }
     function arrancar(id){
-      if(id==="ruleta"){T.fase="ruleta";T.juego="ruleta";pintar();difundir();setTimeout(()=>{location.href="index.html?tvhost=1";},1500);return;}
+      /* La Ruleta es el juego principal (Sala TV): la tele la abre y, cuando tiene el código, se lo pasa a los
+         celulares de esta sala, que entran solos (31/10/2026: "que no haya que poner otro código"). */
+      if(id==="ruleta"){T.fase="ruleta";T.juego="ruleta";pintar();difundir();setTimeout(()=>{location.href="index.html?tvhost=1&avisar="+cod+(P.get("telered")==="local"?"&telered=local":"");},1500);return;}
       T.fase="juego";T.juego=id;T.g=(id==="silabario"||id==="frases"?(T,a)=>juegoOrdenar(T,a,id):id==="mimica"?juegoMimica:id==="numero"?juegoNumero:id==="quien"?juegoQuien:id==="duelo"?juegoDuelo:id==="puzzle"?juegoPuzzle:id==="tutti"?juegoTutti:id==="rosco"?juegoRosco:id==="ahorcado"?juegoAhorcado:juegoCien)(T,actualizar);
       ultimoTic=performance.now();clearInterval(timerJuego);
       timerJuego=setInterval(()=>{const a=performance.now(),dt=a-ultimoTic;ultimoTic=a;if(T.g&&T.g.tic)T.g.tic(dt);},200);
@@ -294,7 +310,7 @@
       raiz.className="tl-tv";
       if(T.fase==="rosco_modo"){raiz.innerHTML=`<div class="tl-centro"><img class="tl-logo" src="assets/rosco/logo.webp" alt="" onerror="this.src='assets/logo.webp'"><h1>¿Rosco solo o de a dos?</h1><p class="tl-ayuda">🎮 ${esc(nombreMando())} elige desde su celular</p></div>`;return;}
       if(T.fase==="intro"){raiz.innerHTML=`<div class="tl-centro tl-rosco tl-estudio"><img class="tl-logo" src="assets/logo.webp" alt=""><h1>Preparando el estudio…</h1></div>`;return;}
-      if(T.fase==="ruleta"){raiz.innerHTML=`<div class="tl-centro"><img class="tl-logo" src="assets/logo.webp" alt=""><h1>Abriendo la Ruleta…</h1><p>En los celulares: entrá a <b>girayadivina.com/tv.html</b> y poné el código nuevo que va a aparecer en la tele.</p></div>`;return;}
+      if(T.fase==="ruleta"){raiz.innerHTML=`<div class="tl-centro"><img class="tl-logo" src="assets/logo.webp" alt=""><h1>Abriendo la Ruleta…</h1><p>Los celulares de esta sala entran solos en unos segundos 📱</p></div>`;return;}
       const qr=qrSala(cod);if(!qr)cargarQR(pintar);
       const jug=T.jug.length?T.jug.map(j=>`<li class="${j.pid===T.mando?"tl-mando":""}">${j.pid===T.mando?"🎮 ":""}${esc(j.n)}</li>`).join(""):"<li class='tl-vacio'>Esperando celulares…</li>";
       raiz.innerHTML=`<div class="tl-menu">
@@ -1151,7 +1167,8 @@
       conectar(codCel,()=>{conectado=true;const h=()=>{let pj="";try{pj=localStorage.getItem("gya_giro_personaje")||"";}catch(e){}let av="";try{av=localStorage.getItem("gya_avatar")||localStorage.getItem("gya_tele_avatar")||"";}catch(e){}mandar({t:"hola",n:nombre,pj,av});};h();hola=setInterval(h,4000);
         setTimeout(()=>{if(!ultimo)raiz.innerHTML=`<div class="tl-cel-caja"><h2>No encuentro la tele 🤔</h2><p>Revisá que el código <b>${codCel}</b> sea el que muestra la tele y que la tele siga abierta.</p><button type="button" class="tl-boton" onclick="location.reload()">Probar de nuevo</button><a class="tl-boton tl-chico" href="tele/?cambiar=1">Usar otra tele</a></div>`;},12000);},
         ()=>{raiz.innerHTML=`<div class="tl-cel-caja"><h2>Sin conexión</h2><p>No se pudo conectar (${esc(window.gyaFalloConexion||"sin respuesta")}). Probá con datos del celular.</p><button type="button" class="tl-boton" onclick="location.reload()">Reintentar</button></div>`;},
-        m=>{if(m.t==="estado"&&m.cod===codCel){ultimo=m;visto=Date.now();try{localStorage.setItem("gya_tele_vinculada",codCel);}catch(e){}pintar();}});
+        m=>{if(m.t==="ruleta_sala"&&m.cod===codCel&&/^[0-9A-Z]{4,6}$/.test(String(m.sala||""))){irRuleta(String(m.sala),nombre);return;}
+          if(m.t==="estado"&&m.cod===codCel){ultimo=m;visto=Date.now();try{localStorage.setItem("gya_tele_vinculada",codCel);}catch(e){}pintar();}});
       window.addEventListener("pagehide",()=>{try{mandar({t:"chau"});}catch(e){}});
     }
     const accion=(a,extra={})=>{mandar({...extra,t:"accion",a});try{if(typeof vibrar==="function")vibrar(25);}catch(e){}};
