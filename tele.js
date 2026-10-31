@@ -267,7 +267,7 @@
       if(m.t==="chau"){T.jug=T.jug.filter(x=>x.pid!==m.pid);if(T.mando===m.pid)T.mando=T.jug[0]?T.jug[0].pid:null;pintar();difundir();return;}
       if(m.t==="tomar"){if(T.juego==="tutti"&&T.g&&!T.g.participa(m.pid))return;T.mando=m.pid;pintar();difundir();return;}
       if(m.t!=="accion")return;
-      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="sopa"&&m.a==="sp_marca")||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz","rs_apelar","rs_ver"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
+      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="sopa"&&m.a==="sp_marca")||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz","rs_apelar","rs_ver","rs_voto"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
       if(m.a==="elegir"&&T.fase==="menu"){elegir(String(m.juego||""));return;}
       if(m.a==="rosco_modo"&&T.fase==="rosco_modo"){const r=String(m.rival||"");
         T.roscoModo=m.modo==="dos"&&T.jug.some(j=>j.pid===r&&r!==T.mando)?{dos:true,rival:r}:null;T.roscoListo=true;elegir("rosco");return;}
@@ -851,6 +851,33 @@
     const DOS=!!(T.roscoModo&&T.roscoModo.dos&&T.jug.some(j=>j.pid===T.roscoModo.rival));
     const P=(DOS?[T.mando,T.roscoModo.rival]:[T.mando]).map(pid=>{const it=armar(pid);return{pid,items:it,est:it.map(()=>"pendiente"),resp:it.map(()=>""),actual:0,tiempo:SEGUNDOS*1000,fin:false,ang:0};});
     let turno=0,verFin=0;const J=()=>P[turno];const apeladas=new Set();
+    /* Apelación con votación (31/10/2026): el que erró (o el que tiene el control) apela; el Rosco se pausa
+       (reloj y micrófono) y vota otra persona de la sala. Si en 30 s nadie vota, no vale. Si se acepta durante
+       la partida, la letra pasa a acierto y, si el error le había pasado el turno al rival, vuelve a jugar él.
+       Si está solo en la sala (sin nadie que vote), se acepta. */
+    let apel=null;const APEL_MS=30000;
+    const apelable=(k,i)=>{const j=P[k];return!!j&&j.est[i]==="mal"&&!apeladas.has(k+"-"+i);};
+    function pedirApelacion(k,i){
+      if(apel||!apelable(k,i)||(fase!=="jugando"&&fase!=="fin"))return;
+      apel={k,i,t:Date.now(),durante:fase==="jugando"};
+      if(apel.durante){vozBloqueada=true;++vozBloqueoId;clearTimeout(vozRespaldo);clearTimeout(vozReanudar);}
+      SND.turno();
+      if(!T.jug.some(x=>x.pid!==P[k].pid)){resolverApelacion(true);return;}
+      actualizar();
+    }
+    function resolverApelacion(si){
+      const a=apel;if(!a)return;apel=null;const j=P[a.k];
+      if(si&&j.est[a.i]==="mal"){j.est[a.i]="ok";apeladas.add(a.k+"-"+a.i);SND.ok();
+        if(a.durante&&DOS&&a.k!==turno&&!j.fin&&j.tiempo>0){guardarJ();turno=a.k;cargarJ();}
+        aviso={txt:"✅ Apelación aceptada"+(a.durante&&DOS?" · sigue "+nombrePid(J().pid):""),t:Date.now()};if(fase==="fin")verFin=a.k;}
+      else{SND.mal();aviso={txt:"❌ Apelación rechazada",t:Date.now()};}
+      if(a.durante&&fase==="jugando"){vozRonda++;const id=++vozBloqueoId;vozReanudar=setTimeout(()=>reanudarVoz(id),1500);}
+      actualizar();
+    }
+    const cartelApel=()=>{if(!apel)return"";const j=P[apel.k],d=j.items[apel.i],resta=Math.max(0,Math.ceil((APEL_MS-(Date.now()-apel.t))/1000));
+      return`<div class="tl-apel"><div class="tl-apel-caja"><small>${apel.durante?"⏸️ ROSCO EN PAUSA":"⚖️ APELACIÓN"}</small><h2>⚖️ ¡${esc(nombrePid(j.pid))} apela!</h2>
+        <p>En la <b>${esc(d.letra)}</b> dijo «${esc(j.resp[apel.i])}» y la palabra era <b>${esc(d.palabra)}</b>.</p>
+        <p class="tl-apel-voto">📱 Los demás votan en el celular: ¿vale?</p><div class="tl-apel-t" id="tlApelT">${resta}</div></div></div>`;};
     let items=P[0].items,est=P[0].est,resp=P[0].resp,actual=0,tiempo=SEGUNDOS*1000;
     const guardarJ=()=>{const j=J();j.actual=actual;j.tiempo=tiempo;j.ang=angPrevio;};
     const cargarJ=()=>{const j=J();items=j.items;est=j.est;resp=j.resp;actual=j.actual;tiempo=j.tiempo;angPrevio=j.ang;};
@@ -916,12 +943,12 @@
     function accion(m){
       if(m.a==="rs_seguir"){if(G()&&(fase==="show"||fase==="cierre"))G().avanzar();return;}
       if(fase==="show"||fase==="cierre")return;
+      if(m.a==="rs_apelar"){const own=P.findIndex(j=>j.pid===m.pid),k=m.pid===T.mando&&m.k!=null?Number(m.k):own;pedirApelacion(k,Number(m.i));return;}
+      if(m.a==="rs_voto"){if(apel&&m.pid!==P[apel.k].pid)resolverApelacion(!!m.si);return;}
+      if(apel)return;
       if(fase==="fin"){
-        /* Final (31/10/2026): ver la planilla de cada uno y apelar si el micrófono entendió mal. Cada uno apela
-           sus errores; el que tiene el control puede apelar los de cualquiera. */
+        /* Final (31/10/2026): ver la planilla de cada uno (las apelaciones van arriba, con votación). */
         if(m.a==="rs_ver"){verFin=((Number(m.k)||0)%P.length+P.length)%P.length;actualizar();return;}
-        if(m.a==="rs_apelar"){const own=P.findIndex(j=>j.pid===m.pid),k=m.pid===T.mando&&m.k!=null?Number(m.k):own,j=P[k],i=Number(m.i);
-          if(j&&j.est[i]==="mal"){j.est[i]="ok";apeladas.add(k+"-"+i);SND.ok();verFin=k;actualizar();}return;}
         if(m.a==="otra")T.otra();return;}
       if(vozBloqueada)return;
       if(["pasar","responder","dc_voz"].includes(m.a)&&m.pid!==J().pid)return;
@@ -932,7 +959,7 @@
     function pasarLetra(){vozDesde=Date.now()+1200;vozBloqueada=true;vozRonda++;ultimo={i:actual,tipo:"paso"};cambio=Date.now();SND.turno();avanzar();if(fase==="jugando"){cambiarTurno();pausarPorGiro("pasar");}else actualizar();}
     function responder(txt,porVoz){
       const d=items[actual],ok=vale(d,norm(txt))||!!porVoz;vozDesde=Date.now()+1200;vozBloqueada=true;vozRonda++;
-      est[actual]=ok?"ok":"mal";resp[actual]=txt;ultimo={i:actual,tipo:ok?"ok":"mal",palabra:d.palabra,dijo:txt};cambio=Date.now();
+      est[actual]=ok?"ok":"mal";resp[actual]=txt;if(!ok)J().ultErr=actual;ultimo={i:actual,tipo:ok?"ok":"mal",palabra:d.palabra,dijo:txt};cambio=Date.now();
       if(ok)SND.ok();else SND.mal();
       avanzar();if(fase==="jugando"){if(!ok)cambiarTurno();pausarPorGiro(ok?"acierto":"error");}else actualizar();
     }
@@ -964,6 +991,7 @@
     function tic(dt){
       if(fase==="show"||fase==="cierre"){const e=G()&&G().etapa?G().etapa():"";if(e!==etapaPrev){etapaPrev=e;etapaT=0;}else etapaT+=dt;
         if(ESPERA[e]&&etapaT>ESPERA[e]){etapaT=-1e9;G().avanzar();}return;}
+      if(apel){if(Date.now()-apel.t>APEL_MS){resolverApelacion(false);return;}const e=document.querySelector("#tlApelT");if(e)e.textContent=Math.max(0,Math.ceil((APEL_MS-(Date.now()-apel.t))/1000));return;}
       if(fase!=="jugando"||vozBloqueada)return;const antesR=tiempo;tiempo-=dt;ticFinal(antesR,Math.max(0,tiempo));if(tiempo<=0){tiempo=0;SND.tiempo();reaccionar("tiempo");
         if(DOS){J().fin=true;guardarJ();if(cambiarTurno()){vozRonda++;pausarPorGiro("pasar");return;}}terminar();return;}
       const r=T.g&&document.querySelector("#tlReloj");if(r)r.textContent=reloj(tiempo);}
@@ -978,7 +1006,9 @@
         return`<div class="tl-rd-fila tl-rd-c${x.k}${x.k===turno?" tl-rd-activo":""}${x.j.fin?" tl-rd-listo":""}"><span class="tl-rd-pos">${emp?"=":pos+1+"º"}</span><img src="assets/avatars/${av||"avatar-01"}.webp" alt="" onerror="this.style.visibility='hidden'"><b>${x.k===turno?"🎙 ":""}${esc(nombrePid(x.j.pid))}</b><span class="tl-ok">✓ ${x.ok}</span><span class="tl-mal">✘ ${x.mal}</span><small>${x.j.fin?"terminó":x.q+" letras"}</small><span class="tl-rd-reloj" ${x.k===turno?'id="tlReloj"':""}>${reloj(x.k===turno?tiempo:x.j.tiempo)}</span></div>`;}).join("")}</div>`;}
     const planilla=(j,k)=>`<div class="tl-planilla">${j.items.map((d,i)=>{const a=apeladas.has(k+"-"+i);
       return`<div class="tl-pl-fila tl-pl-${j.est[i]}${a?" tl-pl-apelada":""}"><b>${d.letra}</b><span>${esc(d.palabra)}</span><small>${a?"⚖️ apelada · dijo «"+esc(j.resp[i])+"»":j.est[i]==="ok"?"✓ acertó":j.est[i]==="mal"?"✘ dijo «"+esc(j.resp[i])+"»":"⏭ sin responder"}</small></div>`;}).join("")}</div>`;
-    function pintar(raiz,quien){
+    function pintar(raiz,quien){pintarBase(raiz,quien);if(apel)raiz.insertAdjacentHTML("beforeend",cartelApel());
+      else if(aviso&&/Apelación/.test(aviso.txt)&&Date.now()-aviso.t<3000&&fase==="fin")raiz.insertAdjacentHTML("beforeend",`<div class="tl-flash tl-paso tl-apel-aviso">${esc(aviso.txt)}</div>`);}
+    function pintarBase(raiz,quien){
       const n=items.length,ok=est.filter(s=>s==="ok").length,mal=est.filter(s=>s==="mal").length;
       if(fase==="show"&&!document.querySelector(".grp-apertura,.grp-overlay")){
         raiz.innerHTML=`<div class="tl-centro tl-rosco tl-estudio"><img class="tl-logo" src="assets/logo.webp" alt=""><h1>Preparando el estudio…</h1></div>`;return;}
@@ -1008,11 +1038,13 @@
       /* El rosco gira hasta poner adelante la letra del turno. */
       const g=raiz.querySelector(".tl-giro");requestAnimationFrame(()=>requestAnimationFrame(()=>{if(g)g.style.setProperty("--a",ang+"deg");}));angPrevio=ang;
     }
+    const apelCel=()=>apel?{dueno:P[apel.k].pid,n:nombrePid(P[apel.k].pid),l:P[apel.k].items[apel.i].letra,p:P[apel.k].items[apel.i].palabra,d:P[apel.k].resp[apel.i],t:apel.t}:null;
     return{accion,tic,pintar,fin(){muerto=true;clearTimeout(vozRespaldo);clearTimeout(vozReanudar);try{if(G())G().cerrar();}catch(e){}},cel(){
       if(fase==="show"||fase==="cierre")return{pantalla:"rosco_show",fase};
       if(fase==="fin")return{pantalla:"fin",juego:"rosco",resumen:DOS?P.map(j=>nombrePid(j.pid)+": "+j.est.filter(s=>s==="ok").length+" ✓").join(" · "):est.filter(s=>s==="ok").length+" aciertos",
-        rosco:{dos:DOS,ver:verFin,jug:P.map(j=>({pid:j.pid,n:nombrePid(j.pid),err:j.est.map((x,i)=>x==="mal"?{i,l:j.items[i].letra,p:j.items[i].palabra,d:j.resp[i]}:null).filter(Boolean)}))}};
+        rosco:{dos:DOS,ver:verFin,jug:P.map((j,k)=>({pid:j.pid,n:nombrePid(j.pid),err:j.est.map((x,i)=>apelable(k,i)?{i,l:j.items[i].letra,p:j.items[i].palabra,d:j.resp[i]}:null).filter(Boolean)}))},apel:apelCel()};
       return{pantalla:"rosco",letra:items[actual].letra,regla:regla(items[actual]),escucha:fase==="jugando"&&!vozBloqueada?J().pid:null,puede:!vozBloqueada,turno:vozRonda,i:actual+(DOS?turno*100:0),
+        apel:apelCel(),apelables:P.map((j,k)=>j.ultErr!=null&&apelable(k,j.ultErr)?{pid:j.pid,k,i:j.ultErr,l:j.items[j.ultErr].letra,d:j.resp[j.ultErr]}:null).filter(Boolean),
         dos:DOS,activo:J().pid,nombreActivo:nombrePid(J().pid),marcador:DOS?tablaDos().f.map(x=>({n:nombrePid(x.j.pid),ok:x.ok,mal:x.mal,juega:x.k===turno})):null};}};
   }
 
@@ -1756,6 +1788,12 @@
       if(c.pantalla==="ordenar"){pintarOrdenar(c,cab,soyMando);return;}
       if(c.pantalla==="sopa"){pintarSopa(c,cab,soyMando);return;}
       if(c.pantalla==="numero"&&soyMando){pintarNumero(c,cab);return;}
+      /* Rosco: apelación en curso → el que apeló espera; los demás votan si vale. */
+      if((c.pantalla==="rosco"||c.pantalla==="fin")&&c.apel){const a=c.apel;dcVoz(false);
+        if(a.dueno===yo){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⚖️ Apelaste</h2><p>En la <b>${esc(a.l)}</b> dijiste «${esc(a.d)}» (era <b>${esc(a.p)}</b>).</p><p>⏸ El Rosco está en pausa mientras los demás votan…</p></div>`;return;}
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⚖️ ¿Vale?</h2><p><b>${esc(a.n)}</b> apela: en la <b>${esc(a.l)}</b> dijo «${esc(a.d)}» y la palabra era <b>${esc(a.p)}</b>.</p><p>¿El micrófono entendió mal y en realidad lo dijo bien?</p>
+          <button type="button" class="tl-boton tl-oro" data-voto="1">✔ Sí, vale</button><button type="button" class="tl-boton" data-voto="0">✘ No vale</button></div>`;
+        raiz.querySelectorAll("[data-voto]").forEach(b=>b.onclick=()=>{raiz.querySelectorAll("[data-voto]").forEach(x=>x.disabled=true);accion("rs_voto",{si:b.dataset.voto==="1"});});return;}
       if(!soyMando&&!(c.pantalla==="rosco"&&c.dos)&&!(c.pantalla==="fin"&&c.rosco&&c.rosco.dos)){
         const mando=(m.jug.find(j=>j.pid===m.mando)||{}).n||"otro";
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2><p>El control lo tiene <b>${esc(mando)}</b>. Ayudalo con las respuestas 😉</p><button type="button" class="tl-boton" id="tlTomar">Tomar el control</button></div>`;
@@ -1777,11 +1815,11 @@
         /* Rosco: ◀ ▶ para ver en la tele las palabras de cada uno y «Apelar» los errores que el micrófono entendió mal. */
         const R=c.rosco;let extra="";
         if(R){const yoK=R.jug.findIndex(j=>j.pid===yo),puede=k=>k===yoK||soyMando;
-          const lista=R.jug.map((j,k)=>puede(k)&&j.err.length?`<div class="tl-ap"><p class="tl-ap-t">⚖️ ${R.jug.length>1?"Errores de "+esc(j.n):"Tus errores"}: si el micrófono entendió mal, apelá</p>${j.err.map(e=>`<button type="button" class="tl-ap-b" data-ap="${k}-${e.i}"><b>${esc(e.l)}</b> ${esc(e.p)} <small>dijo «${esc(e.d)}»</small><em>Apelar</em></button>`).join("")}</div>`:"").join("");
+          const lista=R.jug.map((j,k)=>puede(k)&&j.err.length?`<div class="tl-ap"><p class="tl-ap-t">⚖️ ${R.jug.length>1?"Errores de "+esc(j.n):"Tus errores"}: si el micrófono entendió mal, apelá (votan los demás)</p>${j.err.map(e=>`<button type="button" class="tl-ap-b" data-ap="${k}-${e.i}"><b>${esc(e.l)}</b> ${esc(e.p)} <small>dijo «${esc(e.d)}»</small><em>Apelar</em></button>`).join("")}</div>`:"").join("");
           extra=(R.dos?`<div class="tl-rd-nav"><button type="button" class="tl-boton tl-chico" data-ver="${R.ver-1}">◀</button><span>En la tele: <b>${esc((R.jug[R.ver]||{}).n||"")}</b></span><button type="button" class="tl-boton tl-chico" data-ver="${R.ver+1}">▶</button></div>`:"")+lista;}
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>¡Terminó! 🎉</h2><p>${esc(c.resumen||"")}</p>${extra}${soyMando?'<button type="button" class="tl-boton tl-oro" id="tlOtra">Jugar otra vez</button>'+menu:`<p>${esc((m.jug.find(j=>j.pid===m.mando)||{}).n||"El que tiene el control")} elige si juegan otra vez.</p>`}</div>`;
         raiz.querySelectorAll("[data-ver]").forEach(b=>b.onclick=()=>accion("rs_ver",{k:Number(b.dataset.ver)}));
-        raiz.querySelectorAll("[data-ap]").forEach(b=>b.onclick=()=>{const[k,i]=b.dataset.ap.split("-").map(Number);if(confirm("¿Apelar «"+b.querySelector("b").textContent+"»? Pasa a contar como acierto."))accion("rs_apelar",{k,i});});
+        raiz.querySelectorAll("[data-ap]").forEach(b=>b.onclick=()=>{const[k,i]=b.dataset.ap.split("-").map(Number);if(confirm("¿Apelar «"+b.querySelector("b").textContent+"»? Los demás votan si vale."))accion("rs_apelar",{k,i});});
         raiz.querySelector("#tlOtra")?.addEventListener("click",()=>accion("otra"));raiz.querySelector("#tlMenu")?.addEventListener("click",()=>accion("menu"));return;}
       if(c.pantalla==="rosco_modo"){
         if(!soyMando){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🔤 El Rosco</h2><p>${esc((m.jug.find(j=>j.pid===m.mando)||{}).n||"El que tiene el control")} está eligiendo si juega solo o de a dos.</p></div>`;return;}
@@ -1792,13 +1830,16 @@
         raiz.querySelector("#tlRsSolo").onclick=()=>accion("rosco_modo",{modo:"solo"});
         raiz.querySelectorAll("[data-rival]").forEach(b=>b.onclick=()=>accion("rosco_modo",{modo:"dos",rival:b.dataset.rival}));
         raiz.querySelector("#tlMenu").onclick=()=>accion("menu");return;}
+      /* ⚖️ Apelar el último error (pausa el Rosco y votan los demás). */
+      const botonApelar=c=>{const a=(c.apelables||[]).find(x=>x.pid===yo);return a?`<button type="button" class="tl-ap-vivo" id="tlApVivo" data-k="${a.k}" data-i="${a.i}">⚖️ Apelar la <b>${esc(a.l)}</b>: dijiste «${esc(a.d)}» · ¿te entendió mal?</button>`:"";};
+      const enlazarApelar=c=>{const b=raiz.querySelector("#tlApVivo");if(b)b.onclick=()=>{if(confirm("¿Apelar? El Rosco se pausa y los demás votan si vale."))accion("rs_apelar",{k:Number(b.dataset.k),i:Number(b.dataset.i)});};};
       const marcadorCel=c=>c.dos&&Array.isArray(c.marcador)?`<div class="tl-rd-cel">${c.marcador.map((x,i)=>`<div class="${x.juega?"tl-rd-cel-juega":""}"><span>${i+1}º</span><b>${x.juega?"🎙 ":""}${esc(x.n)}</b><em>✓ ${x.ok} · ✘ ${x.mal}</em></div>`).join("")}</div>`:"";
       if(c.pantalla==="rosco"&&c.dos&&c.activo!==yo){
-        raiz.innerHTML=cab+`<div class="tl-cel-caja">${marcadorCel(c)}<h2>🔤 Le toca a ${esc(c.nombreActivo||"")}</h2><p>Mirá la tele 📺 · cuando erre o pase, te toca a vos.</p>${soyMando?menu:""}</div>`;
+        raiz.innerHTML=cab+`<div class="tl-cel-caja">${marcadorCel(c)}${botonApelar(c)}<h2>🔤 Le toca a ${esc(c.nombreActivo||"")}</h2><p>Mirá la tele 📺 · cuando erre o pase, te toca a vos.</p>${soyMando?menu:""}</div>`;enlazarApelar(c);
         raiz.querySelector("#tlMenu")?.addEventListener("click",()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");});return;}
       if(c.pantalla==="rosco"||c.pantalla==="cien"){
         const rosco=c.pantalla==="rosco";
-        raiz.innerHTML=cab+`<div class="tl-cel-caja">${rosco?`${marcadorCel(c)}<div class="tl-cel-letra">${esc(c.letra)}</div><p>${esc(c.regla||"")}</p>
+        raiz.innerHTML=cab+`<div class="tl-cel-caja">${rosco?`${marcadorCel(c)}${botonApelar(c)}<div class="tl-cel-letra">${esc(c.letra)}</div><p>${esc(c.regla||"")}</p>
           ${dcPermiso?`<div class="tl-dc-mic${c.escucha===yo?" tl-dc-on":""}" id="tlDcMic">${c.puede===false?"🔇 Giro está hablando · esperá":dcOyendo?"🎙 Te escucho · decí la palabra o «Pasar»":"🎙 Activando micrófono…"}</div><p class="tl-dc-oi" id="tlDcOi"></p>`:`<button type="button" class="tl-boton tl-oro" id="tlDcPermiso">🎙 Responder hablando</button>`}`:`<p class="tl-cel-preg">${esc(c.pregunta||"")}</p>`}
           <input id="tlTexto" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${rosco?"Tu respuesta":"Lo que dice el grupo"}" ${c.puede===false?"disabled":""}>
           <button type="button" class="tl-boton tl-oro" id="tlEnviar" ${c.puede===false?"disabled":""}>Enviar</button>
@@ -1806,7 +1847,7 @@
         const t=raiz.querySelector("#tlTexto");if(escribiendo)t.value=escribiendo;
         const enviar=()=>{const v=t.value.trim();if(!v)return;accion("responder",{txt:v});t.value="";t.focus();};
         raiz.querySelector("#tlEnviar").onclick=enviar;t.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();enviar();}};
-        if(rosco){raiz.querySelector("#tlPasar").onclick=()=>{accion("pasar");t.value="";};raiz.querySelector("#tlDcPermiso")?.addEventListener("click",pedirPermisoDc);}
+        if(rosco){enlazarApelar(c);raiz.querySelector("#tlPasar").onclick=()=>{accion("pasar");t.value="";};raiz.querySelector("#tlDcPermiso")?.addEventListener("click",pedirPermisoDc);}
         raiz.querySelector("#tlMenu").onclick=()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");};
         if(c.puede!==false&&!(rosco&&dcPermiso))t.focus();return;}
       if(c.pantalla==="ahorcado"){

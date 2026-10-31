@@ -2214,3 +2214,7 @@ Fecha: 31/10/2026 — Rosco por voz (celular y tele): Gonzalo dijo "lluvia" y el
 ```text
 Fecha: 31/10/2026 — Rosco en la tele, final: muestra la planilla de palabras (acertó / dijo «…» / sin responder). De a dos: arriba "Ganó X" o "¡Empate!" y dos pestañas (nombre ✓ ✘ ⏱); con ◀ ▶ en el celular (cualquiera de los dos) se cambia qué planilla se ve en la tele. Botón «Apelar» en el celular para cada error (si el micrófono entendió mal): pasa a acierto, queda marcado "⚖️ apelada" en la tele y se recalcula el ganador. Cada uno apela los suyos; el que tiene el control puede apelar los de cualquiera. Solo (uno): la misma planilla y apelar desde su celular.
 ```
+
+```text
+Fecha: 31/10/2026 — Rosco en la tele: apelación con VOTACIÓN y durante la partida. En el celular, debajo del marcador, aparece "⚖️ Apelar la X: dijiste «…»" para tu último error (también en la pantalla de espera cuando el turno pasó al rival). Al apelar el Rosco se PAUSA (reloj y micrófono), la tele muestra "¡X apela! dijo «…», la palabra era …" con cuenta de 30 s, y los demás votan en su celular ✔ Sí vale / ✘ No vale (decide el primer voto; si nadie vota en 30 s, no vale; si está solo en la sala, se acepta). Si se acepta: la letra pasa a acierto y, si ese error le había pasado el turno al rival, vuelve a jugar el que apeló; después sigue el reloj y el micrófono. En el final, las apelaciones de la planilla también van a votación.
+```
