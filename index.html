@@ -8506,6 +8506,26 @@ function jugarBotToss(){
   },espera);
 }
 
+/* Ruleta desde "Juegos en la tele" (31/10/2026, Gonzalo: "que sea sencillo, sin ese popup y que se pueda
+   jugar de a 1"): si la Sala TV la abrió la tele (?avisar=), no hay cartel de bienvenida ni de sorteo,
+   alcanza con 1 jugador y la partida arranca sola cuando llegan los celulares de la tele (?jug=N). */
+const TV_DESDE_TELE=new URLSearchParams(location.search).has("avisar");
+const TV_ESPERADOS=Math.max(1,Math.min(6,parseInt(new URLSearchParams(location.search).get("jug"),10)||1));
+const tvMinimo=()=>TV_DESDE_TELE?1:2;
+let tvAutoT=null,tvAutoTodos=false;
+function tvAutoArrancar(){
+  if(!TV_DESDE_TELE||tvPartidaIniciada||!familiaJugadores.length)return;
+  /* Llegaron todos: arranca en 2 s. Si falta alguno, espera hasta 20 s y arranca con los que están.
+     Los "hola" se repiten cada 4 s: no se reinicia la espera por eso. */
+  const todos=familiaJugadores.length>=TV_ESPERADOS;
+  if(tvAutoT&&(tvAutoTodos||!todos))return;
+  clearTimeout(tvAutoT);tvAutoTodos=todos;tvAutoT=setTimeout(tvArrancarYa,todos?2000:20000);
+}
+function tvArrancarYa(){
+  if(tvPartidaIniciada||!familiaJugadores.length)return;clearTimeout(tvAutoT);
+  /* Sin carteles: arranca uno al azar (de a 1, arranca ese). */
+  tvComenzarPartidaConArranque(Math.floor(Math.random()*familiaJugadores.length));
+}
 function renderTVLobby(){
   $("tvCodigo").textContent=sala||"····";
   const lista=$("tvLista");lista.innerHTML="";
@@ -8513,15 +8533,16 @@ function renderTVLobby(){
     d.innerHTML=(j.av?'<span class="avatar-wrap"><img class="av ver" src="assets/avatars/'+j.av+'.webp" alt="">'+
       (j.frame?'<img class="avatar-frame ver" src="assets/frames/frame-'+j.frame+'.png" alt="">':"")+'</span>':"")+(i+1)+". "+j.n;
     lista.appendChild(d);});
-  $("tvEstado").textContent=tvPartidaIniciada?"Partida en curso":(familiaJugadores.length+" jugador"+(familiaJugadores.length===1?"":"es")+" conectado"+(familiaJugadores.length===1?"":"s")+" · mínimo 2, máximo 6");
-  $("bTVComenzar").disabled=tvPartidaIniciada||familiaJugadores.length<2;
+  $("tvEstado").textContent=tvPartidaIniciada?"Partida en curso":(familiaJugadores.length+" jugador"+(familiaJugadores.length===1?"":"es")+" conectado"+(familiaJugadores.length===1?"":"s")+" · mínimo "+tvMinimo()+", máximo 6");
+  $("bTVComenzar").disabled=tvPartidaIniciada||familiaJugadores.length<tvMinimo();
 }
 function emitirTVLobby(){if(modo==="tvhost")enviar({tipo:"tv_lobby",jugadores:familiaJugadores.map(j=>({id:j.id,n:j.n,av:j.av||null,frame:j.frame||null})),iniciada:tvPartidaIniciada});}
 function crearSalaTV(){
   modo="tvhost";miJug=-1;familiaJugadores=[];tvPartidaIniciada=false;S=null;
   sala=Array.from({length:4},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)]).join("");
   $("setup").style.display="none";
-  $("capaBienvenidaTV").classList.add("ver");
+  if(TV_DESDE_TELE){$("tvLobby").style.display="block";document.body.classList.add("tv-lobby-bg");}
+  else $("capaBienvenidaTV").classList.add("ver");
   conectar(()=>{
     // The first digit pins all phones to the broker chosen by this TV.
     sala=String(window.gyaTVBroker||0)+Array.from({length:5},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)]).join("");
@@ -8561,7 +8582,7 @@ function recibirTVHost(d){
     let j=familiaJugadores.find(x=>x.id===d.pid);
     if(!j&&!tvPartidaIniciada&&familiaJugadores.length<6){j={id:d.pid,n:(d.n||"Jugador").slice(0,12),av:d.av||null,frame:d.frame||null};familiaJugadores.push(j);}
     else if(j&&!tvPartidaIniciada){j.n=(d.n||j.n).slice(0,12);j.av=d.av||j.av||null;j.frame=d.frame||j.frame||null;}
-    renderTVLobby();emitirTVLobby();if(S)publicar(V.aviso,null,true);return;
+    renderTVLobby();emitirTVLobby();if(S)publicar(V.aviso,null,true);else tvAutoArrancar();return;
   }
   if(d.a==="reaccion"){volar(d.e);if(S)enviar({tipo:"reaccion",e:d.e});return;}
   if(!S)return;
@@ -8696,7 +8717,8 @@ $("bEntrarTV").onclick=()=>{
   $("estado").textContent="Escribí el código que aparece en la televisión.";
 };
 $("bTVComenzar").onclick=()=>{
-  if(familiaJugadores.length<2||tvPartidaIniciada)return;
+  if(familiaJugadores.length<tvMinimo()||tvPartidaIniciada)return;
+  if(TV_DESDE_TELE){tvArrancarYa();return;}
   tvAnunciarSorteo();
 };
 function tvAnunciarSorteo(){
@@ -9525,6 +9547,7 @@ function calcularGanador(){
   return cand.length===1?cand[0].i:-1;
 }
 function detalleResultado(g){
+  if(S.jug.length===1){const a=S.jug[0];return a.n+" terminó con $"+a.tot+" · "+a.rg+" ronda"+(a.rg===1?"":"s")+" ganada"+(a.rg===1?"":"s")+".";}
   if(S.jug.length===2){const [a,b]=S.jug;if(g<0)return "Empataron $"+a.tot+" a $"+b.tot+" · rondas "+a.rg+" a "+b.rg+".";return "Ganó por dinero $"+S.jug[g].tot+" contra $"+S.jug[1-g].tot+" · rondas "+S.jug[g].rg+" a "+S.jug[1-g].rg+".";}
   const orden=S.jug.map((j,i)=>({j,i})).sort((a,b)=>b.j.tot-a.j.tot||b.j.rg-a.j.rg);
   if(g<0){const top=orden[0].j;const emp=orden.filter(x=>x.j.tot===top.tot&&x.j.rg===top.rg).map(x=>x.j.n).join(", ");return "Empate entre "+emp+" con $"+top.tot+".";}
@@ -12117,7 +12140,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="extensiones.js?v=118"></script>
 <script src="sala-tv.js?v=1"></script>
 <link rel="stylesheet" href="tele.css?v=42">
-<script src="tele.js?v=72"></script>
+<script src="tele.js?v=73"></script>
 </body>
 </html>
 

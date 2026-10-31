@@ -317,7 +317,7 @@
     function arrancar(id){
       /* La Ruleta es el juego principal (Sala TV): la tele la abre y, cuando tiene el código, se lo pasa a los
          celulares de esta sala, que entran solos (31/10/2026: "que no haya que poner otro código"). */
-      if(id==="ruleta"){T.fase="ruleta";T.juego="ruleta";pintar();difundir();setTimeout(()=>{location.href="index.html?tvhost=1&avisar="+cod+(P.get("telered")==="local"?"&telered=local":"");},1500);return;}
+      if(id==="ruleta"){T.fase="ruleta";T.juego="ruleta";pintar();difundir();setTimeout(()=>{location.href="index.html?tvhost=1&jug="+T.jug.length+"&avisar="+cod+(P.get("telered")==="local"?"&telered=local":"");},1500);return;}
       T.fase="juego";T.juego=id;T.g=(id==="silabario"||id==="frases"?(T,a)=>juegoOrdenar(T,a,id):id==="mimica"?juegoMimica:id==="numero"?juegoNumero:id==="quien"?juegoQuien:id==="duelo"?juegoDuelo:id==="puzzle"?juegoPzEspejo:id==="sopa"?juegoSopa:id==="palabra"?juegoPalabra:id==="memoria"?juegoMemoria:id==="rueda"?juegoRueda:id==="tutti"?juegoTutti:id==="rosco"?juegoRosco:id==="ahorcado"?juegoAhorcado:juegoCien)(T,actualizar);
       ultimoTic=performance.now();clearInterval(timerJuego);
       timerJuego=setInterval(()=>{const a=performance.now(),dt=a-ultimoTic;ultimoTic=a;if(T.g&&T.g.tic)T.g.tic(dt);},200);
