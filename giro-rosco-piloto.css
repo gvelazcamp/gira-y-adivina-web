@@ -37,7 +37,10 @@
 }
 .grp-escenario-estable[data-plano="medio"] .grp-plano-estable{transform:scale(1.025)}
 .grp-escenario-estable[data-plano="cercano"] .grp-plano-estable{transform:scale(1.045)}
-.grp-overlay.grp-saliendo{animation:grp-salida .46s ease-in both;pointer-events:none}
+/* (31/10) Salida sin mezclar dos pantallas: primero se apaga el contenido sobre el fondo oscuro y recién al final se va el fondo. */
+.grp-overlay.grp-saliendo{animation:grp-salida-fondo .46s ease-in both;pointer-events:none}
+.grp-overlay.grp-saliendo>*{animation:grp-salida .3s ease-in both}
+@keyframes grp-salida-fondo{0%,65%{opacity:1}100%{opacity:0}}
 @keyframes grp-salida{from{opacity:1}to{opacity:0}}
 
 .grp-rotulo{position:absolute;z-index:5;left:12px;top:12px;background:rgba(3,16,49,.82);border:1px solid #f9d26e;
@@ -87,7 +90,9 @@
 .grp-ap-logo{left:50%;top:50%;width:min(46%,520px);transform:translate(-50%,-50%) scale(.2);opacity:0;filter:drop-shadow(0 0 3vmin rgba(255,210,63,.65));animation:grpApLogo 1s cubic-bezier(.2,1.6,.4,1) 2.3s forwards,grpApFlota 3s ease-in-out 3.4s infinite alternate}
 .grp-ap-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
 .grp-ap-saltar{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));z-index:2;border:1px solid #f9d26e;background:rgba(3,16,49,.75);color:#fff;font:700 15px system-ui,sans-serif;border-radius:999px;padding:9px 16px;cursor:pointer}
-.grp-apertura.grp-ap-fin{animation:grpApSale .65s ease forwards}
+.grp-apertura.grp-ap-fin{animation:grpApSaleFondo .65s ease forwards}
+.grp-apertura.grp-ap-fin>*{animation:grpApSale .38s ease forwards}
+@keyframes grpApSaleFondo{0%,62%{opacity:1}100%{opacity:0}}
 @keyframes grpApNegro{from{opacity:0}to{opacity:1}}
 @keyframes grpApEstudio{0%{opacity:0;filter:brightness(.25)}35%{opacity:1;filter:brightness(1.6)}100%{opacity:1;filter:brightness(1)}}
 @keyframes grpApLuces{0%{opacity:.25;transform:rotate(-4deg)}100%{opacity:.85;transform:rotate(4deg)}}

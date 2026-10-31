@@ -154,6 +154,9 @@
       dice.textContent="🎙 Giro: ¡Hoy se enfrentan "+nombre+" y "+(rival||"su rival")+"! 24 letras, una vuelta. ¿Quién gana?";
     }else{
       /* En la tele, si el jugador tiene avatar con pose de atril, aparece él (si no carga, el personaje de siempre). */
+      /* En el celular también: si tu avatar tiene pose de atril (assets/atril), salís vos. */
+      let fotoPropia="";try{const av=localStorage.getItem("gya_avatar")||"";const n=+(av.match(/^avatar-(\d{2})$/)||[])[1];if(n&&(n<=22||n===33||(n>=42&&n<=54)))fotoPropia="assets/atril/"+av+".webp";}catch(e){}
+      if(!opc&&fotoPropia)opc={foto:fotoPropia,_propio:true};
       jugador("centro",opc&&opc.foto||PERSONAJES[yo],nombre,1.9);
       if(opc&&opc.foto){const f=cuadro.querySelector(".grp-part-persona.grp-part-centro");if(f){f.dataset.resp=PERSONAJES[yo];f.classList.add("grp-part-avatar");}}
       dice.textContent="🎙 Giro: ¡Hoy juega "+nombre+"! 24 letras, una vuelta. ¿Podrá completar el Rosco?";
