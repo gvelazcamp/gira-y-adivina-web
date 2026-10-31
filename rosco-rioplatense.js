@@ -514,7 +514,8 @@ const RoscoRioplatense=(()=>{
   function iniciar(){if(window.Fichas&&!Fichas.usar("rosco-rioplatense",iniciar))return;
     /* La presentación aparece antes de arrancar la partida. */
     const empezar=()=>{if(!raiz)return;duelo=false;config=configNivel(nivel);items=armarRonda();guardar();arrancarRonda();};
-    if(pruebaG&&window.GiroRoscoPiloto?.presentarSolo?.(()=>{if(raiz){raiz.classList.add("rr-estudio");const sp=$("#rrPasar span");if(sp)sp.textContent="Pasar";}empezar();})){
+    /* La rueda arranca cuando ya se fue la presentación (antes empezaba a girar por detrás del fundido). */
+    if(pruebaG&&window.GiroRoscoPiloto?.presentarSolo?.(()=>{if(raiz){raiz.classList.add("rr-estudio");const sp=$("#rrPasar span");if(sp)sp.textContent="Pasar";}setTimeout(empezar,450);})){
       /* El cartel de Jugar queda oculto debajo de la presentación (si no, se veía al desvanecerse). */
       $("#rrPanel").hidden=true;return;}
     empezar();}
@@ -700,12 +701,12 @@ const RoscoRioplatense=(()=>{
     };
     if(window.GiroRoscoPiloto){activar();return;}
     if(!document.querySelector('link[data-giro-rosco]')){
-      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=21";
+      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=22";
       estilo.dataset.giroRosco="1";document.head.appendChild(estilo);
     }
     let script=document.querySelector('script[data-giro-rosco]');
     if(!script){
-      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=36";script.async=true;
+      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=37";script.async=true;
       script.dataset.giroRosco="1";script.addEventListener("load",activar,{once:true});script.addEventListener("error",()=>cortinaG(false),{once:true});
       document.head.appendChild(script);
     }else script.addEventListener("load",activar,{once:true});

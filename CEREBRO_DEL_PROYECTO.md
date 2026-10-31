@@ -2142,3 +2142,7 @@ Fecha: 31/10/2026 — Cuenta de Google: se queda SOLA la partida más avanzada (
 ```text
 Fecha: 31/10/2026 — Rosco en modo tele (celular horizontal con 📺): la pregunta "¿Querés jugar con el micrófono?" ahora sale ANTES de que gire la rueda la primera vez (Gonzalo: "gira antes del popup del audio; que gire después"). Al contestar, recién gira; si eligió "Sí, activar voz", la voz se activa cuando para la rueda. rosco-rioplatense.js v80, sw v621.
 ```
+
+```text
+Fecha: 31/10/2026 — Auditoría del arranque del Rosco con Giro (Gonzalo: "algo hace raro desde Giro presentador hasta el Rosco"). Grabado cuadro a cuadro (celular parado y acostado). Problemas: (1) al tocar "Ir al Rosco" y "¡A jugar!" la presentación se desvanecía ENCIMA de la pantalla siguiente y se veían las dos mezcladas (cartel de Giro sobre "Jugar nivel 1"; estudio sobre el tablero); (2) la rueda empezaba a girar por detrás del fundido; (3) en el celular el participante era el genérico. Arreglo: las salidas (.grp-overlay.grp-saliendo y .grp-apertura.grp-ap-fin) primero apagan el contenido sobre el fondo oscuro y recién al final se va el fondo (sin mezclar); la partida arranca 450 ms después de "¡A jugar!" para que la rueda gire a la vista; y en el celular, si tu avatar tiene pose de atril (assets/atril), salís vos en el atril (sin botón "Cambiar personaje"). giro-rosco-piloto.js v37, css v22, rosco-rioplatense.js v81, tele.js v38, sw v622.
+```
