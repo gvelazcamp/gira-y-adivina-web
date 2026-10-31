@@ -789,8 +789,12 @@ p.sub{margin:14px 0 24px;color:#C9B8DE}
 @media(max-width:350px){.setup-stats{gap:4px;flex-wrap:wrap;flex:1 1 auto;justify-content:flex-start}.setup-stats .stat-pill{padding-left:7px;padding-right:7px;font-size:.8rem}}
 /* (31/10/2026) Con el 📺 para todos la fila no entraba y el ⚙️ quedaba afuera: si no entra, baja a otra línea
    (nunca queda cortada) y en celulares comunes se achican un poco las pastillas. */
-.setup-stats{flex-wrap:wrap;flex:1 1 auto;min-width:0;justify-content:flex-start;row-gap:6px}
-@media(max-width:480px){.setup-stats{gap:5px}.setup-stats .stat-pill{padding-left:8px;padding-right:8px;font-size:.82rem}}
+/* (31/10) Siempre en UNA línea: en celulares se saca la palabra "monedas" (queda 🪙 y el número) y todo se achica. */
+.setup-stats{flex-wrap:nowrap;flex:0 0 auto;justify-content:flex-start}
+.txt-monedas{font-style:normal}
+@media(max-width:480px){.txt-monedas{display:none}.setup-stats{gap:4px}.setup-stats .stat-pill{padding-left:7px;padding-right:7px;font-size:.8rem;white-space:nowrap}
+ #btnMusica,#bMasOpciones,#btnTeleCast{width:24px;height:24px;font-size:.8rem}}
+@media(max-width:350px){.setup-stats{flex-wrap:nowrap}.setup-stats .stat-pill{padding-left:5px;padding-right:5px;font-size:.74rem}}
 /* (19/10/2026) Se sacó html,body{overscroll-behavior-y:none} (puesto el 17/10 para que
    deslizar hacia abajo arriba de todo no recargue): desde ahí a Gonzalo el inicio
    le quedaba trabado unos segundos al deslizar. */
@@ -1360,7 +1364,7 @@ body:not(.tvhost) #horizontalAyuda{display:none}
     </div>
     <div class="setup-stats">
       <span class="stat-pill stat-racha" id="setupRacha" title="Racha de días jugados">🔥 <b>0</b></span>
-      <span class="stat-pill stat-monedas" id="setupMonedas" title="Monedas: se ganan jugando y sirven para comprar en la Tienda">🪙 <b>0</b> monedas</span>
+      <span class="stat-pill stat-monedas" id="setupMonedas" title="Monedas: se ganan jugando y sirven para comprar en la Tienda">🪙 <b>0</b><i class="txt-monedas"> monedas</i></span>
       <span class="stat-pill stat-vidas" id="setupVidas">❤️ <b>0</b></span>
       <button id="btnTeleCast" type="button" title="Jugar en la tele" hidden>📺</button>
       <button id="btnMusica" type="button" title="Silenciar todo el sonido">🔊</button>
@@ -3281,7 +3285,7 @@ function mundoActualizarHud(){
   if($("mhMonedas"))$("mhMonedas").textContent="🪙 "+meta.monedas+" monedas";
   if($("jgMonedas"))$("jgMonedas").textContent="🪙 "+meta.monedas+" monedas";
   if($("setupVidas")){$("setupVidas").innerHTML=vidasInfinitasActivas()?"❤️ <b>∞</b>":"❤️ <b>"+meta.vidas+"</b>";$("setupVidas").title=vidasInfinitasActivas()?"Vidas infinitas · "+textoVidasInfinitas():"";}
-  if($("setupMonedas"))$("setupMonedas").innerHTML="🪙 <b>"+meta.monedas+"</b> monedas";
+  if($("setupMonedas"))$("setupMonedas").innerHTML="🪙 <b>"+meta.monedas+"</b><i class=\"txt-monedas\"> monedas</i>";
   if($("setupRacha"))$("setupRacha").innerHTML="🔥 <b>"+meta.diaRacha+"</b>";
   if($("bTorneosBadge")){
     const tk=meta.ticketsTorneo||0;
