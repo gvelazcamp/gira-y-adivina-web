@@ -2122,3 +2122,7 @@ Fecha: 31/10/2026 — /tele: si la persona nunca jugó (sin perfil), pide nombre
 ```text
 Fecha: 31/10/2026 — Botón "🔄 ¿Ya jugás en otro celular, en la app o en la compu? Traé tu partida" en la pantalla de crear perfil, debajo de Uruguay/Argentina (Gonzalo: "un botón abajo de Uruguay y Argentina: ya sos usuario, ¿querés trasladar tus partidas?"). Abre una ventana para escribir el nombre con el que juega en el otro aparato, busca su respaldo en Supabase (filaPartidaGuardada) y pide tocar su avatar (mostrarRecuperar, el "¿Sos vos?" de siempre); si acierta, trae toda la partida. Solo se ve si ese aparato todavía no tiene perfil. Es una copia en ese momento, no sincronización en vivo (eso sería con cuenta de Google, pendiente de activar Google Auth en Supabase). sw v616.
 ```
+
+```text
+Fecha: 31/10/2026 — Inicio: el ⚙️ (Más opciones) había desaparecido en el celular de Gonzalo: con el 📺 visible para todos la fila racha/monedas/vidas/📺/🔊/⚙️ no entraba y el ⚙️ quedaba afuera de la pantalla. Ahora la fila baja a otra línea si no entra (nunca se corta) y en celulares de hasta 480 px las pastillas son un poco más chicas. Probado en 360, 412 y 480 px. sw v617.
+```
