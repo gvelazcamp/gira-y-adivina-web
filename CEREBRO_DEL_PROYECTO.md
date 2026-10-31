@@ -2178,3 +2178,7 @@ Fecha: 31/10/2026 — Rosco por voz (celular y tele): acepta lo que el reconocim
 ```text
 Fecha: 31/10/2026 — Tele: Silabario con tablero lleno de 6×5 sílabas (las de la palabra + relleno) en la tele y en el celular, como el juego del celular, sin scroll. Sala TV (ruleta): la pantalla de Resultados/festejos achica el podio según el alto de la tele para que podio + "Jugar de nuevo" + "Abandonar partida" entren sin scroll (probado 960×540, 1280×720, 1920×1080).
 ```
+
+```text
+Fecha: 31/10/2026 — Rosco en la tele: (1) De a dos tiene un MARCADOR en vivo (ranking 1º/2º con avatar, ✓, ✘, letras que quedan y reloj, "Va ganando X"/"¡Van empatados!"), y el mismo marcador chico en el celular de los dos. (2) Las palabras no se repiten por persona: el celular le manda a la tele su memoria del Rosco (gya_vistas_rosco, la misma del Rosco del celular y que va en el respaldo de la cuenta), la tele arma el rosco evitando esas y las que ya salieron en esa tele, y le devuelve al celular las 20 de ese rosco para que queden guardadas. Cuando a una letra se le acaban las palabras nuevas, esa letra vuelve a empezar.
+```
