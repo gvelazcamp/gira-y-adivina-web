@@ -775,8 +775,12 @@
   function juegoRosco(T,actualizar){
     const CANT=20,SEGUNDOS=160,LETRAS="ABCDEFGHIJLMNOPQRSTUVYZ";
     const norm=s=>sinTilde(s).replace(/\s+/g,"");
+    /* Singular o plural cuenta igual (31/10/2026, Gonzalo: "uñas" por UÑA, "departamentos" por DEPARTAMENTO):
+       +S, +ES y Z→CES (lápiz/lápices), en las dos direcciones. */
+    const mismoNumero=(a,b)=>{if(a===b)return true;const[c,l]=a.length<b.length?[a,b]:[b,a];if(c.length<3)return false;
+      return l===c+"S"||l===c+"ES"||(c.endsWith("Z")&&l===c.slice(0,-1)+"CES");};
     function vale(d,valor){
-      const ops=[d.palabra,...(d.alternativas||[])].map(norm);if(ops.includes(valor))return true;
+      const ops=[d.palabra,...(d.alternativas||[])].map(norm);if(ops.some(o=>mismoNumero(o,valor)))return true;
       const base=norm(d.palabra),resto=valor.startsWith(base)?valor.slice(base.length):"";
       return resto.length>0&&resto.length<=12&&/^(DEL?|DELA|DELOS|DELAS)[A-Z]{3,}$/.test(resto);
     }
