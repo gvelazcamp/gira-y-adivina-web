@@ -131,16 +131,18 @@
   /* Menú del 📺: las 3 formas de jugar en la tele. Al elegir una, un popup la explica con su
      dibujo (assets/tele/), los pasos y el botón para hacerla. */
   const FORMAS_TELE=[
-    {id:"transmitir",tag:"⭐ LA MÁS FÁCIL",titulo:"📡 Transmitir",para:"Teles con Play Store, Google TV o Chromecast (como la Panavox).",
+    {id:"transmitir",oculto:true,tag:"⭐ LA MÁS FÁCIL",titulo:"📡 Transmitir",para:"Teles con Play Store, Google TV o Chromecast (como la Panavox).",
       pasos:["Tele y celular en el <b>mismo wifi</b>.","Tocá <b>«Buscar teles»</b> y elegí tu tele.","La tele abre la sala sola y tu celular queda de control."],
       pie:"✔ Sin navegador · sin código · 1 celular alcanza",boton:"📡 Buscar teles"},
-    {id:"codigo",tag:"🔢 CON CÓDIGO",titulo:"🌐 Navegador de la tele",para:"Teles con navegador (Samsung, LG, cualquiera con internet).",
+    {id:"codigo",tag:"⭐ LA MÁS FÁCIL",titulo:"🌐 Navegador de la tele",para:"Teles con navegador (Samsung, LG, cualquiera con internet).",
       pasos:["En la tele entrá a <b>girayadivina.com/tele</b>.","Tocá <b>«Esta pantalla es la tele»</b>: sale un código.","En el celular poné tu nombre y ese <b>código</b>.","No hace falta el mismo wifi."],
       pie:"✔ Anda en casi todas · hay que escribir el código",boton:"🔢 Poner el código"},
     {id:"celular-tele",tag:"📱 PLAN B",titulo:"📱➜📺 Un celular de tele",para:"Teles sin navegador ni Chromecast: un celular hace de tele y se emite.",
       pasos:["En el celular que va a ser la tele tocá <b>«Este celular es la tele»</b>.","Ese celular hace <b>«Emitir»</b> (o Smart View) a la tele y queda acostado al lado.","Los demás se unen desde su celular con el <b>código</b>."],
       pie:"✔ Cualquier tele que acepte emitir · hacen falta 2 celulares",boton:"📱 Este celular es la tele"}
   ];
+  /* «Transmitir» oculto (31/10/2026): en Android (app y Chrome) no encuentra la tele (Presentation API sin app de
+     Google Cast registrada). Para volver a mostrarlo hace falta un Custom Receiver en cast.google.com (Gonzalo no quiso). */
   function compartirPantalla(){
     document.querySelector(".tl-cast-capa")?.remove();
     const capa=document.createElement("div");capa.className="tl-cast-capa";document.body.appendChild(capa);
@@ -148,7 +150,7 @@
     const menu=()=>{
       capa.innerHTML=`<div class="tl-cast-caja" role="dialog" aria-label="Jugar en la tele"><button type="button" class="tl-cast-x" aria-label="Cerrar">✕</button>
         <h2>📺 Jugar en la tele</h2><p class="tl-cast-sub">Elegí según la tele que tengas</p>
-        ${FORMAS_TELE.map((f,i)=>`<button type="button" class="tl-cast-forma${i===0?" tl-cast-uno":""}" data-f="${f.id}"><img src="assets/tele/${f.id}.webp" alt=""><span><small>${f.tag}</small><b>${f.titulo}</b><em>${f.para}</em></span></button>`).join("")}</div>`;
+        ${FORMAS_TELE.filter(f=>!f.oculto).map((f,i)=>`<button type="button" class="tl-cast-forma${i===0?" tl-cast-uno":""}" data-f="${f.id}"><img src="assets/tele/${f.id}.webp" alt=""><span><small>${f.tag}</small><b>${f.titulo}</b><em>${f.para}</em></span></button>`).join("")}</div>`;
       capa.querySelector(".tl-cast-x").onclick=cerrar;
       capa.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>detalle(FORMAS_TELE.find(f=>f.id===b.dataset.f)));
     };
