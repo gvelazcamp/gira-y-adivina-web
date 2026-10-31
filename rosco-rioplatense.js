@@ -75,11 +75,19 @@ const RoscoRioplatense=(()=>{
       .replace(/C/g,"K").replace(/Z/g,"S").replace(/V/g,"B")
       .replace(/H/g,"").replace(/@/g,"CH").replace(/#/g,"G");
   }
+  /* Voz: el reconocimiento a veces oye casi lo mismo ("uva" → "Cuba", 31/10/2026). Se acepta si suena casi igual:
+     1 letra de diferencia (2 si la palabra es larga), comparando cómo suena (b/v, s/z/c, h muda, etc.). */
+  const distancia=(a,b)=>{const m=a.length,n=b.length;let pr=Array.from({length:n+1},(_,j)=>j);
+    for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(pr[j]+1,c[j-1]+1,pr[j-1]+(a[i-1]===b[j-1]?0:1));pr=c;}return pr[n];};
+  const casiIgual=(a,b)=>{if(!a||!b)return false;const l=Math.max(a.length,b.length);if(Math.min(a.length,b.length)<3)return a===b;
+    /* Palabras cortas: solo una letra de más al principio o al final ("uva"/"cuba"); así "pato" no vale por GATO. */
+    if(l<=5){const[c,g]=a.length<b.length?[a,b]:[b,a];return a===b||(g.length===c.length+1&&(g.slice(1)===c||g.slice(0,-1)===c));}
+    return distancia(a,b)<=(l>=8?2:1);};
   function valeVoz(d,valor){
     const limpio=normalizar(valor);
     if(vale(d,limpio))return true;
     const sonido=sonidoEspanol(limpio);
-    return sonido.length>=3&&[d.palabra,...(d.alternativas||[])].some(x=>sonidoEspanol(x)===sonido);
+    return sonido.length>=3&&[d.palabra,...(d.alternativas||[])].some(x=>{const o=sonidoEspanol(x);return o===sonido||casiIgual(o,sonido);});
   }
   const numero=(v,base=0)=>Number.isFinite(v)&&v>=0?v:base;
   function cargar(){
