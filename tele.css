@@ -518,3 +518,4 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-apel-aviso{position:absolute;left:50%;bottom:4vh;transform:translateX(-50%);z-index:21}
 .tl-ap-vivo{display:block;width:100%;margin:0 0 10px;padding:10px 12px;border:2px solid #F5B301;border-radius:12px;background:#F5B3011A;color:#F6EFE2;font:700 .9rem Outfit,system-ui;text-align:left;cursor:pointer}
 .tl-ap-vivo b{color:#F5B301}
+.tl-rev-nota{margin:8px 0 0;font-size:.82rem;opacity:.8}

@@ -2226,3 +2226,7 @@ Fecha: 31/10/2026 — Rosco en la tele: botón "⏸️ Pausa" en el celular (al 
 ```text
 Fecha: 31/10/2026 — Rosco de a dos en la tele: cada ERROR abre un aviso. Rosco en pausa; la tele muestra "❌ X erró · dijo «…» y era …" con cuenta de 12 s; al que erró le aparece en el celular "¡Uy, no era! … ¿El micrófono te entendió mal?" con "⚖️ Sí, apelar" (va a votación del otro) o "No, seguir (le toca a …)". Si no toca nada en 12 s, sigue la partida. Pasar no abre aviso. El otro ve "Un momento… está decidiendo si apela".
 ```
+
+```text
+Fecha: 31/10/2026 — Rosco de a dos en la tele: el aviso de error tiene 3 opciones: "🔊 Fue ruido: volver a preguntar" (el micrófono escuchó a otra persona), "⚖️ Lo dije bien: apelar" y "No, seguir". Ruido → vota el otro "¿Fue ruido?"; si es Sí, la letra vuelve a pendiente y se le pregunta la MISMA otra vez (vuelve su turno, en esa letra). Para que no sirva de trampa, de a dos la palabra correcta NO se muestra al errar (ni en la tele ni en el celular) hasta que se decide; si sigue como error, recién ahí aparece "Era …".
+```
