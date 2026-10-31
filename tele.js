@@ -828,8 +828,9 @@
     /* Palabras cortas: solo una letra de más al principio o al final ("uva"/"cuba"); así "pato" no vale por GATO. */
     if(l<=5){const[c,g]=a.length<b.length?[a,b]:[b,a];return a===b||(g.length===c.length+1&&(g.slice(1)===c||g.slice(0,-1)===c));}
     return distancia(a,b)<=(l>=8?2:1);};
-    const sonido=s=>norm(s).replace(/[^A-Z]/g,"").replace(/CH/g,"@").replace(/LL/g,"Y").replace(/GU(?=[EI])/g,"#").replace(/QU(?=[EI])/g,"K")
-      .replace(/G(?=[EI])/g,"J").replace(/C(?=[EI])/g,"S").replace(/C/g,"K").replace(/Z/g,"S").replace(/V/g,"B").replace(/H/g,"").replace(/@/g,"CH").replace(/#/g,"G");
+    /* Sheísmo rioplatense: LL, Y, SH y CH se confunden al oído ("lluvia" → "chubia", 31/10/2026). */
+    const sonido=s=>norm(s).replace(/[^A-Z]/g,"").replace(/CH|SH|LL/g,"Y").replace(/GU(?=[EI])/g,"#").replace(/QU(?=[EI])/g,"K")
+      .replace(/G(?=[EI])/g,"J").replace(/C(?=[EI])/g,"S").replace(/C/g,"K").replace(/Z/g,"S").replace(/V/g,"B").replace(/H/g,"").replace(/#/g,"G");
     const suenaIgual=(d,t)=>{const s=sonido(t);return s.length>=3&&[d.palabra,...(d.alternativas||[])].some(x=>{const o=sonido(x);return o===s||casiIgual(o,s);});};
     /* Misma memoria que el Rosco del celular: primero las que nunca salieron. */
     /* Y por persona (31/10/2026): el celular le pasa a la tele las palabras que esa persona ya vio (su memoria del Rosco,

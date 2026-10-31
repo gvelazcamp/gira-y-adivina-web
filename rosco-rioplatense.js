@@ -69,11 +69,12 @@ const RoscoRioplatense=(()=>{
   /* En voz, Chrome puede elegir otra grafía del mismo sonido rioplatense
      (s/z, b/v, ll/y, qu/k, h muda). No aplicar esta tolerancia al teclado. */
   function sonidoEspanol(s){
-    return normalizar(s).replace(/CH/g,"@").replace(/LL/g,"Y")
+    /* Sheísmo rioplatense: LL, Y, SH y CH se confunden al oído ("lluvia" → "chubia", 31/10/2026). */
+    return normalizar(s).replace(/CH|SH|LL/g,"Y")
       .replace(/GU(?=[EI])/g,"#").replace(/QU(?=[EI])/g,"K")
       .replace(/G(?=[EI])/g,"J").replace(/C(?=[EI])/g,"S")
       .replace(/C/g,"K").replace(/Z/g,"S").replace(/V/g,"B")
-      .replace(/H/g,"").replace(/@/g,"CH").replace(/#/g,"G");
+      .replace(/H/g,"").replace(/#/g,"G");
   }
   /* Voz: el reconocimiento a veces oye casi lo mismo ("uva" → "Cuba", 31/10/2026). Se acepta si suena casi igual:
      1 letra de diferencia (2 si la palabra es larga), comparando cómo suena (b/v, s/z/c, h muda, etc.). */
