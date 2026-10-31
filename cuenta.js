@@ -27,7 +27,7 @@ const Cuenta=(()=>{
   function pintar(){
     if(btnAjustes){
       const etiqueta=btnAjustes.querySelector(".btn-txt");
-      if(etiqueta)etiqueta.textContent=usuario?"Partida vinculada":"Guardar mi progreso";
+      if(etiqueta)etiqueta.textContent=usuario?"Cuenta de Google ✓":"Vincular con Google";
     }
   }
   function interfaz(){
@@ -48,14 +48,14 @@ const Cuenta=(()=>{
   function abrir(){
     if(usuario&&pendienteConflicto){conflicto(pendienteConflicto.local,pendienteConflicto.nube,true);return;}
     if(usuario){
-      mostrar("Partida vinculada",errorSync
+      mostrar("Cuenta de Google ✓",errorSync
         ?"Tu avance sigue en este dispositivo. La sincronización con Google está pendiente; podés seguir jugando normalmente."
         :`Tu progreso se guarda con ${usuario.email||"tu cuenta de Google"}. En otro dispositivo elegí esta misma cuenta.`,[
         {texto:"Seguir jugando",principal:true,accion:cerrar},
         ...(errorSync?[{texto:"Revisar sincronización",accion:()=>{cerrar();pospuesto=false;reintentarEn=0;revisar();}}]:[]),
         {texto:"Cerrar sesión en este dispositivo",accion:salir}
       ]);return;}
-    mostrar("Guardar mi progreso","Continuá tu partida en la app y en girayadivina.com con la misma cuenta de Google. Es opcional: podés seguir jugando sin vincularla.",[
+    mostrar("Vincular con Google","Entrá con tu cuenta de Google y tu partida queda guardada: la misma en el celular, en la app de Play Store y en la compu (girayadivina.com). Hacelo en cada aparato con la misma cuenta. Es opcional.",[
       {texto:"Continuar con Google",principal:true,accion:entrar},
       {texto:"Ahora no",accion:cerrar}
     ]);
@@ -117,15 +117,15 @@ const Cuenta=(()=>{
     // cuando el usuario entra por el engranaje.
     pendienteConflicto={local,nube};ocupado=false;pospuesto=true;
     if(!desdeAjustes)return;
-    mostrar("Elegí tu partida",`En este dispositivo: ${nombre(partidaLocal())}. En tu cuenta: ${nombre(nube.estado_juego)}. Ambas partidas están conservadas; elegí cuál querés seguir usando.`,[
-      {texto:"Continuar la partida de mi cuenta",principal:true,accion:async()=>{
+    mostrar("Elegí tu partida",`En este aparato: ${nombre(partidaLocal())}. En tu cuenta: ${nombre(nube.estado_juego)}. Elegí con cuál seguir: la otra queda guardada por las dudas. Si este es el aparato donde más jugás, elegí la de este aparato; si es uno nuevo, la de tu cuenta.`,[
+      {texto:"☁️ Usar la de mi cuenta (traerla acá)",principal:true,accion:async()=>{
         try{
           const actual=await leer();
           if(!actual)throw Error("No se encontró la partida de tu cuenta.");
           bajar(actual.estado_juego,actual.revision);
         }catch(e){fallo(e);cerrar();}
       }},
-      {texto:"Guardar la partida de este dispositivo",accion:async()=>{
+      {texto:"📱 Usar la de este aparato (subirla a mi cuenta)",accion:async()=>{
         try{
           ocupado=true;
           // Tomar el progreso ACTUAL al confirmar, no una copia vieja.
