@@ -1078,7 +1078,7 @@
     }
     function entrar(){
       raiz.innerHTML=`<div class="tl-cel-caja"><h2>Conectando con la tele…</h2><p>Código <b>${codCel}</b></p></div>`;
-      conectar(codCel,()=>{conectado=true;const h=()=>{let pj="";try{pj=localStorage.getItem("gya_giro_personaje")||"";}catch(e){}let av="";try{av=localStorage.getItem("gya_avatar")||"";}catch(e){}mandar({t:"hola",n:nombre,pj,av});};h();hola=setInterval(h,4000);
+      conectar(codCel,()=>{conectado=true;const h=()=>{let pj="";try{pj=localStorage.getItem("gya_giro_personaje")||"";}catch(e){}let av="";try{av=localStorage.getItem("gya_avatar")||localStorage.getItem("gya_tele_avatar")||"";}catch(e){}mandar({t:"hola",n:nombre,pj,av});};h();hola=setInterval(h,4000);
         setTimeout(()=>{if(!ultimo)raiz.innerHTML=`<div class="tl-cel-caja"><h2>No encuentro la tele 🤔</h2><p>Revisá que el código <b>${codCel}</b> sea el que muestra la tele y que la tele siga abierta.</p><button type="button" class="tl-boton" onclick="location.reload()">Probar de nuevo</button><a class="tl-boton tl-chico" href="tele/?cambiar=1">Usar otra tele</a></div>`;},12000);},
         ()=>{raiz.innerHTML=`<div class="tl-cel-caja"><h2>Sin conexión</h2><p>No se pudo conectar (${esc(window.gyaFalloConexion||"sin respuesta")}). Probá con datos del celular.</p><button type="button" class="tl-boton" onclick="location.reload()">Reintentar</button></div>`;},
         m=>{if(m.t==="estado"&&m.cod===codCel){ultimo=m;visto=Date.now();try{localStorage.setItem("gya_tele_vinculada",codCel);}catch(e){}pintar();}});
