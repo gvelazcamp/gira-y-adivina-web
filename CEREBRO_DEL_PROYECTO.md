@@ -2118,3 +2118,7 @@ Fecha: 31/10/2026 — /tele en el celular ya no pide el nombre si hay perfil (Go
 ```text
 Fecha: 31/10/2026 — /tele: si la persona nunca jugó (sin perfil), pide nombre y que elija un avatar gratis (grilla de los 35, se marca en dorado; sin elegir no deja entrar). Se guarda en gya_tele_avatar (no toca el perfil del juego) y el celular lo manda a la tele (hola.av = gya_avatar || gya_tele_avatar), así sale con su avatar en el atril y el podio. tele.js v37, sw v615.
 ```
+
+```text
+Fecha: 31/10/2026 — Botón "🔄 ¿Ya jugás en otro celular, en la app o en la compu? Traé tu partida" en la pantalla de crear perfil, debajo de Uruguay/Argentina (Gonzalo: "un botón abajo de Uruguay y Argentina: ya sos usuario, ¿querés trasladar tus partidas?"). Abre una ventana para escribir el nombre con el que juega en el otro aparato, busca su respaldo en Supabase (filaPartidaGuardada) y pide tocar su avatar (mostrarRecuperar, el "¿Sos vos?" de siempre); si acierta, trae toda la partida. Solo se ve si ese aparato todavía no tiene perfil. Es una copia en ese momento, no sincronización en vivo (eso sería con cuenta de Google, pendiente de activar Google Auth en Supabase). sw v616.
+```

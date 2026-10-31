@@ -735,6 +735,7 @@ p.sub{margin:14px 0 24px;color:#C9B8DE}
 .perfil-pais-btn{border:1px solid #FFFFFF22;background:#2A1A3C;color:var(--crema);border-radius:16px;padding:12px 8px;font-weight:900;box-shadow:0 4px 0 #150C1F}
 .perfil-pais-btn.elegido{background:var(--agua);color:var(--tinta);border-color:var(--agua);box-shadow:0 4px 0 #16796D}
 .perfil-pais-ayuda{display:block;color:#B49FCE;font-size:.78rem;line-height:1.25;margin:8px 6px 0}
+.perfil-traer{display:block;width:100%;margin-top:14px;background:#2A1A3C;border:1px dashed #F5B30199;color:#F6EFE2;border-radius:14px;padding:12px;font:600 .9rem system-ui;line-height:1.35;cursor:pointer}.perfil-traer b{color:#F5B301}
 .perfil-ciudad{margin:12px 0 6px;text-align:left;flex-direction:column;align-items:stretch}.perfil-ciudad input{width:100%;flex:auto}.perfil-ciudad-ayuda{display:block;color:#B49FCE;font-size:.76rem;line-height:1.3;margin:5px 6px 0}
 #perfilCambiarNombre{background:none;color:var(--agua);font-weight:700;padding:4px 8px;margin:-2px 0 12px}
 .avatar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 22px}
@@ -1511,6 +1512,7 @@ body:not(.tvhost) #horizontalAyuda{display:none}
       <small class="perfil-pais-ayuda" id="perfilPaisAyuda">Elegí tu país para habilitar el perfil. La expansión sugerida queda cruzada al otro lado del Río de la Plata.</small>
     </div>
     <input id="perfilCiudad" type="hidden">
+    <button type="button" id="bTraerPartida" class="perfil-traer">🔄 ¿Ya jugás en otro celular, en la app o en la compu? <b>Traé tu partida</b></button>
   </div>
   <div id="perfilPasoAvatar" style="display:none">
     <p class="sub" id="avatarTitulo" style="margin:8px 0 4px">Ahora elegí tu avatar</p>
@@ -2091,6 +2093,13 @@ body:not(.tvhost) #horizontalAyuda{display:none}
   <button class="no" id="rkCerrar" style="width:100%;border-radius:14px;padding:13px;font-weight:700;margin-top:10px">Cerrar</button>
 </div></div>
 
+<div class="capa" id="capaTraer"><div class="caja" style="max-width:360px;text-align:center">
+  <h2>🔄 Traé tu partida</h2>
+  <p style="margin:6px 4px 12px;line-height:1.35">Escribí el nombre con el que jugás en tu otro aparato (celular, app de Play Store o compu). Te vamos a pedir que toques tu avatar para confirmar que sos vos.</p>
+  <input id="traerNombre" maxlength="12" autocomplete="off" placeholder="Tu nombre en el juego" style="width:100%;font:800 1.2rem system-ui;padding:12px;border-radius:12px;border:2px solid #7b3fe4;background:#0c0616;color:#fff;text-align:center">
+  <button class="btn-grande" id="traerBuscar" style="margin-top:12px;width:100%">Buscar mi partida</button>
+  <button class="no" id="traerNo" style="width:100%;border-radius:12px;padding:12px;font-weight:700;margin-top:8px">Cancelar</button>
+</div></div>
 <div class="capa" id="capaRecuperar"><div class="caja" style="max-width:360px;text-align:center">
   <h2 id="recTit">¿Sos vos?</h2>
   <p id="recTxt" style="margin:6px 4px 14px;line-height:1.35">Ese nombre ya tiene una partida guardada. Para traerla a este celular, tocá el avatar que usabas:</p>
@@ -8012,6 +8021,18 @@ function recuperarPartida(fila){
   }catch(e){mostrarToast("⚠️","No se pudo recuperar. Probá de nuevo con internet.");}
 }
 $("recNo").onclick=()=>{$("capaRecuperar").classList.remove("ver");recuperarFila=null;};
+/* Botón "Traé tu partida" en la pantalla de perfil (31/10/2026): para pasar la partida de un aparato a otro
+   (app de Play Store ↔ compu ↔ otro celular). Usa el mismo "¿Sos vos?" con el avatar. */
+$("bTraerPartida").onclick=()=>{$("traerNombre").value=$("perfilNombre").value.trim();$("capaTraer").classList.add("ver");setTimeout(()=>$("traerNombre").focus(),200);};
+$("traerNo").onclick=()=>$("capaTraer").classList.remove("ver");
+$("traerNombre").addEventListener("keydown",e=>{if(e.key==="Enter")$("traerBuscar").click();});
+$("traerBuscar").onclick=async()=>{
+  const n=$("traerNombre").value.trim();if(!n){$("traerNombre").focus();return;}
+  const b=$("traerBuscar");b.disabled=true;b.textContent="Buscando…";
+  const fila=await filaPartidaGuardada(n);b.disabled=false;b.textContent="Buscar mi partida";
+  if(!fila){mostrarToast("🔎","No encontramos una partida con ese nombre. Revisá cómo está escrito (necesita internet).");return;}
+  $("capaTraer").classList.remove("ver");mostrarRecuperar(fila);
+};
 async function nombrePerfilDisponible(nombre,soloRanking){
   const supa=obtenerSupa();
   if(!supa)return true;
@@ -8095,6 +8116,7 @@ function abrirPerfil(callback,obligatorio=false){
   $("setup").style.display="none";$("mundo").style.display="none";$("pantDurazno").style.display="none";
   $("pantPerfil").style.display="block";
   $("perfilCerrar").style.display=perfilObligatorio?"none":"";
+  $("bTraerPartida").style.display=perfilExiste()?"none":"";
   renderAvatarGrid();actualizarBotonPerfil();perfilMostrarPaso(perfilEdicionDirecta?"todo":"nombre");
 }
 function previsualizarPerfilVacio(){
