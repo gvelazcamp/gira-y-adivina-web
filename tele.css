@@ -483,3 +483,7 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-rd-fila.tl-rd-c0,.tl-rd-fila.tl-rd-c1{border-left:.7vw solid var(--fc)}
 .tl-rd-fila.tl-rd-activo.tl-rd-c1{border-color:#9B6BFF;background:#9B6BFF22;box-shadow:0 0 1.6vw #9B6BFF66}
 .tl-rd-fila.tl-rd-activo.tl-rd-c1 b{color:#C7AEFF}
+/* Las letras del rosco, enteras del color de cada jugador (las acertadas/erradas siguen verde/rojo) */
+.tl-rd-j0 .tl-rl:not(.tl-ok):not(.tl-mal):not(.tl-actual){background:#F5B301;color:#160B24;box-shadow:0 0 0 .4vh #FFE08A,0 .3vh 0 #0005}
+.tl-rd-j1 .tl-rl:not(.tl-ok):not(.tl-mal):not(.tl-actual){background:#7B3FE4;color:#fff;box-shadow:0 0 0 .4vh #C7AEFF,0 .3vh 0 #0005}
+.tl-rd-j1 .tl-medio{background:#1E0F3ADD}
