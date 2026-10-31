@@ -2250,3 +2250,7 @@ Fecha: 31/10/2026 — Rosco de a dos: cuando uno termina su rosco (completó o s
 ```text
 Fecha: 31/10/2026 — Rosco en la tele de a 2, 3 o 4 (mismo mecanismo que de a dos). En el celular del control: "👤 Solo yo" o marcar con quiénes (hasta 3) y "▶ Jugar de a dos/tres/cuatro" (de a dos ahora son 2 toques). Turnos en orden saltando al que ya terminó; colores por jugador: dorado, violeta, celeste, naranja (rosco, marcador, pestañas). De a 2 sigue la escena de los dos atriles; de a 3 o 4 la tele presenta a todos (avatar, nombre, color y orden, con música; 9 s o "Siguiente"). Marcador, pausa, aviso de error con ruido/apelar/seguir, votación (vota cualquiera de los demás), "Rosco terminado" en gris, final con pestañas ◀ ▶, medallas 🥇🥈🥉/4º con empates (🤝) y podio en vivo funcionan igual. T.roscoModo={dos:true,rival,rivales:[...]}.
 ```
+
+```text
+Fecha: 31/10/2026 — ⚙️ Más opciones → "🔤 Palabras del Rosco": muestra las palabras del Rosco que ya le salieron a esta persona (X de 521), por letra con barra y "3/26"; tocando la letra se ven las palabras. Es la misma memoria del Rosco del celular y de la tele (gya_vistas_rosco), que se guarda en el celular y en el respaldo de la cuenta (☁️). Botón "🔄 Empezar de nuevo" (con confirmación) para borrar la lista.
+```

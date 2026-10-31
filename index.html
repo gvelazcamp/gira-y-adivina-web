@@ -1123,6 +1123,17 @@ html.rueda-prueba-boreal .centro{background:radial-gradient(circle at 38% 30%,#E
 #modalFin{z-index:30}
 #capaSinVidas{z-index:35}
 #capaResultadosTV{z-index:32}
+.rp-lista{display:flex;flex-direction:column;gap:5px;max-height:38vh;overflow-y:auto;text-align:left}
+.rp-fila{background:#00000030;border-radius:10px;padding:2px 10px}
+.rp-fila summary{display:flex;align-items:center;gap:10px;padding:7px 0;cursor:pointer;list-style:none}
+.rp-fila summary::-webkit-details-marker{display:none}
+.rp-fila summary b{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--oro);color:#160B24;font-family:'Archivo Black',sans-serif;font-size:.85rem;flex:0 0 auto}
+.rp-fila[data-vacia] summary b{background:#FFFFFF2A;color:var(--crema)}
+.rp-barra{flex:1;height:7px;border-radius:99px;background:#FFFFFF1A;overflow:hidden}.rp-barra i{display:block;height:100%;background:#37D6C0;border-radius:99px}
+.rp-fila summary em{font-style:normal;font-weight:800;font-size:.78rem;color:#BFAFD1;min-width:40px;text-align:right}
+.rp-pal{display:flex;flex-wrap:wrap;gap:5px;padding:2px 0 9px}.rp-pal span{background:#37D6C022;border:1px solid #37D6C055;border-radius:99px;padding:3px 9px;font-size:.74rem;font-weight:800;color:var(--crema)}
+.rp-pal small{opacity:.7}
+.rp-nota{font-size:.74rem;margin:10px 0 4px;opacity:.85}
 #capaResultadosTV .rtv-caja{max-width:820px;width:100%;position:relative;overflow:hidden;background:linear-gradient(160deg,var(--noche2),var(--noche));border:2px solid #F5B30155;border-radius:22px;padding:14px 14px 20px;text-align:center}
 .rtv-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2}
 .rtv-confetti span{position:absolute;top:-10%;width:8px;height:14px;opacity:.9;border-radius:2px;animation:rtvCaer 3.2s linear infinite}
@@ -2011,12 +2022,22 @@ body:not(.tvhost) #horizontalAyuda{display:none}
     <button class="btn-grande sec" id="bCuenta" type="button"><span class="btn-ico">☁️</span><span class="btn-txt">Guardar mi progreso</span></button>
     <button class="btn-grande sec" id="bLogros"><span class="btn-ico">🏅</span><span class="btn-txt">Logros</span></button>
     <button class="btn-grande sec" id="bRecords"><span class="btn-ico">🏆</span><span class="btn-txt">Mis récords</span></button>
+    <button class="btn-grande sec" id="bRoscoPalabras"><span class="btn-ico">🔤</span><span class="btn-txt">Palabras del Rosco</span></button>
     <button class="btn-grande sec" id="bCompartirJuego"><span class="btn-ico">📤</span><span class="btn-txt">Compartir el juego</span></button>
     <button class="btn-grande sec" id="bIdioma"><span class="btn-ico">🌐</span><span class="btn-txt" id="bIdiomaTxt">Idioma / Language</span></button>
     <button class="btn-grande sec" id="bPruebas" style="display:none"><span class="btn-ico">🧪</span><span class="btn-txt">Pruebas</span></button>
     <button class="btn-grande" id="bInstalar" style="display:none"><span class="btn-ico">📲</span><span class="btn-txt">Instalar app en el celular</span></button>
   </div>
   <button class="no" id="masCerrar" style="width:100%;border-radius:14px;padding:13px;font-weight:700;margin-top:10px">Cerrar</button>
+</div></div>
+
+<div class="capa" id="capaRoscoPal"><div class="caja rk-caja">
+  <h2>🔤 Palabras del Rosco</h2>
+  <p class="sub" id="rpResumen" style="margin:4px 0 10px"></p>
+  <div class="rp-lista" id="rpLista"></div>
+  <p class="sub rp-nota">Se guardan en este celular y en tu cuenta (☁️). Vale para el Rosco del celular y el de la tele: no te vuelven a salir hasta que se terminen las de esa letra; ahí esa letra empieza de nuevo.</p>
+  <button class="no" id="rpReiniciar" style="width:100%;border-radius:14px;padding:11px;font-weight:700;margin-top:6px">🔄 Empezar de nuevo (borrar la lista)</button>
+  <button class="no" id="rpCerrar" style="width:100%;border-radius:14px;padding:13px;font-weight:700;margin-top:8px">Cerrar</button>
 </div></div>
 
 <div class="capa" id="capaPruebas"><div class="caja rk-caja">
@@ -4749,6 +4770,22 @@ function recAbrir(){
   $("capaRecords").classList.add("ver");
 }
 $("bRecords").onclick=recAbrir;
+/* Ajustes → 🔤 Palabras del Rosco (31/10/2026, Gonzalo): las que ya le salieron a esta persona, por letra.
+   Es la misma memoria del Rosco del celular y de la tele (gya_vistas_rosco), que va en el respaldo de la cuenta. */
+function rpAbrir(){
+  let vistas=new Set();try{vistas=Vistas.cargar("rosco");}catch(e){}
+  const banco=typeof ROSCO_DATOS!=="undefined"?ROSCO_DATOS:[],L={};
+  banco.forEach(d=>{const x=L[d.letra]||(L[d.letra]={tot:0,vis:[]});x.tot++;if(vistas.has(d.palabra))x.vis.push(d.palabra);});
+  const total=Object.values(L).reduce((a,x)=>a+x.vis.length,0);
+  $("rpResumen").textContent=total?"Ya te salieron "+total+" de "+banco.length+" palabras. Tocá una letra para verlas.":"Todavía no te salió ninguna palabra del Rosco.";
+  $("rpLista").innerHTML=Object.keys(L).sort().map(l=>{const x=L[l],pc=Math.round(100*x.vis.length/x.tot);
+    return'<details class="rp-fila"'+(x.vis.length?"":" data-vacia")+'><summary><b>'+l+'</b><span class="rp-barra"><i style="width:'+pc+'%"></i></span><em>'+x.vis.length+'/'+x.tot+'</em></summary><div class="rp-pal">'+
+      (x.vis.length?x.vis.sort().map(w=>'<span>'+rkEsc(w)+'</span>').join(""):"<small>Ninguna todavía</small>")+'</div></details>';}).join("");
+  $("capaMas").classList.remove("ver");$("capaRoscoPal").classList.add("ver");
+}
+$("bRoscoPalabras").onclick=rpAbrir;
+$("rpCerrar").onclick=()=>$("capaRoscoPal").classList.remove("ver");
+$("rpReiniciar").onclick=()=>{if(!confirm("¿Borrar la lista? Las palabras del Rosco pueden volver a salirte desde el principio."))return;try{Vistas.guardar("rosco",new Set());}catch(e){}rpAbrir();};
 $("recCerrar").onclick=()=>$("capaRecords").classList.remove("ver");
 
 /* ---- Ranking de amigos (Supabase) ---- */
