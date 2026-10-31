@@ -394,6 +394,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 31/10/2026 — Puzzle vuelve a la tele: se arma en el cel y la tele lo copia en vivo
+- Qué: en Sala TV, el del control arma el Puzzle de siempre en su celular (puzzle.html?espejo=1, a pantalla completa) y cada movimiento se ve igual en la tele (puzzle.html?tvpuzzle=1&ver=1, solo mirar). Los demás celulares dicen "mirá la tele". Al terminar, festejo en la tele.
+- Dónde: tele.js (juegoPzEspejo, pintarPzEspejo), tele.css (.tl-pze), puzzle.html (ES_ESPEJO / ES_VER; en espejo se oculta "Armar con un amigo").
+- Ojo: el Puzzle viejo por cursor (juegoPuzzle) queda en el código sin usar.
+
 ```text
 Fecha: 04-05/10/2026 (sesión Claude Code, PRs #825–#843)
 Pedido de Gonzalo: mejorar juegos de previa.
