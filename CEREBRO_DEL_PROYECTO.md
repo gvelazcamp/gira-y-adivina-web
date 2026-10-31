@@ -2254,3 +2254,7 @@ Fecha: 31/10/2026 — Rosco en la tele de a 2, 3 o 4 (mismo mecanismo que de a d
 ```text
 Fecha: 31/10/2026 — ⚙️ Más opciones → "🔤 Palabras del Rosco": muestra las palabras del Rosco que ya le salieron a esta persona (X de 521), por letra con barra y "3/26"; tocando la letra se ven las palabras. Es la misma memoria del Rosco del celular y de la tele (gya_vistas_rosco), que se guarda en el celular y en el respaldo de la cuenta (☁️). Botón "🔄 Empezar de nuevo" (con confirmación) para borrar la lista.
 ```
+
+```text
+Fecha: 31/10/2026 — Rosco, planilla del final: la letra apelada (aceptada) queda en VERDE como un acierto, con el texto "⚖️ apelada · dijo «…»" también en verde (antes amarillo).
+```
