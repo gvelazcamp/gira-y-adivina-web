@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 31/10/2026 — La Ruleta desde Juegos en la tele: sin carteles y se puede jugar de a 1
+- Qué: cuando la Sala TV la abre la tele (index.html?tvhost=1&avisar=…), ya no aparece el cartel de bienvenida ni el anuncio/ruleta de sorteo ni "¡Ya tenemos jugador!". Alcanza con 1 jugador (antes mínimo 2). La tele avisa cuántos jugadores tiene (&jug=N) y la partida arranca sola 2 s después de que llegan todos los celulares (si falta alguno, a los 20 s con los que están). Arranca uno al azar. Con 1 jugador el final dice "X terminó con $… · N rondas ganadas". La Sala TV de siempre (entrando por su botón) sigue igual.
+- Dónde: index.html (TV_DESDE_TELE, TV_ESPERADOS, tvAutoArrancar, tvArrancarYa, renderTVLobby, crearSalaTV, resumen del final), tele.js (manda &jug=).
+
 ### 31/10/2026 — Memoria en Giro (tele): Nivel Experto y cartas que se apagan
 - Qué: 5 niveles. Nuevo nivel 5 "🔥 NIVEL EXPERTO": 17 pares + 2 bombas (6x6), 3 s para memorizar, gira con cada fallo, cartas parecidas, 10 s por turno. "Cartas que se apagan": desde el nivel 3 la 1ª carta que destapás se vuelve a tapar (nivel 3: 2 s, nivel 4: 1,5 s, experto: 1 s) y queda marcada con 💡; la 2ª se elige de memoria. Además, las dos cartas de un fallo se ven cada vez menos (1,5 s → 0,7 s).
 - Dónde: tele.js (juegoMemoria: NIV con ver/ap/experto, apagada/apT; pintarMemoria marca .tl-mgc-sel), tele.css (.tl-mg-sel, .tl-mgc-sel).
