@@ -787,6 +787,10 @@ p.sub{margin:14px 0 24px;color:#C9B8DE}
 /* Celulares angostos (o con "Tamaño de pantalla: grande" en Android): la fila de
    racha/monedas/vidas/🔊/⚙️ se salía y el ⚙️ quedaba cortado. */
 @media(max-width:350px){.setup-stats{gap:4px;flex-wrap:wrap;flex:1 1 auto;justify-content:flex-start}.setup-stats .stat-pill{padding-left:7px;padding-right:7px;font-size:.8rem}}
+/* (31/10/2026) Con el 📺 para todos la fila no entraba y el ⚙️ quedaba afuera: si no entra, baja a otra línea
+   (nunca queda cortada) y en celulares comunes se achican un poco las pastillas. */
+.setup-stats{flex-wrap:wrap;flex:1 1 auto;min-width:0;justify-content:flex-start;row-gap:6px}
+@media(max-width:480px){.setup-stats{gap:5px}.setup-stats .stat-pill{padding-left:8px;padding-right:8px;font-size:.82rem}}
 /* (19/10/2026) Se sacó html,body{overscroll-behavior-y:none} (puesto el 17/10 para que
    deslizar hacia abajo arriba de todo no recargue): desde ahí a Gonzalo el inicio
    le quedaba trabado unos segundos al deslizar. */
