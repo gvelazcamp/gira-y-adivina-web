@@ -1,6 +1,6 @@
 /* Juegos en la tele (tele.js). Tele: todo en grande para ver desde el sillón. */
 @property --a{syntax:"<angle>";inherits:true;initial-value:0deg}
-html.tele-modo body>*:not(#teleTV):not(#teleCel):not(#splash):not(.grp-apertura):not(.grp-overlay):not(.tl-podio){display:none!important}
+html.tele-modo body>*:not(#teleTV):not(#teleCel):not(#splash):not(.grp-apertura):not(.grp-overlay):not(.tl-podio):not(.tl-rd-presenta){display:none!important}
 html.tele-modo body{background:#160B24}
 .tl-tv,.tl-cel{position:fixed;inset:0;z-index:2147482000;color:#F6EFE2;font-family:Outfit,system-ui,sans-serif;background:radial-gradient(ellipse at 50% 0%,#3a1a5c 0%,#160B24 62%)}
 .tl-tv{overflow:hidden;font-size:1.6vw}
@@ -525,3 +525,26 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-rd-cel>div.tl-rd-cel-fin{opacity:.5;filter:grayscale(1)}
 .tl-rd-termine{filter:grayscale(.9)}
 .tl-rd-termine h2{color:#D9D2E3}
+/* Rosco de a 3 y de a 4: colores del 3.º (celeste) y 4.º (naranja) y la presentación de todos */
+.tl-rd-j2{--rd:#3DA5FF}.tl-rd-j3{--rd:#FF8A3D}
+:is(.tl-rd-j2,.tl-rd-j3) .tl-medio{border:.9vh solid var(--rd);box-shadow:0 0 5vh var(--rd)}
+:is(.tl-rd-j2,.tl-rd-j3) .tl-rl.tl-actual{outline-color:var(--rd);box-shadow:0 0 3vh var(--rd)}
+.tl-rd-j2 .tl-rl:not(.tl-ok):not(.tl-mal):not(.tl-actual){background:#1E7FE0;color:#fff;box-shadow:0 0 0 .4vh #9DD0FF,0 .3vh 0 #0005}
+.tl-rd-j3 .tl-rl:not(.tl-ok):not(.tl-mal):not(.tl-actual){background:#F07A22;color:#fff;box-shadow:0 0 0 .4vh #FFC79A,0 .3vh 0 #0005}
+.tl-rd-fila.tl-rd-c2{--fc:#3DA5FF}.tl-rd-fila.tl-rd-c3{--fc:#FF8A3D}
+.tl-rd-fila.tl-rd-c2,.tl-rd-fila.tl-rd-c3{border-left:.7vw solid var(--fc)}
+.tl-rd-fila.tl-rd-activo:is(.tl-rd-c2,.tl-rd-c3){border-color:var(--fc);background:color-mix(in srgb,var(--fc) 14%,transparent);box-shadow:0 0 1.6vw var(--fc)}
+.tl-rd-fila.tl-rd-activo:is(.tl-rd-c2,.tl-rd-c3) b{color:var(--fc)}
+.tl-rd-tab.tl-rd-t2 b{color:#7CC2FF}.tl-rd-tab.tl-rd-t3 b{color:#FFB077}
+.tl-rd-tab.tl-rd-t2.tl-rd-tab-on{border-color:#3DA5FF;box-shadow:0 0 2vh #3DA5FF66}.tl-rd-tab.tl-rd-t3.tl-rd-tab-on{border-color:#FF8A3D;box-shadow:0 0 2vh #FF8A3D66}
+.tl-rd-presenta{position:fixed;inset:0;z-index:2147482998;background:#000;display:grid;place-items:center;color:#fff;overflow:hidden}
+.tl-rd-pres-caja{position:relative;text-align:center;background:#0C0616E6;border:.5vh solid #F5B301;border-radius:3vh;padding:4vh 4vw;box-shadow:0 0 8vh #F5B30155;animation:tlPodioCaja .6s cubic-bezier(.2,1.5,.4,1) both}
+.tl-rd-pres-caja small{font:900 2vh 'Archivo Black',sans-serif;letter-spacing:.4vh;color:#37D6C0}
+.tl-rd-pres-caja h1{margin:1vh 0 3vh;font:900 7vh 'Archivo Black',sans-serif;color:#F5B301}
+.tl-rd-pres-caja p{margin:3vh 0 0;font:800 2.8vh Outfit,system-ui}
+.tl-rd-pres-lista{display:flex;gap:2.5vw;justify-content:center}
+.tl-rd-pres-j{--pc:#F5B301;display:flex;flex-direction:column;align-items:center;gap:1vh;min-width:16vw;padding:2.5vh 1.5vw;border-radius:2.4vh;background:#ffffff0F;border:.5vh solid var(--pc);box-shadow:0 0 3vh color-mix(in srgb,var(--pc) 45%,transparent)}
+.tl-rd-pres-j img{width:16vh;height:16vh;border-radius:50%;object-fit:cover;border:.6vh solid var(--pc);background:#2A1A3C}
+.tl-rd-pres-j b{font:900 3.6vh 'Archivo Black',sans-serif;color:var(--pc)}
+.tl-rd-pres-j span{font:700 2vh Outfit,system-ui;opacity:.8}
+.tl-rd-pc1{--pc:#9B6BFF}.tl-rd-pc2{--pc:#3DA5FF}.tl-rd-pc3{--pc:#FF8A3D}
