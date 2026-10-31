@@ -1017,7 +1017,9 @@
       }
     }
     /* Si nadie toca "Siguiente" en el celular, el show avanza solo. */
-    const ESPERA={giro:14000,participantes:12000,cierre:11000};
+    /* Auditoría 31/10/2026: Giro termina de hablar ~9,5 s después de empezar y el duelo ~8,5 s; antes quedaban 4 s
+       muertos. Ahora pasa solo apenas termina la voz. */
+    const ESPERA={giro:11000,participantes:10000,cierre:11000};
     function tic(dt){
       if(fase==="show"||fase==="cierre"){const e=G()&&G().etapa?G().etapa():"";if(e!==etapaPrev){etapaPrev=e;etapaT=0;}else etapaT+=dt;
         if(ESPERA[e]&&etapaT>ESPERA[e]){etapaT=-1e9;G().avanzar();}return;}
