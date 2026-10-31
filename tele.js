@@ -98,6 +98,8 @@
   }
   /* En la tele y en el celular de la tele no salen los carteles del juego normal. */
   function silenciarApp(){
+    try{if(typeof detenerMusica==="function")detenerMusica();}catch(e){}
+    try{if(typeof cortarSFX==="function")cortarSFX();}catch(e){}
     ["tutChequearBienvenida","ptChequearAutoPopup","mostrarPromptIOS","pdChequearAutoPopup"].forEach(f=>{try{if(typeof window[f]==="function")window[f]=()=>{};}catch(e){}});
   }
   function despierta(){try{if(navigator.wakeLock)navigator.wakeLock.request("screen").catch(()=>{});}catch(e){}}

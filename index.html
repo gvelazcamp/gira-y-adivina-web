@@ -2640,6 +2640,9 @@ function cortarSFX(){
   try{Object.values(audioSFX).forEach(a=>{if(!a.paused){a.pause();a.currentTime=0;}});}catch(e){}
 }
 function contextoMusicaActual(){
+  /* La sala de la tele ocupa otra pantalla: el menú que quedó detrás
+     no puede volver a encender su música al tocar la tele. */
+  if(document.documentElement.classList.contains("tele-modo"))return null;
   /* Las extensiones son independientes de la rueda principal (ver
      extensiones.js): si están abiertas, no tiene que sonar la música del
      menú/partida de atrás — cada extensión maneja su propio sonido. */
@@ -12027,7 +12030,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="frases-en-giro.js?v=11"></script>
 <script src="memoria-en-giro.js?v=9"></script>
 <script src="rosco-rioplatense-datos.js?v=7"></script>
-<script src="rosco-rioplatense.js?v=81"></script>
+<script src="rosco-rioplatense.js?v=82"></script>
 <script src="silabario-rioplatense-datos.js?v=4"></script>
 <script src="silabario-rioplatense.js?v=17"></script>
 <script src="cien-rioplatenses-datos.js?v=2"></script>
@@ -12055,10 +12058,10 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="canta-la-cancion.js?v=13"></script>
 <script src="tutti-frutti-datos.js?v=35"></script>
 <script src="tutti-frutti.js?v=97"></script>
-<script src="extensiones.js?v=117"></script>
+<script src="extensiones.js?v=118"></script>
 <script src="sala-tv.js?v=1"></script>
 <link rel="stylesheet" href="tele.css?v=22">
-<script src="tele.js?v=38"></script>
+<script src="tele.js?v=39"></script>
 </body>
 </html>
 

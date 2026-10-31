@@ -226,6 +226,11 @@
     Object.values(REACCIONES).forEach(r=>r.poses.forEach(p=>cargarImagenReaccion(BASE+p)));
   }
   const ultimaFrase={};let reacAudio=null,reacTimer=null,reacSolicitud=0;
+  function detenerReaccion(){
+    ++reacSolicitud;clearTimeout(reacTimer);reacTimer=null;
+    if(reacAudio){try{reacAudio.pause();reacAudio.currentTime=0;}catch(e){}reacAudio=null;}
+    document.querySelector(".rr-game.rr-estudio .grp-reac,#teleTV .grp-reac")?.remove();
+  }
   function reaccion(tipo,contenedor){
     const r=REACCIONES[tipo];if(!r||!habilitado())return;
     const rueda=contenedor||document.querySelector(".rr-game.rr-estudio .rr-rueda");if(!rueda)return;
@@ -255,6 +260,7 @@
   }
   function presentarDuelo(rival,siguiente){if(!habilitado())return false;precargarReacciones();return mostrarParticipantes("duelo",rival,siguiente);}
   function limpiar(){
+    detenerReaccion();
     cortarApertura();cortarCierre();cortarEleccion();
     cortarParticipantes();
     clearInterval(intervalo);intervalo=null;
@@ -471,5 +477,5 @@
     mostrarApertura(p);return true;
   }
   function etapa(){return apertura?"apertura":capa?"giro":participantes?"participantes":cierre?"cierre":eleccion?"eleccion":"";}
-  window.GiroRoscoPiloto={mostrarInicio,mostrarFinal,presentarSolo,presentarDuelo,posLetra,reaccion,cerrar,habilitado,avanzar,etapa,presentarJuego};
+  window.GiroRoscoPiloto={mostrarInicio,mostrarFinal,presentarSolo,presentarDuelo,posLetra,reaccion,detenerReaccion,cerrar,habilitado,avanzar,etapa,presentarJuego};
 })();

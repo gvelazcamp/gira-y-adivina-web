@@ -416,6 +416,8 @@ const Extensiones=(()=>{
   function abrirJuego(id){
     if(!EXTENSIONES_HABILITADAS)return;
     const ext=EXTENSIONES.find(x=>x.id===id&&x.estado==="disponible"&&extensionVisible(x));if(!ext)return;
+    /* «Probá otro» abre un juego sin pasar por el lobby: detener el anterior. */
+    if(vista&&vista!=="lobby")salirJuego();
     mostrar();vista=id;contenido.replaceChildren();Fichas.enJuego(id);pintarTV();
     /* Pedir orientación horizontal solo al entrar al juego y solo cuando
        el usuario eligió TV, nunca al seleccionar el modo en el menú. */
