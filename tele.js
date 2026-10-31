@@ -978,7 +978,10 @@
     function trampas(it){
       if(!SIL)return (it.trampas||[]).slice(0,2);
       const todas=[...new Set(base().flatMap(x=>x.piezas))].filter(x=>!it.piezas.includes(x));
-      return mezclar(todas).slice(0,it.piezas.length>=4?2:3);
+      /* En la tele el tablero es compartido: sumamos opciones cada dos rondas.
+         Las pistas también pasan de nivel 1 a 3 durante la partida. */
+      const extras=(it.piezas.length>=4?2:3)+Math.floor((ronda-1)/2);
+      return mezclar(todas).slice(0,extras);
     }
     function nueva(){
       ronda++;item=items[ronda-1];if(!item){terminar();return;}

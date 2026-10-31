@@ -63,5 +63,5 @@ const index=fs.readFileSync(path.join(__dirname,"..","index.html"),"utf8");
 const sw=fs.readFileSync(path.join(__dirname,"..","sw.js"),"utf8");
 assert(index.includes("rosco-rioplatense.js?v=83"));
 assert(index.includes("rosco-rioplatense-datos.js?v=7"));
-assert(sw.includes("rosco-rioplatense.js?v=83")&&sw.includes("rosco-rioplatense-datos.js?v=7")&&sw.includes("gya-cache-v625"));
+assert(sw.includes("rosco-rioplatense.js?v=83")&&sw.includes("rosco-rioplatense-datos.js?v=7")&&sw.includes("gya-cache-v626"));
 console.log("PASS: voz y Pasapalabra, con y sin pantalla compartida, respuestas parciales, retorno y caché");

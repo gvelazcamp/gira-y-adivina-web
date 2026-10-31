@@ -97,6 +97,18 @@ const SilabarioRioplatense=(()=>{
     }
     return mezclar(todas);
   }
+  /* Cada acierto libera su lugar para sílabas nuevas. Así el tablero no se
+     vacía a medida que avanzás y cada palabra conserva opciones para elegir. */
+  function reponerUsadas(){
+    const usadas=fichas.filter(f=>f.reponer);if(!usadas.length)return;
+    const presentes=new Set(fichas.map(f=>f.texto));
+    const nuevas=mezclar([...new Set(SILABARIO_DATOS.flatMap(d=>d.silabas))]).filter(t=>!presentes.has(t));
+    for(const f of usadas){
+      const texto=nuevas.pop();if(!texto)break;
+      f.texto=texto;f.palabraIdx=-1;f.reponer=false;
+      f.el.textContent=texto;f.el.classList.remove("usada");f.el.disabled=false;
+    }
+  }
   function pendientes(){return estados.map((s,i)=>s==="pendiente"?i:-1).filter(i=>i>=0);}
   function conteo(s){return estados.filter(x=>x===s).length;}
   function hud(){
@@ -154,7 +166,7 @@ const SilabarioRioplatense=(()=>{
     const item=items[actual],texto=elegidas.map(f=>f.texto).join(""),ok=texto===item.respuesta;
     estados[actual]=ok?"acierto":"error";
     elegidas.forEach(f=>f.el.classList.remove("elegida"));
-    fichas.filter(f=>f.palabraIdx===actual).forEach(f=>{f.el.disabled=true;f.el.classList.add("usada");});
+    fichas.filter(f=>f.palabraIdx===actual).forEach(f=>{f.el.disabled=true;f.el.classList.add("usada");if(ok)f.reponer=true;});
     elegidas.forEach(f=>{if(f.palabraIdx!==actual)f.el.disabled=false;});
     elegidas=[];
     fase="respuesta";espera=SILABARIO_CONFIG.pausaMs;
@@ -173,6 +185,7 @@ const SilabarioRioplatense=(()=>{
   }
   function siguiente(){
     const p=pendientes();if(!p.length){terminar();return;}
+    reponerUsadas();
     const opciones=p.length>1?p.filter(i=>i!==actual):p;
     actual=opciones[Math.floor(Math.random()*opciones.length)];
     elegidas.forEach(f=>{f.el.disabled=false;f.el.classList.remove("elegida");});
@@ -253,7 +266,7 @@ const SilabarioRioplatense=(()=>{
     document.addEventListener("visibilitychange",visibilidad);ultimo=performance.now();intervalo=setInterval(tic,SILABARIO_CONFIG.ticMs);iniciarMusicaJuego();
     const acciones=[["Jugar nivel "+nivel,iniciar]];if(nivel>1)acciones.push(["Practicar desde el nivel 1",()=>{nivel=1;iniciar();}]);
     acciones.push(["Jugar con un amigo 👥",iniciarDuelo]);
-    panel("Silabario Rioplatense","Un tablero de "+config.columnas+"×"+config.columnas+" con todas las sílabas de las respuestas de este nivel. Tocá en orden las sílabas que arman cada respuesta, estén donde estén — las que ya usaste quedan marcadas. El tablero se reordena entre pregunta y pregunta, y también si te quedás trabado mucho rato. Si no sabés, tocá Pasar. Respondé bien la mayoría para avanzar de nivel. Jugás gratis, sin gastar vidas ni monedas. Mejor: "+datos.mejor+" puntos.",acciones,"personaje");
+    panel("Silabario Rioplatense","Un tablero de "+config.columnas+"×"+config.columnas+" con todas las sílabas de las respuestas de este nivel. Tocá en orden las sílabas que arman cada respuesta. Tras cada acierto aparecen sílabas nuevas y aumentan las distractoras. El tablero se reordena entre preguntas y si te quedás trabado. Si no sabés, tocá Pasar. Respondé bien la mayoría para avanzar de nivel. Jugás gratis, sin gastar vidas ni monedas. Mejor: "+datos.mejor+" puntos.",acciones,"personaje");
   }
   function salir(){
     clearInterval(intervalo);intervalo=null;document.removeEventListener("visibilitychange",visibilidad);
