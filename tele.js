@@ -886,7 +886,8 @@
         SND.turno();aviso={txt:"🔁 Fue ruido: otra vez la "+j.items[a.i].letra+" para "+nombrePid(j.pid),t:Date.now()};}
       else if(si&&j.est[a.i]==="mal"){j.est[a.i]="ok";apeladas.add(a.k+"-"+a.i);SND.ok();
         if(a.durante&&DOS&&a.k!==turno&&!j.fin&&j.tiempo>0){guardarJ();turno=a.k;cargarJ();}
-        aviso={txt:"✅ Apelación aceptada"+(a.durante&&DOS?" · sigue "+nombrePid(J().pid):""),t:Date.now()};if(fase==="fin")verFin=a.k;}
+        aviso={txt:"✅ Apelación aceptada"+(a.durante&&DOS?" · sigue "+nombrePid(J().pid):""),t:Date.now()};
+        if(fase==="fin"){verFin=a.k;if(DOS){const antes=resDos.ultimo,ahora=resDos()[0].n+"|"+empDos(resDos());resDos.ultimo=ahora;podioDos("⚖️ Apelación aceptada: "+nombrePid(j.pid)+" suma la "+j.items[a.i].letra+(antes&&antes!==ahora?" · ¡cambió el ganador!":""));}}}
       else{SND.mal();aviso={txt:a.tipo==="ruido"?"❌ No fue ruido · era "+j.items[a.i].palabra:"❌ Apelación rechazada",t:Date.now()};}
       if(a.durante&&fase==="jugando"){vozRonda++;const id=++vozBloqueoId;vozReanudar=setTimeout(()=>reanudarVoz(id),1500);}
       actualizar();
@@ -949,11 +950,12 @@
     const resDos=()=>P.map((j,k)=>({k,n:nombrePid(j.pid),av:avDe(T,j.pid),ok:j.est.filter(s=>s==="ok").length,mal:j.est.filter(s=>s==="mal").length,t:j.tiempo}))
       .sort((a,b)=>b.ok-a.ok||a.mal-b.mal||b.t-a.t);
     const empDos=r=>r.length>1&&r[0].ok===r[1].ok&&r[0].mal===r[1].mal&&r[0].t===r[1].t;
+    /* Podio de a dos. Se vuelve a mostrar si una apelación del final cambia los puntos (como el Tutti Frutti). */
+    function podioDos(sub){const res=resDos(),emp=empDos(res);
+      podioTele({juego:"EL ROSCO DE A DOS",titulo:emp?"¡EMPATE!":"¡GANÓ "+String(res[0].n).toUpperCase()+"!",sub:sub||"Más aciertos (y si empatan, menos errores)",
+        filas:res.map(x=>({n:x.n,av:x.av,pts:x.ok+" ✓ · "+x.mal+" ✘"}))});}
     function terminar(){if(fase==="fin"||fase==="cierre")return;guardarJ();
-      if(DOS){fase="fin";const res=resDos(),emp=empDos(res);
-        podioTele({juego:"EL ROSCO DE A DOS",titulo:emp?"¡EMPATE!":"¡GANÓ "+String(res[0].n).toUpperCase()+"!",sub:"Más aciertos (y si empatan, menos errores)",
-          filas:res.map(x=>({n:x.n,av:x.av,pts:x.ok+" ✓ · "+x.mal+" ✘"}))});
-        actualizar();return;}
+      if(DOS){fase="fin";resDos.ultimo=resDos()[0].n+"|"+empDos(resDos());podioDos();actualizar();return;}
       const ok=est.filter(s=>s==="ok").length,mal=est.filter(s=>s==="mal").length;
       try{const r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");if(ok>(r.rosco||0)){r.rosco=ok;localStorage.setItem("gya_tele_records",JSON.stringify(r));}}catch(e){}
       sfx(ok>=items.length/2?"aplausos":"abucheo");
@@ -1049,8 +1051,8 @@
         raiz.innerHTML=`<div class="tl-centro tl-rosco tl-estudio"><img class="tl-logo" src="assets/logo.webp" alt=""><h1>Preparando el estudio…</h1></div>`;return;}
       if(DOS&&fase==="fin"){const r=resDos(),emp=empDos(r),j=P[verFin];
         raiz.innerHTML=`<div class="tl-centro tl-fin tl-rd-final"><h1>${emp?"¡Empate!":"🏆 Ganó "+esc(r[0].n)}</h1>
-          <div class="tl-rd-tabs"><span class="tl-rd-flecha">◀</span>${P.map((x,k)=>{const o=x.est.filter(s=>s==="ok").length,m=x.est.filter(s=>s==="mal").length;
-            return`<span class="tl-rd-tab tl-rd-t${k}${k===verFin?" tl-rd-tab-on":""}"><b>${esc(nombrePid(x.pid))}</b> ✓ ${o} · ✘ ${m} · ⏱ ${reloj(SEGUNDOS*1000-x.tiempo)}</span>`;}).join("")}<span class="tl-rd-flecha">▶</span></div>
+          <div class="tl-rd-tabs"><span class="tl-rd-flecha">◀</span>${P.map((x,k)=>{const o=x.est.filter(s=>s==="ok").length,m=x.est.filter(s=>s==="mal").length,pos=r.findIndex(y=>y.k===k);
+            return`<span class="tl-rd-tab tl-rd-t${k}${k===verFin?" tl-rd-tab-on":""}">${emp?"🤝":pos===0?"🥇":"🥈"} <b>${esc(nombrePid(x.pid))}</b> ✓ ${o} · ✘ ${m} · ⏱ ${reloj(SEGUNDOS*1000-x.tiempo)}</span>`;}).join("")}<span class="tl-rd-flecha">▶</span></div>
           ${planilla(j,verFin)}
           <p class="tl-ayuda">📱 En el celular: ◀ ▶ para ver las palabras de cada uno · «Apelar» si el micrófono entendió mal</p></div>`;return;}
       if(fase==="fin"||fase==="cierre"){
