@@ -2206,3 +2206,7 @@ Fecha: 31/10/2026 — Rosco de a dos en la tele: el padre de Gonzalo creyó que 
 ```text
 Fecha: 31/10/2026 — Rosco de a dos en la tele: las letras del rosco van enteras del color de cada jugador (1.º dorado, 2.º violeta); acertadas verde, erradas rojo y la actual fucsia como siempre.
 ```
+
+```text
+Fecha: 31/10/2026 — Rosco por voz (celular y tele): Gonzalo dijo "lluvia" y el reconocimiento escribió "chubia" (sheísmo). Ahora al comparar cómo suena, LL, Y, SH y CH cuentan como el mismo sonido (lluvia = chubia = shuvia). Solo para voz; escribiendo sigue exacto.
+```
