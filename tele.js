@@ -28,7 +28,12 @@
     tic(){sonar(520,.06,"sine",.04);},
     arranca(){sonar(880,.18,"triangle",.07);},
     tiempo(){sonar(330,.18,"square",.05);setTimeout(()=>sonar(220,.5,"square",.05),190);},
-    turno(){sonar(660,.1,"sine",.05);setTimeout(()=>sonar(880,.16,"triangle",.06),100);}
+    turno(){sonar(660,.1,"sine",.05);setTimeout(()=>sonar(880,.16,"triangle",.06),100);},
+    /* Explosión (carta bomba de Memoria): ruido que se apaga + golpe grave. */
+    boom(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const ac=SND._ac||(SND._ac=new C());if(ac.state==="suspended")ac.resume();
+      const n=ac.sampleRate*1.2,buf=ac.createBuffer(1,n,ac.sampleRate),d=buf.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.5);
+      const src=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();src.buffer=buf;f.type="lowpass";f.frequency.value=900;g.gain.value=.5;src.connect(f);f.connect(g);g.connect(ac.destination);src.start();
+      const o=ac.createOscillator(),og=ac.createGain();o.frequency.setValueAtTime(110,ac.currentTime);o.frequency.exponentialRampToValueAtTime(35,ac.currentTime+.6);og.gain.setValueAtTime(.45,ac.currentTime);og.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.7);o.connect(og);og.connect(ac.destination);o.start();o.stop(ac.currentTime+.75);}catch(e){}}
   };
   /* Últimos 5 segundos del reloj: un tic por segundo. */
   const ticFinal=(antes,ahora)=>{const a=Math.ceil(antes/1000),b=Math.ceil(ahora/1000);if(b!==a&&b>0&&b<=5)SND.tic();};
@@ -1386,16 +1391,19 @@
   function juegoMemoria(T,actualizar){
     const SIM=typeof MEMORIA_GIRO_SIMBOLOS!=="undefined"?MEMORIA_GIRO_SIMBOLOS:["🌟","🦋","🍓","🐚","🌈","🎈","🍋","🐝","🌻","🐬"];
     const PAREC=["❤️","💛","💚","💙","💜","🍎","🍏","🍅","🐶","🐺","🦊","🐱","🐯","🦁","🌕","🌝","⭐","🌟","🐸","🐢"];
-    const NIV=[{n:8,c:4,v:5000,g:3},{n:10,c:5,v:4500,g:3},{n:12,c:6,v:4000,g:2,parec:true},{n:15,c:6,v:3500,g:2,parec:true,t:12000}];
+    const NIV=[{n:8,c:4,v:5000,g:3},{n:9,c:5,v:4500,g:3,b:2},{n:11,c:6,v:4000,g:2,parec:true,b:2},{n:14,c:6,v:3500,g:2,parec:true,t:12000,b:2}];
     const orden=T.jug.map(j=>j.pid);
     const COL=["#F5B301","#9B6BFF","#3DA5FF","#FF8A3D","#2ED18A","#E5197C","#37D6C0","#FFFFFF"],color={};orden.forEach((p,i)=>color[p]=COL[i%COL.length]);
     const pares={};orden.forEach(p=>pares[p]=0);
     let nivel=0,L=NIV[0],N=8,COLS=4,GIRO_CADA=3,cartas=[];
-    let fase="vista",turno=0,abiertas=[],fallos=0,timer=null,muerto=false,giro=0,aviso=null,limite=0,ultSeg=0;
+    let fase="vista",turno=0,abiertas=[],fallos=0,timer=null,muerto=false,giro=0,aviso=null,limite=0,ultSeg=0,boom=0;
     function armarNivel(){L=NIV[nivel];N=L.n;COLS=L.c;GIRO_CADA=L.g;fallos=0;abiertas=[];
       let pool;if(L.parec){const p=mezclar(PAREC.slice()),otros=mezclar(SIM.filter(x=>!PAREC.includes(x)));pool=p.slice(0,Math.min(N,p.length)).concat(otros).slice(0,N);}
       else pool=mezclar(SIM.slice()).slice(0,N);
-      cartas=mezclar(pool.flatMap((s,i)=>[{s,par:i,de:null},{s,par:i,de:null}]));}
+      /* Carta bomba (31/10/2026): desde el nivel 2 hay bombas sueltas; el que da vuelta una pierde un par
+         (vuelve tapado al tablero) y pasa el turno. */
+      const bombas=Array.from({length:L.b||0},()=>({s:"💣",par:-1,de:null,bomba:true}));
+      cartas=mezclar(pool.flatMap((s,i)=>[{s,par:i,de:null},{s,par:i,de:null}]).concat(bombas));}
     function reloj(){limite=L.t&&fase==="juego"?Date.now()+L.t:0;ultSeg=0;}
     function arrancarVista(ms){fase="vista";limite=0;clearTimeout(timer);actualizar();timer=setTimeout(()=>{if(muerto)return;fase="juego";reloj();SND.turno();actualizar();},ms);}
     function pasarNivel(){nivel++;if(nivel>=NIV.length){terminar();return;}
@@ -1403,17 +1411,22 @@
       timer=setTimeout(()=>{if(!muerto)arrancarVista(L.v);},3800);}
     function siguiente(){turno=(turno+1)%orden.length;aviso={txt:"🔄 Le toca a "+nombreDe(T,orden[turno]),t:Date.now()};}
     function girar(){fase="giro";limite=0;giro++;aviso={txt:"🌀 ¡EL TABLERO GIRA!",t:Date.now()};SND.turno();actualizar();clearTimeout(timer);
-      timer=setTimeout(()=>{if(muerto)return;const pend=cartas.map((c,i)=>c.de?null:i).filter(i=>i!=null),mez=mezclar(pend.map(i=>cartas[i]));pend.forEach((i,k)=>cartas[i]=mez[k]);
+      timer=setTimeout(()=>{if(muerto)return;const pend=cartas.map((c,i)=>c.de||c.exp?null:i).filter(i=>i!=null),mez=mezclar(pend.map(i=>cartas[i]));pend.forEach((i,k)=>cartas[i]=mez[k]);
         fase="juego";reloj();actualizar();},2400);}
     function fallar(){abiertas=[];fallos++;siguiente();
-      if(fallos%GIRO_CADA===0&&cartas.filter(c=>!c.de).length>=4){girar();return;}fase="juego";reloj();actualizar();}
+      if(fallos%GIRO_CADA===0&&cartas.filter(c=>!c.de&&!c.exp).length>=4){girar();return;}fase="juego";reloj();actualizar();}
+    function explotar(i){const pid=orden[turno];cartas[i].exp=true;limite=0;fase="bomba";boom=Date.now();SND.boom();
+      const mios=[...new Set(cartas.filter(c=>c.de===pid).map(c=>c.par))];let txt="💣 ¡BOMBA! "+nombreDe(T,pid)+" no tenía pares para perder";
+      if(mios.length){const par=mios[Math.floor(Math.random()*mios.length)];cartas.forEach(c=>{if(c.par===par)c.de=null;});pares[pid]=Math.max(0,pares[pid]-1);txt="💣 ¡BOMBA! "+nombreDe(T,pid)+" pierde un par";}
+      aviso={txt,t:Date.now()+1600};actualizar();clearTimeout(timer);timer=setTimeout(()=>{if(!muerto)fallar();},2600);}
     function elegirCarta(m){
       if(fase!=="juego"||m.pid!==orden[turno])return;const i=Number(m.i);if(!(i>=0&&i<cartas.length)||cartas[i].de||abiertas.includes(i)||abiertas.length>=2)return;
       abiertas.push(i);SND.tic();
+      if(cartas[i].bomba){explotar(i);return;}
       if(abiertas.length<2){actualizar();return;}
       const[a,b]=abiertas;
       if(cartas[a].par===cartas[b].par){cartas[a].de=cartas[b].de=orden[turno];pares[orden[turno]]++;abiertas=[];SND.ok();aviso={txt:"✨ ¡Par para "+nombreDe(T,orden[turno])+"! Sigue jugando",t:Date.now()};
-        if(cartas.every(c=>c.de)){limite=0;actualizar();clearTimeout(timer);timer=setTimeout(()=>{if(!muerto)pasarNivel();},1400);return;}reloj();actualizar();return;}
+        if(cartas.every(c=>c.de||c.bomba)){limite=0;actualizar();clearTimeout(timer);timer=setTimeout(()=>{if(!muerto)pasarNivel();},1400);return;}reloj();actualizar();return;}
       fase="fallo";limite=0;SND.mal();actualizar();clearTimeout(timer);
       timer=setTimeout(()=>{if(!muerto)fallar();},1400);
     }
@@ -1427,22 +1440,22 @@
       if(m.a==="otra"&&fase==="fin"&&m.pid===T.mando){T.otra();return;}
       if(m.a==="mg_carta"){elegirCarta(m);return;}
     }
-    const visible=(c,i)=>fase==="vista"||fase==="giro"||!!c.de||abiertas.includes(i);
-    const extras=()=>[L.parec?"👀 cartas parecidas":"",L.t?"⏱ "+L.t/1000+" s por turno":""].filter(Boolean);
+    const visible=(c,i)=>fase==="vista"||fase==="giro"||!!c.de||!!c.exp||abiertas.includes(i);
+    const extras=()=>[L.b?"💣 "+L.b+" bombas: si das vuelta una, perdés un par":"",L.parec?"👀 cartas parecidas":"",L.t?"⏱ "+L.t/1000+" s por turno":""].filter(Boolean);
     function pintar(raiz){
       const ranking=orden.map((p,k)=>`<span class="${k===turno&&fase!=="fin"?"tl-mg-ahora":""}" style="--c:${color[p]}"><i></i>${k===turno&&fase!=="fin"?"🎮 ":""}${esc(nombreDe(T,p))} <b>${pares[p]}</b></span>`).join("");
-      const msg=fase==="vista"?"👀 ¡Memorizá dónde está cada una!":fase==="giro"?"🌀 ¡El tablero gira! Mirá bien…":aviso&&Date.now()-aviso.t<2600?aviso.txt:"🎮 Juega "+nombreDe(T,orden[turno]);
+      const msg=fase==="bomba"&&aviso?aviso.txt:fase==="vista"?"👀 ¡Memorizá dónde está cada una!":fase==="giro"?"🌀 ¡El tablero gira! Mirá bien…":aviso&&Date.now()-aviso.t<2600?aviso.txt:"🎮 Juega "+nombreDe(T,orden[turno]);
       const filas=Math.ceil(cartas.length/COLS),tam=Math.min(15,(70-(filas-1)*1.4)/filas,(58-(COLS-1)*1.4)/COLS*1.778);
       const cartel=fase==="nivel"?`<div class="tl-mg-nivel"><b>🔼 NIVEL ${nivel+1} de ${NIV.length}</b><span>${N} pares · ${L.v/1000} s para memorizar · gira cada ${GIRO_CADA} fallos</span>${extras().map(x=>`<em>${x}</em>`).join("")}</div>`:"";
       raiz.innerHTML=`<div class="tl-mg"><img class="tl-or-fondo" src="presentacion-y-locucion-extensiones/Giro/estudios/Giro_estudio_principal_16x9.webp" alt="">
-        <div class="tl-or-top"><span>🃏 MEMORIA EN GIRO</span><span>🔼 Nivel ${nivel+1}/${NIV.length} · ${cartas.filter(c=>c.de).length/2}/${N} pares</span><span>🌀 gira cada ${GIRO_CADA} fallos</span></div>
-        <div class="tl-mg-cuerpo"><div class="tl-mg-tablero${fase==="giro"?" tl-mg-girando":""}" style="--cols:${COLS};--tam:${tam.toFixed(2)}vh">${cartas.map((c,i)=>`<div class="tl-mg-carta${visible(c,i)?" tl-mg-abierta":""}${c.de?" tl-mg-par":""}${fase==="fallo"&&abiertas.includes(i)?" tl-mg-mal":""}" style="${c.de?"--c:"+color[c.de]:""}"><span class="tl-mg-dorso">?</span><span class="tl-mg-cara">${c.s}</span></div>`).join("")}</div>
+        <div class="tl-or-top"><span>🃏 MEMORIA EN GIRO</span><span>🔼 Nivel ${nivel+1}/${NIV.length} · ${cartas.filter(c=>c.de).length/2}/${N} pares</span><span>🌀 gira cada ${GIRO_CADA} fallos${L.b?" · 💣 "+L.b:""}</span></div>
+        <div class="tl-mg-cuerpo"><div class="tl-mg-tablero${fase==="giro"?" tl-mg-girando":""}${fase==="bomba"?" tl-mg-temblor":""}" style="--cols:${COLS};--tam:${tam.toFixed(2)}vh">${cartas.map((c,i)=>`<div class="tl-mg-carta${visible(c,i)?" tl-mg-abierta":""}${c.de?" tl-mg-par":""}${fase==="fallo"&&abiertas.includes(i)?" tl-mg-mal":""}${c.exp?" tl-mg-boom":""}${c.exp&&fase==="bomba"&&abiertas.includes(i)?" tl-mg-boom-ya":""}" style="${c.de?"--c:"+color[c.de]:""}"><span class="tl-mg-dorso">?</span><span class="tl-mg-cara">${c.s}</span></div>`).join("")}</div>
           <aside class="tl-mg-panel"><div class="tl-mg-msg">${esc(msg)}</div>${limite?`<div class="tl-mg-reloj" id="tlMgReloj">⏱ ${Math.max(0,Math.ceil((limite-Date.now())/1000))} s</div>`:""}<div class="tl-sp-rank tl-mg-rank">${ranking}</div></aside></div>
-        <p class="tl-or-ayuda">📱 El que juega toca dos cartas en su celular · par = sigue jugando</p>${cartel}</div>`;
+        <p class="tl-or-ayuda">📱 El que juega toca dos cartas en su celular · par = sigue jugando${L.b?" · 💣 bomba = perdés un par":""}</p>${cartel}${fase==="bomba"?`<div class="tl-mg-explota"><b>💥</b><span>¡BOMBA!</span></div>`:""}</div>`;
     }
     function cel(){
       if(fase==="fin")return{pantalla:"fin",juego:"memoria",resumen:"Mirá el podio en la tele 🏆"};
-      return{pantalla:"memoria",fase,nivel:nivel+1,niveles:NIV.length,cols:COLS,turno:orden[turno],nombreTurno:nombreDe(T,orden[turno]),seg:L.t?L.t/1000:0,cartas:cartas.map((c,i)=>visible(c,i)?{s:c.s,de:c.de?color[c.de]:"",ab:abiertas.includes(i)}:null),pares,giro};
+      return{pantalla:"memoria",fase,nivel:nivel+1,niveles:NIV.length,cols:COLS,turno:orden[turno],nombreTurno:nombreDe(T,orden[turno]),seg:L.t?L.t/1000:0,cartas:cartas.map((c,i)=>visible(c,i)?{s:c.s,de:c.de?color[c.de]:c.exp?"#FF4D6D":"",ab:abiertas.includes(i)}:null),pares,giro,bombas:L.b||0,aviso:fase==="bomba"&&aviso?aviso.txt:""};
     }
     armarNivel();arrancarVista(L.v);
     return{accion,tic,pintar,cel,fin(){muerto=true;clearTimeout(timer);}};
@@ -1997,10 +2010,10 @@
     }
     function pintarMemoria(c,cab,soyMando){
       const mio=c.turno===yo,puedo=mio&&c.fase==="juego";
-      const tit=c.fase==="nivel"?"🔼 ¡Nivel "+c.nivel+"! Mirá la tele":c.fase==="vista"?"👀 ¡Memorizá!":c.fase==="giro"?"🌀 ¡El tablero gira!":mio?"🎮 ¡Te toca! Tocá dos cartas"+(c.seg?" ("+c.seg+" s)":""):"⏳ Le toca a "+esc(c.nombreTurno||"");
+      const tit=c.fase==="bomba"?esc(c.aviso||"💣 ¡BOMBA!"):c.fase==="nivel"?"🔼 ¡Nivel "+c.nivel+"! Mirá la tele":c.fase==="vista"?"👀 ¡Memorizá!":c.fase==="giro"?"🌀 ¡El tablero gira!":mio?"🎮 ¡Te toca! Tocá dos cartas"+(c.seg?" ("+c.seg+" s)":""):"⏳ Le toca a "+esc(c.nombreTurno||"");
       raiz.innerHTML=cab+`<div class="tl-cel-caja tl-mgc"><h2 class="${mio&&c.fase==="juego"?"tl-mgc-mio":""}">${tit}</h2>
         <div class="tl-mgc-tab" style="grid-template-columns:repeat(${c.cols},1fr)">${(c.cartas||[]).map((x,i)=>x?`<button type="button" class="tl-mgc-c tl-mgc-ab" style="${x.de?"border-color:"+x.de+";background:"+x.de+"33":""}" disabled>${x.s}</button>`:`<button type="button" class="tl-mgc-c" data-i="${i}" ${puedo?"":"disabled"}>?</button>`).join("")}</div>
-        <p class="tl-mgc-pares">Nivel <b>${c.nivel||1}/${c.niveles||1}</b> · Tus pares: <b>${(c.pares||{})[yo]||0}</b></p>${menuX(soyMando,false)}</div>`;
+        <p class="tl-mgc-pares">Nivel <b>${c.nivel||1}/${c.niveles||1}</b> · Tus pares: <b>${(c.pares||{})[yo]||0}</b>${c.bombas?` · 💣 ${c.bombas} bombas`:""}</p>${menuX(soyMando,false)}</div>`;
       raiz.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{b.disabled=true;b.classList.add("tl-mgc-toc");accion("mg_carta",{i:Number(b.dataset.i)});});
       enlazarX();
     }
