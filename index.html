@@ -2845,9 +2845,13 @@ function animarRueda(destino,alFinal){
   let ult=-1,tAnt=t0,gAnt=ini,terminado=false;
   // El resultado no depende de requestAnimationFrame: en salas la pantalla
   // puede dejar de dibujarse en segundo plano mientras el juego sigue.
+  /* (31/10/2026) El giro lo anima el navegador (Web Animations, en la placa de video): no se tranca aunque
+     la tele o el celular estén ocupados con otra cosa. El cuadro a cuadro solo mueve la aguja. */
+  const EASE="cubic-bezier(.15,.65,.3,1)";let anim=null;
+  try{if(cv.animate)anim=cv.animate([{transform:"rotate("+ini.toFixed(2)+"deg) translateZ(0)"},{transform:"rotate("+destino.toFixed(2)+"deg) translateZ(0)"}],{duration:dur,easing:EASE,fill:"forwards"});}catch(e){anim=null;}
   esperarPartida(()=>{
     terminado=true;giroActual=destino;
-    cv.style.transform="rotate("+destino.toFixed(2)+"deg) translateZ(0)";
+    cv.style.transform="rotate("+destino.toFixed(2)+"deg) translateZ(0)";try{if(anim)anim.cancel();}catch(e){}
     ag.style.transform="translateX(-50%)";bip(190,.16,"triangle",.07);
     const sg=segmentoDe(destino);
     $("salioGiro").textContent=sg.t?ETI[sg.t]:"$"+sg.v;
@@ -2857,10 +2861,12 @@ function animarRueda(destino,alFinal){
   requestAnimationFrame(function frame(){
     const t=ahoraPartida();
     if(token!==matchToken||terminado)return;
-    if(tiempoPartida.pausa!==null){requestAnimationFrame(frame);return;}
-    const p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3.2);
+    if(tiempoPartida.pausa!==null){try{if(anim&&anim.playState==="running")anim.pause();}catch(e){}requestAnimationFrame(frame);return;}
+    try{if(anim&&anim.playState==="paused")anim.play();}catch(e){}
+    const p=Math.min(1,(t-t0)/dur);let e=1-Math.pow(1-p,3.2);
+    if(anim){try{const pr=anim.effect.getComputedTiming().progress;if(pr!=null)e=pr;}catch(x){}}
     giroActual=ini+(destino-ini)*e;
-    cv.style.transform="rotate("+giroActual.toFixed(2)+"deg) translateZ(0)";
+    if(!anim)cv.style.transform="rotate("+giroActual.toFixed(2)+"deg) translateZ(0)";
     const k=Math.floor(giroActual/paso);
     if(k!==ult){
       if(ult>=0){
@@ -8713,12 +8719,14 @@ function tvAnimarRuletaArranque(gajos,indiceGanador,alFinal){
   const paso=360/gajos.length,dentro=elegido*paso+paso*(.15+Math.random()*.7);
   const base=((270-dentro)%360+360)%360,destino=base+360*6;
   const cvT=$("ruedaTV"),ag=$("agujaTV"),ini=tvRuletaGiroActual,dur=4200,t0=performance.now();
+  let anim=null;try{if(cvT.animate)anim=cvT.animate([{transform:"rotate("+ini.toFixed(2)+"deg) translateZ(0)"},{transform:"rotate("+destino.toFixed(2)+"deg) translateZ(0)"}],{duration:dur,easing:"cubic-bezier(.15,.65,.3,1)",fill:"forwards"});}catch(e){anim=null;}
   sonarRuletaGiro();
   let ult=-1,tAnt=t0,gAnt=ini;
   requestAnimationFrame(function frame(t){
-    const p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3.2);
+    const p=Math.min(1,(t-t0)/dur);let e=1-Math.pow(1-p,3.2);
+    if(anim&&p<1){try{const pr=anim.effect.getComputedTiming().progress;if(pr!=null)e=pr;}catch(x){}}
     tvRuletaGiroActual=ini+(destino-ini)*e;
-    cvT.style.transform="rotate("+tvRuletaGiroActual.toFixed(2)+"deg) translateZ(0)";
+    if(!anim||p>=1){cvT.style.transform="rotate("+tvRuletaGiroActual.toFixed(2)+"deg) translateZ(0)";if(anim&&p>=1)try{anim.cancel();}catch(x){}}
     const k=Math.floor(tvRuletaGiroActual/paso);
     if(k!==ult){
       if(ult>=0){
@@ -9047,6 +9055,10 @@ if(tvEnLink){
   $("bEntrarTV").onclick=()=>{
     const n=$("miNombre").value.trim();if(!n){$("miNombre").focus();return;}unirseTV(tvEnLink);
   };
+  /* Desde Juegos en la tele (31/10/2026): el celular ya trae el nombre y entra solo a la Ruleta, sin escribir nada. */
+  const qTV=new URLSearchParams(location.search),nTV=(qTV.get("tvname")||"").replace(/[<>&"']/g,"").trim().slice(0,12);
+  if(nTV)$("miNombre").value=nTV;
+  if(qTV.get("tvauto")==="1"&&($("miNombre").value.trim()||nTV)){const ir=()=>setTimeout(()=>$("bEntrarTV").click(),300);if(document.readyState==="loading")window.addEventListener("DOMContentLoaded",ir,{once:true});else ir();}
 }
 const salaEnLink=(new URLSearchParams(location.search).get("sala")||"").toUpperCase();
 if(salaEnLink){
@@ -12061,7 +12073,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="extensiones.js?v=118"></script>
 <script src="sala-tv.js?v=1"></script>
 <link rel="stylesheet" href="tele.css?v=23">
-<script src="tele.js?v=43"></script>
+<script src="tele.js?v=44"></script>
 </body>
 </html>
 
