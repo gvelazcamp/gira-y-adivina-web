@@ -2182,3 +2182,7 @@ Fecha: 31/10/2026 — Tele: Silabario con tablero lleno de 6×5 sílabas (las de
 ```text
 Fecha: 31/10/2026 — Rosco en la tele: (1) De a dos tiene un MARCADOR en vivo (ranking 1º/2º con avatar, ✓, ✘, letras que quedan y reloj, "Va ganando X"/"¡Van empatados!"), y el mismo marcador chico en el celular de los dos. (2) Las palabras no se repiten por persona: el celular le manda a la tele su memoria del Rosco (gya_vistas_rosco, la misma del Rosco del celular y que va en el respaldo de la cuenta), la tele arma el rosco evitando esas y las que ya salieron en esa tele, y le devuelve al celular las 20 de ese rosco para que queden guardadas. Cuando a una letra se le acaban las palabras nuevas, esa letra vuelve a empezar.
 ```
+
+```text
+Fecha: 31/10/2026 — Tele: el Puzzle sale del menú de juegos (no andaba bien; su código juegoPuzzle queda) y entra Sopa Fugaz. El que tiene el control elige Clásica (letras quietas) o Giratoria (cada 14 s la sopa gira y las palabras que faltan se mudan), como en el celular. Sopa 10×10 en la tele, 4 rondas de 6 palabras de un tema de SOPA_DATOS (memoria "sopa_tele" para no repetir); cada uno marca desde su celular tocando la primera y la última letra; 100 puntos por palabra para el que la encuentra primero, ranking en vivo y podio al final. Locución de la intro: no hay mp3 (giro-intro-sopa.mp3), usa la voz del navegador hasta que Gonzalo lo pase.
+```
