@@ -16,8 +16,12 @@ const RoscoRioplatense=(()=>{
   function cerrarConsultaVozG(){if(avisoVozG){avisoVozG.remove();avisoVozG=null;}}
   /* Una única decisión en la partida: Sí activa voz sin tocar de nuevo Hablar;
      No mantiene exactamente el manejo previo con teclado. */
-  function mostrarConsultaVozG(){
-    if(!pruebaG||vozConsultadaG||avisoVozG||!horizontalG()||!window.GyaTV?.activo?.("ext"))return false;
+  /* (31/10/2026) En la tele la pregunta del micrófono va ANTES de que gire la rueda (Gonzalo: "gira antes del
+     popup del audio; que gire después"). Con "despues" se usa al arrancar: al contestar, recién gira. */
+  let vozPendienteG=false;
+  const debeConsultarVozG=()=>pruebaG&&!vozConsultadaG&&!avisoVozG&&horizontalG()&&!!window.GyaTV?.activo?.("ext");
+  function mostrarConsultaVozG(despues){
+    if(!debeConsultarVozG())return false;
     vozConsultadaG=true;vozLeyendoG=true;ultimo=performance.now();
     const capa=document.createElement("div");capa.className="rr-voz-consulta";
     capa.setAttribute("role","dialog");capa.setAttribute("aria-modal","true");
@@ -27,6 +31,7 @@ const RoscoRioplatense=(()=>{
       const boton=e.target.closest("button[data-voz]");if(!boton)return;
       const activar=boton.dataset.voz==="si";
       cerrarConsultaVozG();vozLeyendoG=false;ultimo=performance.now();
+      if(typeof despues==="function"){vozPendienteG=activar;if(raiz)despues();return;}
       if(!raiz||fase!=="resolver"||document.hidden)return;
       if(activar)alternarVozG();
       else if(typeof hablar==="function")hablar(items[actual].definicion,audioMusica);
@@ -480,6 +485,7 @@ const RoscoRioplatense=(()=>{
     }
   }
   function siguiente(){
+    if(debeConsultarVozG()&&mostrarConsultaVozG(siguiente))return;
     cancelarPaseVozG();cancelarErrorVozG();
     if(!(pruebaG&&vozG))detenerVoz();
     const p=pendientes();if(!p.length){terminar();return;}
@@ -500,6 +506,7 @@ const RoscoRioplatense=(()=>{
     actual=destino;fase="resolver";const d=items[actual];
     $("#rrGrande").textContent=d.letra;$("#rrRegla").textContent=(d.contiene?"Contiene la ":"Empieza con ")+d.letra;
     $("#rrDefinicion").textContent=d.definicion;hud();enfocar();
+    if(vozPendienteG){vozPendienteG=false;if(!vozG){alternarVozG();return;}}
     if(mostrarConsultaVozG())return;
     if(pruebaG&&vozG)leerPistaG();
     else if(typeof hablar==="function")hablar(d.definicion,audioMusica);
