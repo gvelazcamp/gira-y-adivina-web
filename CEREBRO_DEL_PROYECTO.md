@@ -2138,3 +2138,7 @@ Fecha: 31/10/2026 — Textos de la cuenta de Google más claros (Gonzalo: "¿es 
 ```text
 Fecha: 31/10/2026 — Cuenta de Google: se queda SOLA la partida más avanzada (Gonzalo: "la partida más avanzada es la que se tiene que trasladar"). Cuando el aparato y la cuenta tienen partidas distintas, cuenta.js calcula avance() de cada una (ciudades ganadas ×50, pasos del mapa ×5, cosas compradas *_owned ×10, logros ×10, monedas/100). Si la del aparato está más avanzada, la sube a la cuenta (la de la cuenta queda de respaldo gya_cuenta_respaldo_nube) y avisa con un cartelito. Si la de la cuenta está más avanzada, la trae (respaldo de la local), pero espera a estar en el inicio para no cortar una partida en juego; después de recargar avisa "Trajimos tu partida más avanzada". Solo si están parejas sale el cartel de elegir. cuenta.js v7, sw v620.
 ```
+
+```text
+Fecha: 31/10/2026 — Rosco en modo tele (celular horizontal con 📺): la pregunta "¿Querés jugar con el micrófono?" ahora sale ANTES de que gire la rueda la primera vez (Gonzalo: "gira antes del popup del audio; que gire después"). Al contestar, recién gira; si eligió "Sí, activar voz", la voz se activa cuando para la rueda. rosco-rioplatense.js v80, sw v621.
+```
