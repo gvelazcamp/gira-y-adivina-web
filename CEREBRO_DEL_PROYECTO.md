@@ -2134,3 +2134,7 @@ Fecha: 31/10/2026 — Inicio: la fila 🔥/🪙/❤️/📺/🔊/⚙️ siempre 
 ```text
 Fecha: 31/10/2026 — Textos de la cuenta de Google más claros (Gonzalo: "¿es guardar mi progreso o continuar?… algo más claro"). En ⚙️: "Vincular con Google" (antes "Guardar mi progreso") y, ya vinculado, "Cuenta de Google ✓" (antes "Partida vinculada"); el aviso explica que es la misma partida en celular, app y compu y que se hace en cada aparato. Cartel cuando hay dos partidas: "☁️ Usar la de mi cuenta (traerla acá)" y "📱 Usar la de este aparato (subirla a mi cuenta)", con la ayuda "si es donde más jugás, la de este aparato; si es uno nuevo, la de tu cuenta" (la otra queda como respaldo gya_cuenta_respaldo_*). cuenta.js v6, sw v619.
 ```
+
+```text
+Fecha: 31/10/2026 — Cuenta de Google: se queda SOLA la partida más avanzada (Gonzalo: "la partida más avanzada es la que se tiene que trasladar"). Cuando el aparato y la cuenta tienen partidas distintas, cuenta.js calcula avance() de cada una (ciudades ganadas ×50, pasos del mapa ×5, cosas compradas *_owned ×10, logros ×10, monedas/100). Si la del aparato está más avanzada, la sube a la cuenta (la de la cuenta queda de respaldo gya_cuenta_respaldo_nube) y avisa con un cartelito. Si la de la cuenta está más avanzada, la trae (respaldo de la local), pero espera a estar en el inicio para no cortar una partida en juego; después de recargar avisa "Trajimos tu partida más avanzada". Solo si están parejas sale el cartel de elegir. cuenta.js v7, sw v620.
+```
