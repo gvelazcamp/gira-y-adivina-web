@@ -2194,3 +2194,7 @@ Fecha: 31/10/2026 — Rosco (celular y tele): ahora ~1 de cada 5 letras es "Cont
 ```text
 Fecha: 31/10/2026 — Sopa Fugaz en la tele: el celular ahora se ve como el juego del celular (mismas clases sf- de extensiones.css: cabecera con tema, HUD Ronda/Puntos/Puesto/Tiempo, barra de tiempo, tablero crema con cápsulas, barra "Las letras se mudan en X s" y lista de palabras) y se marca deslizando el dedo (o tocando primera y última letra). La tele no cambió. El celular no se redibuja si solo cambió el reloj y espera a que sueltes el dedo para repintar.
 ```
+
+```text
+Fecha: 31/10/2026 — Botón 📺 "Jugar en la tele": se ocultó la forma "📡 Transmitir" (Gonzalo la probó con la Panavox desde la app y desde Chrome: "No encontré teles", aunque YouTube sí la veía). En Android la Presentation API no abre una página web en la tele sin una app registrada en Google Cast (Custom Receiver en cast.google.com, 5 USD); Gonzalo no quiso hacerlo. Ahora la primera es "🌐 Navegador de la tele" (con código) como "LA MÁS FÁCIL"; queda "📱 Un celular de tele". El código de Transmitir sigue (oculto:true en FORMAS_TELE).
+```
