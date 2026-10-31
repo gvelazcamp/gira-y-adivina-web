@@ -648,3 +648,5 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-mg-explota b{font-size:30vh;line-height:1;animation:tlMgExpB 1.6s ease forwards}.tl-mg-explota span{font:900 9vh 'Archivo Black',sans-serif;color:#fff;text-shadow:0 0 4vh #FF4D6D,0 .6vh 0 #7A0A20}
 @keyframes tlMgExp{0%{opacity:0}10%{opacity:1}75%{opacity:1}100%{opacity:0}}
 @keyframes tlMgExpB{0%{transform:scale(.2)}25%{transform:scale(1.25)}45%{transform:scale(1)}100%{transform:scale(1.1)}}
+.tl-mg-sel .tl-mg-dorso{box-shadow:0 0 0 .6vh #fff,0 0 3vh #fff;filter:brightness(.75)}.tl-mg-sel .tl-mg-dorso::after{content:"💡";position:absolute;top:.4vh;right:.6vh;font-size:calc(var(--tam,15vh)*.25)}
+.tl-mgc-sel{outline:3px solid #fff;filter:brightness(.8)}

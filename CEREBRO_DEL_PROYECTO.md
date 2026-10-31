@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 31/10/2026 — Memoria en Giro (tele): Nivel Experto y cartas que se apagan
+- Qué: 5 niveles. Nuevo nivel 5 "🔥 NIVEL EXPERTO": 17 pares + 2 bombas (6x6), 3 s para memorizar, gira con cada fallo, cartas parecidas, 10 s por turno. "Cartas que se apagan": desde el nivel 3 la 1ª carta que destapás se vuelve a tapar (nivel 3: 2 s, nivel 4: 1,5 s, experto: 1 s) y queda marcada con 💡; la 2ª se elige de memoria. Además, las dos cartas de un fallo se ven cada vez menos (1,5 s → 0,7 s).
+- Dónde: tele.js (juegoMemoria: NIV con ver/ap/experto, apagada/apT; pintarMemoria marca .tl-mgc-sel), tele.css (.tl-mg-sel, .tl-mgc-sel).
+
 ### 31/10/2026 — Memoria en Giro (tele): carta bomba 💣
 - Qué: desde el nivel 2 hay 2 bombas sueltas en el tablero (nivel 2: 9 pares + 2 bombas en 5x4; nivel 3: 11 + 2 en 6x4; nivel 4: 14 + 2 en 6x5). El que da vuelta una bomba pierde un par (vuelve tapado al tablero, se puede volver a encontrar) y pasa el turno; cuenta como fallo. En la tele: explosión 💥 "¡BOMBA!", tablero que tiembla y sonido de explosión (SND.boom, hecho con WebAudio). La bomba queda destapada en rojo.
 - Dónde: tele.js (juegoMemoria: explotar(), NIV con b:2; SND.boom), tele.css (.tl-mg-boom, .tl-mg-explota, .tl-mg-temblor).
