@@ -465,3 +465,11 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-sp-modo{display:flex;flex-direction:column;gap:1vh;background:#0C0616E6;border:.4vh solid #F5B301;border-radius:2vw;padding:3vh 3vw;width:28vw}
 .tl-sp-modo b{font:900 2.6vw 'Archivo Black',sans-serif;color:#F5B301}
 .tl-sp-modo span{font:700 1.5vw Outfit,system-ui}
+
+/* Sopa Fugaz en el celular con el mismo aspecto que el juego del celular (clases sf- de extensiones.css) */
+.tl-sp-real{text-align:center;padding:0 2px}
+.tl-sp-real .sf-cabeza img{height:40px}
+.tl-sp-real .sf-lista{grid-template-columns:repeat(3,1fr)}
+.tl-sp-real .sf-acciones{margin-top:12px}
+.tl-sp-real .sf-celda.sel{background:#E5197C;color:#fff;border-radius:6px}
+.tl-sp-real .tl-sp-aviso{margin:6px 0 0}

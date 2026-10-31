@@ -2190,3 +2190,7 @@ Fecha: 31/10/2026 — Tele: el Puzzle sale del menú de juegos (no andaba bien; 
 ```text
 Fecha: 31/10/2026 — Rosco (celular y tele): ahora ~1 de cada 5 letras es "Contiene la X" (antes todas eran "Empieza con"): se usa una palabra del banco de otra letra que lleva esa letra adentro (roscoConContiene en rosco-rioplatense-datos.js), sin repetir dentro del mismo rosco y respetando la memoria de vistas. No se agregaron palabras (no hace falta auditoría). También se sacó la palabra "Pasapalabra" de los textos del Rosco del celular (ahora dice "Pasar").
 ```
+
+```text
+Fecha: 31/10/2026 — Sopa Fugaz en la tele: el celular ahora se ve como el juego del celular (mismas clases sf- de extensiones.css: cabecera con tema, HUD Ronda/Puntos/Puesto/Tiempo, barra de tiempo, tablero crema con cápsulas, barra "Las letras se mudan en X s" y lista de palabras) y se marca deslizando el dedo (o tocando primera y última letra). La tele no cambió. El celular no se redibuja si solo cambió el reloj y espera a que sueltes el dedo para repintar.
+```
