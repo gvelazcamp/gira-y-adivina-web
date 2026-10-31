@@ -585,11 +585,11 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-ps-teclado span{width:4.2vh;height:5vh;display:grid;place-items:center;border-radius:.7vh;background:#ffffff22;font:900 2.2vh 'Archivo Black',sans-serif}
 .tl-ps-t-exacta{background:#2ED18A!important;color:#0B2A1A}.tl-ps-t-presente{background:#F5B301!important;color:#2A1A00}.tl-ps-t-ausente{background:#1a1424!important;color:#5d5568}
 /* Memoria en Giro */
-.tl-mg-tablero{display:grid;grid-template-columns:repeat(var(--cols),1fr);gap:1.4vh;background:#0C0616E6;border:.5vh solid #F5B301;border-radius:2vh;padding:2vh;box-shadow:0 0 6vh #F5B30144}
-.tl-mg-carta{position:relative;width:15vh;height:15vh;perspective:60vh}
+.tl-mg-tablero{--tam:15vh;display:grid;grid-template-columns:repeat(var(--cols),var(--tam));gap:1.4vh;background:#0C0616E6;border:.5vh solid #F5B301;border-radius:2vh;padding:2vh;box-shadow:0 0 6vh #F5B30144}
+.tl-mg-carta{position:relative;width:var(--tam,15vh);height:var(--tam,15vh);perspective:60vh}
 .tl-mg-carta span{position:absolute;inset:0;display:grid;place-items:center;border-radius:1.6vh;backface-visibility:hidden;transition:transform .45s ease}
-.tl-mg-dorso{background:linear-gradient(135deg,#7B3FE4,#E5197C);font:900 7vh 'Archivo Black',sans-serif;color:#ffffff88;box-shadow:inset 0 0 0 .5vh #ffffff33}
-.tl-mg-cara{background:#F6EFE2;font-size:9vh;transform:rotateY(180deg)}
+.tl-mg-dorso{background:linear-gradient(135deg,#7B3FE4,#E5197C);font:900 calc(var(--tam,15vh)*.47) 'Archivo Black',sans-serif;color:#ffffff88;box-shadow:inset 0 0 0 .5vh #ffffff33}
+.tl-mg-cara{background:#F6EFE2;font-size:calc(var(--tam,15vh)*.6);transform:rotateY(180deg)}
 .tl-mg-abierta .tl-mg-dorso{transform:rotateY(180deg)}.tl-mg-abierta .tl-mg-cara{transform:rotateY(0)}
 .tl-mg-par .tl-mg-cara{box-shadow:0 0 0 .6vh var(--c),0 0 3vh var(--c)}
 .tl-mg-mal .tl-mg-cara{box-shadow:0 0 0 .6vh #FF4D6D;animation:tlMgMal .4s ease}
@@ -636,3 +636,7 @@ html.tele-modo .grp-acciones{margin:0}
 /* Puzzle espejo (31/10/2026): la tele muestra el puzzle que se arma en el celular */
 .tl-pze{position:absolute;inset:0;background:#160B24}.tl-pze iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .tl-pze-cartel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1vw;background:#160B24;color:#F6EFE2;text-align:center;font-family:Outfit,system-ui,sans-serif}.tl-pze-cartel[hidden]{display:none}.tl-pze-cartel img{width:12vw;border-radius:2vw}.tl-pze-cartel h1{font-size:4vw;margin:0}.tl-pze-cartel p{font-size:2vw;margin:0}
+.tl-mg-reloj{font:900 5vh 'Archivo Black',sans-serif;color:#fff;text-align:center;background:#E5197C;border-radius:1.5vh;padding:1vh}
+.tl-mg-nivel{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vh;background:#0C0616E8;text-align:center;animation:tlMgNivel .5s ease}
+.tl-mg-nivel b{font:900 11vh 'Archivo Black',sans-serif;color:#F5B301;text-shadow:0 0 5vh #F5B30188}.tl-mg-nivel span{font:800 4vh Outfit,system-ui,sans-serif;color:#F6EFE2}.tl-mg-nivel em{font:900 4.2vh 'Archivo Black',sans-serif;font-style:normal;color:#fff;background:#E5197C;border-radius:1.5vh;padding:1vh 2.5vw}
+@keyframes tlMgNivel{from{opacity:0;transform:scale(1.15)}to{opacity:1;transform:none}}
