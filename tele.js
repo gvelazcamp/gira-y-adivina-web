@@ -263,7 +263,7 @@
       if(m.t==="chau"){T.jug=T.jug.filter(x=>x.pid!==m.pid);if(T.mando===m.pid)T.mando=T.jug[0]?T.jug[0].pid:null;pintar();difundir();return;}
       if(m.t==="tomar"){if(T.juego==="tutti"&&T.g&&!T.g.participa(m.pid))return;T.mando=m.pid;pintar();difundir();return;}
       if(m.t!=="accion")return;
-      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||((T.juego==="silabario"||T.juego==="frases")&&m.a==="or_resp")||(T.juego==="rosco"&&["responder","pasar","dc_voz"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
+      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
       if(m.a==="elegir"&&T.fase==="menu"){elegir(String(m.juego||""));return;}
       if(m.a==="rosco_modo"&&T.fase==="rosco_modo"){const r=String(m.rival||"");
         T.roscoModo=m.modo==="dos"&&T.jug.some(j=>j.pid===r&&r!==T.mando)?{dos:true,rival:r}:null;T.roscoListo=true;elegir("rosco");return;}
@@ -1026,7 +1026,7 @@
                  :{nombre:"FRASES EN GIRO",icono:"💬",rondas:6,seg:60,unir:" ",niveles:[2,2,2],etiqueta:"ORDENÁ LA FRASE"};
     const PTS=[10,8,6,5,4,3,3,3];
     let ronda=0,item=null,fichas=[],restante=0,fase="jugando",timer=null,muerto=false;
-    let resueltos={},lugar=0,fallos={},puntos={},items=[];
+    let resueltos={},lugar=0,fallos={},puntos={},items=[],armado={};
     const jugadores=T.jug.map(j=>({pid:j.pid,n:j.n}));jugadores.forEach(j=>puntos[j.pid]=0);
     function base(){
       if(SIL){const d=typeof SILABARIO_DATOS!=="undefined"?SILABARIO_DATOS:[];
@@ -1050,7 +1050,7 @@
     }
     function nueva(){
       ronda++;item=items[ronda-1];if(!item){terminar();return;}
-      fichas=mezclar([...item.piezas,...trampas(item)]);resueltos={};lugar=0;fallos={};restante=CFG.seg*1000;fase="jugando";
+      fichas=mezclar([...item.piezas,...trampas(item)]);resueltos={};lugar=0;fallos={};armado={};restante=CFG.seg*1000;fase="jugando";
       try{Vistas.marcar(SIL?"silabario_tele":"frases_tele",item.piezas.join(" "));}catch(e){}
       if(ronda>1)SND.turno();actualizar();
     }
@@ -1064,13 +1064,17 @@
     function accion(m){
       if(m.a==="otra"&&fase==="fin"&&m.pid===T.mando){T.otra();return;}
       if(m.a==="or_saltar"&&fase==="jugando"&&m.pid===T.mando){revelar();return;}
+      /* Lo que cada uno va tocando en el celular aparece en la tele al instante (31/10/2026). */
+      if(m.a==="or_arma"){if(fase!=="jugando"||Number(m.r)!==ronda||resueltos[m.pid]||!(m.pid in puntos))return;
+        const o=(Array.isArray(m.orden)?m.orden.map(Number):[]).slice(0,item.piezas.length);
+        if(new Set(o).size!==o.length||o.some(i=>!(i>=0&&i<fichas.length)))return;armado[m.pid]=o;actualizar();return;}
       if(m.a!=="or_resp"||fase!=="jugando"||Number(m.r)!==ronda||resueltos[m.pid]||!(m.pid in puntos))return;
       const o=Array.isArray(m.orden)?m.orden.map(Number):[];
       if(o.length!==item.piezas.length||new Set(o).size!==o.length||o.some(i=>!(i>=0&&i<fichas.length)))return;
       const bien=o.every((i,k)=>sinTilde(fichas[i])===sinTilde(item.piezas[k]));
       if(bien){resueltos[m.pid]=++lugar;puntos[m.pid]+=PTS[Math.min(lugar-1,PTS.length-1)];SND.ok();
         if(jugadores.every(j=>resueltos[j.pid])){actualizar();setTimeout(revelar,900);return;}}
-      else{fallos[m.pid]=(fallos[m.pid]||0)+1;SND.mal();}
+      else{fallos[m.pid]=(fallos[m.pid]||0)+1;armado[m.pid]=[];SND.mal();}
       actualizar();
     }
     function tic(dt){if(fase!=="jugando")return;const a=restante;restante=Math.max(0,restante-dt);ticFinal(a,restante);
@@ -1080,12 +1084,15 @@
       const GB="presentacion-y-locucion-extensiones/Giro/";
       if(!item){raiz.innerHTML=`<div class="tl-centro"><h1>Preparando…</h1></div>`;return;}
       const rev=fase!=="jugando";
-      const jug=jugadores.map(j=>`<span class="${resueltos[j.pid]?"tl-or-ok":""}">${resueltos[j.pid]?resueltos[j.pid]+"º ✓ ":""}${esc(j.n)} · <b>${puntos[j.pid]}</b></span>`).join("");
+      /* Uno solo: lo que toca se arma en los casilleros grandes. Varios: cada uno ve su armado debajo de su nombre. */
+      const solo=jugadores.length===1,mio=solo?(armado[jugadores[0].pid]||[]):[],usadas=new Set(mio);
+      const jug=jugadores.map(j=>{const a=armado[j.pid]||[];
+        return`<span class="${resueltos[j.pid]?"tl-or-ok":""}">${resueltos[j.pid]?resueltos[j.pid]+"º ✓ ":""}${esc(j.n)} · <b>${puntos[j.pid]}</b>${!solo&&!rev&&!resueltos[j.pid]&&a.length?`<em class="tl-or-mini">${a.map(i=>esc(fichas[i])).join(SIL?"·":" ")}</em>`:""}</span>`;}).join("");
       raiz.innerHTML=`<div class="tl-or${SIL?" tl-or-sil":" tl-or-fra"}"><img class="tl-or-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
         <div class="tl-or-top"><span>${CFG.icono} ${CFG.nombre}</span><span>RONDA ${ronda}/${items.length}</span><span class="tl-or-reloj" id="tlOrReloj">${Math.ceil(restante/1000)}</span></div>
         <div class="tl-or-card"><small>${CFG.etiqueta}</small><p class="tl-or-pista">${esc(item.pista)}</p>
-          <div class="tl-or-slots">${item.piezas.map(x=>`<span class="${rev?"tl-or-vista":""}">${rev?esc(x):""}</span>`).join("")}</div>
-          ${rev?"":`<div class="tl-or-fichas">${fichas.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`}</div>
+          <div class="tl-or-slots">${item.piezas.map((x,k)=>rev?`<span class="tl-or-vista">${esc(x)}</span>`:mio[k]!=null?`<span class="tl-or-puesta">${esc(fichas[mio[k]])}</span>`:`<span></span>`).join("")}</div>
+          ${rev?"":`<div class="tl-or-fichas">${fichas.map((x,i)=>`<span class="${usadas.has(i)?"tl-or-usada":""}">${esc(x)}</span>`).join("")}</div>`}</div>
         <div class="tl-or-jug">${jug}</div>
         <p class="tl-or-ayuda">${rev?"⏳ Ya viene la siguiente…":"📱 Armalo tocando las piezas en tu celular · ¡ojo que hay de más!"}</p></div>`;
     }
@@ -1442,9 +1449,9 @@
         <button type="button" class="tl-boton tl-chico" id="tlOrBorrar" ${orSel.length?"":"disabled"}>⌫ Borrar</button>${menu}</div>`;
       raiz.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{const i=Number(b.dataset.f);if(orSel.includes(i))return;orSel.push(i);orAviso="";
         try{if(typeof vibrar==="function")vibrar(15);}catch(e){}
-        if(orSel.length>=c.n){accion("or_resp",{r:c.ronda,orden:orSel.slice()});orAviso="⏳ Revisando…";}
+        if(orSel.length>=c.n){accion("or_resp",{r:c.ronda,orden:orSel.slice()});orAviso="⏳ Revisando…";}else accion("or_arma",{r:c.ronda,orden:orSel.slice()});
         pintarOrdenar(c,cab,soyMando);});
-      raiz.querySelector("#tlOrBorrar").onclick=()=>{orSel.pop();orAviso="";pintarOrdenar(c,cab,soyMando);};
+      raiz.querySelector("#tlOrBorrar").onclick=()=>{orSel.pop();orAviso="";accion("or_arma",{r:c.ronda,orden:orSel.slice()});pintarOrdenar(c,cab,soyMando);};
       enlazar();
     }
     function pintarMimica(c,cab,soyMando){
