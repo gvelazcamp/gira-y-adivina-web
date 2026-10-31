@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 31/10/2026 — Memoria en Giro (tele): carta bomba 💣
+- Qué: desde el nivel 2 hay 2 bombas sueltas en el tablero (nivel 2: 9 pares + 2 bombas en 5x4; nivel 3: 11 + 2 en 6x4; nivel 4: 14 + 2 en 6x5). El que da vuelta una bomba pierde un par (vuelve tapado al tablero, se puede volver a encontrar) y pasa el turno; cuenta como fallo. En la tele: explosión 💥 "¡BOMBA!", tablero que tiembla y sonido de explosión (SND.boom, hecho con WebAudio). La bomba queda destapada en rojo.
+- Dónde: tele.js (juegoMemoria: explotar(), NIV con b:2; SND.boom), tele.css (.tl-mg-boom, .tl-mg-explota, .tl-mg-temblor).
+
 ### 31/10/2026 — Memoria en Giro (tele) por niveles, cada vez más difícil
 - Qué: 4 niveles. Nivel 1: 8 pares (4x4), 5 s para memorizar, gira cada 3 fallos. Nivel 2: 10 pares (5x4), 4,5 s. Nivel 3: 12 pares (6x4), 4 s, gira cada 2 fallos y cartas parecidas (corazones de colores, manzanas, perro/lobo, gato/tigre, lunas). Nivel 4: 15 pares (6x5), 3,5 s, cartas parecidas y 12 s por turno (si no, pierde el turno). Entre niveles, cartel grande "NIVEL X de 4". Los pares se suman y gana el que más tiene al final.
 - Dónde: tele.js (juegoMemoria, pintarMemoria), tele.css (.tl-mg-nivel, .tl-mg-reloj, cartas con tamaño --tam).
