@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 31/10/2026 — Voces de Giro para Sopa Fugaz, Palabra Secreta, Memoria en Giro, Rueda de Letras y Puzzle (tele)
+- Qué: Gonzalo grabó en ElevenLabs las 5 presentaciones en un solo audio (voz Cesar Rodriguez); se cortó en los silencios y quedaron giro-intro-sopa/palabra/memoria/rueda/puzzle.mp3 (el de puzzle se reemplazó por el texto nuevo del puzzle espejo).
+- Dónde: presentacion-y-locucion-extensiones/Giro/voz/tele/.
+
 ### 31/10/2026 — Puzzle vuelve a la tele: se arma en el cel y la tele lo copia en vivo
 - Qué: en Sala TV, el del control arma el Puzzle de siempre en su celular (puzzle.html?espejo=1, a pantalla completa) y cada movimiento se ve igual en la tele (puzzle.html?tvpuzzle=1&ver=1, solo mirar). Los demás celulares dicen "mirá la tele". Al terminar, festejo en la tele.
 - Dónde: tele.js (juegoPzEspejo, pintarPzEspejo), tele.css (.tl-pze), puzzle.html (ES_ESPEJO / ES_VER; en espejo se oculta "Armar con un amigo").
