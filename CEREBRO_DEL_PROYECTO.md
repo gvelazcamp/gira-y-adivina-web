@@ -2166,3 +2166,7 @@ Fecha: 31/10/2026 — Ruleta (juego principal) desde Juegos en la tele: (1) MÁS
 ```text
 Fecha: 31/10/2026 — Pantalla siempre encendida (Gonzalo: "en el Rosco, como es por audio, se nos apaga la pantalla por inactividad"). Screen Wake Lock: (1) en Juegos en la tele, en la tele y en TODOS los celulares de la sala desde que entran (antes solo la tele al elegir un juego); (2) en el Rosco del celular mientras está abierto (se suelta al salir). Se vuelve a pedir al volver a la app o al tocar la pantalla (Android lo suelta al cambiar de app). tele.js v45, rosco-rioplatense.js v86, sw v630.
 ```
+
+```text
+Fecha: 31/10/2026 — Silabario y Frases en Giro en la tele: lo que cada uno toca en el celular se ve en la tele AL INSTANTE (Gonzalo: "que se transmita lo que selecciono; solo aparece al enviar"). El celular manda "or_arma" con cada pieza que toca o borra. Si juega uno solo, las piezas se van poniendo en los casilleros grandes (borde turquesa) y las usadas se apagan abajo; si juegan varios, cada uno ve su armado chiquito debajo de su nombre (para no mezclar). Si erra, se limpia. tele.js v46, tele.css v24, sw v631.
+```

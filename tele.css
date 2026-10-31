@@ -382,3 +382,7 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-rd-fin{display:flex;gap:3vw;justify-content:center;margin:3vh 0}
 .tl-rd-card{display:flex;flex-direction:column;gap:1vh;align-items:center;background:#0C0616CC;border:.3vw solid #F5B30188;border-radius:2vw;padding:2.5vh 3vw;font:800 2vw Outfit,system-ui}
 .tl-rd-card b{font:900 3vw 'Archivo Black',sans-serif;color:#F5B301}
+/* Silabario / Frases: lo que se va tocando en el celular, en vivo en la tele */
+.tl-or-slots span.tl-or-puesta{border:.35vh solid #37D6C0;background:#37D6C033;color:#fff;animation:tlPodioCaja .25s ease-out both}
+.tl-or-fichas span.tl-or-usada{opacity:.25;box-shadow:none}
+.tl-or-mini{display:block;font-style:normal;font:800 calc(var(--u)*1.3) Outfit,system-ui;color:#37D6C0;margin-top:.2vh}
