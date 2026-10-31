@@ -396,3 +396,24 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-or-sil .tl-or-fichas span{padding:calc(var(--u)*.55) 0;font-size:calc(var(--u)*2.2);box-shadow:0 .45vh 0 #b9a98a}
 .tl-or-cel-sil .tl-or-cel-fichas{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
 .tl-or-cel-sil .tl-or-cel-fichas button{padding:11px 0;font-size:.85rem;border-radius:10px;min-width:0}
+
+/* Rosco de a dos: marcador en vivo (ranking) en la tele y en el celular */
+.tl-rd-rank{background:#0C0616E0;border:.25vw solid #F5B30188;border-radius:1.4vw;padding:1vw 1.2vw;display:flex;flex-direction:column;gap:.7vw;box-shadow:0 0 2.4vw #F5B30133}
+.tl-rd-rank-cab{display:flex;justify-content:space-between;align-items:baseline;gap:1vw;font:900 1.4vw 'Archivo Black',sans-serif;color:#F5B301;letter-spacing:.1vw}
+.tl-rd-rank-cab em{font:800 1.3vw Outfit,system-ui;font-style:normal;color:#37D6C0;letter-spacing:0}
+.tl-rd-fila{display:grid;grid-template-columns:3vw 3.6vw 1fr auto auto auto 5vw;align-items:center;gap:.9vw;background:#ffffff0D;border:.2vw solid #ffffff1A;border-radius:1vw;padding:.5vw .9vw;font:800 1.5vw Outfit,system-ui;transition:all .4s}
+.tl-rd-fila img{width:3.6vw;height:3.6vw;border-radius:50%;object-fit:cover;background:#2A1A3C}
+.tl-rd-fila b{font-size:1.7vw;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-rd-fila small{font:700 1.1vw Outfit,system-ui;opacity:.75}
+.tl-rd-pos{font:900 1.8vw 'Archivo Black',sans-serif;color:#F5B301;text-align:center}
+.tl-rd-reloj{text-align:right;font-variant-numeric:tabular-nums}
+.tl-rd-fila.tl-rd-activo{border-color:#F5B301;background:#F5B3011F;box-shadow:0 0 1.6vw #F5B30155}
+.tl-rd-fila.tl-rd-activo b{color:#F5B301}
+.tl-rd-fila.tl-rd-listo{opacity:.55}
+.tl-rd-cel{display:flex;flex-direction:column;gap:6px;margin:0 0 10px}
+.tl-rd-cel>div{display:flex;align-items:center;gap:8px;background:#0C0616;border:1px solid #ffffff22;border-radius:10px;padding:7px 10px;font-weight:800}
+.tl-rd-cel>div span{color:#F5B301;font-weight:900}
+.tl-rd-cel>div b{flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl-rd-cel>div em{font-style:normal;color:#BFAFD1}
+.tl-rd-cel>div.tl-rd-cel-juega{border-color:#F5B301}
+.tl-rd-cel>div.tl-rd-cel-juega b{color:#F5B301}
