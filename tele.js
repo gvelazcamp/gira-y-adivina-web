@@ -967,7 +967,21 @@
     /* De a dos: cuando uno termina (completó o se le acabó el tiempo) queda en gris y "Rosco terminado"; el otro
        sigue solo hasta terminar (31/10/2026). */
     const avisoFin=quien=>{aviso={txt:"🏁 "+nombrePid(quien)+" terminó su rosco · sigue "+nombrePid(J().pid),t:Date.now()+1500};};
-    function finJugador(){const q=J().pid;J().fin=true;if(DOS&&cambiarTurno()){avisoFin(q);return;}terminar();}
+    /* ¡Rosco completado! (31/10/2026, Gonzalo: "le falta emoción"). Cuando alguien responde todas sus letras
+       (de a 2, 3 o 4): el rosco brilla y gira, papelitos, aplausos y "¡FELICITACIONES!"; si no erró ninguna,
+       "¡ROSCO PERFECTO!". Dura ~5 s (reloj y micrófono en pausa) y después sigue el siguiente o el final. */
+    let festejo=null;const FEST_MS=5200;
+    function festejar(q){const j=J(),ok=j.est.filter(x=>x==="ok").length,mal=j.est.filter(x=>x==="mal").length;
+      festejo={pid:q,n:nombrePid(q),ok,mal,perfecto:mal===0,t:Date.now(),girado:false};
+      vozBloqueada=true;++vozBloqueoId;clearTimeout(vozRespaldo);clearTimeout(vozReanudar);
+      try{G()&&G().detenerReaccion&&G().detenerReaccion();}catch(e){}
+      sfx("aplausos");setTimeout(()=>sfx("festejo"),350);
+      try{const a=new Audio("presentacion-y-locucion-extensiones/Giro/voz/reacciones/giro-acierto-"+(1+Math.floor(Math.random()*4))+".mp3");setTimeout(()=>a.play().catch(()=>{}),900);}catch(e){}
+      actualizar();
+      setTimeout(()=>{if(muerto||!festejo)return;festejo=null;
+        if(DOS&&cambiarTurno()){avisoFin(q);vozRonda++;const id=++vozBloqueoId;vozReanudar=setTimeout(()=>reanudarVoz(id),900);actualizar();return;}
+        terminar();},FEST_MS);}
+    function finJugador(){const q=J().pid;J().fin=true;if(DOS){festejar(q);return;}terminar();}
     /* Resultado de a dos (también después de apelar): más aciertos, menos errores, más tiempo sobrante. */
     const resDos=()=>P.map((j,k)=>({k,n:nombrePid(j.pid),av:avDe(T,j.pid),ok:j.est.filter(s=>s==="ok").length,mal:j.est.filter(s=>s==="mal").length,t:j.tiempo}))
       .sort((a,b)=>b.ok-a.ok||a.mal-b.mal||b.t-a.t);
@@ -989,7 +1003,7 @@
       if(fase==="show"||fase==="cierre")return;
       if(m.a==="rs_apelar"){const own=P.findIndex(j=>j.pid===m.pid),k=m.pid===T.mando&&m.k!=null?Number(m.k):own;pedirApelacion(k,Number(m.i));return;}
       if(m.a==="rs_voto"){if(apel&&m.pid!==P[apel.k].pid)resolverApelacion(!!m.si);return;}
-      if(apel)return;
+      if(apel||festejo)return;
       if(m.a==="rs_rev"){if(revision&&(m.pid===P[revision.k].pid||m.pid===T.mando)){const r=revision;
         const modo=m.modo||(m.apelar?"apelar":"seguir");
         if(modo==="apelar"||modo==="ruido"){revision=null;pedirApelacion(r.k,r.i,modo);if(!apel)seguirTrasRevision();}
@@ -1012,7 +1026,7 @@
       est[actual]=ok?"ok":"mal";resp[actual]=txt;if(!ok)J().ultErr=actual;ultimo={i:actual,tipo:ok?"ok":"mal",palabra:d.palabra,dijo:txt,n:nombrePid(J().pid)};cambio=Date.now();
       if(ok)SND.ok();else SND.mal();
       const kErr=turno,iErr=actual;
-      avanzar();if(fase==="jugando"){if(!ok)cambiarTurno();pausarPorGiro(ok?"acierto":"error");
+      avanzar();if(festejo)return;if(fase==="jugando"){if(!ok)cambiarTurno();pausarPorGiro(ok?"acierto":"error");
         if(!ok&&DOS&&fase==="jugando"){revision={k:kErr,i:iErr,t:Date.now()};++vozBloqueoId;clearTimeout(vozRespaldo);clearTimeout(vozReanudar);actualizar();}}else actualizar();
     }
     /* Los aciertos y Pasar entran al instante; una respuesta final equivocada
@@ -1046,7 +1060,7 @@
       if(fase==="show"||fase==="cierre"){const e=G()&&G().etapa?G().etapa():"";if(e!==etapaPrev){etapaPrev=e;etapaT=0;}else etapaT+=dt;
         if(ESPERA[e]&&etapaT>ESPERA[e]){etapaT=-1e9;G().avanzar();}return;}
       if(apel){if(Date.now()-apel.t>APEL_MS){resolverApelacion(false);return;}const e=document.querySelector("#tlApelT");if(e)e.textContent=Math.max(0,Math.ceil((APEL_MS-(Date.now()-apel.t))/1000));return;}
-      if(pausa)return;
+      if(pausa||festejo)return;
       if(revision){if(Date.now()-revision.t>REV_MS){seguirTrasRevision();return;}const e=document.querySelector("#tlRevT");if(e)e.textContent=Math.max(0,Math.ceil((REV_MS-(Date.now()-revision.t))/1000));return;}
       if(fase!=="jugando"||vozBloqueada)return;const antesR=tiempo;tiempo-=dt;ticFinal(antesR,Math.max(0,tiempo));if(tiempo<=0){tiempo=0;SND.tiempo();reaccionar("tiempo");
         if(DOS){const q=J().pid;J().fin=true;guardarJ();if(cambiarTurno()){avisoFin(q);vozRonda++;pausarPorGiro("pasar");return;}}terminar();return;}
@@ -1064,7 +1078,20 @@
         return`<div class="tl-rd-fila tl-rd-c${x.k}${x.k===turno?" tl-rd-activo":""}${x.j.fin?" tl-rd-listo":""}"><span class="tl-rd-pos">${x.empata?"=":""}${x.pos}º</span><img src="assets/avatars/${av||"avatar-01"}.webp" alt="" onerror="this.style.visibility='hidden'"><b>${x.k===turno?"🎙 ":""}${esc(nombrePid(x.j.pid))}</b><span class="tl-ok">✓ ${x.ok}</span><span class="tl-mal">✘ ${x.mal}</span><small>${x.j.fin?"🏁 TERMINADO":x.q+" letras"}</small><span class="tl-rd-reloj" ${x.k===turno?'id="tlReloj"':""}>${reloj(x.k===turno?tiempo:x.j.tiempo)}</span></div>`;}).join("")}</div>`;}
     const planilla=(j,k)=>`<div class="tl-planilla">${j.items.map((d,i)=>{const a=apeladas.has(k+"-"+i);
       return`<div class="tl-pl-fila tl-pl-${j.est[i]}${a?" tl-pl-apelada":""}"><b>${d.letra}</b><span>${esc(d.palabra)}</span><small>${a?"⚖️ apelada · dijo «"+esc(j.resp[i])+"»":j.est[i]==="ok"?"✓ acertó":j.est[i]==="mal"?"✘ dijo «"+esc(j.resp[i])+"»":"⏭ sin responder"}</small></div>`;}).join("")}</div>`;
-    function pintar(raiz,quien){pintarBase(raiz,quien);if(apel)raiz.insertAdjacentHTML("beforeend",cartelApel());
+    function pintar(raiz,quien){pintarBase(raiz,quien);
+      if(festejo&&fase==="jugando"){const f=festejo,ro=raiz.querySelector(".tl-rosco");if(ro)ro.classList.add("tl-rd-completo");
+        let conf="";const cols=["#F5B301","#E5197C","#37D6C0","#7B3FE4","#2F9BFF","#FF7A1A","#fff"];
+        for(let i=0;i<90;i++)conf+=`<i style="left:${(i*37)%100}%;background:${cols[i%cols.length]};animation-delay:${((i*13)%26)/10}s;animation-duration:${2.6+((i*7)%20)/10}s;--g:${(i*97)%720-360}deg"></i>`;
+        raiz.insertAdjacentHTML("beforeend",`<div class="tl-rd-fest"><div class="tl-podio-conf">${conf}</div><div class="tl-rd-fest-caja"><small>🎉 ¡FELICITACIONES, ${esc(String(f.n).toUpperCase())}!</small>
+          <h1>${f.perfecto?"¡ROSCO PERFECTO!":"¡ROSCO COMPLETADO!"}</h1><p><span class="tl-ok">✓ ${f.ok} aciertos</span>${f.mal?` · <span class="tl-mal">✘ ${f.mal}</span>`:""}</p></div></div>`);
+        raiz.querySelectorAll(".tl-rl.tl-actual").forEach(x=>x.classList.remove("tl-actual"));
+        const le=raiz.querySelector(".tl-letra"),re=raiz.querySelector(".tl-regla");if(le)le.textContent=f.perfecto?"🏆":"🎉";if(re)re.textContent=f.perfecto?"¡Perfecto!":"¡Completado!";
+        /* El rosco da vueltas y frena brillando */
+        const g=raiz.querySelector(".tl-giro");if(g&&!f.girado){f.girado=true;const a0=parseFloat(g.style.getPropertyValue("--a"))||0;
+          requestAnimationFrame(()=>requestAnimationFrame(()=>{g.style.transition="--a 3.2s cubic-bezier(.15,.7,.2,1)";g.style.setProperty("--a",(a0+1080)+"deg");}));}
+        else if(g&&f.girado){const a0=parseFloat(g.style.getPropertyValue("--a"))||0;g.style.transition="none";g.style.setProperty("--a",(a0+1080)+"deg");}
+        return;}
+      if(apel)raiz.insertAdjacentHTML("beforeend",cartelApel());
       else if(revision&&fase==="jugando"){const j=P[revision.k],d=j.items[revision.i];
         raiz.insertAdjacentHTML("beforeend",`<div class="tl-apel"><div class="tl-apel-caja tl-rev-caja"><small>⏸️ ROSCO EN PAUSA</small><h2>❌ ${esc(nombrePid(j.pid))} erró</h2>
           <p>En la <b>${esc(d.letra)}</b> el micrófono escuchó «${esc(j.resp[revision.i])}».</p>
@@ -1109,7 +1136,7 @@
       if(fase==="fin")return{pantalla:"fin",juego:"rosco",resumen:DOS?P.map(j=>nombrePid(j.pid)+": "+j.est.filter(s=>s==="ok").length+" ✓").join(" · "):est.filter(s=>s==="ok").length+" aciertos",
         rosco:{dos:DOS,ver:verFin,jug:P.map((j,k)=>({pid:j.pid,n:nombrePid(j.pid),err:j.est.map((x,i)=>apelable(k,i)?{i,l:j.items[i].letra,p:j.items[i].palabra,d:j.resp[i]}:null).filter(Boolean)}))},apel:apelCel()};
       return{pantalla:"rosco",letra:items[actual].letra,regla:regla(items[actual]),escucha:fase==="jugando"&&!vozBloqueada?J().pid:null,puede:!vozBloqueada,turno:vozRonda,i:actual+(DOS?turno*100:0),
-        terminados:P.filter(j=>j.fin).map(j=>j.pid),apel:apelCel(),pausa,rev:revision?{dueno:P[revision.k].pid,n:nombrePid(P[revision.k].pid),l:P[revision.k].items[revision.i].letra,d:P[revision.k].resp[revision.i],sig:nombrePid(J().pid),t:revision.t}:null,pids:P.map(j=>j.pid),apelables:P.map((j,k)=>j.ultErr!=null&&apelable(k,j.ultErr)?{pid:j.pid,k,i:j.ultErr,l:j.items[j.ultErr].letra,d:j.resp[j.ultErr]}:null).filter(Boolean),
+        festejo:festejo?{dueno:festejo.pid,n:festejo.n,ok:festejo.ok,mal:festejo.mal,perfecto:festejo.perfecto}:null,terminados:P.filter(j=>j.fin).map(j=>j.pid),apel:apelCel(),pausa,rev:revision?{dueno:P[revision.k].pid,n:nombrePid(P[revision.k].pid),l:P[revision.k].items[revision.i].letra,d:P[revision.k].resp[revision.i],sig:nombrePid(J().pid),t:revision.t}:null,pids:P.map(j=>j.pid),apelables:P.map((j,k)=>j.ultErr!=null&&apelable(k,j.ultErr)?{pid:j.pid,k,i:j.ultErr,l:j.items[j.ultErr].letra,d:j.resp[j.ultErr]}:null).filter(Boolean),
         dos:DOS,activo:J().pid,nombreActivo:nombrePid(J().pid),marcador:DOS?tablaDos().f.map(x=>({n:nombrePid(x.j.pid),ok:x.ok,mal:x.mal,juega:x.k===turno,fin:!!x.j.fin,pos:x.pos,empata:x.empata})):null};}};
   }
 
@@ -1862,6 +1889,9 @@
         else raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⚖️ ¿Vale?</h2><p><b>${esc(a.n)}</b> apela: en la <b>${esc(a.l)}</b> dijo «${esc(a.d)}» y la palabra era <b>${esc(a.p)}</b>.</p><p>¿El micrófono entendió mal y en realidad lo dijo bien?</p>
           <button type="button" class="tl-boton tl-oro" data-voto="1">✔ Sí, vale</button><button type="button" class="tl-boton" data-voto="0">✘ No vale</button></div>`;
         raiz.querySelectorAll("[data-voto]").forEach(b=>b.onclick=()=>{raiz.querySelectorAll("[data-voto]").forEach(x=>x.disabled=true);accion("rs_voto",{si:b.dataset.voto==="1"});});return;}
+      /* ¡Rosco completado! en el celular */
+      if(c.pantalla==="rosco"&&c.festejo){const f=c.festejo;dcVoz(false);
+        raiz.innerHTML=cab+`<div class="tl-cel-caja tl-rd-fest-cel"><div class="tl-rd-fest-emoji">${f.perfecto?"🏆":"🎉"}</div><h2>${f.dueno===yo?(f.perfecto?"¡Rosco perfecto!":"¡Completaste el rosco!"):"¡"+esc(f.n)+" completó el rosco!"}</h2><p>✓ ${f.ok} aciertos${f.mal?" · ✘ "+f.mal:""}</p><p>Mirá la tele 📺</p></div>`;return;}
       /* Error en el Rosco de a dos: el que erró decide si apela; los demás esperan. */
       if(c.pantalla==="rosco"&&c.rev){const r=c.rev;dcVoz(false);
         if(r.dueno===yo||soyMando&&!(c.pids||[]).includes(yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja tl-rev-cel"><h2>❌ ¡Uy, no era!</h2><p>En la <b>${esc(r.l)}</b> el micrófono escuchó «${esc(r.d)}».</p><p>¿Qué pasó?</p>
