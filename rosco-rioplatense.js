@@ -26,7 +26,7 @@ const RoscoRioplatense=(()=>{
     const capa=document.createElement("div");capa.className="rr-voz-consulta";
     capa.setAttribute("role","dialog");capa.setAttribute("aria-modal","true");
     capa.setAttribute("aria-label","Activar respuestas por voz");
-    capa.innerHTML='<div class="rr-voz-consulta-caja"><h3>¿Querés jugar con el micrófono?</h3><p>Respondé hablando o decí «Pasapalabra», sin tocar Enviar.</p><div class="rr-voz-consulta-acciones"><button type="button" data-voz="no">No, escribir</button><button type="button" data-voz="si">Sí, activar voz</button></div></div>';
+    capa.innerHTML='<div class="rr-voz-consulta-caja"><h3>¿Querés jugar con el micrófono?</h3><p>Respondé hablando o decí «Pasar», sin tocar Enviar.</p><div class="rr-voz-consulta-acciones"><button type="button" data-voz="no">No, escribir</button><button type="button" data-voz="si">Sí, activar voz</button></div></div>';
     capa.addEventListener("click",e=>{
       const boton=e.target.closest("button[data-voz]");if(!boton)return;
       const activar=boton.dataset.voz==="si";
@@ -117,6 +117,7 @@ const RoscoRioplatense=(()=>{
       const elegida=mezclar(preferidas.length?preferidas:libres)[0];
       datos.ultimas[letra]=elegida.palabra;usadasSesion.add(elegida.palabra);vistas.add(elegida.palabra);return elegida;
     });
+    try{if(typeof roscoConContiene==="function")roscoConContiene(elegidas,vistas,(viejo,nuevo)=>{vistas.delete(viejo.palabra);usadasSesion.delete(viejo.palabra);vistas.add(nuevo.palabra);usadasSesion.add(nuevo.palabra);});}catch(e){}
     Vistas.guardar("rosco",vistas);
     return elegidas;
   }
@@ -234,7 +235,7 @@ const RoscoRioplatense=(()=>{
       const pasa=opciones.some(t=>["PASAPALABRA","PASAR","PASO"].includes(normalizar(t)));
       if(pasa){
         cancelarErrorVozG();
-        mostrarEstadoVozG(resultado.isFinal?"Pasapalabra reconocido":"Oí «Pasapalabra» · confirmando…");
+        mostrarEstadoVozG(resultado.isFinal?"Pasar reconocido":"Oí «Pasar» · confirmando…");
         if(resultado.isFinal){vozSilenciosG=0;pasar();return;}
         /* Chrome puede quedarse en resultado parcial: una sola vez basta
            para Pasapalabra, siempre que no cambie la transcripción. */
@@ -564,7 +565,7 @@ const RoscoRioplatense=(()=>{
     if(!(pruebaG&&vozG))detenerVoz();
     tic();if(fase!=="resolver")return;
     const crudo=$("#rrEntrada").value.trim().slice(0,30);
-    const valor=normalizar($("#rrEntrada").value);if(!valor){mensaje("Escribí una palabra o tocá Pasapalabra.");enfocar();return;}
+    const valor=normalizar($("#rrEntrada").value);if(!valor){mensaje("Escribí una palabra o tocá Pasar.");enfocar();return;}
     const d=items[actual],ok=vale(d,valor);
     estados[actual]=ok?"acierto":"error";respuestas[actual]=crudo;fase="respuesta";espera=ROSCO_CONFIG.pausaMs;
     if(raiz.classList.contains("rr-estudio"))window.GiroRoscoPiloto?.reaccion?.(ok?"acierto":"error");
@@ -600,7 +601,7 @@ const RoscoRioplatense=(()=>{
     const acciones=[["Jugar nivel "+nivel,iniciar]];
     if(nivel>1)acciones.push(["Practicar desde el nivel 1",()=>{nivel=1;iniciar();}]);
     acciones.push(["Jugar con un amigo 👥",iniciarDuelo]);
-    panel("El Rosco Rioplatense",config.letras+" letras y "+config.segundos+" segundos. Leé cada pista y escribí la palabra: tenés un intento por letra. Pasapalabra la deja para después. El reloj se pausa al girar. Acertá al menos "+Math.ceil(config.letras*ROSCO_CONFIG.proporcionAvance)+" y respondé todas para avanzar. Jugás gratis, sin gastar vidas ni monedas. Mejor: "+datos.mejor+" puntos.",acciones,"personaje");
+    panel("El Rosco Rioplatense",config.letras+" letras y "+config.segundos+" segundos. Leé cada pista y escribí la palabra: tenés un intento por letra. Pasar la deja para después. El reloj se pausa al girar. Acertá al menos "+Math.ceil(config.letras*ROSCO_CONFIG.proporcionAvance)+" y respondé todas para avanzar. Jugás gratis, sin gastar vidas ni monedas. Mejor: "+datos.mejor+" puntos.",acciones,"personaje");
     $(".rr-principal")?.focus({preventScroll:true});ajustarPantalla();
   }
   /* Resumen final: por letra, la palabra correcta, lo que escribiste vos y
@@ -738,7 +739,7 @@ const RoscoRioplatense=(()=>{
     pruebaG=true;
     vozG=false;vozConsultadaG=false;cerrarConsultaVozG();
     if(pruebaG)raiz.classList.add("rr-gonzalo");
-    raiz.innerHTML='<button type="button" class="ext-volver" id="rrVolver">⟵ Extensiones</button><div class="rr-titulo rr-titulo-arte"><h2 class="rr-logo-h"><img class="rr-logo" src="'+ARTE("logo")+'" alt="El Rosco" draggable="false"></h2><p>Una vuelta, muchas palabras nuestras.</p></div><div id="rrJuego" hidden><div class="sf-hud"><div><small>Nivel</small><b id="rrNivel"></b></div><div><small>'+ico("aciertos")+'Aciertos</small><b id="rrAciertos"></b></div><div><small>'+ico("errores")+'Errores</small><b id="rrErrores"></b></div><div><small>'+ico("reloj")+'Tiempo</small><b id="rrTiempo"></b></div></div><div class="sf-bar"><i id="rrBarra"></i></div><div class="rr-rueda"><div id="rrDisco"></div><b id="rrGrande"></b></div><div class="rr-pista" role="status" aria-live="polite"><div class="voz-fila"><span class="rr-pista-ico">'+ico("pista")+'</span><small id="rrRegla"></small><button type="button" class="voz-btn rr-escuchar" id="rrEscuchar" aria-label="Escuchar la pista">'+ico("escuchar")+'</button></div><p id="rrDefinicion"></p></div><p id="rrMensaje" class="rr-mensaje" role="status"></p><form id="rrForm" autocomplete="off"><label class="rr-sr" for="rrEntrada">Tu respuesta</label><div class="rr-fila"><input id="rrEntrada" placeholder="Tu palabra" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" enterkeyhint="send" maxlength="60"><button id="rrEnviar" type="submit">Enviar</button><button id="rrPasar" type="button">'+ico("pasapalabra")+'<span>Pasapalabra</span></button><button id="rrVoz" type="button" class="rr-microfono" aria-label="Responder hablando" aria-pressed="false" title="Responder por voz">🎙<span>Hablar</span></button></div></form></div><div id="rrPanel" class="rr-panel-capa"></div>';
+    raiz.innerHTML='<button type="button" class="ext-volver" id="rrVolver">⟵ Extensiones</button><div class="rr-titulo rr-titulo-arte"><h2 class="rr-logo-h"><img class="rr-logo" src="'+ARTE("logo")+'" alt="El Rosco" draggable="false"></h2><p>Una vuelta, muchas palabras nuestras.</p></div><div id="rrJuego" hidden><div class="sf-hud"><div><small>Nivel</small><b id="rrNivel"></b></div><div><small>'+ico("aciertos")+'Aciertos</small><b id="rrAciertos"></b></div><div><small>'+ico("errores")+'Errores</small><b id="rrErrores"></b></div><div><small>'+ico("reloj")+'Tiempo</small><b id="rrTiempo"></b></div></div><div class="sf-bar"><i id="rrBarra"></i></div><div class="rr-rueda"><div id="rrDisco"></div><b id="rrGrande"></b></div><div class="rr-pista" role="status" aria-live="polite"><div class="voz-fila"><span class="rr-pista-ico">'+ico("pista")+'</span><small id="rrRegla"></small><button type="button" class="voz-btn rr-escuchar" id="rrEscuchar" aria-label="Escuchar la pista">'+ico("escuchar")+'</button></div><p id="rrDefinicion"></p></div><p id="rrMensaje" class="rr-mensaje" role="status"></p><form id="rrForm" autocomplete="off"><label class="rr-sr" for="rrEntrada">Tu respuesta</label><div class="rr-fila"><input id="rrEntrada" placeholder="Tu palabra" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" enterkeyhint="send" maxlength="60"><button id="rrEnviar" type="submit">Enviar</button><button id="rrPasar" type="button">'+ico("pasapalabra")+'<span>Pasar</span></button><button id="rrVoz" type="button" class="rr-microfono" aria-label="Responder hablando" aria-pressed="false" title="Responder por voz">🎙<span>Hablar</span></button></div></form></div><div id="rrPanel" class="rr-panel-capa"></div>';
     contenedor.appendChild(raiz);shell=raiz.closest(".ext-shell");shell?.classList.add("rr-abierta");
     if(pruebaG){
       const teclado=document.createElement("div");teclado.id="rrTecladoG";teclado.className="rr-teclado-g";teclado.setAttribute("aria-label","Teclado propio del Rosco");

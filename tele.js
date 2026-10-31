@@ -840,6 +840,7 @@
         if(!libres.length)libres=b.filter(d=>!suyas.has(d.palabra));
         if(!libres.length){b.forEach(d=>{vistas.delete(d.palabra);suyas.delete(d.palabra);});libres=b;}
         const pref=libres.filter(d=>d.nivel<=2);const d=mezclar(pref.length?pref:libres)[0];vistas.add(d.palabra);suyas.add(d.palabra);return d;});
+      try{if(typeof roscoConContiene==="function")roscoConContiene(items,new Set([...vistas,...suyas]),(viejo,nuevo)=>{vistas.delete(viejo.palabra);suyas.delete(viejo.palabra);vistas.add(nuevo.palabra);suyas.add(nuevo.palabra);});}catch(e){}
       Vistas.guardar("rosco",vistas);try{T.avisarVistas&&T.avisarVistas(pid,items.map(d=>d.palabra));}catch(e){}return items;
     }
     /* Rosco de a dos (31/10/2026): cada uno con su rosco, su reloj y su puntaje; juega uno por vez y el turno

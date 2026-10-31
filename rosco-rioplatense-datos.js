@@ -526,3 +526,19 @@ const ROSCO_DATOS=[
   ["Z","ZURCIR","Arreglar un agujero de la media cosiéndolo.","costumbres",3],
   ["Z","ZORRINO","Animal que larga un olor feo para defenderse.","naturaleza",2,["ZORRILLO"]]
 ].map(([letra,palabra,definicion,categoria,nivel,alternativas=[]])=>({letra,palabra,definicion,categoria,nivel,alternativas}));
+
+/* "Contiene la X" (31/10/2026, Gonzalo: "nunca dice contiene"): en cada rosco ~1 de cada 5 letras usa una palabra
+   de otra letra que lleva esa letra adentro (no al principio). La usan el Rosco del celular y el de la tele. */
+function roscoContiene(letra,usadas,vistas){
+  const n=s=>String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
+  const ops=ROSCO_DATOS.filter(d=>d.letra!==letra&&!/\s/.test(d.palabra)&&n(d.palabra).indexOf(letra)>0&&!usadas.has(d.palabra));
+  const libres=vistas?ops.filter(d=>!vistas.has(d.palabra)):ops,l=libres.length?libres:ops;
+  if(!l.length)return null;const d=l[Math.floor(Math.random()*l.length)];return{...d,letra,contiene:true};
+}
+function roscoConContiene(items,vistas,alCambiar){
+  const usadas=new Set(items.map(d=>d.palabra)),idx=items.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+  idx.slice(0,Math.round(items.length*.2)).forEach(i=>{const c=roscoContiene(items[i].letra,usadas,vistas);if(!c)return;
+    if(alCambiar)alCambiar(items[i],c);usadas.add(c.palabra);items[i]=c;});
+  return items;
+}
