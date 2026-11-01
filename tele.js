@@ -204,7 +204,7 @@
     iniciarCel(nombre);
   }
   /* Celular: entrar a la Ruleta (Sala TV) con el código que mandó la tele, con su nombre, sin tocar nada. */
-  let yendoRuleta=false;
+  let yendoRuleta=false,ruletaDesde=0,ruletaT=null;
   function irRuleta(sala,nombre){if(yendoRuleta)return;yendoRuleta=true;
     const u=new URL("index.html",location.href);u.searchParams.set("tv",sala);u.searchParams.set("tvname",nombre||"");u.searchParams.set("tvauto","1");location.href=u.href;}
   /* Tele en la Ruleta (index.html?tvhost=1&avisar=<código de Juegos en la tele>): apenas la Sala TV tiene
@@ -2185,7 +2185,11 @@
       const cab=`<div class="tl-cel-cab">📺 Sala ${esc(m.cod)} · ${esc(nombre)}${soyMando?" · 🎮":""}</div>`;
       if(!m.jug.some(j=>j.pid===yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Entrando…</h2></div>`;return;}
       if(c.pantalla==="ruleta_nativa"){pintarRuletaNativa(c,cab,soyMando,yo);return;}
-      if(c.pantalla==="ruleta"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🎡 La Ruleta</h2><p>La Ruleta tiene su propia entrada. Cuando la tele muestre el código nuevo, tocá acá y ponelo:</p><a class="tl-boton tl-oro" href="tv.html">Entrar a la Ruleta</a></div>`;return;}
+      /* Mientras la tele abre la Ruleta, el celular entra solo (irRuleta): sin código ni nombre. Solo si a los
+         40 s no entró, aparece un botón de respaldo. */
+      if(c.pantalla==="ruleta"){if(!ruletaDesde)ruletaDesde=Date.now();
+        raiz.innerHTML=cab+`<div class="tl-cel-caja tl-ruleta-espera"><div class="tl-ruleta-gira"></div><h2>🎡 Abriendo la Ruleta…</h2><p>Tu celular entra solo en unos segundos. No tenés que hacer nada.</p><a class="tl-boton" id="tlRuletaMano" href="tv.html" hidden>¿No entra? Tocá acá</a></div>`;
+        clearTimeout(ruletaT);ruletaT=setTimeout(()=>{const b=document.getElementById("tlRuletaMano");if(b)b.hidden=false;},Math.max(0,40000-(Date.now()-ruletaDesde)));return;}
       if(c.pantalla==="tutti"){pintarTutti(c,cab,soyMando);return;}
       if(c.pantalla==="puzzle"){pintarPuzzle(c,cab,soyMando);return;}
       if(c.pantalla!=="duelo"&&c.pantalla!=="rosco")dcVoz(false);

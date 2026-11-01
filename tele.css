@@ -650,3 +650,5 @@ html.tele-modo .grp-acciones{margin:0}
 @keyframes tlMgExpB{0%{transform:scale(.2)}25%{transform:scale(1.25)}45%{transform:scale(1)}100%{transform:scale(1.1)}}
 .tl-mg-sel .tl-mg-dorso{box-shadow:0 0 0 .6vh #fff,0 0 3vh #fff;filter:brightness(.75)}.tl-mg-sel .tl-mg-dorso::after{content:"💡";position:absolute;top:.4vh;right:.6vh;font-size:calc(var(--tam,15vh)*.25)}
 .tl-mgc-sel{outline:3px solid #fff;filter:brightness(.8)}
+.tl-ruleta-espera{text-align:center}.tl-ruleta-gira{width:44px;height:44px;margin:6px auto 12px;border-radius:50%;border:5px solid #ffffff33;border-top-color:#F5B301;animation:tlRuletaGira .8s linear infinite}
+@keyframes tlRuletaGira{to{transform:rotate(360deg)}}

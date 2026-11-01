@@ -1255,6 +1255,11 @@ body.tv-lobby-bg{background-image:linear-gradient(#0C0616CC,#0C0616F2),url('asse
 #tvcRespuestaBtns{display:flex;gap:8px}
 #tvcRespuestaBtns button{flex:1;border-radius:11px;padding:12px;font-weight:800}
 #tvcMiniTiempo{font-family:'Archivo Black';color:var(--oro);margin-bottom:8px}
+#tvAutoCapa{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;background:radial-gradient(circle at 50% 40%,#3A1D63,#160B24 70%);color:#F6EFE2;font-family:Outfit,system-ui,sans-serif}
+#tvAutoCapa img{width:min(52vw,230px)}#tvAutoCapa h2{margin:0;color:#F5B301;font:900 1.6rem 'Archivo Black',system-ui,sans-serif}#tvAutoCapa p{margin:0;font-weight:700;opacity:.9}
+#tvAutoCapa span{width:38px;height:38px;border-radius:50%;border:4px solid #ffffff33;border-top-color:#F5B301;animation:tvAutoGira .8s linear infinite}
+@keyframes tvAutoGira{to{transform:rotate(360deg)}}
+body.tv-desde-tele #tvCodigo{font-size:1.1rem;opacity:.35;padding:6px}
 body.tvhost #juego{max-width:1240px}
 body.tvhost #juego .marcador,body.tv-prueba-bots #juego .marcador{
  display:flex;grid-template-columns:none;overflow-x:auto;scroll-snap-type:x mandatory;
@@ -8541,7 +8546,8 @@ function crearSalaTV(){
   modo="tvhost";miJug=-1;familiaJugadores=[];tvPartidaIniciada=false;S=null;
   sala=Array.from({length:4},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)]).join("");
   $("setup").style.display="none";
-  if(TV_DESDE_TELE){$("tvLobby").style.display="block";document.body.classList.add("tv-lobby-bg");}
+  if(TV_DESDE_TELE){$("tvLobby").style.display="block";document.body.classList.add("tv-lobby-bg");document.body.classList.add("tv-desde-tele");
+    const a=document.querySelector("#tvLobby .tv-ayuda");if(a)a.textContent="🎡 La Ruleta: los celulares de la sala entran solos y la partida arranca sola.";}
   else $("capaBienvenidaTV").classList.add("ver");
   conectar(()=>{
     // The first digit pins all phones to the broker chosen by this TV.
@@ -8604,7 +8610,8 @@ function recibirTVHost(d){
 function recibirTVGuest(d){
   if(d.tipo==="tv_lobby"){
     const yo=(d.jugadores||[]).findIndex(j=>j.id===tvId);
-    if(yo>=0){tvMiIndex=yo;$("estado").textContent="Conectado como "+d.jugadores[yo].n+". Esperando que la TV inicie…";}
+    if(yo>=0){tvMiIndex=yo;$("estado").textContent="Conectado como "+d.jugadores[yo].n+". Esperando que la TV inicie…";
+      const cp=document.querySelector("#tvAutoCapa p");if(cp)cp.textContent="✅ Ya estás adentro, "+d.jugadores[yo].n+". Arranca enseguida…";}
     return;
   }
   if(d.tipo==="estado"){
@@ -9124,6 +9131,13 @@ if(tvEnLink){
   /* Desde Juegos en la tele (31/10/2026): el celular ya trae el nombre y entra solo a la Ruleta, sin escribir nada. */
   const qTV=new URLSearchParams(location.search),nTV=(qTV.get("tvname")||"").replace(/[<>&"']/g,"").trim().slice(0,12);
   if(nTV)$("miNombre").value=nTV;
+  /* Gonzalo (01/11/2026): "no entiendo por qué me hacés poner pin, nombre…". Viniendo de Juegos en la tele
+     el celular no muestra código ni nombre: solo "Entrando a la Ruleta…" hasta que aparece el control. */
+  if(qTV.get("tvauto")==="1"){const capa=document.createElement("div");capa.id="tvAutoCapa";
+    capa.innerHTML='<img src="assets/logo.webp" alt=""><span></span><h2>🎡 Entrando a la Ruleta…</h2><p>No tenés que hacer nada: la partida arranca sola.</p>';
+    const poner=()=>{document.body.appendChild(capa);const t=setInterval(()=>{const c=$("tvControl");if(c&&c.style.display==="block"){clearInterval(t);capa.remove();}},400);};
+    if(document.body)poner();else window.addEventListener("DOMContentLoaded",poner,{once:true});
+    if(!$("miNombre").value.trim())$("miNombre").value=nTV||(perfil&&perfil.nombre)||"Jugador";}
   if(qTV.get("tvauto")==="1"&&($("miNombre").value.trim()||nTV)){const ir=()=>setTimeout(()=>$("bEntrarTV").click(),300);if(document.readyState==="loading")window.addEventListener("DOMContentLoaded",ir,{once:true});else ir();}
 }
 const salaEnLink=(new URLSearchParams(location.search).get("sala")||"").toUpperCase();
@@ -12139,8 +12153,8 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="tutti-frutti.js?v=97"></script>
 <script src="extensiones.js?v=118"></script>
 <script src="sala-tv.js?v=1"></script>
-<link rel="stylesheet" href="tele.css?v=42">
-<script src="tele.js?v=76"></script>
+<link rel="stylesheet" href="tele.css?v=43">
+<script src="tele.js?v=77"></script>
 </body>
 </html>
 
