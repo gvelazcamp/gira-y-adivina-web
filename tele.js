@@ -879,7 +879,7 @@
     /* De a dos (31/10/2026): cada error abre un aviso en el celular del que erró: "Dijiste «…», era …
        ¿Apelás?". Mientras decide, el Rosco queda en pausa. "No" (o 12 s sin tocar) → sigue la partida;
        "Sí" → apelación con votación. Pasar no abre nada. */
-    function seguirTrasRevision(){revision=null;if(fase!=="jugando"||apel)return;vozRonda++;const id=++vozBloqueoId;vozReanudar=setTimeout(()=>reanudarVoz(id),900);actualizar();}
+    function seguirTrasRevision(){revision=null;if(!DOS&&ultimo&&ultimo.tipo==="mal")cambio=Date.now();if(fase!=="jugando"||apel)return;vozRonda++;const id=++vozBloqueoId;vozReanudar=setTimeout(()=>reanudarVoz(id),900);actualizar();}
     /* ⏸️ Pausa (31/10/2026): cualquiera de los que juegan (o el del control) frena reloj y micrófono; desde la
        pausa se puede apelar. ▶ Seguir (o la decisión de una apelación) lo vuelve a poner en marcha. */
     function pausar(){if(fase!=="jugando"||pausa||apel)return;pausa=true;vozBloqueada=true;++vozBloqueoId;clearTimeout(vozRespaldo);clearTimeout(vozReanudar);SND.turno();actualizar();}
@@ -1042,7 +1042,9 @@
       if(ok)SND.ok();else SND.mal();
       const kErr=turno,iErr=actual;
       avanzar();if(festejo)return;if(fase==="jugando"){if(!ok)cambiarTurno();pausarPorGiro(ok?"acierto":"error");
-        if(!ok&&DOS&&fase==="jugando"){revision={k:kErr,i:iErr,t:Date.now()};++vozBloqueoId;clearTimeout(vozRespaldo);clearTimeout(vozReanudar);actualizar();}}else actualizar();
+        /* También jugando solo (01/11/2026, Gonzalo: "por ruido no podía jugarlo bien"): al errar se pausa y se
+           puede elegir Fue ruido / Lo dije bien / Seguir. Solo, la palabra correcta se muestra recién al seguir. */
+        if(!ok&&fase==="jugando"){revision={k:kErr,i:iErr,t:Date.now()};++vozBloqueoId;clearTimeout(vozRespaldo);clearTimeout(vozReanudar);actualizar();}}else actualizar();
     }
     /* Los aciertos y Pasar entran al instante; una respuesta final equivocada
        cuenta como error. Mientras habla Giro el celular deja de escuchar. */
@@ -1132,7 +1134,7 @@
       const letras=items.map((x,i)=>`<div class="tl-rl tl-${est[i]}${i===actual?" tl-actual":""}" style="--p:${i*paso}deg">${x.letra}</div>`).join("");
       /* De a dos el aviso dice quién fue (auditoría 31/10/2026: "Pasó" aparecía ya en el turno del otro). */
       const qn=DOS&&ultimo&&ultimo.n?esc(ultimo.n)+" ":"";
-      const flash=ultimo&&Date.now()-cambio<1800?(ultimo.tipo==="ok"?`<div class="tl-flash tl-ok">✓ ¡Bien${DOS&&ultimo.n?" "+esc(ultimo.n):""}! «${esc(ultimo.palabra)}»</div>`:ultimo.tipo==="mal"?`<div class="tl-flash tl-mal">✘ ${qn?qn+"dijo":"Dijo"} «${esc(ultimo.dijo||"")}»${DOS?"":" · Era "+esc(ultimo.palabra)}</div>`:`<div class="tl-flash tl-paso">${qn?qn+"pasó":"Pasó"} ⏭</div>`):"";
+      const flash=ultimo&&Date.now()-cambio<1800?(ultimo.tipo==="ok"?`<div class="tl-flash tl-ok">✓ ¡Bien${DOS&&ultimo.n?" "+esc(ultimo.n):""}! «${esc(ultimo.palabra)}»</div>`:ultimo.tipo==="mal"?`<div class="tl-flash tl-mal">✘ ${qn?qn+"dijo":"Dijo"} «${esc(ultimo.dijo||"")}»${DOS||revision||apel?"":" · Era "+esc(ultimo.palabra)}</div>`:`<div class="tl-flash tl-paso">${qn?qn+"pasó":"Pasó"} ⏭</div>`):"";
       /* De a dos: el rosco de cada uno con su color y su nombre en el medio (31/10/2026). */
       raiz.innerHTML=`<div class="tl-rosco tl-estudio${DOS?" tl-rd-j"+turno:""}">
         <div class="tl-aro"><div class="tl-giro" style="--a:${angPrevio}deg">${letras}</div>
@@ -1151,7 +1153,7 @@
       if(fase==="fin")return{pantalla:"fin",juego:"rosco",resumen:DOS?P.map(j=>nombrePid(j.pid)+": "+j.est.filter(s=>s==="ok").length+" ✓").join(" · "):est.filter(s=>s==="ok").length+" aciertos",
         rosco:{dos:DOS,ver:verFin,jug:P.map((j,k)=>({pid:j.pid,n:nombrePid(j.pid),err:j.est.map((x,i)=>apelable(k,i)?{i,l:j.items[i].letra,p:j.items[i].palabra,d:j.resp[i]}:null).filter(Boolean)}))},apel:apelCel()};
       return{pantalla:"rosco",letra:items[actual].letra,regla:regla(items[actual]),escucha:fase==="jugando"&&!vozBloqueada?J().pid:null,puede:!vozBloqueada,turno:vozRonda,i:actual+(DOS?turno*100:0),
-        festejo:festejo?{dueno:festejo.pid,n:festejo.n,ok:festejo.ok,mal:festejo.mal,perfecto:festejo.perfecto}:null,terminados:P.filter(j=>j.fin).map(j=>j.pid),apel:apelCel(),pausa,rev:revision?{dueno:P[revision.k].pid,n:nombrePid(P[revision.k].pid),l:P[revision.k].items[revision.i].letra,d:P[revision.k].resp[revision.i],sig:nombrePid(J().pid),t:revision.t}:null,pids:P.map(j=>j.pid),apelables:P.map((j,k)=>j.ultErr!=null&&apelable(k,j.ultErr)?{pid:j.pid,k,i:j.ultErr,l:j.items[j.ultErr].letra,d:j.resp[j.ultErr]}:null).filter(Boolean),
+        festejo:festejo?{dueno:festejo.pid,n:festejo.n,ok:festejo.ok,mal:festejo.mal,perfecto:festejo.perfecto}:null,terminados:P.filter(j=>j.fin).map(j=>j.pid),apel:apelCel(),pausa,rev:revision?{dueno:P[revision.k].pid,n:nombrePid(P[revision.k].pid),l:P[revision.k].items[revision.i].letra,d:P[revision.k].resp[revision.i],sig:nombrePid(J().pid),t:revision.t,solo:!DOS}:null,pids:P.map(j=>j.pid),apelables:P.map((j,k)=>j.ultErr!=null&&apelable(k,j.ultErr)?{pid:j.pid,k,i:j.ultErr,l:j.items[j.ultErr].letra,d:j.resp[j.ultErr]}:null).filter(Boolean),
         dos:DOS,activo:J().pid,nombreActivo:nombrePid(J().pid),marcador:DOS?tablaDos().f.map(x=>({n:nombrePid(x.j.pid),ok:x.ok,mal:x.mal,juega:x.k===turno,fin:!!x.j.fin,pos:x.pos,empata:x.empata})):null};}};
   }
 
@@ -2217,7 +2219,7 @@
         if(r.dueno===yo||soyMando&&!(c.pids||[]).includes(yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja tl-rev-cel"><h2>❌ ¡Uy, no era!</h2><p>En la <b>${esc(r.l)}</b> el micrófono escuchó «${esc(r.d)}».</p><p>¿Qué pasó?</p>
           <button type="button" class="tl-boton tl-oro" data-rev="ruido">🔊 Fue ruido: volver a preguntar</button>
           <button type="button" class="tl-boton tl-oro" data-rev="apelar">⚖️ Lo dije bien: apelar</button>
-          <button type="button" class="tl-boton" data-rev="seguir">No, seguir${r.sig&&r.sig!==r.n?" (le toca a "+esc(r.sig)+")":""}</button><p class="tl-rev-nota">Los demás votan si fue ruido o si vale.</p></div>`;
+          <button type="button" class="tl-boton" data-rev="seguir">No, seguir${r.sig&&r.sig!==r.n?" (le toca a "+esc(r.sig)+")":""}</button>${r.solo?"":'<p class="tl-rev-nota">Los demás votan si fue ruido o si vale.</p>'}</div>`;
           raiz.querySelectorAll("[data-rev]").forEach(b=>b.onclick=()=>{raiz.querySelectorAll("[data-rev]").forEach(x=>x.disabled=true);accion("rs_rev",{modo:b.dataset.rev});});return;}
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏸️ Un momento</h2><p><b>${esc(r.n)}</b> erró en la <b>${esc(r.l)}</b> (el micrófono escuchó «${esc(r.d)}») y está decidiendo qué hacer…</p></div>`;return;}
       if(c.pantalla==="rosco"&&c.pausa&&((c.pids||[]).includes(yo)||soyMando)){dcVoz(false);

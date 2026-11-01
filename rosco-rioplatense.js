@@ -568,6 +568,10 @@ const RoscoRioplatense=(()=>{
     const crudo=$("#rrEntrada").value.trim().slice(0,30);
     const valor=normalizar($("#rrEntrada").value);if(!valor){mensaje("Escribí una palabra o tocá Pasar.");enfocar();return;}
     const d=items[actual],ok=vale(d,valor);
+    /* Jugando con voz (01/11/2026, Gonzalo: "por ruido no podía jugarlo bien"): si el micrófono oye algo
+       equivocado, el reloj se frena y se elige: Fue ruido (otra vez la misma pista), Lo dije bien (vale)
+       o Seguir. La palabra correcta se muestra recién al seguir. */
+    if(!ok&&vozG&&!duelo){revisarErrorVozG(d,crudo);return;}
     estados[actual]=ok?"acierto":"error";respuestas[actual]=crudo;fase="respuesta";espera=ROSCO_CONFIG.pausaMs;
     if(raiz.classList.contains("rr-estudio"))window.GiroRoscoPiloto?.reaccion?.(ok?"acierto":"error");
     $("#rrEntrada").value="";sonido(ok);mensaje(ok?"¡Bien! +100 puntos · "+d.palabra:"Era "+d.palabra,ok?"acierto":"error");
@@ -575,6 +579,22 @@ const RoscoRioplatense=(()=>{
     if(ok&&typeof logroDesbloquear==="function")logroDesbloquear("roscoPrimera");
     hud();enfocar();
     if(duelo)Duelo.enviarProgreso({aciertos:conteo("acierto"),total:items.length});
+  }
+  function revisarErrorVozG(d,crudo){
+    const i=actual;fase="revision";detenerVoz();$("#rrEntrada").value="";sonido(false);mensaje("Oí «"+crudo+"»","error");hud();
+    const cerrar=()=>{$("#rrPanel").hidden=true;};
+    const seguirConError=(texto)=>{cerrar();if(!raiz||fase!=="revision")return;
+      estados[i]="error";respuestas[i]=crudo;fase="respuesta";espera=ROSCO_CONFIG.pausaMs;
+      if(raiz.classList.contains("rr-estudio"))window.GiroRoscoPiloto?.reaccion?.("error");
+      mensaje(texto||"Era "+d.palabra,"error");if(typeof objSumar==="function")objSumar("roscoLetras",1);hud();};
+    panel("❌ ¡Uy, no era!","El micrófono escuchó «"+crudo+"». El reloj está en pausa. ¿Qué pasó?",[
+      ["🔊 Fue ruido: volver a preguntar",()=>{cerrar();if(!raiz||fase!=="revision")return;
+        estados[i]="pendiente";respuestas[i]="";destino=i;mensaje("🔁 Otra vez la "+d.letra);detenerGiro();}],
+      ["⚖️ Lo dije bien: que valga",()=>{cerrar();if(!raiz||fase!=="revision")return;
+        estados[i]="acierto";respuestas[i]=crudo;fase="respuesta";espera=ROSCO_CONFIG.pausaMs;sonido(true);
+        if(raiz.classList.contains("rr-estudio"))window.GiroRoscoPiloto?.reaccion?.("acierto");
+        mensaje("✅ Apelada · +100 puntos · "+d.palabra,"acierto");if(typeof objSumar==="function")objSumar("roscoLetras",1);hud();}],
+      ["Seguir",()=>seguirConError()]]);
   }
   function pasar(){
     if(!raiz||fase!=="resolver"||document.hidden)return;
