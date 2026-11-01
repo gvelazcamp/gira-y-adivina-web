@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 01/11/2026 — La Ruleta desde Juegos en la tele: el celular ya no muestra código ni nombre
+- Qué: Gonzalo: "no entiendo por qué me hacés poner pin, nombre… que sea jugar solo o de a dos". (1) Mientras la tele abre la Ruleta, el celular muestra "🎡 Abriendo la Ruleta… tu celular entra solo" con ruedita (antes decía "poné el código nuevo" con un botón a tv.html); el botón de respaldo "¿No entra? Tocá acá" aparece recién a los 40 s. (2) Al pasar a la Sala TV (index.html?tv=…&tvauto=1) el celular tapa la pantalla de nombre/código con "Entrando a la Ruleta… no tenés que hacer nada" hasta que aparece el control (y "✅ Ya estás adentro" cuando la tele lo anota). Si no hay nombre usa el del perfil o "Jugador". (3) En la tele, la Sala TV abierta desde Juegos en la tele dice "los celulares entran solos y la partida arranca sola" y el código queda chiquito y tenue.
+- Dónde: tele.js (pantalla "ruleta" del celular), tele.css (.tl-ruleta-espera), index.html (#tvAutoCapa, recibirTVGuest, crearSalaTV con tv-desde-tele).
+
 ### 01/11/2026 — Rosco jugando solo: también "Fue ruido / Lo dije bien / Seguir"
 - Qué: Gonzalo: "lo de fue ruido y apelar no aparece cuando juego solo; por ruido no podía jugarlo bien". (1) Tele, Rosco de a 1: al errar aparece el mismo cartel que de a dos (⏸️ Rosco en pausa · el celular ofrece 🔊 Fue ruido: volver a preguntar / ⚖️ Lo dije bien: apelar / No, seguir; 12 s y sigue solo). Solo no hay votación: se acepta directo. La palabra correcta ("Era …") se muestra recién al seguir. (2) Rosco del celular jugando con voz (vozG, no en duelo online): si el micrófono oye algo equivocado, se frena el reloj y sale un cartel con las mismas 3 opciones; "Fue ruido" vuelve a leer la misma pista, "Lo dije bien" la cuenta como acierto (+100), "Seguir" la deja como error y muestra la palabra.
 - Dónde: tele.js (responder: revision también sin DOS; flash sin "Era" durante la revisión; rev.solo), rosco-rioplatense.js (revisarErrorVozG, fase "revision").
