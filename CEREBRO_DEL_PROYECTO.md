@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 01/11/2026 — Rosco en iPhone: ya no queda en negro esperando las imágenes de Giro
+- Qué: (1) las imágenes de Giro que usaba el Rosco estaban en PNG pesados (el estudio 1,6 MB, las poses de espera hasta 1,8 MB): pasaron a WebP (161 KB y ~80 KB). Los PNG quedan en el repo sin usar. (2) Antes de la apertura se esperan sus imágenes (máx. 3 s) con un cartel "Cargando el estudio…" (logo + ruedita, fondo violeta) en vez de pantalla negra; durante la apertura se precargan las de la presentación y el estudio del juego. (3) La apertura ya no arranca 1,3 s en negro: fondo azul de estudio y el estudio aparece a los 0,25 s. La cortina del Rosco mientras carga también es violeta, no negra.
+- Dónde: giro-rosco-piloto.js (precargar, esperarImagenes, mostrarInicio; .png → .webp), giro-rosco-piloto.css (.grp-cargando, tiempos de la apertura), rosco-rioplatense.js (cortina, versiones v41/v23), tele.js (poses .webp).
+
 ### 31/10/2026 — La Ruleta desde Juegos en la tele: sin carteles y se puede jugar de a 1
 - Qué: cuando la Sala TV la abre la tele (index.html?tvhost=1&avisar=…), ya no aparece el cartel de bienvenida ni el anuncio/ruleta de sorteo ni "¡Ya tenemos jugador!". Alcanza con 1 jugador (antes mínimo 2). La tele avisa cuántos jugadores tiene (&jug=N) y la partida arranca sola 2 s después de que llegan todos los celulares (si falta alguno, a los 20 s con los que están). Arranca uno al azar. Con 1 jugador el final dice "X terminó con $… · N rondas ganadas". La Sala TV de siempre (entrando por su botón) sigue igual.
 - Dónde: index.html (TV_DESDE_TELE, TV_ESPERADOS, tvAutoArrancar, tvArrancarYa, renderTVLobby, crearSalaTV, resumen del final), tele.js (manda &jug=).

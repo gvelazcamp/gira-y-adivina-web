@@ -80,14 +80,14 @@
 @media(prefers-reduced-motion:reduce){.grp-overlay *{animation:none!important;transition:none!important;will-change:auto!important}.grp-plano-estable{transform:none!important}}
 /* Apertura del programa: todo entra en una pantalla, sin deslizar. */
 /* El fondo negro aparece entero de una (si se desvanecía, se transparentaba el cartel del Rosco que queda debajo); lo que entra de a poco es el contenido. */
-.grp-apertura{position:fixed;inset:0;z-index:2147483001;background:#000;display:grid;place-items:center;overflow:hidden}
+.grp-apertura{position:fixed;inset:0;z-index:2147483001;background:radial-gradient(ellipse at 50% 50%,#1C2B7A,#070B24 72%);display:grid;place-items:center;overflow:hidden}
 .grp-apertura>.grp-ap-cuadro{animation:grpApNegro .65s ease both}
 .grp-ap-cuadro{position:relative;width:min(100vw,calc(100vh*16/9));aspect-ratio:16/9;overflow:hidden}
 .grp-ap-cuadro img{position:absolute;pointer-events:none;user-select:none}
-.grp-ap-estudio{inset:0;width:100%;height:100%;object-fit:cover;opacity:0;filter:brightness(.25);animation:grpApEstudio 1.4s ease-out 1.3s forwards}
-.grp-ap-luces{inset:-6%;width:112%;height:112%;object-fit:cover;opacity:0;mix-blend-mode:screen;transform-origin:50% 0;animation:grpApLuces 3.2s ease-in-out 1.5s infinite alternate}
-.grp-ap-destellos{inset:0;width:100%;height:100%;object-fit:cover;opacity:0;animation:grpApDestellos 1.6s ease-out 2.4s 4}
-.grp-ap-logo{left:50%;top:50%;width:min(46%,520px);transform:translate(-50%,-50%) scale(.2);opacity:0;filter:drop-shadow(0 0 3vmin rgba(255,210,63,.65));animation:grpApLogo 1s cubic-bezier(.2,1.6,.4,1) 2.3s forwards,grpApFlota 3s ease-in-out 3.4s infinite alternate}
+.grp-ap-estudio{inset:0;width:100%;height:100%;object-fit:cover;opacity:0;filter:brightness(.25);animation:grpApEstudio 1.2s ease-out .25s forwards}
+.grp-ap-luces{inset:-6%;width:112%;height:112%;object-fit:cover;opacity:0;mix-blend-mode:screen;transform-origin:50% 0;animation:grpApLuces 3.2s ease-in-out .5s infinite alternate}
+.grp-ap-destellos{inset:0;width:100%;height:100%;object-fit:cover;opacity:0;animation:grpApDestellos 1.6s ease-out 1.3s 4}
+.grp-ap-logo{left:50%;top:50%;width:min(46%,520px);transform:translate(-50%,-50%) scale(.2);opacity:0;filter:drop-shadow(0 0 3vmin rgba(255,210,63,.65));animation:grpApLogo 1s cubic-bezier(.2,1.6,.4,1) 1.2s forwards,grpApFlota 3s ease-in-out 2.3s infinite alternate}
 .grp-ap-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
 .grp-ap-saltar{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));z-index:2;border:1px solid #f9d26e;background:rgba(3,16,49,.75);color:#fff;font:700 15px system-ui,sans-serif;border-radius:999px;padding:9px 16px;cursor:pointer}
 .grp-apertura.grp-ap-fin{animation:grpApSaleFondo .65s ease forwards}
@@ -185,3 +185,10 @@ body .rr-game.rr-estudio .grp-reac-atril{position:absolute;left:0;bottom:0;width
   font:700 clamp(10px,2vmin,14px) system-ui,sans-serif;border-radius:999px;padding:.8vmin 1.6vmin;cursor:pointer;opacity:0;animation:grpApNegro .4s ease 3s forwards}
 /* Juegos en la tele: el avatar del jugador en el atril (assets/atril, más alto que el personaje genérico). */
 .grp-part-persona.grp-part-centro.grp-part-avatar{width:17%}
+
+/* Cartel mientras cargan las imágenes del estudio (01/11/2026): nunca pantalla negra. */
+.grp-cargando{position:fixed;inset:0;z-index:2147483002;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(circle at 50% 40%,#3A1D63,#160B24 70%);color:#F6EFE2;font:800 17px Outfit,system-ui,sans-serif}
+.grp-cargando img{width:min(46vw,220px);filter:drop-shadow(0 6px 18px #0008)}
+.grp-cargando span{width:34px;height:34px;border-radius:50%;border:4px solid #ffffff33;border-top-color:#F5B301;animation:grpGira .8s linear infinite}
+.grp-cargando p{margin:0;opacity:.85}
+@keyframes grpGira{to{transform:rotate(360deg)}}
