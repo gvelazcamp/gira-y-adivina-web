@@ -659,3 +659,10 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-sp-lista i.tl-sp-dib{font-style:normal;font-size:3.6vh;line-height:1}
 .sf-grid .sf-celda.tl-sf-vacia{background:transparent!important;box-shadow:none!important;border:0!important;pointer-events:none}
 .sf-lista .sf-palabra.tl-sf-dib{font-size:1.45rem;line-height:1.1;padding-top:2px;padding-bottom:2px}
+/* Ruleta de categorías del Ahorcado en la tele (01/11/2026) */
+.tl-ruleta-wrap{position:relative;display:inline-block;margin-top:3vw}
+.tl-ruleta-flecha{position:absolute;left:50%;top:-3.4vw;transform:translateX(-50%);z-index:2;font-size:3vw;line-height:1;color:#F5B301;text-shadow:0 .3vw 0 #7a4d00,0 0 1.2vw #F5B30199}
+.tl-ruleta-cat span.tl-rc-elegida{animation:tlRcBrilla .5s ease 1.8s 2 alternate;box-shadow:0 0 0 .3vw #fff}
+@keyframes tlRcBrilla{to{box-shadow:0 0 0 .5vw #fff,0 0 3vw #F5B301;filter:brightness(1.3)}}
+.tl-rc-nombre{margin-top:1.4vw;display:inline-block;padding:.6vw 2vw;border-radius:99vw;background:var(--c);color:#fff;font:900 2.8vw 'Archivo Black',sans-serif;text-shadow:0 .2vw 0 #0006;opacity:0;transform:scale(.6);animation:tlRcAparece .45s cubic-bezier(.2,1.6,.4,1) 1.85s forwards}
+@keyframes tlRcAparece{to{opacity:1;transform:none}}

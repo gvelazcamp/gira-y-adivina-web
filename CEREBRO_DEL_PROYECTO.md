@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 01/11/2026 — Tele: música de juego en cada juego (menos Rosco y Duelo) + ruleta del Ahorcado que se entiende
+- Qué: (1) Gonzalo: "sin ser el Rosco, que los demás tengan su música de juego en la tele". La tele pone en loop la música de siempre de cada juego (assets/audio/<juego>-musica.mp3; ¿Quién soy?, Mímica y ¿Qué número soy? usan musica-bonus.mp3), a volumen bajo (0,2) para no tapar el micrófono de los celulares, con fundido. Se calla mientras Giro presenta, en el podio y en el menú. Rosco y Duelo de Conocimiento (se juegan hablando) quedan sin música. (2) Auditoría de la ruleta del Ahorcado en la tele: giraba pero no se sabía qué categoría salía. Ahora tiene flecha ▼ arriba; al frenar la elegida queda bajo la flecha, brilla y aparece su nombre en una píldora de su color. El giro dura 3 s (antes 1,8 s) para que se lea.
+- Dónde: tele.js (MUSICA_TELE + intervalo en iniciarTele; juegoAhorcado: pintar del giro y nueva()), tele.css (.tl-ruleta-wrap, .tl-ruleta-flecha, .tl-rc-elegida, .tl-rc-nombre).
+
 ### 01/11/2026 — Ahorcado: 16 categorías nuevas (22 en total, 475 palabras)
 - Qué: Gonzalo: "más categorías, muchas más". Nuevas: Animales, La casa, Escuela, Música, Playa, Viajes, Oficios, Naturaleza, Ropa, Deportes, Cuerpo humano, Tecnología, Cine y tele, Historia, Países, Herramientas (248 palabras). Se armaron con listas candidatas filtradas contra todos los juegos de respuesta única (auditoría en 0 errores). Las 6 con dibujo en assets/cien/c_<id>.webp lo usan; las demás muestran su emoji. Como son muchas, la ruleta del celular muestra 8 por vez (la de la palabra + 7 al azar) y la de la tele 6.
 - Dónde: ahorcado-rioplatense-datos.js (v3), ahorcado-rioplatense.js (v16: CON_ARTE, RUEDA/armarRueda), tele.js (ruleta de 6), extensiones.css (.ah-ico-emoji, v151), AUDITORIA_PALABRAS.md.
