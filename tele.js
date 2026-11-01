@@ -1190,7 +1190,7 @@
     function pintar(raiz,quien){
       if(fase==="fin"){raiz.innerHTML=`<div class="tl-centro tl-fin"><h1>${ganadas>=4?"¡Impresionante! 🎉":ganadas>=2?"¡Bien jugado! 👏":"¡Se terminó!"}</h1><div class="tl-res"><span class="tl-ok">✓ ${ganadas} de ${C.palabras} palabras</span><span>⭐ ${puntos} puntos</span></div><p class="tl-ayuda">${quien?esc(quien)+": desde el celular podés jugar otra vez o volver al menú.":""}</p></div>`;return;}
       const cat=CATS.find(c=>c.id===pal.categoria)||{nombre:pal.categoria,emoji:"❓",color:"#7B3FE4"};
-      if(fase==="giro"){raiz.innerHTML=`<div class="tl-centro"><div class="tl-ruleta-cat">${CATS.map((c,i)=>`<span style="--c:${c.color};--i:${i}">${c.emoji}</span>`).join("")}</div><h1>Palabra ${n} de ${C.palabras}</h1><p class="tl-ayuda">Girando la categoría…</p></div>`;return;}
+      if(fase==="giro"){const seis=[cat].concat(CATS.filter(c=>c.id!==cat.id).sort(()=>Math.random()-.5).slice(0,5));raiz.innerHTML=`<div class="tl-centro"><div class="tl-ruleta-cat">${seis.map((c,i)=>`<span style="--c:${c.color};--i:${i}">${c.emoji}</span>`).join("")}</div><h1>Palabra ${n} de ${C.palabras}</h1><p class="tl-ayuda">Girando la categoría…</p></div>`;return;}
       const revelar=fase==="entre";
       const casillas=[...pal.palabra].map(c=>`<span class="tl-casilla${!usadas.has(c)&&revelar?" tl-falto":""}">${usadas.has(c)||revelar?c:""}</span>`).join("");
       const teclas=[...LET].map(l=>`<span class="${usadas.has(l)?(pal.palabra.includes(l)?"tl-si":"tl-no"):""}">${l}</span>`).join("");

@@ -1304,3 +1304,6 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 }
 /* Ahorcado: la casilla con letra queda ya dibujada (invisible) para que el primer acierto aparezca al instante. */
 .ah-game::after{content:"";position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none;background:url(assets/ahorcado/casilla_ok.webp),url(assets/ahorcado/casilla.webp)}
+/* Ahorcado (01/11/2026): categorías nuevas con emoji en vez de dibujo */
+.ah-game .ah-ico-emoji{display:block;font-size:clamp(15px,4.5vw,20px);line-height:1;margin:0 auto 1px}
+.ah-game .ah-pregunta .ah-ico-emoji{display:inline-block;font-size:20px;vertical-align:-3px}
