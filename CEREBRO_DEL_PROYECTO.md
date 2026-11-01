@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 01/11/2026 — Rosco en la tele: hasta 6 jugadores y se ve clarito a quién le toca
+- Qué: Gonzalo: "poder jugar de a 6 y una flechita o algo de color en el nombre que avise quién juega". (1) El del control puede marcar hasta 5 más (antes 3): "▶ Jugar de a cinco/seis". Colores nuevos: j4 verde #2ED18A, j5 rosa #E5197C (rosco, marcador y presentación). Con 5–6 el marcador se achica para que entre. (2) Turno: en el marcador, flechita ▶ que late al costado de la fila del que juega y la fila titila con su color; debajo, una píldora grande "▶ Le toca a <nombre>" con el color del jugador (reemplaza "🎮 Juega …" en el modo de varios).
+- Dónde: tele.js (rosco_modo: slice(0,5); NOMBRE_N; celular hasta 5; marcadorDos con .tl-rd-flecha y .tl-rd-muchos; .tl-rd-letoca), tele.css.
+
 ### 01/11/2026 — Tele: la música se pausa mientras alguien usa el micrófono
 - Qué: Gonzalo: "los que tienen micrófono, que se pause la música cuando uso el micrófono". El celular avisa a la tele {a:"mic",on:1/0} al prender/apagar el micrófono (escucharUnaVez de Palabra Secreta y dcVoz de Rosco/Duelo). Mientras haya alguno hablando, la música de la tele baja y se pausa; al terminar sigue desde donde estaba. Por seguridad, un "mic on" vence a los 20 s.
 - Dónde: tele.js (micTele en recibir; intervalo de música con musPausada/fundir; escucharUnaVez y dcVoz mandan "mic").
