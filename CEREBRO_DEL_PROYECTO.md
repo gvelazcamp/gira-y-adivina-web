@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 01/11/2026 — Ruleta en la tele: carga más rápida ("anda medio trancado")
+- Qué (auditoría de la carga): (1) La tele anfitriona probaba los servidores de a uno (7 s de espera por cada uno que no respondía): ahora prueba los 4 a la vez y se queda con el primero que conecta (los celulares siguen yendo directo a ese por el primer dígito del código). (2) Al abrir la Sala TV se bajaban ~10 MB / 226 archivos: 14 imágenes de capas ocultas (expansión, mundo Durazno, promo de eventos, tutorial, carteles de la Sala TV) pasaron a loading="lazy" y el fondo de la Sala TV ya no baja dos veces splash-tv.webp → ~7,5 MB. (3) Esperas más cortas: la tele salta a la Ruleta a los 0,4 s (antes 1,5 s), avisa el código cada 0,3 s (antes 1 s) y la partida arranca 1,2 s después de que entran todos (antes 2 s). No hay videos corriendo de fondo durante la partida (revisado).
+- Dónde: index.html (conectar: carrera de servidores para tvhost; img lazy; tvAutoArrancar), tele.js (salto a la Ruleta, avisarRuleta).
+
 ### 01/11/2026 — La Ruleta desde Juegos en la tele: el celular ya no muestra código ni nombre
 - Qué: Gonzalo: "no entiendo por qué me hacés poner pin, nombre… que sea jugar solo o de a dos". (1) Mientras la tele abre la Ruleta, el celular muestra "🎡 Abriendo la Ruleta… tu celular entra solo" con ruedita (antes decía "poné el código nuevo" con un botón a tv.html); el botón de respaldo "¿No entra? Tocá acá" aparece recién a los 40 s. (2) Al pasar a la Sala TV (index.html?tv=…&tvauto=1) el celular tapa la pantalla de nombre/código con "Entrando a la Ruleta… no tenés que hacer nada" hasta que aparece el control (y "✅ Ya estás adentro" cuando la tele lo anota). Si no hay nombre usa el del perfil o "Jugador". (3) En la tele, la Sala TV abierta desde Juegos en la tele dice "los celulares entran solos y la partida arranca sola" y el código queda chiquito y tenue.
 - Dónde: tele.js (pantalla "ruleta" del celular), tele.css (.tl-ruleta-espera), index.html (#tvAutoCapa, recibirTVGuest, crearSalaTV con tv-desde-tele).
