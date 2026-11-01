@@ -3,19 +3,19 @@
 (function(){
   "use strict";
   const BASE="presentacion-y-locucion-extensiones/Giro/";
-  const ESCENA=BASE+"estudios/Giro_estudio_rosco_16x9.png";
+  const ESCENA=BASE+"estudios/Giro_estudio_rosco_16x9.webp";
   // Un único fotograma oficial: Giro y su atril ya forman parte de la misma
   // imagen. Nunca mezclar otras poses, tamaños o atriles en la apertura.
   const PLANO_ESTABLE=BASE+"escenas/Giro_presentacion_plano_general_16x9.webp";
   const IMAGENES={
-    neutral:BASE+"opcionales/espera/Giro_espera_neutral.png",
-    respira:BASE+"opcionales/espera/Giro_espera_respirando.png",
-    escucha:BASE+"opcionales/espera/Giro_espera_escuchando.png",
-    saludo:BASE+"opcionales/transiciones/Giro_transicion_saludando.png",
-    señala:BASE+"opcionales/transiciones/Giro_transicion_senalando.png",
-    presenta:BASE+"opcionales/gestos/Giro_gesto_presenta_extension.png",
-    festeja:BASE+"Giro_festejando.png",
-    revancha:BASE+"Giro_confundido.png"
+    neutral:BASE+"opcionales/espera/Giro_espera_neutral.webp",
+    respira:BASE+"opcionales/espera/Giro_espera_respirando.webp",
+    escucha:BASE+"opcionales/espera/Giro_espera_escuchando.webp",
+    saludo:BASE+"opcionales/transiciones/Giro_transicion_saludando.webp",
+    señala:BASE+"opcionales/transiciones/Giro_transicion_senalando.webp",
+    presenta:BASE+"opcionales/gestos/Giro_gesto_presenta_extension.webp",
+    festeja:BASE+"Giro_festejando.webp",
+    revancha:BASE+"Giro_confundido.webp"
   };
   let capa=null, intervalo=null, frase=null, activa=false, salirDeCapa=null, anteriorFoco=null;
   let reiniciarCine=null, salidaTimer=null;
@@ -207,10 +207,10 @@
      cortadas de una grabación de Gonzalo en ElevenLabs). No repite la misma
      frase dos veces seguidas. */
   const REACCIONES={
-    acierto:{poses:["Giro_festejando.png"],frases:["acierto-1","acierto-2","acierto-3","acierto-4"]},
-    error:{poses:["Giro_confundido.png"],frases:["error-1","error-2","error-3","error-4"]},
-    pasar:{poses:["Giro_suspenso.png"],frases:["pasar-1","pasar-2"]},
-    tiempo:{poses:["Giro_sorprendido.png"],frases:["tiempo-1","tiempo-2"]}
+    acierto:{poses:["Giro_festejando.webp"],frases:["acierto-1","acierto-2","acierto-3","acierto-4"]},
+    error:{poses:["Giro_confundido.webp"],frases:["error-1","error-2","error-3","error-4"]},
+    pasar:{poses:["Giro_suspenso.webp"],frases:["pasar-1","pasar-2"]},
+    tiempo:{poses:["Giro_sorprendido.webp"],frases:["tiempo-1","tiempo-2"]}
   };
   const ATRIL_REACCION=BASE+"elementos/Giro_atril_oficial_chico.webp";
   const imagenesReaccion=new Map();
@@ -413,9 +413,29 @@
     }
     return true;
   }
+  /* iPhone (01/11/2026, Gonzalo: "el rosco no carga la imagen enseguida, queda negra y carga"): antes de la
+     apertura se esperan sus imágenes (máx. 3 s) con un cartel "Cargando el estudio…" en vez de negro, y mientras
+     corre la apertura se bajan las de la presentación y el estudio. Las poses pasaron de PNG (hasta 1,8 MB) a WebP. */
+  const precargadas=new Map();
+  function precargar(src){if(precargadas.has(src))return precargadas.get(src);
+    const im=new Image();im.decoding="async";im.src=src;
+    const p=new Promise(ok=>{im.onload=()=>{if(im.decode)im.decode().then(ok,ok);else ok();};im.onerror=ok;if(im.complete&&im.naturalWidth)ok();});
+    precargadas.set(src,p);return p;}
+  function esperarImagenes(lista,ms){return Promise.race([Promise.all(lista.map(precargar)),new Promise(r=>setTimeout(r,ms))]);}
   function mostrarInicio(despues){
     if(!habilitado())return false;
-    mostrarApertura(()=>presentarGiro(despues));return true;
+    const enTele=document.documentElement.classList.contains("tele-modo");
+    const apertura=enTele?[]:[BASE+"estudios/Giro_estudio_principal_16x9.webp",BASE+"efectos/Giro_efecto_haces_de_luz_transparente.webp",BASE+"efectos/Giro_efecto_destellos_transparente.png","assets/logo.webp"];
+    const siguientes=[PLANO_ESTABLE,IMAGENES.saludo,IMAGENES.neutral,ESCENA,ESTUDIOS.solo.img,PERSONAJES.hombre,PERSONAJES.mujer,BASE+"estudios/Giro_estudio_rosco_juego_16x9.webp",BASE+"estudios/Giro_rosco_juego_rueda.webp"];
+    const cargando=document.createElement("div");cargando.className="grp-cargando";cargando.setAttribute("aria-live","polite");
+    cargando.innerHTML='<img src="assets/logo.webp" alt=""><span></span><p>Cargando el estudio…</p>';
+    document.body.appendChild(cargando);
+    let listo=false;
+    esperarImagenes(apertura,3000).then(()=>{if(listo)return;listo=true;
+      mostrarApertura(()=>presentarGiro(despues));
+      setTimeout(()=>cargando.remove(),250);
+      siguientes.forEach(precargar);});
+    return true;
   }
   function presentarGiro(despues){
     return presentar({continuar:typeof despues==="function"?despues:null,

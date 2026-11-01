@@ -704,7 +704,7 @@ const RoscoRioplatense=(()=>{
     let c=document.getElementById("rrCortinaG");clearTimeout(cortinaTimerG);
     if(!poner){c?.remove();return;}
     if(!c){c=document.createElement("div");c.id="rrCortinaG";c.setAttribute("aria-hidden","true");
-      c.style.cssText="position:fixed;inset:0;z-index:2147482999;background:#000";document.body.appendChild(c);}
+      c.style.cssText="position:fixed;inset:0;z-index:2147482999;background:radial-gradient(circle at 50% 40%,#3A1D63,#160B24 70%)";document.body.appendChild(c);}
     cortinaTimerG=setTimeout(()=>cortinaG(false),7000);
   }
   function cargarEscenaGiroG(referencia){
@@ -718,12 +718,12 @@ const RoscoRioplatense=(()=>{
     };
     if(window.GiroRoscoPiloto){activar();return;}
     if(!document.querySelector('link[data-giro-rosco]')){
-      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=22";
+      const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="giro-rosco-piloto.css?v=23";
       estilo.dataset.giroRosco="1";document.head.appendChild(estilo);
     }
     let script=document.querySelector('script[data-giro-rosco]');
     if(!script){
-      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=40";script.async=true;
+      script=document.createElement("script");script.src="giro-rosco-piloto.js?v=41";script.async=true;
       script.dataset.giroRosco="1";script.addEventListener("load",activar,{once:true});script.addEventListener("error",()=>cortinaG(false),{once:true});
       document.head.appendChild(script);
     }else script.addEventListener("load",activar,{once:true});

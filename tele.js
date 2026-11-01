@@ -763,9 +763,9 @@
   /* Show de Giro (giro-rosco-piloto.js, el mismo del Rosco del celular): se carga al elegir el Rosco. */
   function cargarGiro(cb){
     if(window.GiroRoscoPiloto){cb(true);return;}
-    if(!document.querySelector('link[data-giro-rosco]')){const l=document.createElement("link");l.rel="stylesheet";l.href="giro-rosco-piloto.css?v=22";l.dataset.giroRosco="1";document.head.appendChild(l);}
+    if(!document.querySelector('link[data-giro-rosco]')){const l=document.createElement("link");l.rel="stylesheet";l.href="giro-rosco-piloto.css?v=23";l.dataset.giroRosco="1";document.head.appendChild(l);}
     let sc=document.querySelector('script[data-giro-rosco]');
-    if(!sc){sc=document.createElement("script");sc.src="giro-rosco-piloto.js?v=40";sc.async=true;sc.dataset.giroRosco="1";document.head.appendChild(sc);}
+    if(!sc){sc=document.createElement("script");sc.src="giro-rosco-piloto.js?v=41";sc.async=true;sc.dataset.giroRosco="1";document.head.appendChild(sc);}
     let listo=false;const fin=ok=>{if(listo)return;listo=true;cb(ok&&!!window.GiroRoscoPiloto);};
     sc.addEventListener("load",()=>fin(true),{once:true});sc.addEventListener("error",()=>fin(false),{once:true});setTimeout(()=>fin(!!window.GiroRoscoPiloto),8000);
   }
@@ -810,7 +810,7 @@
   const GIRO_IMGS=["estudios/Giro_estudio_principal_16x9.webp","efectos/Giro_efecto_haces_de_luz_transparente.webp","efectos/Giro_efecto_destellos_transparente.png",
     "escenas/Giro_presentacion_plano_general_16x9.webp","estudios/Giro_estudio_rosco_un_atril_16x9.webp","estudios/Giro_estudio_rosco_juego_fondo.webp",
     "participantes/participante_hombre.webp","participantes/participante_mujer.webp","elementos/Giro_atril_oficial_chico.webp",
-    "Giro_festejando.png","Giro_festejando_cuerpo.webp","Giro_confundido.png","Giro_suspenso.png","Giro_sorprendido.png","Giro_tarjetas.png",
+    "Giro_festejando.webp","Giro_festejando_cuerpo.webp","Giro_confundido.webp","Giro_suspenso.webp","Giro_sorprendido.webp","Giro_tarjetas.png",
     "escenas/Giro_cierre_victoria_16x9.webp","escenas/Giro_cierre_derrota_revancha_16x9.webp"].map(x=>GIRO_B+x).concat(["assets/logo.webp"]);
   const giroCargadas=[];
   function precargarGiro(){
