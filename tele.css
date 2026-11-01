@@ -652,3 +652,10 @@ html.tele-modo .grp-acciones{margin:0}
 .tl-mgc-sel{outline:3px solid #fff;filter:brightness(.8)}
 .tl-ruleta-espera{text-align:center}.tl-ruleta-gira{width:44px;height:44px;margin:6px auto 12px;border-radius:50%;border:5px solid #ffffff33;border-top-color:#F5B301;animation:tlRuletaGira .8s linear infinite}
 @keyframes tlRuletaGira{to{transform:rotate(360deg)}}
+/* Sopa Fugaz por niveles (01/11/2026): tableros con forma y palabras con dibujo */
+.tl-sp-tablero span.tl-sp-vacia{background:transparent;box-shadow:none}
+.tl-sp-tablero.tl-sp-forma{background:#0C0616B0}
+.tl-sp-extra{font:800 2vh Outfit,system-ui,sans-serif;color:#37D6C0;margin:-.4vh 0 .8vh}
+.tl-sp-lista i.tl-sp-dib{font-style:normal;font-size:3.6vh;line-height:1}
+.sf-grid .sf-celda.tl-sf-vacia{background:transparent!important;box-shadow:none!important;border:0!important;pointer-events:none}
+.sf-lista .sf-palabra.tl-sf-dib{font-size:1.45rem;line-height:1.1;padding-top:2px;padding-bottom:2px}
