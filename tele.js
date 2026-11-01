@@ -1280,7 +1280,7 @@
       while(!g&&objetivos.length>4){objetivos=objetivos.slice(0,objetivos.length-1);g=armarGrilla();}
       try{Vistas.marcar("sopa_tele",objetivos);}catch(e){}
       grid=g||Array(N*N).fill(0).map((_,k)=>libre(k)?"A":".");gen++;cambioGen=Date.now();mudo=false;
-      restante=Math.round(objetivos.reduce((s,w)=>s+7+1.3*w.length,0)*(giratoria?1:.87)*L.t*(L.dib?1.15:1)*1000);durRonda=restante;proxMuda=MUDA;fase="jugando";
+      restante=Math.round(objetivos.reduce((s,w)=>s+7+1.3*w.length,0)*(giratoria?1:.87)*L.t*(L.dib?1.15:1)*1000)+20000; /* +20 s por nivel (Gonzalo, 01/11/2026) */durRonda=restante;proxMuda=MUDA;fase="jugando";
       if(ronda>1)SND.turno();actualizar();
     }
     function mudar(){
