@@ -307,9 +307,9 @@
       if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="sopa"&&m.a==="sp_marca")||(T.juego==="palabra"&&m.a==="ps_intento")||(T.juego==="memoria"&&m.a==="mg_carta")||(T.juego==="rueda"&&m.a==="rl_palabra")||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz","rs_apelar","rs_ver","rs_voto","rs_pausa","rs_reanudar","rs_rev"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
       if(m.a==="elegir"&&T.fase==="menu"){elegir(String(m.juego||""));return;}
       if(m.a==="rosco_modo"&&T.fase==="rosco_modo"){
-        /* De a 2, 3 o 4 (31/10/2026): el del control elige con quiénes juega (hasta 3 más). */
+        /* De a 2 a 6 (01/11/2026; antes hasta 4): el del control elige con quiénes juega (hasta 5 más). */
         const pedidos=(Array.isArray(m.rivales)?m.rivales:[m.rival]).map(x=>String(x||""));
-        const rivales=[...new Set(pedidos)].filter(r=>r!==T.mando&&T.jug.some(j=>j.pid===r)).slice(0,3);
+        const rivales=[...new Set(pedidos)].filter(r=>r!==T.mando&&T.jug.some(j=>j.pid===r)).slice(0,5);
         T.roscoModo=m.modo==="dos"&&rivales.length?{dos:true,rival:rivales[0],rivales}:null;T.roscoListo=true;elegir("rosco");return;}
       if(m.a==="menu"){volverMenu();return;}
       if(m.a==="intro_seguir"&&T.fase==="intro"){try{window.GiroRoscoPiloto.avanzar();}catch(e){}return;}
@@ -896,7 +896,7 @@
        pasa al otro cuando erra, pasa, completa o se le acaba el tiempo (como el programa). Solo: un jugador. */
     const RIV=T.roscoModo&&T.roscoModo.dos?(T.roscoModo.rivales||[T.roscoModo.rival]).filter(r=>r!==T.mando&&T.jug.some(j=>j.pid===r)):[];
     const DOS=RIV.length>0;/* DOS = por turnos con otros (de a 2, 3 o 4) */
-    const NOMBRE_N=["","","DOS","TRES","CUATRO"][1+RIV.length]||"VARIOS";
+    const NOMBRE_N=["","","DOS","TRES","CUATRO","CINCO","SEIS"][1+RIV.length]||"VARIOS";
     const P=(DOS?[T.mando,...RIV]:[T.mando]).map(pid=>{const it=armar(pid);return{pid,items:it,est:it.map(()=>"pendiente"),resp:it.map(()=>""),actual:0,tiempo:SEGUNDOS*1000,fin:false,ang:0};});
     let turno=0,verFin=0;const J=()=>P[turno];const apeladas=new Set();
     /* Apelación con votación (31/10/2026): el que erró (o el que tiene el control) apela; el Rosco se pausa
@@ -1119,8 +1119,8 @@
       f.forEach(x=>{x.pos=1+f.filter(y=>y.ok>x.ok||(y.ok===x.ok&&y.mal<x.mal)).length;x.empata=f.some(y=>y!==x&&y.ok===x.ok&&y.mal===x.mal);});
       return{f,emp:f[0].ok===f[1].ok&&f[0].mal===f[1].mal};}
     function marcadorDos(){const{f,emp}=tablaDos();
-      return`<div class="tl-rd-rank"><div class="tl-rd-rank-cab"><span>🏆 MARCADOR</span><em>${emp?"¡Van empatados!":"Va ganando "+esc(nombrePid(f[0].j.pid))}</em></div>${f.map((x,pos)=>{const av=avDe(T,x.j.pid);
-        return`<div class="tl-rd-fila tl-rd-c${x.k}${x.k===turno?" tl-rd-activo":""}${x.j.fin?" tl-rd-listo":""}"><span class="tl-rd-pos">${x.empata?"=":""}${x.pos}º</span><img src="assets/avatars/${av||"avatar-01"}.webp" alt="" onerror="this.style.visibility='hidden'"><b>${x.k===turno?"🎙 ":""}${esc(nombrePid(x.j.pid))}</b><span class="tl-ok">✓ ${x.ok}</span><span class="tl-mal">✘ ${x.mal}</span><small>${x.j.fin?"🏁 TERMINADO":x.q+" letras"}</small><span class="tl-rd-reloj" ${x.k===turno?'id="tlReloj"':""}>${reloj(x.k===turno?tiempo:x.j.tiempo)}</span></div>`;}).join("")}</div>`;}
+      return`<div class="tl-rd-rank${P.length>4?" tl-rd-muchos":""}"><div class="tl-rd-rank-cab"><span>🏆 MARCADOR</span><em>${emp?"¡Van empatados!":"Va ganando "+esc(nombrePid(f[0].j.pid))}</em></div>${f.map((x,pos)=>{const av=avDe(T,x.j.pid);
+        return`<div class="tl-rd-fila tl-rd-c${x.k}${x.k===turno?" tl-rd-activo":""}${x.j.fin?" tl-rd-listo":""}"><span class="tl-rd-pos">${x.empata?"=":""}${x.pos}º</span><img src="assets/avatars/${av||"avatar-01"}.webp" alt="" onerror="this.style.visibility='hidden'">${x.k===turno&&fase==="jugando"?'<i class="tl-rd-flecha">▶</i>':""}<b>${x.k===turno?"🎙 ":""}${esc(nombrePid(x.j.pid))}</b><span class="tl-ok">✓ ${x.ok}</span><span class="tl-mal">✘ ${x.mal}</span><small>${x.j.fin?"🏁 TERMINADO":x.q+" letras"}</small><span class="tl-rd-reloj" ${x.k===turno?'id="tlReloj"':""}>${reloj(x.k===turno?tiempo:x.j.tiempo)}</span></div>`;}).join("")}</div>`;}
     const planilla=(j,k)=>`<div class="tl-planilla">${j.items.map((d,i)=>{const a=apeladas.has(k+"-"+i);
       return`<div class="tl-pl-fila tl-pl-${j.est[i]}${a?" tl-pl-apelada":""}"><b>${d.letra}</b><span>${esc(d.palabra)}</span><small>${a?"⚖️ apelada · dijo «"+esc(j.resp[i])+"»":j.est[i]==="ok"?"✓ acertó":j.est[i]==="mal"?"✘ dijo «"+esc(j.resp[i])+"»":"⏭ sin responder"}</small></div>`;}).join("")}</div>`;
     function pintar(raiz,quien){pintarBase(raiz,quien);
@@ -1168,7 +1168,7 @@
         <div class="tl-aro"><div class="tl-giro" style="--a:${angPrevio}deg">${letras}</div>
           <div class="tl-medio">${DOS?`<div class="tl-rd-nombre">${esc(nombrePid(J().pid))}</div>`:""}<div class="tl-letra">${d.letra}</div><div class="tl-regla">${regla(d)}</div></div></div>
         <aside class="tl-panel">${DOS?marcadorDos():""}
-          <p class="tl-quien">🎮 Juega ${esc(DOS?nombrePid(J().pid):(quien||"…"))}</p>${aviso&&Date.now()-aviso.t<2600?`<div class="tl-flash tl-paso tl-rd-aviso">${esc(aviso.txt)}</div>`:""}
+          ${DOS?`<p class="tl-quien tl-rd-letoca"><i>▶</i> Le toca a <b>${esc(nombrePid(J().pid))}</b></p>`:`<p class="tl-quien">🎮 Juega ${esc(quien||"…")}</p>`}${aviso&&Date.now()-aviso.t<2600?`<div class="tl-flash tl-paso tl-rd-aviso">${esc(aviso.txt)}</div>`:""}
           <div class="tl-def">${esc(d.definicion)}</div>
           ${DOS?"":`<div class="tl-hud"><span class="tl-ok">✓ ${ok}</span><span class="tl-mal">✘ ${mal}</span><span id="tlReloj">${reloj(tiempo)}</span></div>`}
           <p class="tl-oi" id="tlOi">🎙 Respondé hablando al celular o escribiendo · «Pasar» para pasar</p>${flash}</aside></div>`;
@@ -2336,15 +2336,15 @@
       if(c.pantalla==="rosco_modo"){
         if(!soyMando){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🔤 El Rosco</h2><p>${esc((m.jug.find(j=>j.pid===m.mando)||{}).n||"El que tiene el control")} está eligiendo si juega solo o con quiénes.</p></div>`;return;}
         const otros=(c.jug||[]).filter(j=>j.pid!==yo);
-        /* De a 2, 3 o 4: se marcan los que juegan (hasta 3 más) y "▶ Jugar". */
+        /* De a 2 a 6: se marcan los que juegan (hasta 5 más) y "▶ Jugar". */
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🔤 El Rosco</h2><p>¿Cómo lo juegan?</p>
-          <button type="button" class="tl-boton tl-oro" id="tlRsSolo">👤 Solo yo</button><p>Por turnos, cada uno con su rosco. Marcá con quiénes (hasta 3):</p>
+          <button type="button" class="tl-boton tl-oro" id="tlRsSolo">👤 Solo yo</button><p>Por turnos, cada uno con su rosco. Marcá con quiénes (hasta 5):</p>
           <div class="tl-dc-opciones">${otros.map(j=>`<button type="button" data-rival="${esc(j.pid)}">⚔️ ${esc(j.n)}</button>`).join("")}</div>
           <button type="button" class="tl-boton tl-oro" id="tlRsVarios" disabled>▶ Elegí con quiénes</button>${menu}</div>`;
         raiz.querySelector("#tlRsSolo").onclick=()=>accion("rosco_modo",{modo:"solo"});
         const elegidos=new Set(),bJ=raiz.querySelector("#tlRsVarios");
-        const pintaJ=()=>{const n=elegidos.size+1;bJ.disabled=!elegidos.size;bJ.textContent=elegidos.size?"▶ Jugar de a "+["","","dos","tres","cuatro"][n]:"▶ Elegí con quiénes";};
-        raiz.querySelectorAll("[data-rival]").forEach(b=>b.onclick=()=>{const r=b.dataset.rival;if(elegidos.has(r))elegidos.delete(r);else if(elegidos.size<3)elegidos.add(r);b.classList.toggle("tl-pz-activo",elegidos.has(r));pintaJ();});
+        const pintaJ=()=>{const n=elegidos.size+1;bJ.disabled=!elegidos.size;bJ.textContent=elegidos.size?"▶ Jugar de a "+["","","dos","tres","cuatro","cinco","seis"][n]:"▶ Elegí con quiénes";};
+        raiz.querySelectorAll("[data-rival]").forEach(b=>b.onclick=()=>{const r=b.dataset.rival;if(elegidos.has(r))elegidos.delete(r);else if(elegidos.size<5)elegidos.add(r);b.classList.toggle("tl-pz-activo",elegidos.has(r));pintaJ();});
         bJ.onclick=()=>{if(elegidos.size)accion("rosco_modo",{modo:"dos",rivales:[...elegidos]});};
         raiz.querySelector("#tlMenu").onclick=()=>accion("menu");return;}
       /* ⚖️ Apelar el último error (pausa el Rosco y votan los demás). */

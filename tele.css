@@ -666,3 +666,27 @@ html.tele-modo .grp-acciones{margin:0}
 @keyframes tlRcBrilla{to{box-shadow:0 0 0 .5vw #fff,0 0 3vw #F5B301;filter:brightness(1.3)}}
 .tl-rc-nombre{margin-top:1.4vw;display:inline-block;padding:.6vw 2vw;border-radius:99vw;background:var(--c);color:#fff;font:900 2.8vw 'Archivo Black',sans-serif;text-shadow:0 .2vw 0 #0006;opacity:0;transform:scale(.6);animation:tlRcAparece .45s cubic-bezier(.2,1.6,.4,1) 1.85s forwards}
 @keyframes tlRcAparece{to{opacity:1;transform:none}}
+/* Rosco de a 5 y 6 (01/11/2026) + quién juega bien marcado */
+.tl-rd-j4{--rd:#2ED18A}.tl-rd-j5{--rd:#E5197C}
+:is(.tl-rd-j4,.tl-rd-j5) .tl-medio{border:.9vh solid var(--rd);box-shadow:0 0 5vh var(--rd)}
+:is(.tl-rd-j4,.tl-rd-j5) .tl-rl.tl-actual{outline-color:var(--rd);box-shadow:0 0 3vh var(--rd)}
+.tl-rd-j4 .tl-rl:not(.tl-ok):not(.tl-mal):not(.tl-actual){background:#14A86A;color:#fff;box-shadow:0 0 0 .4vh #9BF0C8,0 .3vh 0 #0005}
+.tl-rd-j5 .tl-rl:not(.tl-ok):not(.tl-mal):not(.tl-actual){background:#C8146A;color:#fff;box-shadow:0 0 0 .4vh #FF9CCB,0 .3vh 0 #0005}
+.tl-rd-fila.tl-rd-c4{--fc:#2ED18A}.tl-rd-fila.tl-rd-c5{--fc:#E5197C}
+.tl-rd-fila.tl-rd-c4,.tl-rd-fila.tl-rd-c5{border-left:.7vw solid var(--fc)}
+.tl-rd-fila.tl-rd-activo:is(.tl-rd-c4,.tl-rd-c5){border-color:var(--fc);background:color-mix(in srgb,var(--fc) 14%,transparent);box-shadow:0 0 1.6vw var(--fc)}
+.tl-rd-fila.tl-rd-activo:is(.tl-rd-c4,.tl-rd-c5) b{color:var(--fc)}
+.tl-rd-pc4{--pc:#2ED18A}.tl-rd-pc5{--pc:#E5197C}
+/* Flechita ▶ en la fila del que juega, que late; la fila entera titila suave con su color. */
+.tl-rd-fila{position:relative}
+.tl-rd-flecha{position:absolute;left:-2.2vw;top:50%;transform:translateY(-50%);font-style:normal;font-size:1.9vw;color:var(--fc,#F5B301);text-shadow:0 0 1vw var(--fc,#F5B301);animation:tlRdFlecha .7s ease-in-out infinite alternate}
+@keyframes tlRdFlecha{from{transform:translate(-.3vw,-50%)}to{transform:translate(.4vw,-50%)}}
+.tl-rd-fila.tl-rd-activo{animation:tlRdLate 1.2s ease-in-out infinite alternate}
+@keyframes tlRdLate{to{box-shadow:0 0 2.6vw var(--fc,#F5B301)}}
+.tl-rd-letoca{font:900 2.2vw 'Archivo Black',sans-serif!important;color:#fff!important;background:color-mix(in srgb,var(--rd,#F5B301) 30%,#0C0616);border:.25vw solid var(--rd,#F5B301);border-radius:99vw;padding:.4vw 1.4vw;display:inline-flex;align-items:center;gap:.8vw;box-shadow:0 0 1.6vw var(--rd,#F5B301)}
+.tl-rd-letoca b{color:var(--rd,#F5B301)}.tl-rd-letoca i{font-style:normal;color:var(--rd,#F5B301);animation:tlRdFlecha2 .7s ease-in-out infinite alternate}
+@keyframes tlRdFlecha2{from{transform:translateX(-.2vw)}to{transform:translateX(.4vw)}}
+/* Con 5 o 6 jugadores el marcador se achica para que entre */
+.tl-rd-rank.tl-rd-muchos{gap:.4vw;padding:.7vw 1vw}
+.tl-rd-muchos .tl-rd-fila{padding:.3vw .8vw;font-size:1.25vw;grid-template-columns:2.6vw 2.8vw 1fr auto auto auto 4.6vw}
+.tl-rd-muchos .tl-rd-fila img{width:2.8vw;height:2.8vw}.tl-rd-muchos .tl-rd-fila b{font-size:1.4vw}.tl-rd-muchos .tl-rd-fila small{font-size:.95vw}
