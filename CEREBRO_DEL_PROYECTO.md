@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 01/11/2026 — Puzzle: cartel final "¡Puzzle completo!" sin scroll (tele y celular)
+- Qué: Gonzalo (foto de la tele): el final quedaba cortado abajo. En la tele ahora es horizontal: foto armada a la izquierda (hasta 78% del alto) y trofeo + título + tiempo a la derecha, todo entra. En el celular la foto se achica según el alto de la pantalla para que entren título, foto, texto y los botones sin scroll (probado en 360×640).
+- Dónde: puzzle.html (CSS de #win; iframes de la tele v=53 en tele.js).
+
 ### 01/11/2026 — Rosco en iPhone: ya no queda en negro esperando las imágenes de Giro
 - Qué: (1) las imágenes de Giro que usaba el Rosco estaban en PNG pesados (el estudio 1,6 MB, las poses de espera hasta 1,8 MB): pasaron a WebP (161 KB y ~80 KB). Los PNG quedan en el repo sin usar. (2) Antes de la apertura se esperan sus imágenes (máx. 3 s) con un cartel "Cargando el estudio…" (logo + ruedita, fondo violeta) en vez de pantalla negra; durante la apertura se precargan las de la presentación y el estudio del juego. (3) La apertura ya no arranca 1,3 s en negro: fondo azul de estudio y el estudio aparece a los 0,25 s. La cortina del Rosco mientras carga también es violeta, no negra.
 - Dónde: giro-rosco-piloto.js (precargar, esperarImagenes, mostrarInicio; .png → .webp), giro-rosco-piloto.css (.grp-cargando, tiempos de la apertura), rosco-rioplatense.js (cortina, versiones v41/v23), tele.js (poses .webp).

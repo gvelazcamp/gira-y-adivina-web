@@ -201,7 +201,16 @@ body.pz-espejo #bTutoPareja,body.pz-espejo #modo,body.pz-espejo #gente,body.pz-e
 body.tv-ver canvas{pointer-events:none!important}body.tv-ver #tvPuzzleCursor{display:none!important}
 body.tv-puzzle .stats{font-size:clamp(18px,1.5vw,30px);padding:.5vw 1vw;top:1vw!important;left:1vw;background:#160B24DD}
 body.tv-puzzle #mini{width:clamp(105px,8vw,160px)}
-body.tv-puzzle #win .card{max-width:min(50vw,760px)}body.tv-puzzle #win h2{font-size:clamp(26px,3vw,58px)}body.tv-puzzle #win p{font-size:clamp(18px,1.4vw,30px)}body.tv-puzzle #winImg{max-width:min(35vw,520px)}
+/* Final sin scroll (01/11/2026, Gonzalo: "el resultado final no se ve bien, que sea una pantalla sin scroll").
+   Celular: todo entra en la pantalla, la foto se achica según el alto. Tele: foto a la izquierda y el texto a la derecha. */
+#win .card{display:flex;flex-direction:column;align-items:center;overflow:hidden;max-height:calc(100dvh - 24px)}
+#win .card>*{flex:none}#win .card button{width:100%}
+#win .win-img{flex:0 1 auto;width:auto;max-width:100%;max-height:calc(100dvh - 350px);min-height:0;object-fit:contain}
+body.tv-puzzle #win .card{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:1fr auto auto 1fr;column-gap:3vw;align-items:center;max-width:min(88vw,1500px);width:auto;max-height:88vh;padding:3vh 3vw}
+body.tv-puzzle #winImg{grid-column:1;grid-row:1/5;max-height:78vh;max-width:52vw;width:auto;margin:0}
+body.tv-puzzle #win .win-trofeo{grid-column:2;grid-row:2;width:min(12vw,200px);margin:0 auto}
+body.tv-puzzle #win h2{grid-column:2;grid-row:3;font-size:clamp(26px,4vw,72px);margin:1vh 0;text-align:center}
+body.tv-puzzle #win p{grid-column:2;grid-row:4;align-self:start;font-size:clamp(18px,1.8vw,34px);text-align:center;margin:0}
 #tvPuzzleCursor{display:none;position:fixed;left:0;top:0;width:3vw;height:3vw;min-width:30px;min-height:30px;transform:translate(-50%,-50%);border:4px solid #F5B301;border-radius:50%;box-shadow:0 0 0 3px #160B24,0 0 18px #F5B301;z-index:40;pointer-events:none}
 #tvPuzzleCursor.on{display:block}#tvPuzzleCursor.agarrando{background:#F5B30199;border-color:#fff}
 </style>
