@@ -1225,7 +1225,7 @@ html.rueda-prueba-boreal .centro{background:radial-gradient(circle at 38% 30%,#E
 
 /* Sala TV / Familia */
 #tvLobby,#tvControl{display:none;max-width:760px;margin:5vh auto;text-align:center}
-body.tv-lobby-bg{background-image:linear-gradient(#0C0616CC,#0C0616F2),url('assets/splash-tv.webp');
+body.tv-lobby-bg{background-image:linear-gradient(#0C0616CC,#0C0616F2),url('assets/splash-tv.webp?v=1');
  background-size:cover;background-position:center;background-attachment:fixed}
 .tv-codigo{font-family:'Archivo Black',sans-serif;font-size:clamp(3rem,12vw,5rem);letter-spacing:.16em;
  color:var(--oro);background:#0C0616;border:1px solid #F5B30166;border-radius:20px;padding:14px 18px;margin:8px 0 14px;
@@ -1590,9 +1590,9 @@ body:not(.tvhost) #horizontalAyuda{display:none}
 </section>
 
 <div id="expansionAnim" aria-hidden="true">
-  <img fetchpriority="low" id="expImg1" src="assets/expansion/expansion-1-bloqueada.webp" class="ver" alt="">
-  <img fetchpriority="low" id="expImg2" src="assets/expansion/expansion-2-cruzando.webp" alt="">
-  <img fetchpriority="low" id="expImg3" src="assets/expansion/expansion-3-argentina.webp" alt="">
+  <img loading="lazy" fetchpriority="low" id="expImg1" src="assets/expansion/expansion-1-bloqueada.webp" class="ver" alt="">
+  <img loading="lazy" fetchpriority="low" id="expImg2" src="assets/expansion/expansion-2-cruzando.webp" alt="">
+  <img loading="lazy" fetchpriority="low" id="expImg3" src="assets/expansion/expansion-3-argentina.webp" alt="">
 </div>
 
 <section id="mundoArgentina">
@@ -1620,7 +1620,7 @@ body:not(.tvhost) #horizontalAyuda{display:none}
   <div class="dz-viewport-wrap">
     <div id="duraznoViewport" class="dz-viewport">
       <div id="duraznoCanvas" class="dz-canvas">
-        <img src="assets/worlds/durazno.webp" id="duraznoImg" draggable="false" alt="Durazno">
+        <img loading="lazy" src="assets/worlds/durazno.webp" id="duraznoImg" draggable="false" alt="Durazno">
         <video id="duraznoVideo" muted loop playsinline preload="none" draggable="false" style="display:none"></video>
         <div id="dzNodos"></div>
       </div>
@@ -1997,7 +1997,7 @@ body:not(.tvhost) #horizontalAyuda{display:none}
 </div></div>
 
 <div class="capa" id="capaPromoEventos"><div class="caja" style="max-width:340px">
-  <img src="assets/eventos/promo-ticket-eventos.webp" alt="" style="width:108px;height:108px;margin:4px auto 14px;display:block;border-radius:28px;box-shadow:0 8px 20px #00000055">
+  <img loading="lazy" src="assets/eventos/promo-ticket-eventos.webp" alt="" style="width:108px;height:108px;margin:4px auto 14px;display:block;border-radius:28px;box-shadow:0 8px 20px #00000055">
   <h2>¡Jugá los Eventos!</h2>
   <p>Cada evento que jugás te da 🎟️ <b>tickets</b> para entrar a los <b>Torneos</b> y competir por premios increíbles.</p>
   <button class="btn-grande cta-jugar" id="peIrEventos" style="margin-bottom:10px">
@@ -2008,7 +2008,7 @@ body:not(.tvhost) #horizontalAyuda{display:none}
 </div></div>
 
 <div class="capa" id="capaBienvenida"><div class="caja" style="max-width:380px;padding:0;background:transparent;border:none;border-radius:20px;overflow:hidden;position:relative">
-  <img src="assets/tutorial/bienvenida.webp" alt="Aprendé en 30 segundos: girás la ruleta, elegís una letra, adivinás y ganás" style="width:100%;display:block">
+  <img loading="lazy" src="assets/tutorial/bienvenida.webp" alt="Aprendé en 30 segundos: girás la ruleta, elegís una letra, adivinás y ganás" style="width:100%;display:block">
   <button id="bienvenidaCerrarX" aria-label="Cerrar" style="position:absolute;left:86.5%;top:3%;width:11%;aspect-ratio:1;background:transparent;border:none;padding:0"></button>
   <button id="bienvenidaTutorial" style="position:absolute;left:6.5%;top:69.5%;width:87%;height:12%;background:transparent;border:none;padding:0"></button>
   <button id="bienvenidaCerrar" style="position:absolute;left:12%;top:82.5%;width:76%;height:6.5%;background:transparent;border:none;padding:0"></button>
@@ -2082,7 +2082,7 @@ body:not(.tvhost) #horizontalAyuda{display:none}
 
 <div id="capaBienvenidaTV">
   <div class="bvtv-caja">
-    <img fetchpriority="low" src="assets/salatv-bienvenida.webp" alt="Bienvenidos a Girá y Adiviná Rioplatense - Sala TV">
+    <img loading="lazy" fetchpriority="low" src="assets/salatv-bienvenida.webp" alt="Bienvenidos a Girá y Adiviná Rioplatense - Sala TV">
     <button type="button" class="bvtv-btn bvtv-btn-si" id="bBienvenidaTVJugar" aria-label="Jugar ahora"></button>
     <button type="button" class="bvtv-btn bvtv-btn-no" id="bBienvenidaTVNo" aria-label="Ahora no"></button>
   </div>
@@ -2247,20 +2247,20 @@ body:not(.tvhost) #horizontalAyuda{display:none}
 
 <div id="capaAnuncioTV">
   <div class="bvtv-caja">
-    <img fetchpriority="low" src="assets/salatv-sorteo.webp" alt="Antes de arrancar... vamos a sortear quién juega primero">
+    <img loading="lazy" fetchpriority="low" src="assets/salatv-sorteo.webp" alt="Antes de arrancar... vamos a sortear quién juega primero">
     <button type="button" class="bvtv-btn bvtv-btn-sortear" id="bAnuncioTVSortear" aria-label="Sortear ahora"></button>
   </div>
 </div>
 
 <div id="capaRuletaTV">
   <div class="ruedabox rtv-ruedabox-marco">
-    <img fetchpriority="low" class="rtv-marco-img" src="assets/salatv-ruleta-marco.webp" alt="">
+    <img loading="lazy" fetchpriority="low" class="rtv-marco-img" src="assets/salatv-ruleta-marco.webp" alt="">
     <div class="aguja" id="agujaTV"></div>
     <div class="aro"><canvas id="ruedaTV" width="600" height="600"></canvas></div>
     <div class="centro"></div>
   </div>
   <div class="rtv-cartelito" id="salioGiroTV">
-    <img fetchpriority="low" src="assets/salatv-arranca-jugador.webp" alt="Ya tenemos jugador">
+    <img loading="lazy" fetchpriority="low" src="assets/salatv-arranca-jugador.webp" alt="Ya tenemos jugador">
     <div class="rtv-cartelito-nombre" id="salioGiroTVNombre"></div>
     <button type="button" class="rtv-cartelito-btn" id="salioGiroTVBtn" aria-label="Empezar partida"></button>
   </div>
@@ -2501,20 +2501,20 @@ body:not(.tvhost) #horizontalAyuda{display:none}
 <div class="capa" id="capaResultadosTV"><div class="caja rtv-caja">
   <div class="rtv-confetti" id="rtvConfetti"></div>
   <div class="rtv-podio-foto">
-    <img fetchpriority="low" src="assets/salatv-resultados-fondo.webp" alt="Resultados — ¡Qué buena partida!">
+    <img loading="lazy" fetchpriority="low" src="assets/salatv-resultados-fondo.webp" alt="Resultados — ¡Qué buena partida!">
     <div class="rtv-lugar" id="rtvLugar2">
       <img class="rtv-fj rtv-fj-2" id="rtvFj2" src="" alt="">
-      <img fetchpriority="low" class="rtv-costura rtv-costura-2" src="assets/salatv-resultados-costura-2.webp" alt="">
+      <img loading="lazy" fetchpriority="low" class="rtv-costura rtv-costura-2" src="assets/salatv-resultados-costura-2.webp" alt="">
       <div class="rtv-placa-txt rtv-placa-2"><div class="rtv-nombre" id="rtvNom2"></div><div class="rtv-monto" id="rtvMonto2"></div></div>
     </div>
     <div class="rtv-lugar" id="rtvLugar1">
       <img class="rtv-fj rtv-fj-1" id="rtvFj1" src="" alt="">
-      <img fetchpriority="low" class="rtv-costura rtv-costura-1" src="assets/salatv-resultados-costura-1.webp" alt="">
+      <img loading="lazy" fetchpriority="low" class="rtv-costura rtv-costura-1" src="assets/salatv-resultados-costura-1.webp" alt="">
       <div class="rtv-placa-txt rtv-placa-1"><div class="rtv-nombre" id="rtvNom1"></div><div class="rtv-monto" id="rtvMonto1"></div></div>
     </div>
     <div class="rtv-lugar" id="rtvLugar3">
       <img class="rtv-fj rtv-fj-3" id="rtvFj3" src="" alt="">
-      <img fetchpriority="low" class="rtv-costura rtv-costura-3" src="assets/salatv-resultados-costura-3.webp" alt="">
+      <img loading="lazy" fetchpriority="low" class="rtv-costura rtv-costura-3" src="assets/salatv-resultados-costura-3.webp" alt="">
       <div class="rtv-placa-txt rtv-placa-3"><div class="rtv-nombre" id="rtvNom3"></div><div class="rtv-monto" id="rtvMonto3"></div></div>
     </div>
   </div>
@@ -2944,6 +2944,21 @@ function conectar(alConectar,alFallar,asignar,i){
   }
   window.gyaFalloConexion=typeof mqtt==="undefined"?"sin librería":"los servidores no responden";
   if(typeof mqtt==="undefined"||i>=BROKERS.length||(fijo!==null&&i!==fijo))return alFallar();
+  /* Ruleta en la tele (01/11/2026, "anda medio trancado"): la tele anfitriona probaba un servidor por vez
+     (7 s de espera por cada uno que no respondía). Ahora prueba los 4 a la vez y se queda con el primero;
+     el código de la sala lleva ese número y los celulares van directo a ese servidor. */
+  if(esTV&&modo==="tvhost"&&i===0&&!conectar.carrera){
+    conectar.carrera=true;let ganador=null,caidos=0;const cs=[];
+    BROKERS.forEach((url,k)=>{let c;try{c=mqtt.connect(url,{clientId:"lr"+Math.random().toString(16).slice(2),connectTimeout:7000,reconnectPeriod:0,clean:true});}catch(e){c=null;}
+      let cayo=false;const caer=()=>{if(cayo||ganador)return;cayo=true;try{c&&c.end(true);}catch(e){}
+        if(++caidos>=BROKERS.length){conectar.carrera=false;window.gyaFalloConexion="los servidores no responden";alFallar();}};
+      if(!c){caer();return;}cs.push(c);
+      c.on("connect",()=>{
+        if(ganador){if(ganador===c)recuperarSala();else{try{c.end(true);}catch(e){}}return;}
+        ganador=c;conectar.carrera=false;cs.forEach(o=>{if(o!==c){try{o.end(true);}catch(e){}}});
+        asignarCliente(c);c.options.reconnectPeriod=2500;window.gyaTVBroker=k;alConectar();});
+      c.on("error",()=>{if(!ganador)caer();});c.on("close",()=>{if(!ganador)caer();});});
+    return;}
   let listo=false,muerto=false;
   const c=mqtt.connect(BROKERS[i],{clientId:"lr"+Math.random().toString(16).slice(2),
     connectTimeout:7000,reconnectPeriod:0,clean:true});
@@ -8524,7 +8539,7 @@ function tvAutoArrancar(){
      Los "hola" se repiten cada 4 s: no se reinicia la espera por eso. */
   const todos=familiaJugadores.length>=TV_ESPERADOS;
   if(tvAutoT&&(tvAutoTodos||!todos))return;
-  clearTimeout(tvAutoT);tvAutoTodos=todos;tvAutoT=setTimeout(tvArrancarYa,todos?2000:20000);
+  clearTimeout(tvAutoT);tvAutoTodos=todos;tvAutoT=setTimeout(tvArrancarYa,todos?1200:20000);
 }
 function tvArrancarYa(){
   if(tvPartidaIniciada||!familiaJugadores.length)return;clearTimeout(tvAutoT);
@@ -12154,7 +12169,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="extensiones.js?v=118"></script>
 <script src="sala-tv.js?v=1"></script>
 <link rel="stylesheet" href="tele.css?v=43">
-<script src="tele.js?v=77"></script>
+<script src="tele.js?v=78"></script>
 </body>
 </html>
 
