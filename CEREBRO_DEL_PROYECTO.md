@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 01/11/2026 — Rosco en la tele: lee la pista en voz alta y recién después prende el micrófono
+- Qué: Gonzalo: "que haga como el cel, que dice la palabra y el audio se prende después de decirla". Antes de abrir el micrófono de cada letra (también al volver de pausa, apelación, error o cambio de turno) la tele lee "Empieza/Contiene la X. <definición>" con la voz de Giro (speechSynthesis, voz masculina si hay). El micrófono del celular se prende cuando termina de leer; mientras lee, el reloj no corre y la tele dice "🔊 Escuchá la pista… el micrófono se prende al terminar". Si la tele no avisa que terminó, se abre igual a los 1,8 s + 75 ms por letra (máx. 15 s). Pausa y apelación cortan la lectura.
+- Dónde: tele.js (juegoRosco: reanudarVoz → lee y llama abrirMic; callarPista en pausar/apelación/fin; texto de #tlOi).
+
 ### 01/11/2026 — Rosco en la tele: hasta 6 jugadores y se ve clarito a quién le toca
 - Qué: Gonzalo: "poder jugar de a 6 y una flechita o algo de color en el nombre que avise quién juega". (1) El del control puede marcar hasta 5 más (antes 3): "▶ Jugar de a cinco/seis". Colores nuevos: j4 verde #2ED18A, j5 rosa #E5197C (rosco, marcador y presentación). Con 5–6 el marcador se achica para que entre. (2) Turno: en el marcador, flechita ▶ que late al costado de la fila del que juega y la fila titila con su color; debajo, una píldora grande "▶ Le toca a <nombre>" con el color del jugador (reemplaza "🎮 Juega …" en el modo de varios).
 - Dónde: tele.js (rosco_modo: slice(0,5); NOMBRE_N; celular hasta 5; marcadorDos con .tl-rd-flecha y .tl-rd-muchos; .tl-rd-letoca), tele.css.
