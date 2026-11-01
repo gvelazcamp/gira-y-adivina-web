@@ -1545,7 +1545,7 @@
     }
     function pintar(raiz){
       if(!iframe||!raiz.contains(iframe)){listo=false;
-        raiz.innerHTML=`<div class="tl-pze"><iframe id="tlPzeFrame" src="puzzle.html?tvpuzzle=1&amp;ver=1&amp;v=52" title="Puzzle"></iframe><div class="tl-pze-cartel" id="tlPzeCartel"></div></div>`;
+        raiz.innerHTML=`<div class="tl-pze"><iframe id="tlPzeFrame" src="puzzle.html?tvpuzzle=1&amp;ver=1&amp;v=53" title="Puzzle"></iframe><div class="tl-pze-cartel" id="tlPzeCartel"></div></div>`;
         iframe=raiz.querySelector("#tlPzeFrame");}
       const c=raiz.querySelector("#tlPzeCartel");if(c){c.hidden=hay;c.innerHTML=`<img src="assets/puzzle-arte/icono.webp" alt=""><h1>🧩 Puzzle</h1><p>📱 <b>${esc(nombreDe(T,dueno))}</b> elige y arma el puzzle en su celular…</p><p class="tl-ayuda">Todo lo que arma se ve acá en la tele, en vivo.</p>`;}
     }
@@ -1974,7 +1974,7 @@
       if(c.dueno!==yo){if(pzeMarco){pzeMarco.remove();pzeMarco=null;}raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🧩 Puzzle</h2><p><b>${esc(c.nombre||"")}</b> está armando el puzzle en su celular. ¡Mirá la tele 📺 y ayudá!</p></div>`;return;}
       if(pzeMarco&&document.body.contains(pzeMarco))return;
       raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🧩 Armando el puzzle…</h2><p>Se ve en la tele 📺</p></div>`;
-      pzeMarco=document.createElement("iframe");pzeMarco.src="puzzle.html?espejo=1&v=52";pzeMarco.className="tl-pze-cel";pzeMarco.title="Puzzle";
+      pzeMarco=document.createElement("iframe");pzeMarco.src="puzzle.html?espejo=1&v=53";pzeMarco.className="tl-pze-cel";pzeMarco.title="Puzzle";
       pzeMarco.style.cssText="position:fixed;left:0;right:0;bottom:0;top:env(safe-area-inset-top,0px);width:100%;height:calc(100% - env(safe-area-inset-top,0px));border:0;z-index:2147483000;background:#160B24";
       document.body.appendChild(pzeMarco);
       if(!pzeOyendo){pzeOyendo=true;addEventListener("message",e=>{if(!pzeMarco||e.source!==pzeMarco.contentWindow||e.origin!==location.origin||!e.data||e.data.t!=="gya-pz-espejo")return;
