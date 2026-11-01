@@ -262,17 +262,25 @@
     const MUSICA_TELE={ahorcado:"ahorcado-rioplatense",cien:"cien-rioplatenses",frases:"frases-en-giro",silabario:"silabario-rioplatense",
       memoria:"memoria-en-giro",palabra:"palabra-secreta",puzzle:"puzzle",rueda:"rueda-de-letras",sopa:"sopa-fugaz",tutti:"tutti-frutti",
       quien:"musica-bonus",mimica:"musica-bonus",numero:"musica-bonus"};
-    let musTele=null,musTeleId="";
+    let musTele=null,musTeleId="",musPausada=false;const micTele={};
+    const fundir=(a,hasta,fin)=>{if(a._t)clearInterval(a._t);a._t=setInterval(()=>{let v=a.volume;v=hasta>v?Math.min(hasta,v+.02):Math.max(hasta,v-.04);try{a.volume=v;}catch(e){}if(v===hasta){clearInterval(a._t);a._t=null;fin&&fin();}},60);};
     setInterval(()=>{
       let id="";
       if(T.fase==="juego"&&T.g&&MUSICA_TELE[T.juego]&&!document.querySelector(".grp-overlay,.grp-apertura,.tl-podio,.tl-rd-presenta"))id=MUSICA_TELE[T.juego];
-      if(id===musTeleId)return;
-      const viejo=musTele;musTele=null;musTeleId=id;
-      if(viejo){let v=viejo.volume;const t=setInterval(()=>{v-=.04;if(v<=0){clearInterval(t);try{viejo.pause();}catch(e){}}else try{viejo.volume=v;}catch(e){}},60);}
-      if(!id)return;
-      try{const a=new Audio("assets/audio/"+(id.startsWith("musica-")?id:id+"-musica")+".mp3");a.loop=true;a.volume=0;musTele=a;
-        a.play().then(()=>{let v=0;const t=setInterval(()=>{v=Math.min(.2,v+.02);if(musTele!==a){clearInterval(t);return;}try{a.volume=v;}catch(e){}if(v>=.2)clearInterval(t);},80);}).catch(()=>{});}catch(e){}
-    },700);
+      const ahora=Date.now();Object.keys(micTele).forEach(k=>{if(micTele[k]<ahora)delete micTele[k];});
+      const hablan=Object.keys(micTele).length>0;
+      if(id!==musTeleId){
+        const viejo=musTele;musTele=null;musTeleId=id;musPausada=false;
+        if(viejo)fundir(viejo,0,()=>{try{viejo.pause();}catch(e){}});
+        if(!id)return;
+        try{const a=new Audio("assets/audio/"+(id.startsWith("musica-")?id:id+"-musica")+".mp3");a.loop=true;a.volume=0;musTele=a;
+          if(!hablan)a.play().then(()=>{if(musTele===a&&!musPausada)fundir(a,.2);}).catch(()=>{});else musPausada=true;}catch(e){}
+        return;}
+      if(!musTele)return;
+      /* Alguien está hablando al celular: la música baja y se pausa; vuelve donde estaba al terminar. */
+      if(hablan&&!musPausada){musPausada=true;const a=musTele;fundir(a,0,()=>{if(musPausada)try{a.pause();}catch(e){}});}
+      else if(!hablan&&musPausada){musPausada=false;const a=musTele;a.play().then(()=>{if(musTele===a&&!musPausada)fundir(a,.2);}).catch(()=>{});}
+    },400);
     function estadoCel(){
       if(T.fase==="menu")return{pantalla:"menu",juegos:JUEGOS.map(j=>({id:j.id,nombre:j.nombre,ok:j.ok,icono:j.icono,desc:j.desc}))};
       if(T.fase==="ruleta")return{pantalla:"ruleta"};
@@ -294,6 +302,8 @@
       if(m.t==="chau"){T.jug=T.jug.filter(x=>x.pid!==m.pid);if(T.mando===m.pid)T.mando=T.jug[0]?T.jug[0].pid:null;pintar();difundir();return;}
       if(m.t==="tomar"){if(T.juego==="tutti"&&T.g&&!T.g.participa(m.pid))return;T.mando=m.pid;pintar();difundir();return;}
       if(m.t!=="accion")return;
+      /* Micrófono de un celular prendido/apagado: la música de la tele se pausa mientras alguien habla. */
+      if(m.a==="mic"){if(m.on)micTele[m.pid]=Date.now()+20000;else delete micTele[m.pid];return;}
       if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="sopa"&&m.a==="sp_marca")||(T.juego==="palabra"&&m.a==="ps_intento")||(T.juego==="memoria"&&m.a==="mg_carta")||(T.juego==="rueda"&&m.a==="rl_palabra")||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz","rs_apelar","rs_ver","rs_voto","rs_pausa","rs_reanudar","rs_rev"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
       if(m.a==="elegir"&&T.fase==="menu"){elegir(String(m.juego||""));return;}
       if(m.a==="rosco_modo"&&T.fase==="rosco_modo"){
@@ -1955,11 +1965,11 @@
     let dcRec=null,dcOyendo=false,dcDebe=false,dcLetra=-1,dcTurno=-1,dcParcial=null,dcParcialT=null,dcUltimo="",dcEnvio=0,dcPermiso=(()=>{try{return localStorage.getItem("gya_tele_mic")==="1";}catch(e){return false;}})();
     function dcVoz(debe){
       dcDebe=debe;
-      if(!debe){dcOyendo=false;clearTimeout(dcParcialT);dcParcial=null;dcUltimo="";if(dcRec){const r=dcRec;dcRec=null;try{r.abort();}catch(e){}}return;}
+      if(!debe){if(dcRec)mandar({t:"accion",a:"mic",on:0});dcOyendo=false;clearTimeout(dcParcialT);dcParcial=null;dcUltimo="";if(dcRec){const r=dcRec;dcRec=null;try{r.abort();}catch(e){}}return;}
       if(dcRec||!dcPermiso)return;
       const Ctor=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Ctor)return;
       const r=new Ctor();dcRec=r;r.lang="es-UY";r.continuous=true;r.interimResults=true;r.maxAlternatives=5;
-      r.onaudiostart=()=>{if(dcRec!==r)return;dcOyendo=true;mandar({t:"accion",a:"dc_listo"});const el=raiz.querySelector("#tlDcMic");if(el)el.textContent="🎙 Te escucho · respondé";};
+      r.onaudiostart=()=>{if(dcRec!==r)return;dcOyendo=true;mandar({t:"accion",a:"dc_listo"});mandar({t:"accion",a:"mic",on:1});const el=raiz.querySelector("#tlDcMic");if(el)el.textContent="🎙 Te escucho · respondé";};
       r.onresult=e=>{if(dcRec!==r)return;const l=[];let hayFinal=false;
         for(let i=e.resultIndex;i<e.results.length;i++){const x=e.results[i];l.push({alts:Array.from(x).map(a=>String(a.transcript||"")),isFinal:!!x.isFinal});if(x.isFinal)hayFinal=true;}
         const txt=(l[l.length-1]?.alts[0]||"").trim();const el=raiz.querySelector("#tlDcOi");if(el&&txt)el.textContent="Oí: «"+txt+"»";
@@ -1969,7 +1979,7 @@
         const ahora=Date.now();if(!hayFinal&&(txt===dcUltimo||ahora-dcEnvio<250))return;dcUltimo=txt;dcEnvio=ahora;
         mandar({t:"accion",a:"dc_voz",turno:dcTurno,l});};
       r.onerror=e=>{if(dcRec!==r)return;if(["not-allowed","service-not-allowed"].includes(e.error)){dcPermiso=false;try{localStorage.removeItem("gya_tele_mic");}catch(x){}pantallaPintada="";}};
-      r.onend=()=>{if(dcRec!==r)return;dcRec=null;dcOyendo=false;
+      r.onend=()=>{mandar({t:"accion",a:"mic",on:0});if(dcRec!==r)return;dcRec=null;dcOyendo=false;
         clearTimeout(dcParcialT);if(dcParcial&&dcDebe){mandar({t:"accion",a:"dc_voz",turno:dcTurno,l:[{alts:[dcParcial],isFinal:true}]});}dcParcial=null;if(dcDebe)setTimeout(()=>{if(dcDebe&&!dcRec)dcVoz(true);},300);};
       try{r.start();}catch(e){dcRec=null;}
     }
@@ -2050,8 +2060,9 @@
     /* Hablar una vez: el celular escucha y devuelve lo que entendió. */
     function escucharUnaVez(cb){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){alert("Este celular no permite hablar acá. Escribila.");cb([]);return;}
       let r;try{r=new R();}catch(e){cb([]);return;}r.lang="es-UY";r.interimResults=false;r.maxAlternatives=5;let listo=false;
-      r.onresult=e=>{listo=true;cb([...e.results[0]].map(x=>x.transcript));};r.onerror=()=>{if(!listo){listo=true;cb([]);}};r.onend=()=>{if(!listo){listo=true;cb([]);}};
-      try{r.start();}catch(e){cb([]);}}
+      const micOff=()=>mandar({t:"accion",a:"mic",on:0});mandar({t:"accion",a:"mic",on:1});
+      r.onresult=e=>{listo=true;micOff();cb([...e.results[0]].map(x=>x.transcript));};r.onerror=()=>{micOff();if(!listo){listo=true;cb([]);}};r.onend=()=>{micOff();if(!listo){listo=true;cb([]);}};
+      try{r.start();}catch(e){micOff();cb([]);}}
     function pintarPalabra(c,cab,soyMando){
       const mios=(c.pts||{})[yo]||0,aviso=avisoX(c,"ps");
       const filas=Array.from({length:c.max},(_,f)=>{const x=(c.intentos||[])[f];return`<div class="tl-psc-fila">${x?[...x.w].map((l,i)=>`<span class="tl-ps-${x.c[i]}">${l}</span>`).join("")+`<em>${esc(x.n)}</em>`:"<span></span>".repeat(5)+"<em></em>"}</div>`;}).join("");
