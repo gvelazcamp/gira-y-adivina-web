@@ -255,6 +255,24 @@
     const raiz=document.createElement("div");raiz.id="teleTV";raiz.className="tl-tv";document.body.appendChild(raiz);
     let timerJuego=null,ultimoTic=0;
     const mandar=m=>{if(red)red.mandar(m);};
+    /* Música de juego en la tele (01/11/2026, Gonzalo: "que los demás tengan su música de juego, sin ser el Rosco").
+       Cada juego usa su música de siempre (assets/audio/*-musica.mp3), bajita para no tapar el micrófono de los
+       celulares. Se calla mientras habla Giro (presentación), en el podio y en el menú. El Rosco y el Duelo
+       (se juegan hablando) no llevan. */
+    const MUSICA_TELE={ahorcado:"ahorcado-rioplatense",cien:"cien-rioplatenses",frases:"frases-en-giro",silabario:"silabario-rioplatense",
+      memoria:"memoria-en-giro",palabra:"palabra-secreta",puzzle:"puzzle",rueda:"rueda-de-letras",sopa:"sopa-fugaz",tutti:"tutti-frutti",
+      quien:"musica-bonus",mimica:"musica-bonus",numero:"musica-bonus"};
+    let musTele=null,musTeleId="";
+    setInterval(()=>{
+      let id="";
+      if(T.fase==="juego"&&T.g&&MUSICA_TELE[T.juego]&&!document.querySelector(".grp-overlay,.grp-apertura,.tl-podio,.tl-rd-presenta"))id=MUSICA_TELE[T.juego];
+      if(id===musTeleId)return;
+      const viejo=musTele;musTele=null;musTeleId=id;
+      if(viejo){let v=viejo.volume;const t=setInterval(()=>{v-=.04;if(v<=0){clearInterval(t);try{viejo.pause();}catch(e){}}else try{viejo.volume=v;}catch(e){}},60);}
+      if(!id)return;
+      try{const a=new Audio("assets/audio/"+(id.startsWith("musica-")?id:id+"-musica")+".mp3");a.loop=true;a.volume=0;musTele=a;
+        a.play().then(()=>{let v=0;const t=setInterval(()=>{v=Math.min(.2,v+.02);if(musTele!==a){clearInterval(t);return;}try{a.volume=v;}catch(e){}if(v>=.2)clearInterval(t);},80);}).catch(()=>{});}catch(e){}
+    },700);
     function estadoCel(){
       if(T.fase==="menu")return{pantalla:"menu",juegos:JUEGOS.map(j=>({id:j.id,nombre:j.nombre,ok:j.ok,icono:j.icono,desc:j.desc}))};
       if(T.fase==="ruleta")return{pantalla:"ruleta"};
@@ -1172,7 +1190,7 @@
       const cats=[...new Set(libres.map(d=>d.categoria))],cat=cats[Math.floor(Math.random()*cats.length)];
       const ops=libres.filter(d=>d.categoria===cat),d=ops[Math.floor(Math.random()*ops.length)];Vistas.marcar("ahorcado",d.palabra);return d;
     }
-    function nueva(){n++;pal=elegir();usadas=new Set();errores=0;fase="giro";SND.turno();actualizar();clearTimeout(timer);timer=setTimeout(()=>{fase="jugando";actualizar();},1800);}
+    function nueva(){n++;pal=elegir();usadas=new Set();errores=0;fase="giro";SND.turno();actualizar();clearTimeout(timer);timer=setTimeout(()=>{fase="jugando";actualizar();},3000);}
     const completa=()=>[...pal.palabra].every(c=>usadas.has(c));
     function cerrarPalabra(gano){fase="entre";if(gano){ganadas++;puntos+=C.ptsPalabra+C.ptsVida*(C.vidas-errores);sfx("aplausos");}else sfx("abucheo");actualizar();
       clearTimeout(timer);timer=setTimeout(()=>{if(n>=C.palabras){fase="fin";try{const r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");if(puntos>(r.ahorcado||0)){r.ahorcado=puntos;localStorage.setItem("gya_tele_records",JSON.stringify(r));}}catch(e){}
@@ -1190,7 +1208,10 @@
     function pintar(raiz,quien){
       if(fase==="fin"){raiz.innerHTML=`<div class="tl-centro tl-fin"><h1>${ganadas>=4?"¡Impresionante! 🎉":ganadas>=2?"¡Bien jugado! 👏":"¡Se terminó!"}</h1><div class="tl-res"><span class="tl-ok">✓ ${ganadas} de ${C.palabras} palabras</span><span>⭐ ${puntos} puntos</span></div><p class="tl-ayuda">${quien?esc(quien)+": desde el celular podés jugar otra vez o volver al menú.":""}</p></div>`;return;}
       const cat=CATS.find(c=>c.id===pal.categoria)||{nombre:pal.categoria,emoji:"❓",color:"#7B3FE4"};
-      if(fase==="giro"){const seis=[cat].concat(CATS.filter(c=>c.id!==cat.id).sort(()=>Math.random()-.5).slice(0,5));raiz.innerHTML=`<div class="tl-centro"><div class="tl-ruleta-cat">${seis.map((c,i)=>`<span style="--c:${c.color};--i:${i}">${c.emoji}</span>`).join("")}</div><h1>Palabra ${n} de ${C.palabras}</h1><p class="tl-ayuda">Girando la categoría…</p></div>`;return;}
+      if(fase==="giro"){const seis=[cat].concat(CATS.filter(c=>c.id!==cat.id).sort(()=>Math.random()-.5).slice(0,5));
+        /* Ruleta de categorías (01/11/2026): flecha arriba; al frenar, la elegida queda bajo la flecha, brilla y aparece su nombre. */
+        raiz.innerHTML=`<div class="tl-centro"><div class="tl-ruleta-wrap"><div class="tl-ruleta-flecha">▼</div><div class="tl-ruleta-cat">${seis.map((c,i)=>`<span class="${i===0?"tl-rc-elegida":""}" style="--c:${c.color};--i:${i}">${c.emoji}</span>`).join("")}</div></div>
+          <div class="tl-rc-nombre" style="--c:${cat.color}">${cat.emoji} ${esc(cat.nombre)}</div><h1>Palabra ${n} de ${C.palabras}</h1></div>`;return;}
       const revelar=fase==="entre";
       const casillas=[...pal.palabra].map(c=>`<span class="tl-casilla${!usadas.has(c)&&revelar?" tl-falto":""}">${usadas.has(c)||revelar?c:""}</span>`).join("");
       const teclas=[...LET].map(l=>`<span class="${usadas.has(l)?(pal.palabra.includes(l)?"tl-si":"tl-no"):""}">${l}</span>`).join("");
