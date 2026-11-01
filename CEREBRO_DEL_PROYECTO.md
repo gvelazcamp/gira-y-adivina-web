@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 01/11/2026 — Rosco jugando solo: también "Fue ruido / Lo dije bien / Seguir"
+- Qué: Gonzalo: "lo de fue ruido y apelar no aparece cuando juego solo; por ruido no podía jugarlo bien". (1) Tele, Rosco de a 1: al errar aparece el mismo cartel que de a dos (⏸️ Rosco en pausa · el celular ofrece 🔊 Fue ruido: volver a preguntar / ⚖️ Lo dije bien: apelar / No, seguir; 12 s y sigue solo). Solo no hay votación: se acepta directo. La palabra correcta ("Era …") se muestra recién al seguir. (2) Rosco del celular jugando con voz (vozG, no en duelo online): si el micrófono oye algo equivocado, se frena el reloj y sale un cartel con las mismas 3 opciones; "Fue ruido" vuelve a leer la misma pista, "Lo dije bien" la cuenta como acierto (+100), "Seguir" la deja como error y muestra la palabra.
+- Dónde: tele.js (responder: revision también sin DOS; flash sin "Era" durante la revisión; rev.solo), rosco-rioplatense.js (revisarErrorVozG, fase "revision").
+
 ### 01/11/2026 — Puzzle: cartel final "¡Puzzle completo!" sin scroll (tele y celular)
 - Qué: Gonzalo (foto de la tele): el final quedaba cortado abajo. En la tele ahora es horizontal: foto armada a la izquierda (hasta 78% del alto) y trofeo + título + tiempo a la derecha, todo entra. En el celular la foto se achica según el alto de la pantalla para que entren título, foto, texto y los botones sin scroll (probado en 360×640).
 - Dónde: puzzle.html (CSS de #win; iframes de la tele v=53 en tele.js).
