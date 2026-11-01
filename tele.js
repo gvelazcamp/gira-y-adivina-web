@@ -1213,43 +1213,68 @@
      Gana el que encuentra más palabras (100 c/u). Como en el celular se elige Clásica (letras quietas)
      o Giratoria: cada 14 s la grilla gira y las palabras que faltan cambian de lugar (las encontradas no vuelven). */
   function juegoSopa(T,actualizar){
-    const N=10,RONDAS=4,PAL=6,MUDA=14000,PTS=100,GB="presentacion-y-locucion-extensiones/Giro/";
-    const DIRS=[[0,1],[1,0],[1,1],[-1,1],[0,-1],[-1,0],[-1,-1],[1,-1]];
+    /* 10 niveles (01/11/2026, Gonzalo: "más niveles, muchos más, y alguna forma distinta"): el tablero crece,
+       hay más palabras, más direcciones, las letras se mudan cada vez más rápido y aparecen tableros con forma
+       (corazón, mate, sol, mapa, pelota, estrella) y palabras con dibujo (se ve el dibujo, hay que buscar la palabra). */
+    const NIV=[{n:10,p:6,d:2,m:14,t:1.2},{n:10,p:7,d:4,m:13,t:1.15},{n:11,p:7,d:4,m:12,t:1.1},{n:12,p:8,d:8,m:11,t:1.05},{n:14,p:8,d:8,m:10,t:1.05,forma:1},
+      {n:12,p:9,d:8,m:9,t:1,dib:1},{n:14,p:9,d:8,m:8,t:1,forma:1},{n:13,p:10,d:8,m:7,t:.95,dib:1},{n:14,p:10,d:8,m:6,t:.92,forma:1,dib:1},{n:14,p:11,d:8,m:5,t:.9,forma:1,dib:1,experto:1}];
+    const RONDAS=NIV.length,PTS=100,GB="presentacion-y-locucion-extensiones/Giro/";
+    let N=10,PAL=6,MUDA=14000,mask=null,forma=null,dibujos=false,DIRS=[[0,1],[1,0]];
+    const TODAS_DIRS=[[0,1],[1,0],[1,1],[-1,1],[0,-1],[-1,0],[-1,-1],[1,-1]];
+    const DIB=typeof SOPA_DIBUJOS==="object"?SOPA_DIBUJOS:{},FORMAS=typeof SOPA_FORMAS!=="undefined"?SOPA_FORMAS:[];
+    const libre=k=>!mask||mask[Math.floor(k/N)][k%N]==="#";
     const COL=["#F5B301","#37D6C0","#E5197C","#9B6BFF","#2ED18A","#FF8A3D","#3DA5FF","#FFFFFF"];
     const jugadores=T.jug.map(j=>({pid:j.pid,n:j.n})),puntos={},color={};
     jugadores.forEach((j,i)=>{puntos[j.pid]=0;color[j.pid]=COL[i%COL.length];});
     const lim=w=>String(w||"").toUpperCase().replace(/[^A-ZÑ]/g,"");
-    const temas=mezclar((typeof SOPA_DATOS!=="undefined"&&SOPA_DATOS.categorias||[]).map(c=>({nombre:c.nombre,
-      palabras:[...new Set((c.palabras||[]).map(lim))].filter(w=>w.length>=4&&w.length<=N)})).filter(c=>c.palabras.length>=PAL)).slice(0,RONDAS);
+    const todosTemas=mezclar((typeof SOPA_DATOS!=="undefined"&&SOPA_DATOS.categorias||[]).map(c=>({nombre:c.nombre,
+      palabras:[...new Set((c.palabras||[]).map(lim))].filter(w=>w.length>=4&&w.length<=14)})).filter(c=>c.palabras.length>=6));
+    const temasUsados=new Set(),formasUsadas=new Set(),temas={length:RONDAS};
+    function elegirTema(L){
+      const libres=todosTemas.filter(c=>!temasUsados.has(c.nombre)&&c.palabras.filter(w=>w.length<=L.n).length>=L.p);
+      let t=null;
+      if(L.forma&&forma){t=libres.find(c=>c.nombre===forma.tema)||null;}
+      if(!t&&L.dib){t=[...libres].sort((a,b)=>b.palabras.filter(w=>DIB[w]).length-a.palabras.filter(w=>DIB[w]).length)[0]||null;}
+      if(!t)t=libres[0]||todosTemas[0]||null;
+      if(t)temasUsados.add(t.nombre);return t;}
     let ronda=0,tema=null,objetivos=[],halladas={},ubic={},grid=[],gen=0,prev=null,cambioGen=0,restante=0,proxMuda=MUDA,fase="config",timer=null,muerto=false,ult={},mudo=false,giratoria=true,durRonda=1;
     function armarGrilla(){
       const faltan=mezclar(objetivos.filter(w=>!halladas[w])).sort((a,b)=>b.length-a.length);
       for(let intento=0;intento<80;intento++){
         const g=Array(N*N).fill(""),pos={};let bien=true;
         for(const w of faltan){let puesto=false;
-          for(let k=0;k<400&&!puesto;k++){
-            const[dr,dc]=DIRS[Math.floor(Math.random()*8)],r0=Math.floor(Math.random()*N),c0=Math.floor(Math.random()*N),L=[...w].length;
+          for(let k=0;k<500&&!puesto;k++){
+            const[dr,dc]=DIRS[Math.floor(Math.random()*DIRS.length)],r0=Math.floor(Math.random()*N),c0=Math.floor(Math.random()*N),L=[...w].length;
             const rf=r0+dr*(L-1),cf=c0+dc*(L-1);if(rf<0||rf>=N||cf<0||cf>=N)continue;
             const cel=Array.from({length:L},(_,i)=>(r0+dr*i)*N+c0+dc*i),le=[...w];
+            if(cel.some(x=>!libre(x)))continue;
             if(cel.some((x,i)=>g[x]&&g[x]!==le[i]))continue;
             cel.forEach((x,i)=>g[x]=le[i]);pos[w]=cel;puesto=true;}
           if(!puesto){bien=false;break;}}
         if(!bien)continue;
         /* Relleno con letras de las mismas palabras: así hay señuelos. */
         const letras=[...(objetivos.join("")+"AEIOUSRNLTCMDP")];
-        for(let i=0;i<g.length;i++)if(!g[i])g[i]=letras[Math.floor(Math.random()*letras.length)];
+        for(let i=0;i<g.length;i++)if(!g[i])g[i]=libre(i)?letras[Math.floor(Math.random()*letras.length)]:".";
         ubic=pos;return g;}
       return null;
     }
     function nueva(){
-      ronda++;tema=temas[ronda-1];if(!tema){terminar();return;}
-      let pool=tema.palabras;try{pool=Vistas.filtrar("sopa_tele",pool,x=>x);}catch(e){}
-      objetivos=mezclar(pool).slice(0,PAL);
-      if(objetivos.length<PAL)objetivos=objetivos.concat(mezclar(tema.palabras.filter(w=>!objetivos.includes(w))).slice(0,PAL-objetivos.length));
-      halladas={};ult={};prev=null;let g=armarGrilla();if(!g){objetivos=objetivos.slice(0,4);g=armarGrilla();}
+      ronda++;const L=NIV[ronda-1];if(!L){terminar();return;}
+      N=L.n;PAL=L.p;MUDA=L.m*1000;DIRS=L.d===2?TODAS_DIRS.slice(0,2):L.d===4?TODAS_DIRS.slice(0,4):TODAS_DIRS;dibujos=!!L.dib;
+      forma=null;mask=null;
+      if(L.forma&&FORMAS.length){const fs=FORMAS.filter(f=>!formasUsadas.has(f.id));forma=(fs.length?fs:FORMAS)[Math.floor(Math.random()*(fs.length||FORMAS.length))];formasUsadas.add(forma.id);
+        mask=forma.mascara.slice(0,14).map(r=>r.padEnd(14,".").slice(0,14));N=14;}
+      tema=elegirTema(L);if(!tema){terminar();return;}
+      const cabe=w=>w.length<=(mask?11:N);
+      let pool=tema.palabras.filter(cabe);try{pool=Vistas.filtrar("sopa_tele",pool,x=>x);}catch(e){}
+      if(dibujos){const con=mezclar(pool.filter(w=>DIB[w])).slice(0,Math.ceil(PAL/2));pool=con.concat(mezclar(pool.filter(w=>!con.includes(w))));objetivos=pool.slice(0,PAL);}
+      else objetivos=mezclar(pool).slice(0,PAL);
+      if(objetivos.length<PAL)objetivos=objetivos.concat(mezclar(tema.palabras.filter(w=>cabe(w)&&!objetivos.includes(w))).slice(0,PAL-objetivos.length));
+      halladas={};ult={};prev=null;let g=armarGrilla();
+      while(!g&&objetivos.length>4){objetivos=objetivos.slice(0,objetivos.length-1);g=armarGrilla();}
       try{Vistas.marcar("sopa_tele",objetivos);}catch(e){}
-      grid=g||Array(N*N).fill("A");gen++;cambioGen=Date.now();mudo=false;
-      restante=Math.round(objetivos.reduce((s,w)=>s+7+1.3*w.length,0)*(giratoria?1:.87)*1000);durRonda=restante;proxMuda=MUDA;fase="jugando";
+      grid=g||Array(N*N).fill(0).map((_,k)=>libre(k)?"A":".");gen++;cambioGen=Date.now();mudo=false;
+      restante=Math.round(objetivos.reduce((s,w)=>s+7+1.3*w.length,0)*(giratoria?1:.87)*L.t*(L.dib?1.15:1)*1000);durRonda=restante;proxMuda=MUDA;fase="jugando";
       if(ronda>1)SND.turno();actualizar();
     }
     function mudar(){
@@ -1258,7 +1283,7 @@
       Object.values(halladas).forEach(h=>h.cel=null);SND.turno();actualizar();
     }
     function revelar(){if(fase!=="jugando")return;fase="revela";actualizar();clearTimeout(timer);
-      timer=setTimeout(()=>{if(muerto)return;if(ronda>=temas.length)terminar();else nueva();},5500);}
+      timer=setTimeout(()=>{if(muerto)return;if(ronda>=RONDAS)terminar();else nueva();},5500);}
     function terminar(){fase="fin";clearTimeout(timer);
       const f=jugadores.map(j=>({n:nombreDe(T,j.pid),av:avDe(T,j.pid),v:puntos[j.pid]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
       podioTele({juego:"SOPA FUGAZ",titulo:f.length<2?"¡"+String(f[0]?f[0].n:"").toUpperCase()+" SUMÓ "+(f[0]?f[0].v:0)+"!":emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",
@@ -1295,31 +1320,34 @@
     function pintar(raiz){
       if(fase==="config"){raiz.innerHTML=`<div class="tl-sp"><img class="tl-or-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
         <div class="tl-sp-modos"><h1>🔎 Sopa Fugaz</h1><p>${esc(nombreDe(T,T.mando))} elige el modo desde su celular</p>
-          <div><div class="tl-sp-modo"><b>🧩 Clásica</b><span>Las letras quedan quietas</span></div><div class="tl-sp-modo"><b>🌀 Giratoria</b><span>Cada 14 s la sopa gira y las letras se mudan</span></div></div></div></div>`;return;}
+          <div><div class="tl-sp-modo"><b>🧩 Clásica</b><span>Las letras quedan quietas</span></div><div class="tl-sp-modo"><b>🌀 Giratoria</b><span>La sopa gira y las letras se mudan, cada vez más rápido</span></div></div></div></div>`;return;}
       if(!tema){raiz.innerHTML=`<div class="tl-centro"><h1>Preparando…</h1></div>`;return;}
       const rev=fase==="revela",marca={};
       Object.entries(halladas).forEach(([w,h])=>(h.cel||[]).forEach(k=>marca[k]=color[h.pid]));
       if(rev)objetivos.filter(w=>!halladas[w]).forEach(w=>(ubic[w]||[]).forEach(k=>{if(!marca[k])marca[k]="falta";}));
       /* Si se repinta durante el giro, sigue desde donde iba (no vuelve a empezar). */
       const giro=Date.now()-cambioGen,gira=mudo&&giro<1100;
-      const celdas=grid.map((l,k)=>{const c=marca[k];return`<span class="${c==="falta"?"tl-sp-falta":c?"tl-sp-h":""}"${c&&c!=="falta"?` style="--c:${c}"`:""}>${esc(l)}</span>`;}).join("");
+      const celdas=grid.map((l,k)=>{if(l===".")return`<span class="tl-sp-vacia"></span>`;const c=marca[k];return`<span class="${c==="falta"?"tl-sp-falta":c?"tl-sp-h":""}"${c&&c!=="falta"?` style="--c:${c}"`:""}>${esc(l)}</span>`;}).join("");
+      const L=NIV[ronda-1]||NIV[0],sig=NIV[ronda];
+      const verPal=w=>dibujos&&DIB[w]?`<i class="tl-sp-dib">${DIB[w]}</i>`:esc(w);
+      const extras=[L.experto?"🔥 EXPERTO":"",forma?"🧩 Forma: "+esc(forma.nombre):"",dibujos?"🖼️ Con dibujos":"",L.d===2?"➡️⬇️ Derecho y para abajo":L.d===4?"↘️ También en diagonal":"↔️ 8 direcciones"].filter(Boolean).join(" · ");
       const ranking=[...jugadores].sort((a,b)=>puntos[b.pid]-puntos[a.pid]).map(j=>`<span style="--c:${color[j.pid]}"><i></i>${esc(nombreDe(T,j.pid))} <b>${puntos[j.pid]}</b></span>`).join("");
       raiz.innerHTML=`<div class="tl-sp"><img class="tl-or-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
-        <div class="tl-or-top"><span>🔎 SOPA FUGAZ${giratoria?" 🌀":""}</span><span>RONDA ${ronda}/${temas.length}</span><span class="tl-or-reloj" id="tlSpReloj">${Math.ceil(restante/1000)}</span></div>
+        <div class="tl-or-top"><span>🔎 SOPA FUGAZ${giratoria?" 🌀":""}</span><span>${L.experto?"🔥 NIVEL EXPERTO":"NIVEL "+ronda+"/"+RONDAS}</span><span class="tl-or-reloj" id="tlSpReloj">${Math.ceil(restante/1000)}</span></div>
         <div class="tl-sp-cuerpo">
-          <div class="tl-sp-tablero${gira?" tl-sp-gira":""}" style="--n:${N}${gira?";animation-delay:-"+giro+"ms":""}">${celdas}</div>
-          <aside class="tl-sp-panel"><small>TEMA</small><div class="tl-sp-tema">${esc(tema.nombre)}</div>
+          <div class="tl-sp-tablero${gira?" tl-sp-gira":""}${mask?" tl-sp-forma":""}" style="--n:${N}${gira?";animation-delay:-"+giro+"ms":""}">${celdas}</div>
+          <aside class="tl-sp-panel"><small>TEMA</small><div class="tl-sp-tema">${esc(tema.nombre)}</div><div class="tl-sp-extra">${extras}</div>
             ${rev?`<div class="tl-sp-fin">${objetivos.every(w=>halladas[w])?"🎉 ¡Encontraron todas!":"⏱ ¡Tiempo! En rojo, las que faltaron"}</div>`:!giratoria?"":`<div class="tl-sp-muda"><i id="tlSpMuda" style="width:${(100*proxMuda/MUDA).toFixed(1)}%"></i><em>🌀 Las letras se mudan</em></div>`}
-            <div class="tl-sp-lista">${objetivos.map(w=>{const h=halladas[w];return h?`<span class="tl-sp-ok" style="--c:${color[h.pid]}">${esc(w)}<small>${esc(nombreDe(T,h.pid))}</small></span>`:`<span class="${rev?"tl-sp-falto":""}">${esc(w)}</span>`;}).join("")}</div>
+            <div class="tl-sp-lista">${objetivos.map(w=>{const h=halladas[w];return h?`<span class="tl-sp-ok" style="--c:${color[h.pid]}">${esc(w)}<small>${esc(nombreDe(T,h.pid))}</small></span>`:`<span class="${rev?"tl-sp-falto":""}">${rev?esc(w):verPal(w)}</span>`;}).join("")}</div>
             <div class="tl-sp-rank">${ranking}</div></aside></div>
-        <p class="tl-or-ayuda">${rev?"⏳ Ya viene la siguiente…":"📱 En tu celular: deslizá el dedo sobre la palabra"}</p></div>`;
+        <p class="tl-or-ayuda">${rev?(sig?`⏳ Ya viene el nivel ${ronda+1}${sig.experto?" 🔥 EXPERTO":""}: ${sig.p} palabras${sig.forma?" · tablero con forma":""}${sig.dib?" · con dibujos":""}${giratoria?" · se mudan cada "+sig.m+" s":""}`:"🏁 ¡Último nivel!"):"📱 En tu celular: deslizá el dedo sobre la palabra"+(dibujos?" · 🖼️ el dibujo es la pista":"")}</p></div>`;
       if(gira){const t=raiz.querySelector(".tl-sp-tablero");setTimeout(()=>{if(t)t.classList.remove("tl-sp-gira");},Math.max(0,1150-giro));}
     }
     function cel(){
       if(fase==="fin")return{pantalla:"fin",juego:"sopa",resumen:"Mirá el podio en la tele 🏆"};
       if(fase==="config")return{pantalla:"sopa",fase,quien:nombreDe(T,T.mando)};
       const hc=Object.values(halladas).filter(x=>x.cel).map(x=>({c:x.cel,col:color[x.pid]}));
-      return{pantalla:"sopa",fase,ronda,rondas:temas.length,giratoria,tema:tema?tema.nombre:"",n:N,g:gen,grid:grid.join(""),hc,pal:objetivos.map(w=>[w,halladas[w]?nombreDe(T,halladas[w].pid):""]),pts:puntos,ult,
+      return{pantalla:"sopa",fase,ronda,rondas:RONDAS,experto:!!(NIV[ronda-1]||{}).experto,forma:forma?forma.nombre:"",giratoria,tema:tema?tema.nombre:"",n:N,g:gen,grid:grid.join(""),hc,pal:objetivos.map(w=>[w,halladas[w]?nombreDe(T,halladas[w].pid):"",dibujos&&DIB[w]?DIB[w]:""]),pts:puntos,ult,
         rest:Math.round(restante),dur:durRonda,muda:giratoria&&fase==="jugando"?Math.round(proxMuda):null,MUDA};
     }
     return{accion,tic,pintar,cel,fin(){muerto=true;clearTimeout(timer);}};
@@ -2073,18 +2101,18 @@
       if(c.fase==="revela"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏱ ¡Terminó la ronda!</h2><p>Mirá la tele 📺 · ya viene la siguiente.</p><p>Tus puntos: <b>${mios}</b> · vas ${puesto}º</p>${menu}</div>`;enlazar();return;}
       const n=c.n,hechas=(c.pal||[]).filter(x=>x[1]).length;
       raiz.innerHTML=cab+`<div class="sf-game tl-sp-real${c.giratoria?" giratoria":""}">
-        <div class="sf-cabeza"><img src="logo-sopa-fugaz.svg" alt=""><div><small>${c.giratoria?"Sopa giratoria 🌀":"Sopa clásica"} · Ronda ${c.ronda}/${c.rondas||4}</small><b>${esc(c.tema)}</b></div><span class="sf-cuenta">${hechas}/${(c.pal||[]).length}</span></div>
-        <div class="sf-hud"><div><small>Ronda</small><b>${c.ronda}</b></div><div><small>Puntos</small><b>${mios}</b></div><div><small>Puesto</small><b>${puesto}º</b></div><div><small>Tiempo</small><b id="tlSpCelT">–</b></div></div>
+        <div class="sf-cabeza"><img src="logo-sopa-fugaz.svg" alt=""><div><small>${c.giratoria?"Sopa giratoria 🌀":"Sopa clásica"} · ${c.experto?"🔥 Experto":"Nivel "+c.ronda+"/"+(c.rondas||10)}${c.forma?" · "+esc(c.forma):""}</small><b>${esc(c.tema)}</b></div><span class="sf-cuenta">${hechas}/${(c.pal||[]).length}</span></div>
+        <div class="sf-hud"><div><small>Nivel</small><b>${c.ronda}</b></div><div><small>Puntos</small><b>${mios}</b></div><div><small>Puesto</small><b>${puesto}º</b></div><div><small>Tiempo</small><b id="tlSpCelT">–</b></div></div>
         <div class="sf-bar"><i id="tlSpCelBar"></i></div>
-        <div class="sf-grid-caja"><div class="sf-tablero"><div class="sf-grid" id="tlSpGrid" style="--sf-n:${n}">${[...c.grid].map((l,i)=>`<div class="sf-celda${spSel===i?" sel":""}" data-k="${i}">${esc(l)}</div>`).join("")}
+        <div class="sf-grid-caja"><div class="sf-tablero"><div class="sf-grid" id="tlSpGrid" style="--sf-n:${n}">${[...c.grid].map((l,i)=>l==="."?`<div class="sf-celda tl-sf-vacia"></div>`:`<div class="sf-celda${spSel===i?" sel":""}" data-k="${i}">${esc(l)}</div>`).join("")}
           <svg class="sf-caps" viewBox="0 0 ${n} ${n}" preserveAspectRatio="none">${(c.hc||[]).map(x=>spTrazo(n,x.c,x.col+"99")).join("")}</svg></div></div></div>
         <div class="sf-mudanza"><div class="sf-mudanza-texto" id="tlSpCelMudaT"></div><div class="sf-bar mudanza"><i id="tlSpCelMudaBar"></i></div></div>
         ${aviso}
-        <div class="sf-lista">${(c.pal||[]).map(([w,q])=>`<span class="sf-palabra${q?" hecho":""}">${esc(w)}</span>`).join("")}</div>${menu}</div>`;
+        <div class="sf-lista">${(c.pal||[]).map(([w,q,d])=>`<span class="sf-palabra${q?" hecho":""}${d&&!q?" tl-sf-dib":""}">${d&&!q?d:esc(w)}</span>`).join("")}</div>${menu}</div>`;
       spReloj();
       if(aviso)setTimeout(()=>{const e=raiz.querySelector(".tl-sp-aviso");if(e&&Date.now()-spUltVisto>=3400)e.remove();},3600);
       const grid=raiz.querySelector("#tlSpGrid"),svg=grid.querySelector("svg"),base=svg.innerHTML;
-      const celda=e=>{const el=document.elementFromPoint(e.clientX,e.clientY);const d=el&&el.closest?el.closest(".sf-celda"):null;return d&&grid.contains(d)?Number(d.dataset.k):null;};
+      const celda=e=>{const el=document.elementFromPoint(e.clientX,e.clientY);const d=el&&el.closest?el.closest(".sf-celda[data-k]"):null;return d&&grid.contains(d)?Number(d.dataset.k):null;};
       const marcarSel=ind=>{grid.querySelectorAll(".sf-celda.sel").forEach(x=>x.classList.remove("sel"));(ind||[]).forEach(k=>grid.children[k]&&grid.children[k].classList.add("sel"));
         svg.innerHTML=base+(ind&&ind.length>1?spTrazo(n,ind,"#E5197C99"):"");};
       const soltar=()=>{const a=spArr;spArr=null;
