@@ -1216,9 +1216,15 @@
     /* 10 niveles (01/11/2026, Gonzalo: "más niveles, muchos más, y alguna forma distinta"): el tablero crece,
        hay más palabras, más direcciones, las letras se mudan cada vez más rápido y aparecen tableros con forma
        (corazón, mate, sol, mapa, pelota, estrella) y palabras con dibujo (se ve el dibujo, hay que buscar la palabra). */
-    const NIV=[{n:10,p:6,d:2,m:14,t:1.2},{n:10,p:7,d:4,m:13,t:1.15},{n:11,p:7,d:4,m:12,t:1.1},{n:12,p:8,d:8,m:11,t:1.05},{n:14,p:8,d:8,m:10,t:1.05,forma:1},
-      {n:12,p:9,d:8,m:9,t:1,dib:1},{n:14,p:9,d:8,m:8,t:1,forma:1},{n:13,p:10,d:8,m:7,t:.95,dib:1},{n:14,p:10,d:8,m:6,t:.92,forma:1,dib:1},{n:14,p:11,d:8,m:5,t:.9,forma:1,dib:1,experto:1}];
-    const RONDAS=NIV.length,PTS=100,GB="presentacion-y-locucion-extensiones/Giro/";
+    /* 50 niveles (01/11/2026, Gonzalo: "más de 50 niveles"). Cada 10 hay un nivel 🔥 EXPERTO. El nivel al que
+       llegaron queda guardado en la tele (gya_sopa_tele_nivel) y la próxima vez se puede seguir desde ahí. */
+    const RONDAS=50,PTS=100,GB="presentacion-y-locucion-extensiones/Giro/",CLAVE_NIV="gya_sopa_tele_nivel";
+    const nivelCfg=k=>{const experto=k%10===0,forma=experto||(k>=5&&k%3===2),dib=experto||(k>=6&&k%4===2);
+      return{n:forma?14:Math.min(14,10+Math.floor((k-1)/6)),p:Math.min(12,6+Math.floor((k-1)/4)),d:k<=2?2:k<=4?4:8,
+        m:Math.max(4,14-Math.floor((k-1)/4)-(experto?2:0)),t:Math.max(.72,1.2-k*.009-(experto?.05:0)),forma,dib,experto};};
+    const NIV=Array.from({length:RONDAS},(_,i)=>nivelCfg(i+1));
+    const nivelGuardado=()=>{try{return Math.min(RONDAS,Math.max(1,parseInt(localStorage.getItem(CLAVE_NIV),10)||1));}catch(e){return 1;}};
+    const guardarNivel=k=>{try{if(k>nivelGuardado())localStorage.setItem(CLAVE_NIV,String(Math.min(RONDAS,k)));}catch(e){}};
     let N=10,PAL=6,MUDA=14000,mask=null,forma=null,dibujos=false,DIRS=[[0,1],[1,0]];
     const TODAS_DIRS=[[0,1],[1,0],[1,1],[-1,1],[0,-1],[-1,0],[-1,-1],[1,-1]];
     const DIB=typeof SOPA_DIBUJOS==="object"?SOPA_DIBUJOS:{},FORMAS=typeof SOPA_FORMAS!=="undefined"?SOPA_FORMAS:[];
@@ -1235,9 +1241,9 @@
       let t=null;
       if(L.forma&&forma){t=libres.find(c=>c.nombre===forma.tema)||null;}
       if(!t&&L.dib){t=[...libres].sort((a,b)=>b.palabras.filter(w=>DIB[w]).length-a.palabras.filter(w=>DIB[w]).length)[0]||null;}
-      if(!t)t=libres[0]||todosTemas[0]||null;
+      if(!t){if(!libres.length)temasUsados.clear();t=libres[0]||todosTemas.find(c=>c.palabras.filter(w=>w.length<=L.n).length>=L.p)||todosTemas[0]||null;}
       if(t)temasUsados.add(t.nombre);return t;}
-    let ronda=0,tema=null,objetivos=[],halladas={},ubic={},grid=[],gen=0,prev=null,cambioGen=0,restante=0,proxMuda=MUDA,fase="config",timer=null,muerto=false,ult={},mudo=false,giratoria=true,durRonda=1;
+    let jugados=0,ronda=0,tema=null,objetivos=[],halladas={},ubic={},grid=[],gen=0,prev=null,cambioGen=0,restante=0,proxMuda=MUDA,fase="config",timer=null,muerto=false,ult={},mudo=false,giratoria=true,durRonda=1;
     function armarGrilla(){
       const faltan=mezclar(objetivos.filter(w=>!halladas[w])).sort((a,b)=>b.length-a.length);
       for(let intento=0;intento<80;intento++){
@@ -1259,10 +1265,10 @@
       return null;
     }
     function nueva(){
-      ronda++;const L=NIV[ronda-1];if(!L){terminar();return;}
+      ronda++;const L=NIV[ronda-1];if(!L){terminar();return;}guardarNivel(ronda);jugados++;
       N=L.n;PAL=L.p;MUDA=L.m*1000;DIRS=L.d===2?TODAS_DIRS.slice(0,2):L.d===4?TODAS_DIRS.slice(0,4):TODAS_DIRS;dibujos=!!L.dib;
       forma=null;mask=null;
-      if(L.forma&&FORMAS.length){const fs=FORMAS.filter(f=>!formasUsadas.has(f.id));forma=(fs.length?fs:FORMAS)[Math.floor(Math.random()*(fs.length||FORMAS.length))];formasUsadas.add(forma.id);
+      if(L.forma&&FORMAS.length){if(formasUsadas.size>=FORMAS.length)formasUsadas.clear();const fs=FORMAS.filter(f=>!formasUsadas.has(f.id));forma=(fs.length?fs:FORMAS)[Math.floor(Math.random()*(fs.length||FORMAS.length))];formasUsadas.add(forma.id);
         mask=forma.mascara.slice(0,14).map(r=>r.padEnd(14,".").slice(0,14));N=14;}
       tema=elegirTema(L);if(!tema){terminar();return;}
       const cabe=w=>w.length<=(mask?11:N);
@@ -1287,7 +1293,7 @@
     function terminar(){fase="fin";clearTimeout(timer);
       const f=jugadores.map(j=>({n:nombreDe(T,j.pid),av:avDe(T,j.pid),v:puntos[j.pid]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
       podioTele({juego:"SOPA FUGAZ",titulo:f.length<2?"¡"+String(f[0]?f[0].n:"").toUpperCase()+" SUMÓ "+(f[0]?f[0].v:0)+"!":emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",
-        sub:"100 puntos por cada palabra encontrada",equipo:f.length<2,filas:f.map(x=>({n:x.n,av:x.av,pts:x.v+" pts"}))});
+        sub:"Llegaron al nivel "+ronda+" de "+RONDAS+" · 100 puntos por palabra",equipo:f.length<2,filas:f.map(x=>({n:x.n,av:x.av,pts:x.v+" pts"}))});
       actualizar();}
     function marcar(m){
       if(fase!=="jugando")return;const pid=m.pid;
@@ -1308,7 +1314,9 @@
     function accion(m){
       if(m.a==="otra"&&fase==="fin"&&m.pid===T.mando){T.otra();return;}
       /* Como en el celular: Clásica (letras quietas) o Giratoria (las letras se mudan). */
-      if(m.a==="sp_modo"&&fase==="config"&&m.pid===T.mando){giratoria=m.modo!=="clasica";nueva();return;}
+      if(m.a==="sp_modo"&&fase==="config"&&m.pid===T.mando){giratoria=m.modo!=="clasica";
+        const desde=Number(m.desde);ronda=desde>=1&&desde<=nivelGuardado()?desde-1:0;nueva();return;}
+      if(m.a==="sp_terminar"&&m.pid===T.mando&&(fase==="jugando"||fase==="revela")){clearTimeout(timer);terminar();return;}
       if(m.a==="sp_marca"){marcar(m);return;}
       if(m.a==="sp_saltar"&&m.pid===T.mando&&fase==="jugando"){revelar();return;}
     }
@@ -1319,7 +1327,7 @@
       const b=document.querySelector("#tlSpMuda");if(b)b.style.width=(100*proxMuda/MUDA).toFixed(1)+"%";}
     function pintar(raiz){
       if(fase==="config"){raiz.innerHTML=`<div class="tl-sp"><img class="tl-or-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
-        <div class="tl-sp-modos"><h1>🔎 Sopa Fugaz</h1><p>${esc(nombreDe(T,T.mando))} elige el modo desde su celular</p>
+        <div class="tl-sp-modos"><h1>🔎 Sopa Fugaz</h1><p>${esc(nombreDe(T,T.mando))} elige el modo desde su celular · ${RONDAS} niveles${nivelGuardado()>1?" · llegaron al nivel "+nivelGuardado():""}</p>
           <div><div class="tl-sp-modo"><b>🧩 Clásica</b><span>Las letras quedan quietas</span></div><div class="tl-sp-modo"><b>🌀 Giratoria</b><span>La sopa gira y las letras se mudan, cada vez más rápido</span></div></div></div></div>`;return;}
       if(!tema){raiz.innerHTML=`<div class="tl-centro"><h1>Preparando…</h1></div>`;return;}
       const rev=fase==="revela",marca={};
@@ -1333,19 +1341,19 @@
       const extras=[L.experto?"🔥 EXPERTO":"",forma?"🧩 Forma: "+esc(forma.nombre):"",dibujos?"🖼️ Con dibujos":"",L.d===2?"➡️⬇️ Derecho y para abajo":L.d===4?"↘️ También en diagonal":"↔️ 8 direcciones"].filter(Boolean).join(" · ");
       const ranking=[...jugadores].sort((a,b)=>puntos[b.pid]-puntos[a.pid]).map(j=>`<span style="--c:${color[j.pid]}"><i></i>${esc(nombreDe(T,j.pid))} <b>${puntos[j.pid]}</b></span>`).join("");
       raiz.innerHTML=`<div class="tl-sp"><img class="tl-or-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
-        <div class="tl-or-top"><span>🔎 SOPA FUGAZ${giratoria?" 🌀":""}</span><span>${L.experto?"🔥 NIVEL EXPERTO":"NIVEL "+ronda+"/"+RONDAS}</span><span class="tl-or-reloj" id="tlSpReloj">${Math.ceil(restante/1000)}</span></div>
+        <div class="tl-or-top"><span>🔎 SOPA FUGAZ${giratoria?" 🌀":""}</span><span>${L.experto?"🔥 NIVEL "+ronda+" · EXPERTO":"NIVEL "+ronda+"/"+RONDAS}</span><span class="tl-or-reloj" id="tlSpReloj">${Math.ceil(restante/1000)}</span></div>
         <div class="tl-sp-cuerpo">
           <div class="tl-sp-tablero${gira?" tl-sp-gira":""}${mask?" tl-sp-forma":""}" style="--n:${N}${gira?";animation-delay:-"+giro+"ms":""}">${celdas}</div>
           <aside class="tl-sp-panel"><small>TEMA</small><div class="tl-sp-tema">${esc(tema.nombre)}</div><div class="tl-sp-extra">${extras}</div>
             ${rev?`<div class="tl-sp-fin">${objetivos.every(w=>halladas[w])?"🎉 ¡Encontraron todas!":"⏱ ¡Tiempo! En rojo, las que faltaron"}</div>`:!giratoria?"":`<div class="tl-sp-muda"><i id="tlSpMuda" style="width:${(100*proxMuda/MUDA).toFixed(1)}%"></i><em>🌀 Las letras se mudan</em></div>`}
             <div class="tl-sp-lista">${objetivos.map(w=>{const h=halladas[w];return h?`<span class="tl-sp-ok" style="--c:${color[h.pid]}">${esc(w)}<small>${esc(nombreDe(T,h.pid))}</small></span>`:`<span class="${rev?"tl-sp-falto":""}">${rev?esc(w):verPal(w)}</span>`;}).join("")}</div>
             <div class="tl-sp-rank">${ranking}</div></aside></div>
-        <p class="tl-or-ayuda">${rev?(sig?`⏳ Ya viene el nivel ${ronda+1}${sig.experto?" 🔥 EXPERTO":""}: ${sig.p} palabras${sig.forma?" · tablero con forma":""}${sig.dib?" · con dibujos":""}${giratoria?" · se mudan cada "+sig.m+" s":""}`:"🏁 ¡Último nivel!"):"📱 En tu celular: deslizá el dedo sobre la palabra"+(dibujos?" · 🖼️ el dibujo es la pista":"")}</p></div>`;
+        <p class="tl-or-ayuda">${rev?(sig?`⏳ Ya viene el nivel ${ronda+1}/${RONDAS}${sig.experto?" 🔥 EXPERTO":""}: ${sig.p} palabras${sig.forma?" · tablero con forma":""}${sig.dib?" · con dibujos":""}${giratoria?" · se mudan cada "+sig.m+" s":""}`:"🏁 ¡Último nivel!"):"📱 En tu celular: deslizá el dedo sobre la palabra"+(dibujos?" · 🖼️ el dibujo es la pista":"")}</p></div>`;
       if(gira){const t=raiz.querySelector(".tl-sp-tablero");setTimeout(()=>{if(t)t.classList.remove("tl-sp-gira");},Math.max(0,1150-giro));}
     }
     function cel(){
       if(fase==="fin")return{pantalla:"fin",juego:"sopa",resumen:"Mirá el podio en la tele 🏆"};
-      if(fase==="config")return{pantalla:"sopa",fase,quien:nombreDe(T,T.mando)};
+      if(fase==="config")return{pantalla:"sopa",fase,quien:nombreDe(T,T.mando),guardado:nivelGuardado(),rondas:RONDAS};
       const hc=Object.values(halladas).filter(x=>x.cel).map(x=>({c:x.cel,col:color[x.pid]}));
       return{pantalla:"sopa",fase,ronda,rondas:RONDAS,experto:!!(NIV[ronda-1]||{}).experto,forma:forma?forma.nombre:"",giratoria,tema:tema?tema.nombre:"",n:N,g:gen,grid:grid.join(""),hc,pal:objetivos.map(w=>[w,halladas[w]?nombreDe(T,halladas[w].pid):"",dibujos&&DIB[w]?DIB[w]:""]),pts:puntos,ult,
         rest:Math.round(restante),dur:durRonda,muda:giratoria&&fase==="jugando"?Math.round(proxMuda):null,MUDA};
@@ -2071,7 +2079,7 @@
     /* Sopa Fugaz en el celular (31/10/2026): igual que el juego del celular (tablero crema, cápsulas, lista y barras);
        se marca deslizando el dedo de la primera a la última letra (o tocando las dos). La tele manda el estado
        cada 2,5 s: si solo cambió el reloj no se redibuja, y mientras arrastrás el dedo el repintado espera. */
-    let spSel=null,spGen=-1,spUltT=0,spUltVisto=0,spClave="",spArr=null,spPend=null,spT={rest:0,dur:1,muda:null,MUDA:1,t:0};
+    let spDesde=null,spSel=null,spGen=-1,spUltT=0,spUltVisto=0,spClave="",spArr=null,spPend=null,spT={rest:0,dur:1,muda:null,MUDA:1,t:0};
     function spLinea(n,a,b){const r1=Math.floor(a/n),c1=a%n,r2=Math.floor(b/n),c2=b%n,dr=Math.sign(r2-r1),dc=Math.sign(c2-c1);
       if(!(r1===r2||c1===c2||Math.abs(r2-r1)===Math.abs(c2-c1)))return null;const L=Math.max(Math.abs(r2-r1),Math.abs(c2-c1))+1;
       return Array.from({length:L},(_,i)=>(r1+dr*i)*n+c1+dc*i);}
@@ -2089,16 +2097,21 @@
       if(c.g!==spGen){spGen=c.g;spSel=null;}
       const u=(c.ult||{})[yo];if(u&&u.t!==spUltT){spUltT=u.t;spUltVisto=Date.now();}
       const aviso=u&&Date.now()-spUltVisto<3500?`<p class="tl-sp-aviso${u.ok?" tl-sp-bien":""}">${u.ok?"✅ ":"❌ "}${esc(u.txt)}</p>`:"";
-      const enlazar=()=>{raiz.querySelector("#tlSpSaltar")?.addEventListener("click",()=>{if(confirm("¿Terminar esta ronda?"))accion("sp_saltar");});const b=raiz.querySelector("#tlMenu");if(b)b.onclick=()=>{if(confirm("¿Volver al menú?"))accion("menu");};};
+      const enlazar=()=>{raiz.querySelector("#tlSpSaltar")?.addEventListener("click",()=>{if(confirm("¿Saltar este nivel?"))accion("sp_saltar");});
+        raiz.querySelector("#tlSpFin")?.addEventListener("click",()=>{if(confirm("¿Terminar la partida y ver el podio? El nivel queda guardado para la próxima."))accion("sp_terminar");});const b=raiz.querySelector("#tlMenu");if(b)b.onclick=()=>{if(confirm("¿Volver al menú?"))accion("menu");};};
       if(c.fase==="config"){
         if(!soyMando){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🔎 Sopa Fugaz</h2><p>${esc(c.quien||"El que tiene el control")} está eligiendo el modo.</p></div>`;return;}
-        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🔎 Sopa Fugaz</h2><p>¿Cómo la juegan?</p>
+        const gd=c.guardado||1;if(spDesde==null||spDesde>gd)spDesde=gd;
+        raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🔎 Sopa Fugaz</h2><p>${c.rondas||50} niveles · ¿Desde dónde arrancan?</p>
+          ${gd>1?`<div class="tl-sp-desde"><button type="button" class="tl-boton${spDesde===gd?" tl-oro":""}" data-desde="${gd}">▶ Seguir en el nivel ${gd}</button><button type="button" class="tl-boton${spDesde===1?" tl-oro":""}" data-desde="1">⟲ Desde el nivel 1</button></div>`:""}
+          <p>¿Cómo la juegan?</p>
           <button type="button" class="tl-boton tl-oro" data-modo="clasica">🔎 Sopa clásica<br><small>Las letras quedan quietas</small></button>
           <button type="button" class="tl-boton tl-oro" data-modo="giratoria">🌀 Sopa giratoria<br><small>La sopa gira y las letras se mudan</small></button><button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button></div>`;
-        raiz.querySelectorAll("[data-modo]").forEach(b=>b.onclick=()=>accion("sp_modo",{modo:b.dataset.modo}));enlazar();return;}
+        raiz.querySelectorAll("[data-desde]").forEach(b=>b.onclick=()=>{spDesde=Number(b.dataset.desde);spClave="";pintarSopa(c,cab,soyMando);});
+        raiz.querySelectorAll("[data-modo]").forEach(b=>b.onclick=()=>accion("sp_modo",{modo:b.dataset.modo,desde:spDesde||1}));enlazar();return;}
       const pts=c.pts||{},mios=pts[yo]||0,puesto=1+Object.values(pts).filter(v=>v>mios).length;
-      const menu=soyMando?`<div class="sf-acciones"><button type="button" id="tlSpSaltar">⏭ Terminar ronda</button><button type="button" id="tlMenu">⟵ Menú</button></div>`:"";
-      if(c.fase==="revela"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏱ ¡Terminó la ronda!</h2><p>Mirá la tele 📺 · ya viene la siguiente.</p><p>Tus puntos: <b>${mios}</b> · vas ${puesto}º</p>${menu}</div>`;enlazar();return;}
+      const menu=soyMando?`<div class="sf-acciones"><button type="button" id="tlSpSaltar">⏭ Saltar nivel</button><button type="button" id="tlSpFin">🏁 Terminar y ver podio</button><button type="button" id="tlMenu">⟵ Menú</button></div>`:"";
+      if(c.fase==="revela"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏱ ¡Terminó el nivel!</h2><p>Mirá la tele 📺 · ya viene la siguiente.</p><p>Tus puntos: <b>${mios}</b> · vas ${puesto}º</p>${menu}</div>`;enlazar();return;}
       const n=c.n,hechas=(c.pal||[]).filter(x=>x[1]).length;
       raiz.innerHTML=cab+`<div class="sf-game tl-sp-real${c.giratoria?" giratoria":""}">
         <div class="sf-cabeza"><img src="logo-sopa-fugaz.svg" alt=""><div><small>${c.giratoria?"Sopa giratoria 🌀":"Sopa clásica"} · ${c.experto?"🔥 Experto":"Nivel "+c.ronda+"/"+(c.rondas||10)}${c.forma?" · "+esc(c.forma):""}</small><b>${esc(c.tema)}</b></div><span class="sf-cuenta">${hechas}/${(c.pal||[]).length}</span></div>

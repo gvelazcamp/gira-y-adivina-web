@@ -1,4 +1,4 @@
-const CACHE_NAME = "gya-cache-v667";
+const CACHE_NAME = "gya-cache-v668";
 // Máximo que se espera a la red (HTML/JS) antes de abrir con la copia guardada.
 const ESPERA_RED_MS = 2000;
 // Imágenes, audios y videos van en una caché APARTE que NO se borra cuando se

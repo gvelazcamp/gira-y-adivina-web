@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 01/11/2026 — Sopa Fugaz en la tele: 50 niveles y se guarda el nivel
+- Qué: Gonzalo: "más de 50 niveles". Los niveles se generan con nivelCfg(k), k=1..50: tablero 10→14, palabras 6→12, direcciones (1–2 derecho/abajo, 3–4 + diagonal, 5+ las 8), mudanza 14 s→4 s, tiempo cada vez más justo; forma en los niveles 5, 8, 11… (k%3==2), dibujos en 6, 10, 14… (k%4==2) y cada 10 un 🔥 EXPERTO (forma + dibujos + mudanza más rápida). Los temas no se repiten hasta agotarse (66) y las formas rotan. El nivel al que llegaron queda guardado en la tele (localStorage gya_sopa_tele_nivel) y al entrar el del control elige "▶ Seguir en el nivel X" o "⟲ Desde el nivel 1". En el celular del control: "⏭ Saltar nivel", "🏁 Terminar y ver podio" (el podio dice hasta qué nivel llegaron) y "⟵ Menú".
+- Dónde: tele.js (juegoSopa: nivelCfg, nivelGuardado/guardarNivel, sp_terminar; pintarSopa: spDesde).
+
 ### 01/11/2026 — Sopa Fugaz en la tele: 10 niveles con formas y dibujos
 - Qué: Gonzalo: "más niveles, muchos más, y alguna forma distinta". Antes eran 4 rondas iguales (10×10, 6 palabras, mudanza cada 14 s). Ahora 10 niveles: 1) 10×10, 6 palabras, solo derecha/abajo; 2) 7 palabras + diagonal; 3) 11×11; 4) 12×12, 8 palabras, 8 direcciones; 5) tablero con forma (14×14 con máscara de SOPA_FORMAS: corazón, mate, sol, mapa de Uruguay, pelota, estrella; usa el tema de la forma si está libre); 6) palabras con dibujo (SOPA_DIBUJOS: en la lista se ve el emoji y hay que buscar la palabra; se elige el tema con más dibujos, mitad con dibujo); 7) forma; 8) 13×13, 10 palabras con dibujo; 9) forma + dibujos; 10) 🔥 EXPERTO: forma + dibujos, 11 palabras, mudanza cada 5 s. La mudanza va de 14 s a 5 s (modo giratoria) y el tiempo se achica. Cada nivel usa un tema distinto. Entre niveles la tele anuncia el que viene. Las casillas fuera de la forma van como "." en la grilla (no se pueden tocar).
 - Dónde: tele.js (juegoSopa: NIV, elegirTema, armarGrilla con máscara; pintarSopa del celular), tele.css (.tl-sp-vacia, .tl-sp-extra, .tl-sf-dib).
