@@ -35,7 +35,13 @@ const AhorcadoRioplatense=(()=>{
   let audioMusica=null;
   /* Dibujos en assets/ahorcado/ (hoja de ChatGPT recortada); los íconos de los temas son los de 100 Rioplatenses (assets/cien/). */
   const ARTE=n=>"assets/ahorcado/"+n+".webp",ico=n=>'<img class="ah-ico" src="'+ARTE(n)+'" alt="" draggable="false">';
-  const icoTema=c=>'<img class="ah-ico-tema" src="assets/cien/c_'+c.id+'.webp" alt="" draggable="false">';
+  /* Con dibujo propio (assets/cien/c_<id>.webp) las categorías de siempre; las nuevas usan su emoji. */
+  const CON_ARTE=new Set(["comida","carnaval","futbol","costumbres","lunfardo","ciudades","animales","casa","escuela","musica","playa","viajes"]);
+  const icoTema=c=>CON_ARTE.has(c.id)?'<img class="ah-ico-tema" src="assets/cien/c_'+c.id+'.webp" alt="" draggable="false">':'<span class="ah-ico-tema ah-ico-emoji">'+(c.emoji||"❓")+'</span>';
+  /* La ruleta muestra 8 categorías por vez (son muchas): la de la palabra y 7 al azar. */
+  let RUEDA=AHORCADO_CATEGORIAS.slice(0,8);
+  function armarRueda(catId){const otras=AHORCADO_CATEGORIAS.filter(c=>c.id!==catId).sort(()=>Math.random()-.5).slice(0,7);
+    const propia=AHORCADO_CATEGORIAS.find(c=>c.id===catId);RUEDA=(propia?[propia]:[]).concat(otras).sort(()=>Math.random()-.5);construirRueda();}
   function iniciarMusicaJuego(){
     try{
       if(typeof sonidoPermitido==="function"&&!sonidoPermitido())return;
@@ -61,19 +67,19 @@ const AhorcadoRioplatense=(()=>{
   }
   function posicionarRueda(){
     const wrap=$("#ahRuedaWrap");if(!wrap)return;
-    const N=AHORCADO_CATEGORIAS.length,R=wrap.clientWidth*.31;
+    const N=RUEDA.length,R=wrap.clientWidth*.31;
     etiquetas.forEach((d,i)=>{const a=i*360/N+180/N;d.style.transform=`translate(-50%,-50%) rotate(${a}deg) translateY(${-R}px) rotate(${-a}deg) rotate(${-W}deg)`});
     $("#ahRueda").style.transform=`rotate(${W}deg)`;
   }
   function construirRueda(){
-    const N=AHORCADO_CATEGORIAS.length,rueda=$("#ahRueda");
-    rueda.style.background="conic-gradient("+AHORCADO_CATEGORIAS.map((c,i)=>`${c.color} ${i*360/N}deg ${(i+1)*360/N}deg`).join(",")+")";
+    const N=RUEDA.length,rueda=$("#ahRueda");
+    rueda.style.background="conic-gradient("+RUEDA.map((c,i)=>`${c.color} ${i*360/N}deg ${(i+1)*360/N}deg`).join(",")+")";
     rueda.replaceChildren();etiquetas=[];
-    AHORCADO_CATEGORIAS.forEach(c=>{const d=document.createElement("div");d.className="ah-cat";d.innerHTML=icoTema(c)+c.nombre;rueda.appendChild(d);etiquetas.push(d);});
+    RUEDA.forEach(c=>{const d=document.createElement("div");d.className="ah-cat";d.innerHTML=icoTema(c)+c.nombre;rueda.appendChild(d);etiquetas.push(d);});
     posicionarRueda();
   }
   function girarA(indice,cb){
-    const N=AHORCADO_CATEGORIAS.length,reducido=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const N=RUEDA.length,reducido=matchMedia("(prefers-reduced-motion: reduce)").matches;
     const a=indice*360/N+180/N,falta=((-a-W)%360+360)%360;
     W+=reducido?falta:1080+falta;posicionarRueda();
     const partida=raiz;
@@ -111,9 +117,10 @@ const AhorcadoRioplatense=(()=>{
     document.querySelectorAll(".ah-figura g>*").forEach(e=>e.classList.remove("on"));$("#ahFigura").classList.remove("perdida");
     resetTeclado();$("#ahPalabra").innerHTML="";$("#ahPregunta").innerHTML="<small>Girando…</small>";hud();
     if(duelo){palabra=palabrasDuelo[n-1];}else{palabra=elegirPalabra(usadas);usadas.push(palabra);}
-    const indice=AHORCADO_CATEGORIAS.findIndex(c=>c.id===palabra.categoria);
+    armarRueda(palabra.categoria);
+    const indice=Math.max(0,RUEDA.findIndex(c=>c.id===palabra.categoria));
     girarA(indice,()=>{
-      const cat=AHORCADO_CATEGORIAS[indice];
+      const cat=RUEDA[indice];
       $("#ahPregunta").innerHTML=`<small>Categoría</small>${icoTema(cat)} ${cat.nombre} · ${palabra.palabra.length} letras`;
       dibujarPalabra(false);fase="jugando";
       if(turnos){avisoTurno();pintarMinis();const cola=colaRemota;colaRemota=[];cola.forEach(letraRemota);}

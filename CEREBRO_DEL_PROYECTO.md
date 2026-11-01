@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 01/11/2026 — Ahorcado: 16 categorías nuevas (22 en total, 475 palabras)
+- Qué: Gonzalo: "más categorías, muchas más". Nuevas: Animales, La casa, Escuela, Música, Playa, Viajes, Oficios, Naturaleza, Ropa, Deportes, Cuerpo humano, Tecnología, Cine y tele, Historia, Países, Herramientas (248 palabras). Se armaron con listas candidatas filtradas contra todos los juegos de respuesta única (auditoría en 0 errores). Las 6 con dibujo en assets/cien/c_<id>.webp lo usan; las demás muestran su emoji. Como son muchas, la ruleta del celular muestra 8 por vez (la de la palabra + 7 al azar) y la de la tele 6.
+- Dónde: ahorcado-rioplatense-datos.js (v3), ahorcado-rioplatense.js (v16: CON_ARTE, RUEDA/armarRueda), tele.js (ruleta de 6), extensiones.css (.ah-ico-emoji, v151), AUDITORIA_PALABRAS.md.
+
 ### 01/11/2026 — Sopa Fugaz en la tele: +20 s en cada nivel
 - Qué: Gonzalo: "agregale 20 segundos más". El tiempo de cada nivel es el de antes + 20 s.
 - Dónde: tele.js (juegoSopa, nueva(): restante).
