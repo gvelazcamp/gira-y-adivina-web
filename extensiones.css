@@ -1309,3 +1309,7 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .ah-game .ah-pregunta .ah-ico-emoji{display:inline-block;font-size:20px;vertical-align:-3px}
 /* Palabra Secreta: tableros de 6 y 7 letras (03/11/2026) */
 .ps-game .ps-tablero.ps-largo .ps-celda{font-size:clamp(.85rem,4.4vw,1.2rem)}
+/* Palabra Secreta: elegir casillero (03/11/2026) */
+.ps-game .ps-celda.ps-tocable{cursor:pointer}
+.ps-game .ps-celda.ps-cursor{box-shadow:0 0 0 3px #F5B301,0 0 12px #F5B301AA;animation:psCursor 1s ease-in-out infinite alternate}
+@keyframes psCursor{to{box-shadow:0 0 0 3px #FFE08A,0 0 18px #F5B301}}
