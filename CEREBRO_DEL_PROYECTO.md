@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 03/11/2026 — Rosco: 150 palabras nuevas (521 → 671)
+- Qué: Gonzalo (captura de "Palabras del Rosco": ya le habían salido 456 de 521) pidió más palabras. Se sumaron 150 con definiciones nuevas, repartidas en todas las letras (más en D, E, I, J, M, N, P, R, T, V, que ya tenía completas). Respetando la regla "Rosco > Silabario > Ahorcado > Sopa Fugaz > Contra Reloj": 47 palabras pasaron de Sopa Fugaz y 10 de Ahorcado al Rosco (ninguna categoría de Sopa quedó con menos de 14 palabras ni de Ahorcado con menos de 10). No se tocaron Contra Reloj (tarjetas de 5 fijas), Impostor, Mímica ni Quién soy. Auditoría: 0 errores.
+- Dónde: rosco-rioplatense-datos.js (v9), sopa-fugaz-datos.js (v7), ahorcado-rioplatense-datos.js (v4), AUDITORIA_PALABRAS.md.
+
 ### 02/11/2026 — Play Store: versión 19 (celular + Android TV) enviada a producción
 - Qué: Gonzalo creó la versión de producción con el app bundle 19, notas "¡Llegan los Juegos en la tele!…", subió el banner de Android TV (1280×720, Giro saltando + "JUEGOS EN LA TELE") y 7 capturas de TV 1920×1080 (entrar con QR, Rosco de a 6, Sopa 50 niveles, Memoria con bomba, Ahorcado 22 categorías, Puzzle, los 16 juegos) y lo mandó a revisión. Los cambios de los juegos no necesitan versión nueva: las apps cargan girayadivina.com.
 
