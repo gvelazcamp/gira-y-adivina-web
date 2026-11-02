@@ -24,7 +24,7 @@ En el proyecto, las entradas son el pedido de Gonzalo, el árbol del repositorio
 
 - Repositorio VIVO (desde el 21/10/2026): https://github.com/gvelazcamp/gira-y-adivina-web → sirve el juego en https://girayadivina.com (archivo `CNAME`). Todo cambio del juego va acá (rama + PR a `main`).
 - Repositorio anterior: https://github.com/gvelazcamp/gira-y-adivina-rioplatense → ahora su `index.html` es el puente de traslado (`migracion/puente.html`) que cifra la partida guardada en github.io y la manda a `girayadivina.com/migrar.html`; el juego viejo quedó como `juego-anterior.html`. No publicar cambios del juego ahí (ver `migracion/README.md`).
-- Play Store (actualizado el 27/10/2026): versión 17 en producción; versión 19 con entrada celular y Android TV disponible para testers internos. La versión 18 exclusiva de TV quedó reemplazada por la 19 combinada.
+- Play Store (actualizado el 02/11/2026): versión 17 en producción; el 02/11 Gonzalo envió a producción la versión 19 (celular + Android TV) con banner de TV y 7 capturas de TV nuevas (en revisión de Google). Antes estaba solo para testers internos.
 - Juego de ruleta y frases con cultura rioplatense, mapas, progreso, cosméticos, colecciones, eventos, torneos, opciones sociales y extensiones.
 - Aplicación estática de HTML, CSS y JavaScript sin framework ni compilación de producción. El núcleo sigue en `index.html`, con estilos y lógica embebidos; las extensiones tienen módulos propios.
 - PWA: `manifest.json`, `sw.js`, iconos y página principal. El manifiesto declara idioma `es-UY`, presentación `standalone`, orientación `any` para respetar el giro del celular y color `#160B24`.
@@ -393,6 +393,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 
 ## Registro de cambios
+
+### 02/11/2026 — Play Store: versión 19 (celular + Android TV) enviada a producción
+- Qué: Gonzalo creó la versión de producción con el app bundle 19, notas "¡Llegan los Juegos en la tele!…", subió el banner de Android TV (1280×720, Giro saltando + "JUEGOS EN LA TELE") y 7 capturas de TV 1920×1080 (entrar con QR, Rosco de a 6, Sopa 50 niveles, Memoria con bomba, Ahorcado 22 categorías, Puzzle, los 16 juegos) y lo mandó a revisión. Los cambios de los juegos no necesitan versión nueva: las apps cargan girayadivina.com.
 
 ### 01/11/2026 — Rosco en la tele: lee la pista en voz alta y recién después prende el micrófono
 - Qué: Gonzalo: "que haga como el cel, que dice la palabra y el audio se prende después de decirla". Antes de abrir el micrófono de cada letra (también al volver de pausa, apelación, error o cambio de turno) la tele lee "Empieza/Contiene la X. <definición>" con la voz de Giro (speechSynthesis, voz masculina si hay). El micrófono del celular se prende cuando termina de leer; mientras lee, el reloj no corre y la tele dice "🔊 Escuchá la pista… el micrófono se prende al terminar". Si la tele no avisa que terminó, se abre igual a los 1,8 s + 75 ms por letra (máx. 15 s). Pausa y apelación cortan la lectura.
