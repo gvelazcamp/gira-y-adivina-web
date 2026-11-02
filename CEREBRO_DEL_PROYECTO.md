@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 03/11/2026 — Palabra Secreta: tableros de 6 y 7 letras desde el nivel 7
+- Qué: Gonzalo: "algún tablero de 6 o 7 letras después del nivel 5". largoDelNivel(n): hasta el 5 y en los niveles de repetir (múltiplos de 3) sigue en 5; n%3==1 → 6 letras (7, 10, 13…); n%6==2 → 7 letras (8, 14, 20…); el resto 5. Con palabra larga hay 1 intento más. Bancos nuevos PALABRA_SECRETAS_6 (125) y _7 (88), palabras comunes sin Ñ. Los intentos de 6/7 letras se validan con assets/diccionario/es-<l>.txt (se baja la letra una vez; acepta el plural en S/ES; si no se puede bajar, acepta). El tablero, el teclado, la voz ("decí una palabra de seis/siete letras") y el cartel del nivel ("✨ 7 letras") se adaptan. La palabra del día y los duelos siguen en 5.
+- Dónde: palabra-secreta.js (v26: largoDelNivel, valeLarga, L()), palabra-secreta-datos.js (v3), extensiones.css (v152).
+
 ### 03/11/2026 — Rosco: 150 palabras nuevas (521 → 671)
 - Qué: Gonzalo (captura de "Palabras del Rosco": ya le habían salido 456 de 521) pidió más palabras. Se sumaron 150 con definiciones nuevas, repartidas en todas las letras (más en D, E, I, J, M, N, P, R, T, V, que ya tenía completas). Respetando la regla "Rosco > Silabario > Ahorcado > Sopa Fugaz > Contra Reloj": 47 palabras pasaron de Sopa Fugaz y 10 de Ahorcado al Rosco (ninguna categoría de Sopa quedó con menos de 14 palabras ni de Ahorcado con menos de 10). No se tocaron Contra Reloj (tarjetas de 5 fijas), Impostor, Mímica ni Quién soy. Auditoría: 0 errores.
 - Dónde: rosco-rioplatense-datos.js (v9), sopa-fugaz-datos.js (v7), ahorcado-rioplatense-datos.js (v4), AUDITORIA_PALABRAS.md.
