@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 03/11/2026 — Palabra Secreta: se puede elegir el casillero donde va la letra
+- Qué: Gonzalo: "dejame seleccionar el casillero para poner la letra, así armo lo que falta". En la fila que se está escribiendo, tocar un casillero lo marca (borde dorado que late) y la próxima letra va ahí; después salta al siguiente vacío. Borrar limpia el marcado (si está lleno) o la letra anterior. Para mandar tienen que estar todas las casillas llenas. Sin tocar casilleros funciona como siempre (de izquierda a derecha).
+- Dónde: palabra-secreta.js (v27: cursor, ponerLetra, borrarLetra, celdas .ps-tocable/.ps-cursor), extensiones.css (v153).
+
 ### 03/11/2026 — Palabra Secreta: tableros de 6 y 7 letras desde el nivel 7
 - Qué: Gonzalo: "algún tablero de 6 o 7 letras después del nivel 5". largoDelNivel(n): hasta el 5 y en los niveles de repetir (múltiplos de 3) sigue en 5; n%3==1 → 6 letras (7, 10, 13…); n%6==2 → 7 letras (8, 14, 20…); el resto 5. Con palabra larga hay 1 intento más. Bancos nuevos PALABRA_SECRETAS_6 (125) y _7 (88), palabras comunes sin Ñ. Los intentos de 6/7 letras se validan con assets/diccionario/es-<l>.txt (se baja la letra una vez; acepta el plural en S/ES; si no se puede bajar, acepta). El tablero, el teclado, la voz ("decí una palabra de seis/siete letras") y el cartel del nivel ("✨ 7 letras") se adaptan. La palabra del día y los duelos siguen en 5.
 - Dónde: palabra-secreta.js (v26: largoDelNivel, valeLarga, L()), palabra-secreta-datos.js (v3), extensiones.css (v152).
