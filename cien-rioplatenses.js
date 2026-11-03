@@ -194,11 +194,6 @@ const CienRioplatenses=(()=>{
     hud();$("#crOtra").focus({preventScroll:true});shell?.scrollTo(0,0);
   }
   function compartir(b){
-    if(window.GyaCompartir){
-      const encontradas=resumen.reduce((total,r)=>total+r.aciertos,0);
-      window.GyaCompartir.abrir({titulo:"100 Rioplatenses Dicen",resultado:puntos+" puntos",subtitulo:"¡Terminaste las tres rondas!",metricas:[{etiqueta:"Puntos",valor:puntos},{etiqueta:"Respuestas",valor:encontradas+"/18"},{etiqueta:"Rondas",valor:resumen.length},{etiqueta:"Récord",valor:datos.mejor}],detalle:"Edición de práctica · "+resumen.map((r,i)=>"R"+(i+1)+": "+r.puntos+" puntos").join(" · "),archivo:"100-rioplatenses"});
-      return;
-    }
     const texto="🎡 100 Rioplatenses Dicen · "+puntos+" puntos\n"+resumen.map((r,i)=>"Ronda "+(i+1)+": "+r.aciertos+"/6 · "+r.puntos+" puntos").join("\n")+"\nEdición de práctica · Girá y Adiviná\n"+location.origin+location.pathname;
     const imagen=()=>{
       const cv=document.createElement("canvas");cv.width=720;cv.height=900;const c=cv.getContext("2d");
