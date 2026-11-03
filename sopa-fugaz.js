@@ -425,10 +425,6 @@ const SopaFugaz=(()=>{
     mostrarPanel("Pausa","El reloj está parado y el tablero tapado.","Seguir",()=>{pausado=false;const ahora=performance.now();proximaMudanza+=ahora-desde;ultimoTic=ahora;raiz.querySelector("#sfTablero").classList.remove("pausa");raiz.querySelector("#sfPanel").hidden=true;actualizarHUD();},false,null,"reloj");
   }
   function compartirResultado(boton){
-    if(window.GyaCompartir){
-      window.GyaCompartir.abrir({titulo:"Sopa Fugaz",resultado:halladas.size+"/"+objetivos.length+" palabras",subtitulo:"Nivel "+nivel+" · "+puntaje+" puntos",metricas:[{etiqueta:"Encontradas",valor:halladas.size},{etiqueta:"Objetivo",valor:objetivos.length},{etiqueta:"Puntos",valor:puntaje},{etiqueta:"Tiempo restante",valor:reloj(tiempoMs)}],detalle:modo==="giratoria"?"Modo giratorio":"Modo clásico",archivo:"sopa-fugaz"});
-      return;
-    }
     const texto="🔎 Sopa Fugaz"+(modo==="giratoria"?" giratoria":"")+" · nivel "+nivel+" · "+puntaje+" puntos. ¡Jugá en Girá y Adiviná! "+location.origin+location.pathname;
     csCompartirImagen(generarCanvasCompartirJuego,"sopa-fugaz.png",texto,texto,boton);
   }
