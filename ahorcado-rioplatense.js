@@ -232,9 +232,7 @@ const AhorcadoRioplatense=(()=>{
     }
     const record=puntos>0&&puntos>datos.mejor;
     fase="fin";datos.mejor=Math.max(datos.mejor,puntos);guardar();hud();
-    const acciones=[["Jugar de nuevo",iniciar],...OPCIONES_AMIGO];
-    if(window.GyaCompartir)acciones.push(["Compartir en redes",()=>window.GyaCompartir.abrir({titulo:"Ahorcado Rioplatense",resultado:puntos+" puntos",subtitulo:"¡Partida terminada!",metricas:[{etiqueta:"Puntos",valor:puntos},{etiqueta:"Palabras jugadas",valor:n},{etiqueta:"Mejor marca",valor:datos.mejor},{etiqueta:"Errores última palabra",valor:errores}],detalle:palabra?.palabra?"Última palabra: "+palabra.palabra:"",archivo:"ahorcado-rioplatense"})]);
-    panel("¡Se terminó!","Puntos: "+puntos+". Mejor: "+datos.mejor+".",acciones,record?"record":puntos>0?"gano":"perdio");
+    panel("¡Se terminó!","Puntos: "+puntos+". Mejor: "+datos.mejor+".",[["Jugar de nuevo",iniciar],...OPCIONES_AMIGO],record?"record":puntos>0?"gano":"perdio");
   }
   function quitarTildes(s){return s.normalize("NFD").split("").filter(ch=>{const n=ch.charCodeAt(0);return n<0x300||n>0x36f;}).join("");}
   function tecla(key,evento){
