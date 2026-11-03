@@ -240,6 +240,7 @@ const SilabarioRioplatense=(()=>{
     const acciones=[];
     if(avanzar)acciones.push(["Siguiente nivel",()=>{nivel++;iniciar();}]);
     acciones.push(["Otra ronda · nivel "+nivel,iniciar]);
+    if(window.GyaCompartir)acciones.push(["Compartir en redes",()=>window.GyaCompartir.abrir({titulo:"Silabario Rioplatense",resultado:aciertos+" aciertos",subtitulo:"Nivel "+nivel+" · "+puntos+" puntos",metricas:[{etiqueta:"Aciertos",valor:aciertos},{etiqueta:"Errores",valor:errores},{etiqueta:"Sin responder",valor:faltan},{etiqueta:"Puntos",valor:puntos}],detalle:faltan?"Se terminó el tiempo":"Tablero completado",archivo:"silabario-rioplatense"})]);
     panel(faltan?"¡Se terminó el tiempo!":errores?"Tablero terminado":"¡Tablero perfecto!",
       aciertos+" aciertos · "+errores+" errores · "+faltan+" sin responder. "+puntos+" puntos"+(bonus?" ("+bonus+" por tiempo)":"")+". Récord: "+datos.mejor+"."+(avanzar?" ¡Desbloqueaste el nivel "+(nivel+1)+"!":" Acertá al menos "+Math.ceil(items.length*SILABARIO_CONFIG.proporcionAvance)+" y respondé todas para avanzar."),acciones,faltan?"tiempo":errores?"terminado":"perfecto");
   }
