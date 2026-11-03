@@ -178,12 +178,6 @@ const FrasesEnGiro=(()=>{
     }
     if(gano){nivel++;panel("¡Frase armada!","“"+frase.texto+"” · "+puntos+" puntos · mejor: "+datos.mejor,"Siguiente nivel",comenzar,null,"armada");}
     else panel("Perdiste esta frase",(motivo==="intentos"?"Agotaste los 3 intentos.":"Se terminó el tiempo.")+" La frase era: “"+frase.texto+"”. Se cortó tu racha"+(puntosPerdidos?" y perdiste "+puntosPerdidos+" puntos de esta partida":"")+". Mejor marca: "+datos.mejor+".","Otra frase del nivel "+nivel,comenzar,null,"perdio");
-    if(window.GyaCompartir){
-      const nivelFinalizado=gano?nivel-1:nivel;
-      const boton=document.createElement("button");boton.type="button";boton.textContent="Compartir en redes";
-      boton.onclick=()=>window.GyaCompartir.abrir({titulo:"Frases en Giro",resultado:gano?"¡Frase armada!":"No llegué a resolverla",subtitulo:"Nivel "+nivelFinalizado+" · "+puntos+" puntos",metricas:[{etiqueta:"Puntos",valor:puntos},{etiqueta:"Racha",valor:racha},{etiqueta:"Récord",valor:datos.mejor},{etiqueta:"Nivel",valor:nivelFinalizado}],detalle:"Frase: "+frase.texto,archivo:"frases-en-giro"});
-      raiz.querySelector("#fgPanel .fg-panel-acciones")?.appendChild(boton);
-    }
   }
   function comprobar(){
     if(!jugando||girando||espacios.includes(null))return;
