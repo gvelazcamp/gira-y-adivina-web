@@ -666,14 +666,7 @@ const RoscoRioplatense=(()=>{
     const revision=document.createElement("div");revision.innerHTML=tablaRespuestas(respuestas,null);
     const leyenda=document.createElement("small");leyenda.className="rr-resultado-leyenda";
     leyenda.textContent="Letra · Respuesta correcta · Tu respuesta";revision.prepend(leyenda);
-    $(".rr-panel").insertBefore(revision,$(".rr-panel button"));
-    const botonRedes=document.createElement("button");botonRedes.type="button";botonRedes.textContent="Compartir en redes";
-    botonRedes.onclick=()=>{
-      if(window.GyaCompartir)window.GyaCompartir.abrir({titulo:"El Rosco Rioplatense",resultado:aciertos+"/"+items.length+" aciertos",subtitulo:"Nivel "+nivel+" · "+puntos+" puntos",metricas:[{etiqueta:"Aciertos",valor:aciertos},{etiqueta:"Errores",valor:errores},{etiqueta:"Pendientes",valor:faltan},{etiqueta:"Puntos",valor:puntos}],detalle:errores===0&&faltan===0?"¡Rosco perfecto!":"¿Te animás a completar el rosco?",archivo:"el-rosco"});
-      else compartir(botonRedes,puntos,aciertos,errores,faltan);
-    };
-    $(".rr-panel").appendChild(botonRedes);
-    $(".rr-principal").focus({preventScroll:true});
+    $(".rr-panel").insertBefore(revision,$(".rr-panel button"));$(".rr-principal").focus({preventScroll:true});
     if(pruebaG&&typeof window.GiroRoscoPiloto?.mostrarFinal==="function"){
       window.GiroRoscoPiloto.mostrarFinal({aciertos,errores,total:items.length,puntos,estudio:raiz.classList.contains("rr-estudio")});
     }

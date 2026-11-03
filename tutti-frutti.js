@@ -1173,14 +1173,6 @@ const TuttiFrutti=(()=>{
       <ol class="kar-podio">${orden.map(([j,rg,p],k)=>`<li style="--c:#E5197C"><span>${k+1}</span><i>${esc((j.nombre||"?")[0].toUpperCase())}</i><b>${esc(j.nombre)}${j.pid===on.pid?" (vos)":""}</b><em>${rg} ${rg===1?"ronda":"rondas"} · ${p} pts</em></li>`).join("")}</ol>
       ${salieronHtml()}
       ${on.host?`<button type="button" class="mg-principal" id="tfRevancha">🔄 Revancha</button>`:`<p class="imp-ayuda">Esperando que el anfitrión arranque la revancha…</p>`}</div>`);
-    const botonRedes=document.createElement("button");botonRedes.type="button";botonRedes.className="mg-principal";botonRedes.textContent="Compartir en redes";
-    botonRedes.onclick=()=>window.GyaCompartir?.abrir({
-      titulo:"Tutti Frutti",resultado:ganan.length>1?"¡Empate!":"¡Ganó "+ganan[0]+"!",
-      subtitulo:(on.tot||RONDAS)+" rondas · "+on.jug.length+" jugadores",
-      metricas:[{etiqueta:"Rondas",valor:on.tot||RONDAS},{etiqueta:"Rondas ganadas",valor:top[1]},{etiqueta:"Puntos del ganador",valor:top[2]},{etiqueta:"Jugadores",valor:on.jug.length}],
-      detalle:orden.slice(0,3).map(([j,rg,p],k)=>(k+1)+". "+j.nombre+" · "+rg+" rondas · "+p+" puntos").join(" · "),archivo:"tutti-frutti"
-    });
-    raiz.querySelector(".imp-fin")?.appendChild(botonRedes);
     if(on.host)q("tfRevancha").onclick=e=>{const b=e&&e.currentTarget;if(b){if(b.disabled)return;b.disabled=true;}
       const revancha=()=>{if(!on)return;on.ganadas={};on.rg={};on.rj=0;on.tot=RONDAS;difundirSala();nuevaRonda();};
       /* contra la máquina, cada revancha es una partida nueva: gasta 1 ficha */
