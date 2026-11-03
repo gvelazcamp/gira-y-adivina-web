@@ -654,6 +654,15 @@ new MutationObserver(()=>{const f=$('feedback'),r=$('dc-reaccion');if(!f||!r)ret
    (WhatsApp, Instagram…). Si el celular no deja compartir imágenes, comparte el texto con el link. */
 function cargarImgDC(src){return new Promise(ok=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=src})}
 async function compartirResultadoDC(){
+  if(window.GyaCompartir){
+   const ganador=ultimoResultadoDC?.p;
+   window.GyaCompartir.abrir({titulo:"Duelo de Conocimiento",resultado:ganador?"¡Ganó "+ganador.name+"!":"¡Empate!",
+    subtitulo:players[0].name+" VS "+players[1].name,
+    metricas:[{etiqueta:players[0].name+" · aciertos",valor:players[0].score},{etiqueta:players[1].name+" · aciertos",valor:players[1].score},
+      {etiqueta:players[0].name+" · errores",valor:players[0].errors||0},{etiqueta:players[1].name+" · errores",valor:players[1].errors||0}],
+    detalle:"Tiempo restante: "+players[0].name+" "+fmt(players[0].ms)+" · "+players[1].name+" "+fmt(players[1].ms),archivo:"duelo-de-conocimiento"});
+   return;
+  }
  const r=ultimoResultadoDC,link='https://girayadivina.com/?ext=duelo-conocimiento';
  const linea=j=>`${players[j].name}: ${players[j].score} ${players[j].score===1?'acierto':'aciertos'}`;
  const texto=(r&&r.p?`🏆 ¡${r.p.name} ganó el Duelo de Conocimiento!`:'🤝 ¡Empate en el Duelo de Conocimiento!')+`\n${linea(0)} · ${linea(1)}\n¿Te animás? ${link}`;
@@ -704,6 +713,7 @@ function initPreview(){players=[{name:'Andrés',ms:40000,score:0},{name:'Sofía'
 initPreview();
 </script>
 <script src="lib/mqtt.min.js?v=5.10.1"></script>
+<script src="compartir-extensiones.js?v=1"></script>
 <script src="duelo-conocimiento-modos.js?v=23"></script>
 </body>
 </html>
