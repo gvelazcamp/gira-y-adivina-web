@@ -2,6 +2,7 @@ const PalabraSecreta=(()=>{
   const CLAVE="gya_palabra_secreta",MAX=6,COLORES={ausente:"⬛",presente:"🟨",exacta:"🟩"};
   let datos=cargar(),raiz=null,partida=null,borrador="",cursor=null,animando=false,token=0,duelo=false;
   let audioMusica=null;
+  let fotoGuardadaPartida=null,fotoGuardadaPromesa=null;
   const horizontal=()=>matchMedia("(orientation: landscape) and (min-width:600px) and (max-width:1024px) and (max-height:600px)").matches
     &&(matchMedia("(pointer: coarse)").matches||navigator.maxTouchPoints>0);
   let avisoVisto=false,micActivo=false,micPidiendo=false,micEscuchando=false,micRecon=null,micStream=null,micTimer=null,micToken=0;
@@ -151,7 +152,31 @@ const PalabraSecreta=(()=>{
   function tablero(){const t=raiz.querySelector("#psTablero");t.replaceChildren();t.style.maxWidth=L()>5?(L()===6?"318px":"360px"):"";t.classList.toggle("ps-largo",L()>5);for(let fila=0;fila<partida.max;fila++){const d=document.createElement("div");d.className="ps-fila";if(L()!==5)d.style.gridTemplateColumns="repeat("+L()+",1fr)";const jugada=partida.intentos[fila],texto=jugada?.palabra||(fila===partida.intentos.length&&!partida.terminada?borrador:"");const actual=!jugada&&fila===partida.intentos.length&&!partida.terminada,arr=actual?filaArr():null,marca=actual?(cursor!=null?cursor:arr.indexOf(" ")):-1;
           for(let i=0;i<L();i++){const celda=document.createElement("span");celda.className="ps-celda"+(jugada?" "+jugada.colores[i]:"")+(actual&&i===marca?" ps-cursor":"");celda.textContent=(texto[i]||"").trim();
             if(actual){celda.classList.add("ps-tocable");celda.onclick=()=>{if(partida.terminada||animando)return;cursor=i;tablero();};}d.appendChild(celda);}t.appendChild(d);}teclado();estadisticas();final();}
-  function final(){const f=raiz.querySelector("#psFinal");f.replaceChildren();f.hidden=!partida.terminada;if(!partida.terminada)return;/* popup en el medio, adelante del tablero */const c=document.createElement("div");c.className="ps-final-caja";f.appendChild(c);/* al cerrarlo queda "Ver resultado" para volver a abrirlo (compartir, jugar otra) */const ocultar=()=>{f.hidden=true;const m=raiz.querySelector("#psMensaje");m.innerHTML='<button type="button" class="ps-reabrir">🏁 Ver resultado</button>';m.querySelector("button").onclick=()=>{f.hidden=false;m.textContent="";};};f.onclick=e=>{if(e.target===f&&!duelo)ocultar();};const dib=document.createElement("img");dib.className="ps-final-dibujo";dib.src=ARTE(partida.gano?"gano":"perdio");dib.alt="";dib.draggable=false;c.appendChild(dib);const p=document.createElement("p");p.textContent=partida.gano?`¡La encontraste en ${partida.intentos.length} intento${partida.intentos.length===1?"":"s"}!${duelo?"":` Pasaste al nivel ${datos.nivel}.`}`:`La palabra era ${partida.objetivo}. Seguís en el nivel ${partida.nivel}.`;c.appendChild(p);if(duelo)return;const cerrar=document.createElement("button");cerrar.type="button";cerrar.className="ps-final-x";cerrar.setAttribute("aria-label","Ver el tablero");cerrar.textContent="✕";cerrar.onclick=ocultar;c.appendChild(cerrar);const compartir=document.createElement("button");compartir.type="button";compartir.textContent="📲 Compartir por WhatsApp";compartir.onclick=compartirWhatsApp;c.appendChild(compartir);const copiar=document.createElement("button");copiar.type="button";copiar.textContent="Copiar resultado";copiar.onclick=compartirResultado;c.appendChild(copiar);const jugar=document.createElement("button");jugar.type="button";jugar.innerHTML=ico("extra")+(partida.gano?`Jugar nivel ${datos.nivel}`:`Otra palabra del nivel ${datos.nivel}`);jugar.onclick=siguienteNivel;c.appendChild(jugar);}
+  function final(){
+    const f=raiz.querySelector("#psFinal");
+    f.replaceChildren();f.hidden=!partida.terminada;
+    if(!partida.terminada)return;
+    /* Popup en el medio, adelante del tablero. Al cerrarlo queda "Ver resultado". */
+    const c=document.createElement("div");c.className="ps-final-caja";f.appendChild(c);
+    const ocultar=()=>{f.hidden=true;const m=raiz.querySelector("#psMensaje");m.innerHTML='<button type="button" class="ps-reabrir">🏁 Ver resultado</button>';m.querySelector("button").onclick=()=>{f.hidden=false;m.textContent="";};};
+    f.onclick=e=>{if(e.target===f&&!duelo)ocultar();};
+    const dib=document.createElement("img");dib.className="ps-final-dibujo";dib.src=ARTE(partida.gano?"gano":"perdio");dib.alt="";dib.draggable=false;dib.style.maxHeight="min(15vh,120px)";c.appendChild(dib);
+    const p=document.createElement("p");
+    p.textContent=partida.gano?`¡La encontraste en ${partida.intentos.length} intento${partida.intentos.length===1?"":"s"}! La palabra era ${partida.objetivo}.${duelo?"":` Pasaste al nivel ${datos.nivel}.`}`:`La palabra era ${partida.objetivo}. Seguís en el nivel ${partida.nivel}.`;
+    c.appendChild(p);
+    if(duelo)return;
+    /* Vista del tablero final tal cual quedó, con sus casillas y colores originales. */
+    const vista=raiz.querySelector("#psTablero").cloneNode(true);
+    vista.removeAttribute("id");vista.classList.add("ps-final-tablero");
+    vista.style.cssText="width:min(100%,210px);max-width:210px;margin:3px auto 9px;gap:3px";
+    vista.querySelectorAll(".ps-fila").forEach(fila=>{fila.style.gap="3px";fila.querySelectorAll(".ps-celda").forEach(celda=>{celda.classList.remove("ps-tocable","ps-cursor");celda.onclick=null;celda.style.fontSize="clamp(.7rem,2.7vw,1.05rem)";});});
+    c.appendChild(vista);
+    fotoParaCompartir();
+    const cerrar=document.createElement("button");cerrar.type="button";cerrar.className="ps-final-x";cerrar.setAttribute("aria-label","Ver el tablero");cerrar.textContent="✕";cerrar.onclick=ocultar;c.appendChild(cerrar);
+    const compartir=document.createElement("button");compartir.type="button";compartir.className="ps-foto-compartir";compartir.textContent="📲 Compartir foto";compartir.onclick=compartirWhatsApp;c.appendChild(compartir);
+    const copiar=document.createElement("button");copiar.type="button";copiar.textContent="Copiar resultado";copiar.onclick=compartirResultado;c.appendChild(copiar);
+    const jugar=document.createElement("button");jugar.type="button";jugar.innerHTML=ico("extra")+(partida.gano?`Jugar nivel ${datos.nivel}`:`Otra palabra del nivel ${datos.nivel}`);jugar.onclick=siguienteNivel;c.appendChild(jugar);
+  }
   /* Elegir casillero (03/11/2026, Gonzalo: "dejame seleccionar el casillero para poner la letra"): tocando un
      casillero de la fila que estás escribiendo, la próxima letra va ahí. Los vacíos quedan como espacio. */
   const filaArr=()=>[...borrador.padEnd(L()," ")].slice(0,L());
@@ -169,7 +194,65 @@ const PalabraSecreta=(()=>{
   async function compartirResultado(){const txt=textoCompartir()+"\n¿Me ganás? 👉 "+linkJuego();try{await navigator.clipboard.writeText(txt);mensaje("Resultado copiado. ¡Compartilo!");}catch(e){const a=document.createElement("textarea");a.value=txt;document.body.appendChild(a);a.select();const ok=document.execCommand("copy");a.remove();mensaje(ok?"Resultado copiado. ¡Compartilo!":"No se pudo copiar el resultado.");}}
   /* Link corto (ps.html): WhatsApp muestra una tarjeta chica de Palabra Secreta y abre el juego directo. */
   function linkJuego(){try{return location.origin+location.pathname.replace(/[^/]*$/,"")+"ps.html?v=2";}catch(e){return"https://girayadivina.com/ps.html?v=2";}}
-  function compartirWhatsApp(){try{window.open("https://wa.me/?text="+encodeURIComponent(textoCompartir()+"\n¿Me ganás? 👉 "+linkJuego()),"_blank");}catch(e){}}
+  /* Foto final: reproduce todas las filas, letras y colores (5, 6 o 7 letras) usando las mismas casillas del juego. */
+  async function armarFotoResultado(juego){
+    const columnas=juego.objetivo.length,separacion=14,lado=Math.min(150,Math.floor((960-(columnas-1)*separacion)/columnas));
+    const altoTablero=juego.max*lado+(juego.max-1)*separacion,inicioY=272;
+    const lienzo=document.createElement("canvas");lienzo.width=1080;lienzo.height=inicioY+altoTablero+195;
+    const g=lienzo.getContext("2d");
+    const fondo=g.createLinearGradient(0,0,0,lienzo.height);fondo.addColorStop(0,"#432060");fondo.addColorStop(1,"#160B24");
+    g.fillStyle=fondo;g.fillRect(0,0,lienzo.width,lienzo.height);
+    g.textAlign="center";g.textBaseline="middle";
+    g.fillStyle="#F5B301";g.font='800 72px "Archivo Black",sans-serif';g.fillText("PALABRA SECRETA",540,76);
+    g.fillStyle="#F6EFE2";g.font="700 39px system-ui,sans-serif";
+    g.fillText("Nivel "+juego.nivel+" · "+juego.intentos.length+" de "+juego.max+" intentos",540,150);
+    g.fillStyle=juego.gano?"#37D6C0":"#F5B301";g.font='800 48px "Archivo Black",sans-serif';
+    g.fillText(juego.gano?"¡PALABRA ENCONTRADA!":"¡INTENTOS AGOTADOS!",540,219);
+    const nombres=["casilla","verde","amarilla","gris"];
+    const imagenes=await Promise.all(nombres.map(nombre=>new Promise(resolve=>{const imagen=new Image();imagen.onload=()=>resolve(imagen);imagen.onerror=()=>resolve(null);imagen.src=ARTE(nombre);})));
+    const sprites=Object.fromEntries(nombres.map((nombre,i)=>[nombre,imagenes[i]]));
+    const x0=(lienzo.width-(columnas*lado+(columnas-1)*separacion))/2;
+    for(let fila=0;fila<juego.max;fila++){
+      const jugada=juego.intentos[fila];
+      for(let i=0;i<columnas;i++){
+        const color=jugada?.colores[i],nombre=color==="exacta"?"verde":color==="presente"?"amarilla":color==="ausente"?"gris":"casilla";
+        const x=x0+i*(lado+separacion),y=inicioY+fila*(lado+separacion),sprite=sprites[nombre];
+        if(sprite)g.drawImage(sprite,x,y,lado,lado);
+        else{g.fillStyle=nombre==="verde"?"#248467":nombre==="amarilla"?"#BB8A1D":nombre==="gris"?"#4A3A66":"#271839";g.fillRect(x,y,lado,lado);}
+        if(jugada){
+          g.fillStyle=color==="presente"?"#3A2400":"#FFFFFF";
+          g.font='800 '+Math.floor(lado*.52)+'px "Archivo Black",sans-serif';
+          g.fillText(jugada.palabra[i]||"",x+lado/2,y+lado/2+3);
+        }
+      }
+    }
+    g.fillStyle="#F5B301";g.font='800 51px "Archivo Black",sans-serif';g.fillText("La palabra era: "+juego.objetivo,540,inicioY+altoTablero+71);
+    g.fillStyle="#F6EFE2";g.font="600 32px system-ui,sans-serif";g.fillText("Girá y Adiviná · Palabra Secreta",540,inicioY+altoTablero+137);
+    return new Promise(resolve=>lienzo.toBlob(resolve,"image/png"));
+  }
+  function fotoParaCompartir(){
+    if(!partida||!partida.terminada)return Promise.resolve(null);
+    if(fotoGuardadaPartida!==partida){fotoGuardadaPartida=partida;fotoGuardadaPromesa=armarFotoResultado(partida).catch(()=>null);}
+    return fotoGuardadaPromesa;
+  }
+  async function compartirWhatsApp(){
+    const boton=raiz?.querySelector("#psFinal .ps-final-caja button.ps-foto-compartir");
+    try{
+      const foto=await fotoParaCompartir();if(!foto)throw new Error("No se pudo generar la imagen");
+      const texto=textoCompartir()+"\n¿Me ganás? 👉 "+linkJuego();
+      if(typeof File==="function"&&typeof navigator.share==="function"){
+        const archivo=new File([foto],"palabra-secreta.png",{type:"image/png"});
+        try{
+          if(!navigator.canShare||navigator.canShare({files:[archivo]})){await navigator.share({files:[archivo],text:texto});return;}
+        }catch(e){if(e?.name==="AbortError")return;}
+      }
+      /* Sin Web Share con archivos (por ejemplo, PC): guardar la foto para adjuntarla en WhatsApp. */
+      const url=URL.createObjectURL(foto),a=document.createElement("a");
+      a.href=url;a.download="palabra-secreta.png";document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),30000);
+      if(boton)boton.textContent="Foto guardada · adjuntala en WhatsApp";
+    }catch(e){if(boton)boton.textContent="No se pudo crear la foto";}
+  }
   /* Duelo 1 vs 1: los dos adivinan la MISMA palabra (no la del día).
      Puntos = 7 − intentos si la encontrás (0 si no): gana quien la saca en menos intentos. */
   const ptsDuelo=()=>partida.gano?7-partida.intentos.length:0;
