@@ -1,4 +1,4 @@
-/* Piloto de duelo contra bots, visible solo para el perfil Gonzalo.
+/* Piloto de duelo contra bots, visible para los perfiles de prueba Gonzalo y Vale.
    Reutiliza las poses de atril y el atril oficial; no modifica el progreso. */
 window.AhoraCaigo=(()=>{
   "use strict";
@@ -38,13 +38,14 @@ window.AhoraCaigo=(()=>{
   }
   function abrir(contenedor){
     const anterior=raiz;salir();anterior?.remove();
-    if(typeof esGonzalo!=="function"||!esGonzalo())return;
+    let usuario="";try{usuario=(perfil?.nombre||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}catch(e){}
+    if(!["gonzalo","vale"].includes(usuario))return;
     raiz=document.createElement("section");raiz.className="ac-juego";
     raiz.innerHTML=`<header class="ac-cabecera"><span>PRUEBA · CONTRA BOTS</span><h2>Ahora Caigo</h2><p>Una pregunta para vos. Otra para tu rival.</p></header>
       <div class="ac-escenario" role="group" aria-label="Escenario con once participantes"><div class="ac-ronda" aria-hidden="true"></div></div>
       <section class="ac-duelo" aria-label="Duelo de preguntas" hidden>
         <div class="ac-marcador"><div class="ac-identidad"><img class="ac-tu-avatar" alt=""><span><small>VOS · <span class="ac-vidas">3 pases</span></small><strong class="ac-tu-nombre"></strong></span></div><span>VS</span><div class="ac-identidad"><img class="ac-rival-avatar" alt=""><span><small>RIVAL · BOT</small><strong class="ac-rival-nombre"></strong></span></div></div>
-        <div class="ac-pregunta-top"><span class="ac-turno-texto" aria-live="polite"></span><button class="ac-pasar" type="button" title="Pasá esta pregunta al rival: tendrá 20 segundos">Pasar · 3</button><div class="ac-reloj" role="timer" aria-label="Segundos restantes"><b>30</b><small>SEG</small></div></div>
+        <div class="ac-pregunta-top"><span class="ac-turno-texto" aria-live="polite"></span><button class="ac-pasar" type="button" title="Pasá esta pregunta al rival: tendrá 20 segundos" aria-label="Pasar pregunta al rival. Tendrá 20 segundos. Tenés tres pases."><span class="ac-pasar-texto">Pasar pregunta</span><small>Al rival · 20 s</small></button><div class="ac-reloj" role="timer" aria-label="Segundos restantes"><b>30</b><small>SEG</small></div></div>
         <span class="ac-categoria"></span><h3 class="ac-pregunta"></h3>
         <div class="ac-letras" aria-label="Respuesta con letras de ayuda"></div><small class="ac-cantidad"></small>
         <form class="ac-responder"><label for="acRespuesta">Tu respuesta</label><div><input id="acRespuesta" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="80" placeholder="Escribí tu respuesta…"><button type="submit">Responder ↵</button></div></form>
@@ -242,8 +243,10 @@ window.AhoraCaigo=(()=>{
       if(Date.now()>=limite){finalizar("yo");return;}
       if(!pases){mensaje.className="ac-mensaje ac-mal";mensaje.textContent="No te quedan pases. Podés seguir intentando responder.";return;}
       pases--;buscar(".ac-vidas").textContent=pases+(pases===1?" pase":" pases");
-      pasar.textContent=pases?"Pasar · "+pases:"Sin pases";pasar.disabled=pases===0;
-      pasar.setAttribute("aria-label","Usar pase. Quedan "+pases+". El rival recibe esta pregunta con 20 segundos.");
+      pasar.querySelector(".ac-pasar-texto").textContent=pases?"Pasar pregunta":"Sin pases";
+      pasar.querySelector("small").textContent=pases?"Al rival · 20 s":"Ya usaste los 3";
+      pasar.disabled=pases===0;
+      pasar.setAttribute("aria-label",pases?"Pasar pregunta al rival. Quedan "+pases+" pases. Tendrá 20 segundos.":"Sin pases disponibles");
       turno="bot";siguiente({conservar:true,segundos:20});
       buscar(".ac-turno-texto").textContent="RESPONDE EL RIVAL";
       mensaje.className="ac-mensaje";mensaje.textContent="Usaste un pase. El rival tiene 20 segundos para esta misma pregunta.";

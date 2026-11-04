@@ -13,7 +13,7 @@ const server=http.createServer((req,res)=>{
   const base="http://127.0.0.1:"+server.address().port;
   const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_EXECUTABLE||"/usr/bin/chromium",args:["--no-sandbox"]});
   try{
-    for(const name of ["Gonzalo","Vale"]){
+    for(const name of ["Gonzalo","Vale","Romina"]){
       const context=await browser.newContext({viewport:{width:1280,height:900},serviceWorkers:"block"});
       const page=await context.newPage();
       const errors=[];page.on("pageerror",e=>errors.push(e.message));
@@ -56,12 +56,25 @@ const server=http.createServer((req,res)=>{
         document.querySelector("#splash")?.remove();document.documentElement.classList.remove("cargando");
         Extensiones.abrirLobby();
       });
-      assert.equal(await page.getByRole("button",{name:/Ahora Caigo/}).count(),name==="Gonzalo"?1:0,"catalog visibility");
+      assert.equal(await page.getByRole("button",{name:/Ahora Caigo/}).count(),["Gonzalo","Vale"].includes(name)?1:0,"catalog visibility");
       await page.evaluate(()=>Extensiones.abrirJuego("ahora-caigo"));
-      assert.equal(await page.locator(".ac-juego").count(),name==="Gonzalo"?1:0,"direct entry gate");
-      if(name!=="Gonzalo"){
+      assert.equal(await page.locator(".ac-juego").count(),["Gonzalo","Vale"].includes(name)?1:0,"direct entry gate");
+      if(name==="Romina"){
         await page.evaluate(()=>AhoraCaigo.abrir(document.getElementById("extContenido")));
         assert.equal(await page.locator(".ac-juego").count(),0,"module entry gate");
+        await context.close();continue;
+      }
+      if(name==="Vale"){
+        assert.equal(await page.locator(".ac-principal .ac-nombre").textContent(),"Vale");
+        await page.clock.install();await page.evaluate(()=>{Math.random=()=>0;});
+        await iniciarDuelo();await page.clock.runFor(12000);
+        assert.equal(await page.locator(".ac-identidad.ac-activo .ac-tu-nombre").textContent(),"Vale");
+        assert.match(await page.locator(".ac-pasar").textContent(),/Pasar pregunta/);
+        await page.locator(".ac-pasar").click();
+        assert.equal(await page.locator(".ac-reloj b").textContent(),"20");
+        assert.equal(await page.locator(".ac-vidas").textContent(),"2 pases");
+        await page.evaluate(()=>Extensiones.cerrar());
+        assert.deepEqual(errors,[],"no browser errors for Vale");
         await context.close();continue;
       }
       assert.equal(await page.locator(".ac-participante").count(),11);
@@ -281,6 +294,6 @@ const server=http.createServer((req,res)=>{
       assert.deepEqual(errors,[],"no browser errors");
       await context.close();
     }
-    console.log("PASS: Gonzalo-only access, existing assets, 11 figures at 3 sizes, single-screen layout and keyboard, profile avatars, speech results/errors/cleanup, hints, unlimited retries, rival-first turns, 3 passes per game, same question/20-second transfer, active turn indicators and result popups");
+    console.log("PASS: access for Gonzalo/Vale and blocked for other profiles, existing assets, 11 figures at 3 sizes, single-screen layout and keyboard, profile avatars, speech results/errors/cleanup, hints, unlimited retries, rival-first turns, 3 passes per game, same question/20-second transfer, active turn indicators and result popups");
   }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});

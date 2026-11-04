@@ -156,9 +156,9 @@
   .ac-bajo .ac-voz{grid-area:voz}
   .ac-bajo .ac-mensaje{grid-area:mensaje}
 }
-.ac-pasar{flex:0 0 auto;min-height:40px;padding:7px 12px;border:1px solid #d5af5f;border-radius:12px;background:#594324;color:#ffe7aa;font:inherit;font-size:.75rem;font-weight:900;cursor:pointer}
+.ac-pasar{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex:0 0 auto;min-height:42px;padding:7px 10px;border:1px solid #fff0b8;border-radius:12px;background:linear-gradient(#ffe991,#ffbb40);color:#3e2700;font:inherit;font-size:.75rem;font-weight:900;cursor:pointer;box-shadow:0 3px 0 #97601a,0 0 12px #f6b83430}
 .ac-pasar[hidden]{display:none}
-.ac-pasar:disabled{opacity:.55;cursor:default}
+.ac-pasar:disabled{opacity:.5;cursor:default;box-shadow:none;background:#695c48;border-color:#a39379;color:#eee1ce}
 .ac-pasar:focus-visible{outline:2px solid #ffdf85;outline-offset:2px}
 .ac-bajo .ac-pasar{min-height:34px;padding:5px 8px;font-size:.68rem}
 .ac-muy-bajo .ac-pasar{min-height:28px;padding:3px 6px;font-size:.6rem}
@@ -221,3 +221,8 @@
 
 .ac-caida-terminada .ac-avatar,.ac-caida-terminada .ac-atril{animation:none;opacity:0}
 @media(max-height:540px) and (max-width:600px){.ac-final-acciones{flex-wrap:nowrap}.ac-final-acciones button{width:auto;flex:1}}
+
+.ac-pasar small{font-size:.53rem;line-height:1.1;font-weight:700;color:#62420c}
+.ac-pasar:disabled small{color:inherit}
+.ac-pasar:not(:disabled):active{transform:translateY(2px);box-shadow:0 1px 0 #97601a}
+.ac-muy-bajo .ac-pasar small{font-size:.46rem}
