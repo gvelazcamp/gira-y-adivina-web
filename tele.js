@@ -1687,7 +1687,7 @@
     function terminar(){fase="fin";clearTimeout(timer);
       const f=jugadores.map(j=>({n:j.n,av:avDe(T,j.pid),v:puntos[j.pid]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
       podioTele({juego:CFG.nombre,titulo:f.length<2?"¡"+String(f[0]?f[0].n:"").toUpperCase()+" SUMÓ "+(f[0]?f[0].v:0)+"!":emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",
-        sub:"El más rápido en armar"+(SIL?" las palabras":" las frases"),equipo:f.length<2,filas:f.map(x=>({n:x.n,av:x.av,pts:x.v+" pts"}))});
+        sub:alterno?"Cada jugador completó su propia partida de 8 palabras":"El más rápido en armar"+(SIL?" las palabras":" las frases"),equipo:f.length<2,filas:f.map(x=>({n:x.n,av:x.av,pts:x.v+" pts"}))});
       actualizar();}
     function accion(m){
       if(m.a==="otra"&&fase==="fin"&&m.pid===T.mando){T.otra();return;}
