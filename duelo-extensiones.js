@@ -162,6 +162,10 @@ const Duelo=(()=>{
   function temaOut(){return "gyaduelo/"+juego+"/"+sala+"/"+(soyHost?"host":"guest");}
   function temaIn(){return "gyaduelo/"+juego+"/"+sala+"/"+(soyHost?"guest":"host");}
   function mandar(msg){try{cliente&&cliente.connected&&cliente.publish(temaOut(),JSON.stringify(msg));}catch(e){}}
+  function conectarSala(listo,fallo,asignar){
+    if(juego==="palabra-colaborativa"&&window.SalaPalabra)return SalaPalabra.conectar(sala,soyHost,listo,fallo,asignar);
+    return MultiBroker.conectar(listo,fallo,asignar);
+  }
   function avatarHtml(av,frame){
     return '<span class="dl-avatar"><img src="assets/avatars/'+(av||"avatar-01")+'.webp" alt="">'+
       (frame?'<img class="dl-marco" src="assets/frames/frame-'+frame+'.png" alt="">':"")+'</span>';
@@ -211,8 +215,10 @@ const Duelo=(()=>{
     c.querySelector("#dlCrear").onclick=()=>{
       soyHost=true;sala=codigoNuevo();c.querySelector("#dlElegir").hidden=true;c.querySelector("#dlCodigoZona").hidden=false;
       c.querySelector("#dlCodigo").textContent=sala;estado("Conectando…");
-      MultiBroker.conectar(()=>{
+      c.querySelector("#dlWpp").disabled=true;c.querySelector("#dlCopiar").disabled=true;
+      conectarSala(()=>{
         cliente.subscribe(temaIn());cliente.on("message",recibir);estado("Sala lista. Esperando al otro jugador…");
+        c.querySelector("#dlWpp").disabled=false;c.querySelector("#dlCopiar").disabled=false;
         cbRivalListo=r=>{estado("");cerrarCapa();if(onListo)onListo(true,r);};
       },()=>estado("No se pudo conectar ("+(window.gyaFalloConexion||"sin respuesta")+"). Probá con otra red (datos del celular)."),cl=>{cliente=cl;});
       const quien=(perfil&&perfil.nombre)||"Un amigo";
@@ -232,7 +238,7 @@ const Duelo=(()=>{
       if(!/^[A-HJ-NP-Z2-9]{4}$/.test(cod)){estado("El código tiene 4 letras o números. Revisalo y probá otra vez.");return;}
       uniendose=true;c.querySelector("#dlEntrar").disabled=true;
       soyHost=false;sala=cod;estado("Conectando…");
-      MultiBroker.conectar(()=>{
+      conectarSala(()=>{
         cliente.subscribe(temaIn());cliente.on("message",recibir);estado("Buscando la sala "+sala+"…");
         cbRivalListo=r=>{estado("");cerrarCapa();if(onListo)onListo(false,r);};
         const hola=()=>mandar({tipo:"hola",nombre:(perfil&&perfil.nombre)||"Jugador",avatar:(perfil&&perfil.avatar)||null,frame:(typeof frameEquipado!=="undefined"?frameEquipado:null)});

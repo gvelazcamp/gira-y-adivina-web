@@ -11,12 +11,24 @@ const server=http.createServer((req,res)=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));
  const base='http://127.0.0.1:'+server.address().port;
  const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_EXECUTABLE||'/usr/bin/chromium'});
- const peers=[],packets=[],errors=[];
+ const peers=[],packets=[],errors=[],salasGuardadas=new Map();
  try{
   async function player(name,saved){
    const context=await browser.newContext({locale:'es-UY',viewport:{width:390,height:844},serviceWorkers:'block',reducedMotion:'reduce'}),page=await context.newPage();
    peers.push(page);page.on('pageerror',e=>errors.push(e.message));
-   await page.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.fulfill({status:200,body:''}));
+   await page.route('**/*',async r=>{
+    const req=r.request(),url=new URL(req.url());
+    if(req.url().startsWith(base))return r.continue();
+    const body=req.method()==='POST'?req.postDataJSON():null;
+    if(url.pathname==='/rest/v1/gya_ranking'&&(url.searchParams.get('grupo')==='eq.palabra_sala'||body?.grupo==='palabra_sala')){
+     let fail=false;try{fail=await page.evaluate(()=>{const f=window.__failNext;window.__failNext=false;return f;});}catch(e){}
+     if(fail)return r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({message:'Fallo de conexión simulado'})});
+     if(body){salasGuardadas.set(body.apodo,JSON.parse(JSON.stringify(body)));return r.fulfill({status:201,body:''});}
+     const row=salasGuardadas.get((url.searchParams.get('apodo')||'').replace(/^eq\./,''));
+     return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(row?[row]:[])});
+    }
+    return r.fulfill({status:200,body:''});
+   });
    await page.exposeFunction('__publish',async(topic,payload)=>{
     packets.push({page,topic,payload});
     for(const other of peers)if(other!==page&&!other.isClosed())await other.evaluate(([t,m])=>window.__deliver?.(t,m),[topic,payload]);
@@ -37,7 +49,8 @@ const server=http.createServer((req,res)=>{
    await page.goto(url);await page.waitForFunction(()=>window.PalabraSecreta&&window.Duelo&&window.MultiBroker);
    await page.evaluate(()=>{
     document.querySelector('#splash')?.remove();document.documentElement.classList.remove('cargando');
-    window.__connectionAttempts=0;window.__failNext=false;window.__charges=0;Fichas.usar=()=>{window.__charges++;return true;};
+    window.__connectionAttempts=0;window.__roomAttempts=0;window.__failNext=false;
+    const connectSala=SalaPalabra.conectar;SalaPalabra.conectar=(...args)=>{window.__roomAttempts++;return connectSala(...args);};window.__charges=0;Fichas.usar=()=>{window.__charges++;return true;};
     MultiBroker.conectar=(ready,fail,assign)=>{
      window.__connectionAttempts++;
      const cl={connected:true,subs:new Set(),handlers:[],closed:false,subscribe(t){this.subs.add(t);},publish(t,m){if(!this.closed&&!window.__pausedNetwork)window.__publish(t,String(m));},on(ev,fn){if(ev==='message')this.handlers.push(fn);},end(){this.closed=true;this.connected=false;}};
@@ -66,7 +79,7 @@ const server=http.createServer((req,res)=>{
   await prepare(guest,base+'/?duelo=palabra-colaborativa&sala='+code+'&de=Anfitrion');
   await guest.waitForFunction(()=>document.querySelector('#psEquipoEstado')?.textContent.includes('tiene el teclado'));
   assert.equal(await guest.locator('.dl-capa').count(),0,'the WhatsApp link joins automatically');
-  assert.equal(await guest.evaluate(()=>window.__connectionAttempts),1,'only one connection per invitation');
+  assert.equal(await guest.evaluate(()=>window.__roomAttempts),1,'only one connection per invitation');
   assert(!(await guest.locator('#bUnirse').textContent()).includes('Entrar a la sala '+code),'the invite must not configure the wheel game');
   assert.equal(await text(guest),await text(host),'including the half-written row');
   assert.equal(await attempts(guest),1);assert.equal(await guest.locator('#psTablero .ps-fila').count(),5);
@@ -186,15 +199,18 @@ const server=http.createServer((req,res)=>{
   assert.equal(await guest.locator('.dl-capa').count(),0);
   assert.equal(await guest.evaluate(()=>window.__connectionAttempts),1);
   // Una falla de red ofrece reintentar con la sala ya cargada, sin pedir el código.
-  await prepare(guest,base+'/?duelo=palabra-colaborativa&sala=B9C4');
+  await open(host);await host.locator('#psColaborativo').click();await host.locator('#dlCrear').click();
+  await host.waitForFunction(()=>document.querySelector('#dlEstado').textContent.includes('Sala lista'));
+  const retryCode=await host.locator('#dlCodigo').textContent();
+  await prepare(guest,base+'/?duelo=palabra-colaborativa&sala='+retryCode);
   await guest.evaluate(()=>window.__failNext=true);
   await guest.getByRole('button',{name:'Reintentar conexión',exact:true}).waitFor({state:'visible'});
-  assert.equal(await guest.locator('#dlInput').inputValue(),'B9C4');
+  assert.equal(await guest.locator('#dlInput').inputValue(),retryCode);
   assert(await guest.locator('#dlInput').evaluate(el=>el.readOnly));
   await guest.getByRole('button',{name:'Reintentar conexión',exact:true}).click();
-  await guest.waitForFunction(()=>document.querySelector('#dlEstado').textContent.includes('Buscando la sala B9C4'));
-  assert.equal(await guest.evaluate(()=>window.__connectionAttempts),2);
-  await guest.locator('#dlCancelar').click();
+  await guest.waitForFunction(()=>document.querySelector('#psEquipoEstado')?.textContent.includes('tiene el teclado'));
+  assert.equal(await guest.evaluate(()=>window.__roomAttempts),2);
+  await guest.locator('#psSalirEquipo').click();await host.locator('#psSalirEquipo').click();
   assert.equal(await guest.locator('.dl-capa').count(),0);
   assert.deepEqual(errors,[]);
   console.log('PASS: collaborative invitation, existing board/draft, keyboard handover, shared guesses, invalid words, duplicate/stale delivery, retry after packet loss, host progression, guest save preserved, next round, repetition challenge, seven-letter word, departure, cancel, cleanup, native code typing/Enter, automatic cooperative/competitive links and connection retry.');
