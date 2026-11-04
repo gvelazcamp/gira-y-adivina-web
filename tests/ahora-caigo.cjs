@@ -17,6 +17,26 @@ const server=http.createServer((req,res)=>{
       const context=await browser.newContext({viewport:{width:1280,height:900},serviceWorkers:"block"});
       const page=await context.newPage();
       const errors=[];page.on("pageerror",e=>errors.push(e.message));
+      async function iniciarDuelo(){
+        if(await page.locator(".ac-final[open]").count())await page.locator(".ac-final-primaria").click();
+        else await page.locator(".ac-sortear").click();
+      }
+      async function comprobarPopup(titulo){
+        assert(await page.locator(".ac-final").isVisible());
+        assert.equal(await page.locator("dialog:modal").count(),1,"native modal is above the game");
+        assert.match(await page.locator("#acFinalTitulo").textContent(),titulo);
+        assert.equal(await page.locator(".ac-final .ac-escenario").count(),1,"the stage is part of the popup");
+        assert(await page.locator(".ac-controles").isHidden(),"result is not below the stage");
+        assert(await page.evaluate(()=>document.querySelector(".ac-final").contains(document.activeElement)),"focus inside the popup");
+        for(const viewport of [{width:1280,height:900},{width:844,height:390},{width:390,height:736},{width:390,height:450},{width:360,height:640}]){
+          await page.setViewportSize(viewport);
+          await page.evaluate(()=>window.dispatchEvent(new Event("resize")));
+          const m=await page.locator(".ac-final").evaluate(el=>({r:el.getBoundingClientRect().toJSON(),ancho:innerWidth,alto:innerHeight,scroll:el.scrollHeight-el.clientHeight}));
+          assert(m.r.left>=0&&m.r.right<=m.ancho+1&&m.r.top>=0&&m.r.bottom<=m.alto+1&&m.scroll<=1,"popup fits: "+JSON.stringify({viewport,...m}));
+        }
+        await page.setViewportSize({width:1280,height:900});
+      }
+
       await page.route("**/*",route=>route.request().url().startsWith(base)?route.continue():route.fulfill({status:200,body:""}));
       await page.addInitScript(n=>{
         window.__speechInstances=[];
@@ -67,7 +87,7 @@ const server=http.createServer((req,res)=>{
       await page.setViewportSize({width:1280,height:900});
       await page.clock.install();
       await page.evaluate(()=>{window.__randomOriginal=Math.random;Math.random=()=>.99;});
-      await page.locator(".ac-sortear").click();
+      await iniciarDuelo();
       assert(await page.locator(".ac-sortear").isDisabled());
       await page.evaluate(()=>{Math.random=()=>0;});
       await page.clock.runFor(12000);
@@ -75,7 +95,10 @@ const server=http.createServer((req,res)=>{
       assert.equal(await page.locator(".ac-elegido .ac-nombre").textContent(),"10");
       assert.equal(await page.locator(".ac-iluminado").count(),1);
       assert(await page.locator(".ac-duelo").isVisible());
-      assert.equal(await page.locator(".ac-turno-texto").textContent(),"TU TURNO");
+      assert.equal(await page.locator(".ac-turno-texto").textContent(),"TE TOCA");
+      assert.equal(await page.locator(".ac-identidad.ac-activo").count(),1);
+      assert.equal(await page.locator(".ac-identidad.ac-activo .ac-tu-nombre").textContent(),"Gonzalo");
+      assert.equal(await page.locator(".ac-identidad.ac-activo").getAttribute("aria-current"),"true");
       const pista=await page.locator(".ac-pregunta").textContent();
       const ayuda=await page.locator(".ac-visible").count(),total=await page.locator(".ac-letra").count();
       assert(ayuda>0&&ayuda<total,"some letters revealed, never the whole answer");
@@ -123,15 +146,19 @@ const server=http.createServer((req,res)=>{
       await page.locator("#acRespuesta").fill(respuesta.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase());
       await page.locator(".ac-responder button").click();
       assert.match(await page.locator(".ac-mensaje").textContent(),/Correcto/);
+      assert.equal(await page.locator(".ac-turno-texto").textContent(),"¡CORRECTO!");
       await page.clock.runFor(1501);
-      assert.equal(await page.locator(".ac-turno-texto").textContent(),"TURNO DEL RIVAL");
+      assert.equal(await page.locator(".ac-turno-texto").textContent(),"RESPONDE EL RIVAL");
+      assert.equal(await page.locator(".ac-identidad.ac-activo .ac-rival-nombre").textContent(),"Participante 10");
       assert.notEqual(await page.locator(".ac-pregunta").textContent(),pista,"different question for the rival");
       assert(await page.locator(".ac-responder").isHidden());
       await page.clock.runFor(30000);
       assert.match(await page.locator(".ac-estado").textContent(),/Ganaste el duelo/);
+      await comprobarPopup(/Ganaste el duelo/);
+      if(process.env.SCREENSHOT_RESULT_PATH)await page.locator(".ac-final").screenshot({path:process.env.SCREENSHOT_RESULT_PATH,animations:"disabled"});
       assert.equal(await page.locator(".ac-caido").count(),1);
       await page.evaluate(()=>{Math.random=()=>.99;});
-      await page.locator(".ac-sortear").click();
+      await iniciarDuelo();
       await page.evaluate(()=>{Math.random=()=>0;});await page.clock.runFor(12000);
       await page.evaluate(()=>{Math.random=()=>.99;});
       assert.equal(await page.locator(".ac-elegido .ac-nombre").textContent(),"9","fallen rival is excluded");
@@ -141,11 +168,12 @@ const server=http.createServer((req,res)=>{
       assert(await page.evaluate(()=>window.__speechInstances.at(-1).aborted),"deadline aborts microphone");
       await page.evaluate(()=>window.__lateSpeech({results:[[{transcript:"tarde"}]]}));
       assert.match(await page.locator(".ac-estado").textContent(),/Caíste/);
+      await comprobarPopup(/Caíste/);
       assert.equal(await page.locator(".ac-principal.ac-caido").count(),1);
-      await page.locator(".ac-sortear").click();
+      await iniciarDuelo();
       assert.equal(await page.locator(".ac-caido").count(),0,"restart restores the stage");
       await page.evaluate(()=>{Math.random=()=>0;});
-      await page.locator(".ac-sortear").click();await page.clock.runFor(12000);
+      await iniciarDuelo();await page.clock.runFor(12000);
       const responder=async(porVoz=false)=>{
         const r=await page.evaluate(()=>AHORA_CAIGO_DATOS.find(q=>q.pregunta===document.querySelector(".ac-pregunta").textContent).respuesta);
         if(porVoz){
@@ -158,11 +186,11 @@ const server=http.createServer((req,res)=>{
       await responder(true);
       assert.equal(await page.locator(".ac-voz").getAttribute("aria-pressed"),"false");
       await page.clock.runFor(1501);
-      assert.equal(await page.locator(".ac-turno-texto").textContent(),"TURNO DEL RIVAL");
+      assert.equal(await page.locator(".ac-turno-texto").textContent(),"RESPONDE EL RIVAL");
       await page.clock.runFor(3500);
       assert.match(await page.locator(".ac-mensaje").textContent(),/rival acertó/);
       await page.clock.runFor(1500);
-      assert.equal(await page.locator(".ac-turno-texto").textContent(),"TU TURNO","bot answer returns turn to player");
+      assert.equal(await page.locator(".ac-turno-texto").textContent(),"TE TOCA","bot answer returns turn to player");
       await page.locator(".ac-voz").click();
       await page.evaluate(()=>{window.__lateSpeech=window.__speechInstances.at(-1).onresult;Extensiones.abrirLobby();});
       assert(await page.evaluate(()=>window.__speechInstances.at(-1).aborted),"exit aborts microphone");
@@ -175,17 +203,18 @@ const server=http.createServer((req,res)=>{
       await page.evaluate(()=>{Math.random=()=>.99;});
       const vistas=new Set();
       for(let ronda=0;ronda<10;ronda++){
-        await page.locator(".ac-sortear").click();await page.clock.runFor(7000);
-        assert.equal(await page.locator(".ac-turno-texto").textContent(),"TURNO DEL RIVAL","rival starts every duel");
+        await iniciarDuelo();await page.clock.runFor(7000);
+        assert.equal(await page.locator(".ac-turno-texto").textContent(),"RESPONDE EL RIVAL","rival starts every duel");
         const bot=await page.locator(".ac-pregunta").textContent();
         assert(!vistas.has(bot),"questions do not repeat");vistas.add(bot);
         await page.clock.runFor(30000);
         assert.equal(await page.locator(".ac-caido").count(),ronda+1);
       }
       assert.match(await page.locator(".ac-estado").textContent(),/Eliminaste a los diez/);
+      await comprobarPopup(/Ganaste la partida/);
       assert.equal(vistas.size,10);
       await page.evaluate(()=>{Math.random=()=>0;Extensiones.abrirJuego("ahora-caigo");});
-      await page.locator(".ac-sortear").click();await page.clock.runFor(12000);
+      await iniciarDuelo();await page.clock.runFor(12000);
       assert.equal(await page.locator(".ac-vidas").textContent(),"3 pases");
       for(let uso=0;uso<3;uso++){
         const q=await page.locator(".ac-pregunta").textContent();
@@ -199,7 +228,7 @@ const server=http.createServer((req,res)=>{
         assert.equal(await page.locator(".ac-reloj b").textContent(),"20");
         assert.equal(await page.locator(".ac-vidas").textContent(),(2-uso)+((2-uso)===1?" pase":" pases"));
         await page.clock.runFor(3500);await page.clock.runFor(1500);
-        assert.equal(await page.locator(".ac-turno-texto").textContent(),"TU TURNO");
+        assert.equal(await page.locator(".ac-turno-texto").textContent(),"TE TOCA");
         assert.notEqual(await page.locator(".ac-pregunta").textContent(),q,"correct pass response returns a new question to the leader");
       }
       assert(await page.locator(".ac-pasar").isDisabled(),"only three passes per game");
@@ -208,10 +237,10 @@ const server=http.createServer((req,res)=>{
       await page.evaluate(()=>{Math.random=()=>.99;});
       await responder();await page.clock.runFor(1501);await page.clock.runFor(30000);
       assert.match(await page.locator(".ac-estado").textContent(),/Ganaste el duelo/);
-      await page.locator(".ac-sortear").click();await page.clock.runFor(7000);
+      await iniciarDuelo();await page.clock.runFor(7000);
       assert.equal(await page.locator(".ac-vidas").textContent(),"0 pases","passes do not refill between duels");
       await page.evaluate(()=>{Math.random=()=>0;Extensiones.abrirJuego("ahora-caigo");});
-      await page.locator(".ac-sortear").click();await page.clock.runFor(12000);
+      await iniciarDuelo();await page.clock.runFor(12000);
       await page.evaluate(()=>{Math.random=()=>.99;});
       await page.locator(".ac-pasar").click();await page.clock.runFor(19999);
       assert.equal(await page.locator(".ac-caido").count(),0);
@@ -225,7 +254,7 @@ const server=http.createServer((req,res)=>{
           window.AHORA_CAIGO_DATOS=[item,{...item,id:item.id+"-geometria"}];
           Math.random=()=>0;Extensiones.abrirJuego("ahora-caigo");
         },respuesta);
-        await page.locator(".ac-sortear").click();await page.clock.runFor(12000);
+        await iniciarDuelo();await page.clock.runFor(12000);
         for(const viewport of [{width:390,height:736},{width:360,height:640},{width:390,height:450},{width:844,height:390}])await comprobarPantalla(viewport);
         await page.setViewportSize({width:390,height:844});
         await page.evaluate(()=>{
@@ -239,14 +268,19 @@ const server=http.createServer((req,res)=>{
         Math.random=()=>0;window.AHORA_CAIGO_DATOS=window.__bancoOriginal;window.SpeechRecognition=undefined;window.webkitSpeechRecognition=undefined;
         Extensiones.abrirJuego("ahora-caigo");
       });
-      await page.locator(".ac-sortear").click();await page.clock.runFor(12000);
+      await iniciarDuelo();await page.clock.runFor(12000);
       assert(await page.locator(".ac-voz").isDisabled(),"typing remains available without speech recognition");
       assert(await page.locator("#acRespuesta").isEnabled());
+      await page.clock.runFor(30000);
+      assert.equal(await page.locator("dialog:modal").count(),1);
+      await page.locator(".ac-final-salir").click();
+      assert.equal(await page.locator("dialog:modal").count(),0,"leaving closes the result popup");
+      assert.equal(await page.locator(".ac-preguntando").count(),0,"leaving restores the normal shell");
       await page.evaluate(()=>{Math.random=window.__randomOriginal;Extensiones.cerrar();});
       assert.equal(await page.locator(".ac-abierta").count(),0);
       assert.deepEqual(errors,[],"no browser errors");
       await context.close();
     }
-    console.log("PASS: Gonzalo-only access, existing assets, 11 figures at 3 sizes, single-screen layout and keyboard, profile avatars, speech results/errors/cleanup, hints, unlimited retries, rival-first turns, 3 passes per game, same question/20-second transfer, falls and victory");
+    console.log("PASS: Gonzalo-only access, existing assets, 11 figures at 3 sizes, single-screen layout and keyboard, profile avatars, speech results/errors/cleanup, hints, unlimited retries, rival-first turns, 3 passes per game, same question/20-second transfer, active turn indicators and result popups");
   }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});

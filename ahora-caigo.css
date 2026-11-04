@@ -162,3 +162,62 @@
 .ac-pasar:focus-visible{outline:2px solid #ffdf85;outline-offset:2px}
 .ac-bajo .ac-pasar{min-height:34px;padding:5px 8px;font-size:.68rem}
 .ac-muy-bajo .ac-pasar{min-height:28px;padding:3px 6px;font-size:.6rem}
+/* Un indicador de turno junto al nombre y el avatar, sin ocupar otra fila. */
+.ac-identidad{position:relative;isolation:isolate;transition:opacity .2s}
+.ac-en-duelo .ac-identidad:not(.ac-activo){opacity:.55}
+.ac-identidad.ac-activo::before{content:"";position:absolute;inset:-5px;z-index:-1;border:1px solid #79ffe2;border-radius:12px;background:linear-gradient(110deg,#3af1c62b,#3af1c605);box-shadow:0 0 15px #54e7c950}
+.ac-identidad.ac-activo img{border-color:#9bffe8;box-shadow:0 0 12px #61f5d7}
+.ac-identidad.ac-activo strong{color:#c4fff1}
+.ac-turno-bot .ac-identidad.ac-activo::before{border-color:#e5b5ff;background:linear-gradient(110deg,#bf78ff05,#bf78ff35);box-shadow:0 0 15px #cb8aff60}
+.ac-turno-bot .ac-identidad.ac-activo img{border-color:#e8baff;box-shadow:0 0 12px #d59aff}
+.ac-turno-bot .ac-identidad.ac-activo strong{color:#f1d5ff}
+.ac-turno-texto::before{content:"";display:inline-block;width:8px;height:8px;margin-right:7px;border-radius:50%;background:currentColor;box-shadow:0 0 9px currentColor}
+.ac-en-duelo>.ac-duelo[hidden]{display:none}
+/* Resultado en un popup del juego: escena, respuesta y acciones juntas. */
+.ac-final{position:fixed;inset:0;box-sizing:border-box;width:min(850px,calc(100vw - 24px));max-height:calc(var(--ac-popup-alto,100dvh) - 24px);margin:auto;padding:22px;border:1px solid #af8ee3;border-radius:24px;background:radial-gradient(ellipse at 50% 0,#5c3c8255,transparent 70%),#1b132e;color:#faf4ff;box-shadow:0 25px 90px #000b;text-align:center}
+.ac-final::backdrop{background:#0b0614d9;backdrop-filter:blur(6px)}
+.ac-final-contenido{display:flex;flex-direction:column;gap:13px;min-width:0}
+.ac-final-cabecera h3{margin:5px 0 7px;font-size:clamp(1.5rem,4vw,2.2rem);color:#8ef4d2}
+.ac-final-cabecera p{margin:0;color:#d2c3e4;font-size:.85rem;line-height:1.4}
+.ac-final-etiqueta{font-size:.6rem;letter-spacing:.14em;font-weight:900;color:#dcbaf8}
+.ac-final-derrota .ac-final-cabecera h3{color:#ffb2c2}
+.ac-final-escena{min-width:0}
+.ac-final .ac-escenario{max-width:620px;margin:auto;border-radius:14px}
+.ac-final-detalle{display:flex;flex-direction:column;gap:12px;min-width:0}
+.ac-final-respuesta{padding:9px 12px;border:1px solid #b38a4f;border-radius:12px;background:#e7b65d0d}
+.ac-final-respuesta[hidden]{display:none}
+.ac-final-respuesta small{display:block;font-size:.57rem;letter-spacing:.12em;color:#d5b67f;margin-bottom:4px}
+.ac-final-respuesta strong{font-size:clamp(1rem,3vw,1.35rem);letter-spacing:.08em;color:#ffe4a7;overflow-wrap:anywhere}
+.ac-final-cifras{display:flex;justify-content:center;gap:6px 14px;flex-wrap:wrap;font-size:.72rem;color:#cbb8df}
+.ac-final-acciones{display:flex;flex-wrap:wrap;justify-content:center;gap:9px}
+.ac-final-acciones button{min-height:44px;padding:10px 18px;border-radius:13px;font:inherit;font-size:.85rem;font-weight:900;cursor:pointer}
+.ac-final-primaria{background:linear-gradient(#ffe8a3,#f6bf51);color:#392405;border:1px solid #fff0bc;box-shadow:0 3px 0 #966323}
+.ac-final-salir{background:#ffffff0d;color:#ddcde8;border:1px solid #80678f}
+.ac-final-acciones button:focus-visible{outline:3px solid #a9ffe6;outline-offset:3px}
+@media(max-width:600px){.ac-final{padding:15px}.ac-final-acciones button{width:100%}.ac-final-contenido,.ac-final-detalle{gap:10px}}
+@media(orientation:landscape) and (max-height:600px){
+  .ac-final{padding:14px}
+  .ac-final-contenido{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-areas:"escena titulo" "escena detalle";gap:8px 16px;align-items:center}
+  .ac-final-escena{grid-area:escena}
+  .ac-final-cabecera{grid-area:titulo}
+  .ac-final-detalle{grid-area:detalle;gap:8px}
+  .ac-final-cabecera h3{font-size:1.5rem;margin:3px 0}
+  .ac-final-cabecera p{font-size:.75rem}
+  .ac-final-acciones{gap:7px}
+  .ac-final-acciones button{padding:7px 11px;min-height:36px;font-size:.75rem}
+}
+@media(max-height:540px) and (max-width:600px){
+  .ac-final{padding:10px}
+  .ac-final .ac-escenario{max-width:210px}
+  .ac-final-contenido,.ac-final-detalle{gap:6px}
+  .ac-final-cabecera h3{font-size:1.3rem;margin:2px 0}
+  .ac-final-cabecera p{font-size:.7rem}
+  .ac-final-respuesta{padding:5px}
+  .ac-final-cifras{font-size:.6rem}
+  .ac-final-acciones{gap:6px}
+  .ac-final-acciones button{min-height:32px;padding:6px 10px;font-size:.7rem}
+}
+@media(prefers-reduced-motion:reduce){.ac-identidad{transition:none}}
+
+.ac-caida-terminada .ac-avatar,.ac-caida-terminada .ac-atril{animation:none;opacity:0}
+@media(max-height:540px) and (max-width:600px){.ac-final-acciones{flex-wrap:nowrap}.ac-final-acciones button{width:auto;flex:1}}

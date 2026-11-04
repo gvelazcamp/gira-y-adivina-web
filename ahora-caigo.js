@@ -13,6 +13,7 @@ window.AhoraCaigo=(()=>{
   const normalizar=s=>String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]/g,"");
   function despues(fn,ms){const t=setTimeout(()=>{pendientes.delete(t);fn();},ms);pendientes.add(t);return t;}
   function salir(){
+    raiz?.querySelector(".ac-final")?.close();
     detenerVoz();quitarAjuste?.();quitarAjuste=null;
     clearTimeout(timer);timer=null;clearInterval(reloj);reloj=null;
     pendientes.forEach(clearTimeout);pendientes.clear();
@@ -43,7 +44,7 @@ window.AhoraCaigo=(()=>{
       <div class="ac-escenario" role="group" aria-label="Escenario con once participantes"><div class="ac-ronda" aria-hidden="true"></div></div>
       <section class="ac-duelo" aria-label="Duelo de preguntas" hidden>
         <div class="ac-marcador"><div class="ac-identidad"><img class="ac-tu-avatar" alt=""><span><small>VOS · <span class="ac-vidas">3 pases</span></small><strong class="ac-tu-nombre"></strong></span></div><span>VS</span><div class="ac-identidad"><img class="ac-rival-avatar" alt=""><span><small>RIVAL · BOT</small><strong class="ac-rival-nombre"></strong></span></div></div>
-        <div class="ac-pregunta-top"><span class="ac-turno-texto"></span><button class="ac-pasar" type="button" title="Pasá esta pregunta al rival: tendrá 20 segundos">Pasar · 3</button><div class="ac-reloj" role="timer" aria-label="Segundos restantes"><b>30</b><small>SEG</small></div></div>
+        <div class="ac-pregunta-top"><span class="ac-turno-texto" aria-live="polite"></span><button class="ac-pasar" type="button" title="Pasá esta pregunta al rival: tendrá 20 segundos">Pasar · 3</button><div class="ac-reloj" role="timer" aria-label="Segundos restantes"><b>30</b><small>SEG</small></div></div>
         <span class="ac-categoria"></span><h3 class="ac-pregunta"></h3>
         <div class="ac-letras" aria-label="Respuesta con letras de ayuda"></div><small class="ac-cantidad"></small>
         <form class="ac-responder"><label for="acRespuesta">Tu respuesta</label><div><input id="acRespuesta" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="80" placeholder="Escribí tu respuesta…"><button type="submit">Responder ↵</button></div></form>
@@ -52,6 +53,10 @@ window.AhoraCaigo=(()=>{
         <p class="ac-mensaje" role="status" aria-live="polite"></p>
       </section>
       <div class="ac-controles"><p class="ac-estado" role="status" aria-live="polite">Sorteá con quién te vas a enfrentar.</p><button class="ac-sortear" type="button">Sortear rival</button><small class="ac-ayuda">30 segundos por pregunta · Tres pases para darle tu pregunta al rival con 20 segundos · Podés intentar varias respuestas mientras quede tiempo.</small></div>`;
+    const final=document.createElement("dialog");final.className="ac-final";
+    final.setAttribute("aria-labelledby","acFinalTitulo");final.setAttribute("aria-describedby","acFinalResumen");
+    final.innerHTML='<div class="ac-final-contenido"><header class="ac-final-cabecera"><span class="ac-final-etiqueta">DUELO TERMINADO</span><h3 id="acFinalTitulo"></h3><p id="acFinalResumen"></p></header><div class="ac-final-escena"></div><div class="ac-final-detalle"><div class="ac-final-respuesta"><small>LA RESPUESTA ERA</small><strong></strong></div><div class="ac-final-cifras"><span class="ac-final-eliminados"></span><span class="ac-final-pases"></span></div><div class="ac-final-acciones"><button type="button" class="ac-final-primaria" autofocus></button><button type="button" class="ac-final-salir">Volver a Más juegos</button></div></div></div>';
+    raiz.appendChild(final);
     contenedor.appendChild(raiz);raiz.closest(".ext-shell")?.classList.add("ac-abierta");
     const actual=raiz;
     let avatar="avatar-01",nombre="Gonzalo";
@@ -72,7 +77,9 @@ window.AhoraCaigo=(()=>{
     buscar(".ac-tu-avatar").src="assets/avatars/"+avatar+".webp";
     buscar(".ac-rival-avatar").src="assets/avatars/"+rivales[0].dataset.avatar+".webp";
     function ajustarPantalla(){
-      if(!activo()||!actual.classList.contains("ac-en-duelo"))return;
+      if(!activo())return;
+      final.style.setProperty("--ac-popup-alto",(window.visualViewport?.height||innerHeight)+"px");
+      if(!actual.classList.contains("ac-en-duelo"))return;
       const vv=window.visualViewport,borde=vv?vv.offsetTop+vv.height:innerHeight;
       const pie=parseFloat(getComputedStyle(shell).paddingBottom)||12;
       const alto=Math.max(170,Math.floor(borde-actual.getBoundingClientRect().top-pie-2));
@@ -93,6 +100,36 @@ window.AhoraCaigo=(()=>{
       if(Recon)microfono.textContent="🎙 Responder hablando";
     }
     function pararReloj(){clearInterval(reloj);reloj=null;}
+    function restaurarEscenario(){
+      escenario.querySelectorAll(".ac-caido").forEach(el=>el.classList.add("ac-caida-terminada"));
+      actual.insertBefore(escenario,panel);
+    }
+    function mostrarResultado({titulo,resumen,tipo="victoria",respuesta=pregunta?.respuesta||""}){
+      if(!activo())return;
+      pararReloj();pararEscucha();input.blur();panel.hidden=true;boton.hidden=true;boton.disabled=false;
+      vistaPregunta(true);
+      final.classList.toggle("ac-final-derrota",tipo==="derrota");
+      final.querySelector(".ac-final-etiqueta").textContent=fase==="listo"?"DUELO TERMINADO":"FIN DE LA PARTIDA";
+      final.querySelector("#acFinalTitulo").textContent=titulo;
+      final.querySelector("#acFinalResumen").textContent=resumen;
+      final.querySelector(".ac-final-respuesta").hidden=!respuesta;
+      final.querySelector(".ac-final-respuesta strong").textContent=respuesta;
+      final.querySelector(".ac-final-eliminados").textContent=(10-vivos.size)+" / 10 rivales eliminados";
+      final.querySelector(".ac-final-pases").textContent=pases+(pases===1?" pase disponible":" pases disponibles");
+      final.querySelector(".ac-final-escena").appendChild(escenario);
+      final.querySelector(".ac-final-primaria").textContent=fase==="listo"?"Sortear próximo rival":"Volver a jugar";
+      ajustarPantalla();if(!final.open)final.showModal();
+    }
+    final.querySelector(".ac-final-primaria").onclick=()=>{
+      if(!activo())return;
+      final.close();restaurarEscenario();
+      if(fase==="fin"){abrir(contenedor);return;}
+      boton.click();
+    };
+    const volverLobby=()=>{final.close();window.Extensiones?.abrirLobby();};
+    final.querySelector(".ac-final-salir").onclick=volverLobby;
+    final.addEventListener("cancel",e=>{e.preventDefault();volverLobby();});
+
     function pintarRespuesta(completa){
       letras.replaceChildren();
       letras.style.setProperty("--larga",Math.max(...pregunta.respuesta.split(" ").map(p=>p.length)));
@@ -122,7 +159,7 @@ window.AhoraCaigo=(()=>{
     }
     function finalizar(pierde){
       if(!activo()||fase!=="pregunta")return;
-      fase="resultado";input.blur();pararReloj();pararEscucha();vistaPregunta(false);pasar.hidden=true;microfono.hidden=true;form.hidden=true;buscar(".ac-bot").hidden=true;
+      fase="resultado";input.blur();pararReloj();pararEscucha();pasar.hidden=true;microfono.hidden=true;form.hidden=true;buscar(".ac-bot").hidden=true;
       pintarRespuesta(true);mensaje.className="ac-mensaje ac-mal";
       mensaje.textContent="Se agotaron los "+(duracion/1000)+" segundos sin acertar. La respuesta era "+pregunta.respuesta+".";
       try{window.sonidoErrorExt?.();}catch(e){}
@@ -132,18 +169,18 @@ window.AhoraCaigo=(()=>{
       caido.setAttribute("aria-label",pierde==="yo"?nombre+" cayó":"Participante "+(rival+1)+" cayó");
       if(pierde==="yo"){
         fase="fin";estado.textContent="¡Caíste! Llegaste a eliminar "+(10-vivos.size)+" de 10 rivales.";
-        boton.hidden=false;boton.disabled=false;boton.textContent="Volver a jugar";
+        mostrarResultado({titulo:"¡Caíste!",resumen:"Se agotaron los "+(duracion/1000)+" segundos. Podés volver a intentarlo.",tipo:"derrota"});
       }else{
         vivos.delete(rival);
         estado.textContent=vivos.size?"¡Ganaste el duelo! Quedan "+vivos.size+" rivales.":"¡Ganaste! Eliminaste a los diez rivales.";
         fase=vivos.size?"listo":"fin";
-        boton.hidden=false;boton.disabled=false;boton.textContent=vivos.size?"Sortear próximo rival":"Volver a jugar";
+        mostrarResultado({titulo:vivos.size?"¡Ganaste el duelo!":"¡Ganaste la partida!",resumen:vivos.size?"El participante "+(rival+1)+" se quedó sin tiempo. Quedan "+vivos.size+" rivales.":"¡Eliminaste a los diez rivales y quedaste en pie!"});
       }
     }
     function acertar(){
       if(!activo()||fase!=="pregunta")return;
       fase="resolviendo";input.blur();pararReloj();pararEscucha();pasar.hidden=true;microfono.hidden=true;form.hidden=true;buscar(".ac-bot").hidden=true;
-      pintarRespuesta(true);mensaje.className="ac-mensaje ac-bien";
+      pintarRespuesta(true);buscar(".ac-turno-texto").textContent="¡CORRECTO!";mensaje.className="ac-mensaje ac-bien";
       mensaje.textContent=turno==="yo"?"¡Correcto! Ahora le toca al rival.":"El rival acertó. ¡Te toca!";
       despues(()=>{if(activo()){turno=turno==="yo"?"bot":"yo";siguiente();}},1500);
     }
@@ -162,13 +199,15 @@ window.AhoraCaigo=(()=>{
         fase="fin";vistaPregunta(false);pasar.hidden=true;microfono.hidden=true;form.hidden=true;buscar(".ac-bot").hidden=true;
         mensaje.className="ac-mensaje";mensaje.textContent="¡Completaste todas las preguntas de esta prueba!";
         estado.textContent="El banco de prueba terminó sin repetir preguntas.";
-        boton.hidden=false;boton.disabled=false;boton.textContent="Volver a jugar";return;
+        mostrarResultado({titulo:"¡Prueba completada!",resumen:"Se completaron las "+usadas.size+" preguntas de esta prueba sin repetir ninguna.",respuesta:""});return;
       }
       fase="pregunta";panel.hidden=false;vistaPregunta(true);
       buscar(".ac-rival-avatar").src="assets/avatars/"+rivales[rival].dataset.avatar+".webp";
       buscar(".ac-rival-nombre").textContent="Participante "+(rival+1);
-      buscar(".ac-turno-texto").textContent=turno==="yo"?"TU TURNO":"TURNO DEL RIVAL";
+      buscar(".ac-turno-texto").textContent=turno==="yo"?"TE TOCA":"RESPONDE EL RIVAL";
       panel.classList.toggle("ac-turno-bot",turno==="bot");
+      const identidades=buscar(".ac-marcador").querySelectorAll(".ac-identidad");
+      identidades.forEach((el,i)=>{const juega=i===(turno==="yo"?0:1);el.classList.toggle("ac-activo",juega);el.setAttribute("aria-current",juega?"true":"false");});
       buscar(".ac-categoria").textContent=pregunta.categoria;
       buscar(".ac-pregunta").textContent=pregunta.pregunta;
       mensaje.className="ac-mensaje";mensaje.textContent=turno==="yo"?"Descubrí la respuesta antes de que se abra la trampilla.":"Mirá cómo responde tu rival.";
@@ -206,7 +245,7 @@ window.AhoraCaigo=(()=>{
       pasar.textContent=pases?"Pasar · "+pases:"Sin pases";pasar.disabled=pases===0;
       pasar.setAttribute("aria-label","Usar pase. Quedan "+pases+". El rival recibe esta pregunta con 20 segundos.");
       turno="bot";siguiente({conservar:true,segundos:20});
-      buscar(".ac-turno-texto").textContent="PREGUNTA PASADA";
+      buscar(".ac-turno-texto").textContent="RESPONDE EL RIVAL";
       mensaje.className="ac-mensaje";mensaje.textContent="Usaste un pase. El rival tiene 20 segundos para esta misma pregunta.";
     }
     pasar.onclick=usarPase;
