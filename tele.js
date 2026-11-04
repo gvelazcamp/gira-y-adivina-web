@@ -13,7 +13,7 @@
   let codCel=(P.get("telecel")||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
   let esCel=!!codCel&&!esTele;
   const CHARS="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const yo=(()=>{try{let id=sessionStorage.getItem("gya_tele_pid");if(!id){id="t"+Math.random().toString(36).slice(2,10);sessionStorage.setItem("gya_tele_pid",id);}return id;}catch(e){return"t"+Math.random().toString(36).slice(2,10);}})();
+  const yo=(()=>{try{const llave=P.get("teleespejo")==="1"?"gya_tele_pid_espejo":"gya_tele_pid";let id=sessionStorage.getItem(llave);if(!id){id="t"+Math.random().toString(36).slice(2,10);sessionStorage.setItem(llave,id);}return id;}catch(e){return"t"+Math.random().toString(36).slice(2,10);}})();
   const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const limpio=(s,max)=>String(s||"").replace(/[<>&"'\u0000-\u001F]/g,"").trim().slice(0,max);
   const mezclar=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
