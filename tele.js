@@ -304,7 +304,7 @@
       if(m.t!=="accion")return;
       /* Micrófono de un celular prendido/apagado: la música de la tele se pausa mientras alguien habla. */
       if(m.a==="mic"){if(m.on)micTele[m.pid]=Date.now()+20000;else delete micTele[m.pid];return;}
-      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="sopa"&&m.a==="sp_marca")||(T.juego==="palabra"&&m.a==="ps_intento")||(T.juego==="memoria"&&m.a==="mg_carta")||(T.juego==="rueda"&&m.a==="rl_palabra")||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz","rs_apelar","rs_ver","rs_voto","rs_pausa","rs_reanudar","rs_rev"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
+      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="sopa"&&m.a==="sp_marca")||(T.juego==="cien"&&m.a==="responder")||(T.juego==="palabra"&&m.a==="ps_intento")||(T.juego==="memoria"&&m.a==="mg_carta")||(T.juego==="rueda"&&m.a==="rl_palabra")||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz","rs_apelar","rs_ver","rs_voto","rs_pausa","rs_reanudar","rs_rev"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
       if(m.a==="elegir"&&T.fase==="menu"){elegir(String(m.juego||""));return;}
       if(m.a==="rosco_modo"&&T.fase==="rosco_modo"){
         /* De a 2 a 6 (01/11/2026; antes hasta 4): el del control elige con quiénes juega (hasta 5 más). */
@@ -1730,6 +1730,11 @@
   }
   function juegoCien(T,actualizar){
     const MULT=[1,2,3],ERRORES=3;
+    /* Con dos celulares, alternan una respuesta cada uno sobre el mismo tablero. */
+    const ordenDos=T.jug.length===2?T.jug.map(j=>j.pid):[];
+    const dos=ordenDos.length===2;
+    let turnoDos=dos?Math.max(0,ordenDos.indexOf(T.mando)):0;
+    const turnoActual=()=>dos?ordenDos[turnoDos]:T.mando;
     const norm=s=>sinTilde(s).replace(/[^A-Z0-9]/g,"");
     const sing=s=>{const f=new Set([s]);if(s.length>4&&s.endsWith("CES"))f.add(s.slice(0,-3)+"Z");if(s.length>3&&s.endsWith("ES")){f.add(s.slice(0,-2));f.add(s.slice(0,-1));}else if(s.length>2&&s.endsWith("S"))f.add(s.slice(0,-1));return f;};
     const misma=(a,b)=>{const fa=sing(a);for(const x of sing(b))if(fa.has(x))return true;return false;};
@@ -1758,7 +1763,8 @@
         actualizar();}else{SND.turno();nueva();}},4500);}
     function accion(m){
       if(fase==="fin"){if(m.a==="otra")T.otra();return;}
-      if(m.a!=="responder"||fase!=="jugando")return;const v=norm(limpio(m.txt,40));if(!v)return;
+      if(m.a!=="responder"||fase!=="jugando"||(dos&&m.pid!==turnoActual()))return;const v=norm(limpio(m.txt,40));if(!v)return;
+      if(dos)turnoDos=(turnoDos+1)%2;
       const i=preg.respuestas.findIndex(r=>[r.texto,...r.alias].some(a=>{const an=norm(a);return an&&(an===v||misma(an,v));}));
       cambio=Date.now();
       if(i>=0&&!abiertas.has(i)){abiertas.add(i);recien=i;pose="festejando";puntos+=preg.respuestas[i].puntos*MULT[ronda];ultimo={tipo:"ok",i};SND.ok();
@@ -1771,6 +1777,7 @@
     function pintar(raiz,quien){
       if(fase==="fin"){let r={};try{r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");}catch(e){}
         raiz.innerHTML=`<div class="tl-centro tl-fin"><h1>¡${puntos} puntos! 🎉</h1><p class="tl-ayuda">Récord del grupo en esta tele: ${r.cien||puntos} puntos</p><p class="tl-ayuda">${quien?esc(quien)+": desde el celular podés jugar otra vez o volver al menú.":""}</p></div>`;return;}
+      const quienResponde=dos?nombreDe(T,turnoActual()):quien;
       const cat=(typeof CIEN_CATEGORIAS!=="undefined"?CIEN_CATEGORIAS:[]).find(c=>c.id===preg.categoria)||{icono:"💬",nombre:""};
       const panel=preg.respuestas.map((r,i)=>abiertas.has(i)?`<div class="tl-resp tl-abierta${i===recien?" tl-recien":""}"><span class="tl-resp-n">${i+1}</span><b>${esc(r.texto)}</b><em>${r.puntos}</em></div>`:`<div class="tl-resp"><span class="tl-resp-n">${i+1}</span></div>`).join("");
       const flash=ultimo&&Date.now()-cambio<1600?(ultimo.tipo==="mal"?`<div class="tl-equis-grande">✘<small>«${esc(ultimo.txt)}» no está</small></div>`:ultimo.tipo==="repe"?`<div class="tl-flash tl-paso">${esc(ultimo.txt)} ya está</div>`:""):"";
@@ -1779,10 +1786,10 @@
         <div class="tl-cien-centro"><div class="tl-cien-top"><span>${cat.icono} ${esc(cat.nombre)}</span><span>RONDA ${ronda+1}/3 · VALE x${MULT[ronda]}</span><span class="tl-cien-pts">⭐ ${puntos}</span></div>
         <h1 class="tl-pregunta">${esc(preg.pregunta)}</h1><div class="tl-tablero">${panel}</div>
         <div class="tl-equis">${[0,1,2].map(i=>`<span class="${i<errores?"tl-on":""}">✘</span>`).join("")}</div>
-        <p class="tl-ayuda">🎮 ${esc(quien||"…")} escribe lo que dice el grupo</p></div>${flash}</div>`;
+        <p class="tl-ayuda">🎮 ${esc(quienResponde||"…")} responde ahora${dos?" · después juega el otro":""}</p></div>${flash}</div>`;
     }
     nueva();
-    return{accion,pintar,fin(){muerto=true;clearTimeout(timer);try{speechSynthesis.cancel();}catch(e){}try{if(audioGiro)audioGiro.pause();}catch(e){}},cel(){return fase==="fin"?{pantalla:"fin",juego:"cien",resumen:puntos+" puntos"}:{pantalla:"cien",puede:fase==="jugando",pregunta:preg.pregunta};}};
+    return{accion,pintar,fin(){muerto=true;clearTimeout(timer);try{speechSynthesis.cancel();}catch(e){}try{if(audioGiro)audioGiro.pause();}catch(e){}},cel(){return fase==="fin"?{pantalla:"fin",juego:"cien",resumen:puntos+" puntos"}:{pantalla:"cien",puede:fase==="jugando",turno:dos?turnoActual():null,nombreTurno:dos?nombreDe(T,turnoActual()):"",pregunta:preg.pregunta};}};
   }
 
   /* =====================================================================
