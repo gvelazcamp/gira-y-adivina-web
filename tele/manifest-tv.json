@@ -1,0 +1,31 @@
+{
+  "id": "/tele/pantalla.html",
+  "name": "Girá y Adiviná TV",
+  "short_name": "Girá TV",
+  "description": "Usá tu celular como pantalla de TV para Girá y Adiviná.",
+  "start_url": "./pantalla.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#160B24",
+  "theme_color": "#160B24",
+  "orientation": "landscape",
+  "lang": "es-UY",
+  "icons": [
+    {
+      "src": "../icono-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icono-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
