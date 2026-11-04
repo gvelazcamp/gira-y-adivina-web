@@ -1282,6 +1282,7 @@
     const libre=k=>!mask||mask[Math.floor(k/N)][k%N]==="#";
     const COL=["#F5B301","#37D6C0","#E5197C","#9B6BFF","#2ED18A","#FF8A3D","#3DA5FF","#FFFFFF"];
     const jugadores=T.jug.map(j=>({pid:j.pid,n:j.n})),puntos={},color={};
+    const cooperativo=jugadores.length===2;
     jugadores.forEach((j,i)=>{puntos[j.pid]=0;color[j.pid]=COL[i%COL.length];});
     const lim=w=>String(w||"").toUpperCase().replace(/[^A-ZÑ]/g,"");
     const todosTemas=mezclar((typeof SOPA_DATOS!=="undefined"&&SOPA_DATOS.categorias||[]).map(c=>({nombre:c.nombre,
@@ -1392,7 +1393,7 @@
       const extras=[L.experto?"🔥 EXPERTO":"",forma?"🧩 Forma: "+esc(forma.nombre):"",dibujos?"🖼️ Con dibujos":"",L.d===2?"➡️⬇️ Derecho y para abajo":L.d===4?"↘️ También en diagonal":"↔️ 8 direcciones"].filter(Boolean).join(" · ");
       const ranking=[...jugadores].sort((a,b)=>puntos[b.pid]-puntos[a.pid]).map(j=>`<span style="--c:${color[j.pid]}"><i></i>${esc(nombreDe(T,j.pid))} <b>${puntos[j.pid]}</b></span>`).join("");
       raiz.innerHTML=`<div class="tl-sp"><img class="tl-or-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
-        <div class="tl-or-top"><span>🔎 SOPA FUGAZ${giratoria?" 🌀":""}</span><span>${L.experto?"🔥 NIVEL "+ronda+" · EXPERTO":"NIVEL "+ronda+"/"+RONDAS}</span><span class="tl-or-reloj" id="tlSpReloj">${Math.ceil(restante/1000)}</span></div>
+        <div class="tl-or-top"><span>🔎 SOPA FUGAZ${giratoria?" 🌀":""}${cooperativo?" · 🤝 DE A DOS":""}</span><span>${L.experto?"🔥 NIVEL "+ronda+" · EXPERTO":"NIVEL "+ronda+"/"+RONDAS}</span><span class="tl-or-reloj" id="tlSpReloj">${Math.ceil(restante/1000)}</span></div>
         <div class="tl-sp-cuerpo">
           <div class="tl-sp-tablero${gira?" tl-sp-gira":""}${mask?" tl-sp-forma":""}" style="--n:${N}${gira?";animation-delay:-"+giro+"ms":""}">${celdas}</div>
           <aside class="tl-sp-panel"><small>TEMA</small><div class="tl-sp-tema">${esc(tema.nombre)}</div><div class="tl-sp-extra">${extras}</div>
@@ -1406,7 +1407,7 @@
       if(fase==="fin")return{pantalla:"fin",juego:"sopa",resumen:"Mirá el podio en la tele 🏆"};
       if(fase==="config")return{pantalla:"sopa",fase,quien:nombreDe(T,T.mando),guardado:nivelGuardado(),rondas:RONDAS};
       const hc=Object.values(halladas).filter(x=>x.cel).map(x=>({c:x.cel,col:color[x.pid]}));
-      return{pantalla:"sopa",fase,ronda,rondas:RONDAS,experto:!!(NIV[ronda-1]||{}).experto,forma:forma?forma.nombre:"",giratoria,tema:tema?tema.nombre:"",n:N,g:gen,grid:grid.join(""),hc,pal:objetivos.map(w=>[w,halladas[w]?nombreDe(T,halladas[w].pid):"",dibujos&&DIB[w]?DIB[w]:""]),pts:puntos,ult,
+      return{pantalla:"sopa",fase,ronda,rondas:RONDAS,cooperativo,experto:!!(NIV[ronda-1]||{}).experto,forma:forma?forma.nombre:"",giratoria,tema:tema?tema.nombre:"",n:N,g:gen,grid:grid.join(""),hc,pal:objetivos.map(w=>[w,halladas[w]?nombreDe(T,halladas[w].pid):"",dibujos&&DIB[w]?DIB[w]:""]),pts:puntos,ult,
         rest:Math.round(restante),dur:durRonda,muda:giratoria&&fase==="jugando"?Math.round(proxMuda):null,MUDA};
     }
     return{accion,tic,pintar,cel,fin(){muerto=true;clearTimeout(timer);}};
@@ -1682,7 +1683,7 @@
       if(ronda>1)SND.turno();actualizar();
     }
     function revelar(){if(fase!=="jugando")return;fase="revela";actualizar();clearTimeout(timer);
-      timer=setTimeout(()=>{if(muerto)return;if(ronda>=items.length){if(alterno&&partida===0){partida=1;ronda=0;nueva();}else terminar();}else nueva();},4200);}
+      timer=setTimeout(()=>{if(muerto)return;if(ronda>=items.length){if(alterno&&partida===0){partida=1;ronda=0;items=armar().slice(0,CFG.rondas);nueva();}else terminar();}else nueva();},4200);}
     function terminar(){fase="fin";clearTimeout(timer);
       const f=jugadores.map(j=>({n:j.n,av:avDe(T,j.pid),v:puntos[j.pid]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
       podioTele({juego:CFG.nombre,titulo:f.length<2?"¡"+String(f[0]?f[0].n:"").toUpperCase()+" SUMÓ "+(f[0]?f[0].v:0)+"!":emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",
@@ -2115,8 +2116,8 @@
       enlazarX("ps_saltar");
     }
     function pintarMemoria(c,cab,soyMando){
-      const mio=c.turno===yo,puedo=mio&&c.fase==="juego";
-      const tit=c.fase==="bomba"?esc(c.aviso||"💣 ¡BOMBA!"):c.fase==="nivel"?"🔼 ¡Nivel "+c.nivel+"! Mirá la tele":c.fase==="vista"?"👀 ¡Memorizá!":c.fase==="giro"?"🌀 ¡El tablero gira!":mio?"🎮 ¡Te toca! Tocá dos cartas"+(c.seg?" ("+c.seg+" s)":""):"⏳ Le toca a "+esc(c.nombreTurno||"");
+      const mio=c.turno===yo,puedo=(c.cooperativo||mio)&&c.fase==="juego";
+      const tit=c.fase==="bomba"?esc(c.aviso||"💣 ¡BOMBA!"):c.fase==="nivel"?"🔼 ¡Nivel "+c.nivel+"! Mirá la tele":c.fase==="vista"?"👀 ¡Memorizá!":c.fase==="giro"?"🌀 ¡El tablero gira!":c.cooperativo?"🤝 ¡Los dos pueden tocar cartas!":mio?"🎮 ¡Te toca! Tocá dos cartas"+(c.seg?" ("+c.seg+" s)":""):"⏳ Le toca a "+esc(c.nombreTurno||"");
       raiz.innerHTML=cab+`<div class="tl-cel-caja tl-mgc"><h2 class="${mio&&c.fase==="juego"?"tl-mgc-mio":""}">${tit}</h2>
         <div class="tl-mgc-tab" style="grid-template-columns:repeat(${c.cols},1fr)">${(c.cartas||[]).map((x,i)=>x?`<button type="button" class="tl-mgc-c tl-mgc-ab" style="${x.de?"border-color:"+x.de+";background:"+x.de+"33":""}" disabled>${x.s}</button>`:`<button type="button" class="tl-mgc-c${c.sel===i?" tl-mgc-sel":""}" data-i="${i}" ${puedo&&c.sel!==i?"":"disabled"}>${c.sel===i?"💡":"?"}</button>`).join("")}</div>
         <p class="tl-mgc-pares">Nivel <b>${c.nivel||1}/${c.niveles||1}</b> · Tus pares: <b>${(c.pares||{})[yo]||0}</b>${c.bombas?` · 💣 ${c.bombas} bombas`:""}</p>${menuX(soyMando,false)}</div>`;
@@ -2179,7 +2180,7 @@
       if(c.fase==="revela"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏱ ¡Terminó el nivel!</h2><p>Mirá la tele 📺 · ya viene la siguiente.</p><p>Tus puntos: <b>${mios}</b> · vas ${puesto}º</p>${menu}</div>`;enlazar();return;}
       const n=c.n,hechas=(c.pal||[]).filter(x=>x[1]).length;
       raiz.innerHTML=cab+`<div class="sf-game tl-sp-real${c.giratoria?" giratoria":""}">
-        <div class="sf-cabeza"><img src="logo-sopa-fugaz.svg" alt=""><div><small>${c.giratoria?"Sopa giratoria 🌀":"Sopa clásica"} · ${c.experto?"🔥 Experto":"Nivel "+c.ronda+"/"+(c.rondas||10)}${c.forma?" · "+esc(c.forma):""}</small><b>${esc(c.tema)}</b></div><span class="sf-cuenta">${hechas}/${(c.pal||[]).length}</span></div>
+        <div class="sf-cabeza"><img src="logo-sopa-fugaz.svg" alt=""><div><small>${c.cooperativo?"🤝 Cooperativo de a dos · ":""}${c.giratoria?"Sopa giratoria 🌀":"Sopa clásica"} · ${c.experto?"🔥 Experto":"Nivel "+c.ronda+"/"+(c.rondas||10)}${c.forma?" · "+esc(c.forma):""}</small><b>${esc(c.tema)}</b></div><span class="sf-cuenta">${hechas}/${(c.pal||[]).length}</span></div>
         <div class="sf-hud"><div><small>Nivel</small><b>${c.ronda}</b></div><div><small>Puntos</small><b>${mios}</b></div><div><small>Puesto</small><b>${puesto}º</b></div><div><small>Tiempo</small><b id="tlSpCelT">–</b></div></div>
         <div class="sf-bar"><i id="tlSpCelBar"></i></div>
         <div class="sf-grid-caja"><div class="sf-tablero"><div class="sf-grid" id="tlSpGrid" style="--sf-n:${n}">${[...c.grid].map((l,i)=>l==="."?`<div class="sf-celda tl-sf-vacia"></div>`:`<div class="sf-celda${spSel===i?" sel":""}" data-k="${i}">${esc(l)}</div>`).join("")}
@@ -2206,11 +2207,12 @@
       enlazar();
     }
     function pintarOrdenar(c,cab,soyMando){
-      const k=c.juego+"-"+c.ronda;if(k!==orClave){orClave=k;orSel=[];orMalVisto=(c.mal||{})[yo]||0;orAviso="";}
+      const k=c.juego+"-"+c.ronda+(c.alterno?"-p"+c.partida:"");if(k!==orClave){orClave=k;orSel=[];orMalVisto=(c.mal||{})[yo]||0;orAviso="";}
       const malAhora=(c.mal||{})[yo]||0;if(malAhora>orMalVisto){orMalVisto=malAhora;orSel=[];orAviso="❌ No era así, probá de nuevo";}
       const menu=soyMando?`<button type="button" class="tl-boton tl-chico" id="tlOrSaltar">⏭ Saltar esta</button><button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>`:"";
       const enlazar=()=>{raiz.querySelector("#tlOrSaltar")?.addEventListener("click",()=>accion("or_saltar"));const b=raiz.querySelector("#tlMenu");if(b)b.onclick=()=>{if(confirm("¿Volver al menú?"))accion("menu");};};
       if(c.fase==="revela"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>${(c.resueltos||[]).includes(yo)?"✅ ¡Bien!":"⏱ ¡Tiempo!"}</h2><p>Era:</p><p class="tl-or-cel-resp">${esc(c.respuesta)}</p>${menu}</div>`;enlazar();return;}
+      if(c.alterno&&c.turno!==yo){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏳ Esperá tu partida</h2><p>Ahora juega <b>${esc(c.nombreTurno||"el otro jugador")}</b> · partida ${c.partida}/2.</p><p>Cuando termine sus 8 palabras, te toca jugar las tuyas.</p>${menu}</div>`;enlazar();return;}
       if((c.resueltos||[]).includes(yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>✅ ¡Lo armaste!</h2><p>Mirá la tele 📺 mientras los demás terminan.</p>${menu}</div>`;enlazar();return;}
       const armado=orSel.map(i=>c.fichas[i]).join(c.unir);
       raiz.innerHTML=cab+`<div class="tl-cel-caja tl-or-cel${c.juego==="silabario"?" tl-or-cel-sil":""}"><p class="tl-or-cel-pista">${esc(c.pista)}</p>
@@ -2389,6 +2391,8 @@
         raiz.innerHTML=cab+(termine?`<div class="tl-cel-caja tl-rd-termine">${marcadorCel(c)}${botonApelar(c)}<h2>🏁 ¡Rosco terminado!</h2><p>Tu rosco ya terminó. Esperá a que <b>${esc(c.nombreActivo||"")}</b> termine el suyo para ver quién gana.</p><button type="button" class="tl-boton tl-chico" id="tlPausa">⏸️ Pausa</button>${soyMando?menu:""}</div>`
           :`<div class="tl-cel-caja">${marcadorCel(c)}${botonApelar(c)}<h2>🔤 Le toca a ${esc(c.nombreActivo||"")}</h2><p>Mirá la tele 📺 · cuando erre o pase, te toca a vos.</p><button type="button" class="tl-boton tl-chico" id="tlPausa">⏸️ Pausa</button>${soyMando?menu:""}</div>`);enlazarApelar(c);raiz.querySelector("#tlPausa").onclick=()=>accion("rs_pausa");
         raiz.querySelector("#tlMenu")?.addEventListener("click",()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");});return;}
+      if(c.pantalla==="cien"&&c.turno&&c.turno!==yo){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏳ Esperá tu respuesta</h2><p>Ahora responde <b>${esc(c.nombreTurno||"el otro jugador")}</b>.</p><p>Después de su respuesta te toca a vos.</p>${menu}</div>`;
+        raiz.querySelector("#tlMenu")?.addEventListener("click",()=>accion("menu"));return;}
       if(c.pantalla==="rosco"||c.pantalla==="cien"){
         const rosco=c.pantalla==="rosco";
         raiz.innerHTML=cab+`<div class="tl-cel-caja">${rosco?`${marcadorCel(c)}${botonApelar(c)}<div class="tl-cel-letra">${esc(c.letra)}</div><p>${esc(c.regla||"")}</p>
