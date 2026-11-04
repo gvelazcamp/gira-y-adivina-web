@@ -39,6 +39,17 @@ const server=http.createServer((req,res)=>{
 
       await page.route("**/*",route=>route.request().url().startsWith(base)?route.continue():route.fulfill({status:200,body:""}));
       await page.addInitScript(n=>{
+        window.__musicasCaigo=[];
+        const AudioNativo=window.Audio;
+        window.Audio=function(src){
+          if(String(src).includes("ahora-caigo-musica-v1.mp3")){
+            const pista={src,paused:true,loop:false,volume:1,currentTime:0,playCount:0,pauseCount:0,
+              play(){this.paused=false;this.playCount++;return Promise.resolve();},
+              pause(){this.paused=true;this.pauseCount++;}};
+            window.__musicasCaigo.push(pista);return pista;
+          }
+          return new AudioNativo(src);
+        };
         window.__speechInstances=[];
         window.SpeechRecognition=class{
           constructor(){window.__speechInstances.push(this);}
@@ -52,6 +63,7 @@ const server=http.createServer((req,res)=>{
       },name);
       await page.goto(base,{waitUntil:"load"});
       await page.waitForFunction(()=>window.Extensiones&&window.AhoraCaigo);
+      await page.clock.install();
       await page.evaluate(()=>{
         document.querySelector("#splash")?.remove();document.documentElement.classList.remove("cargando");
         Extensiones.abrirLobby();
@@ -66,7 +78,7 @@ const server=http.createServer((req,res)=>{
       }
       if(name==="Vale"){
         assert.equal(await page.locator(".ac-principal .ac-nombre").textContent(),"Vale");
-        await page.clock.install();await page.evaluate(()=>{Math.random=()=>0;});
+        await page.evaluate(()=>{Math.random=()=>0;});
         await iniciarDuelo();await page.clock.runFor(12000);
         assert.equal(await page.locator(".ac-identidad.ac-activo .ac-tu-nombre").textContent(),"Vale");
         assert.match(await page.locator(".ac-pasar").textContent(),/Pasar pregunta/);
@@ -77,6 +89,8 @@ const server=http.createServer((req,res)=>{
         assert.deepEqual(errors,[],"no browser errors for Vale");
         await context.close();continue;
       }
+      assert(await page.evaluate(()=>window.__musicasCaigo.length===1&&!window.__musicasCaigo[0].paused),"music plays on the entry screen");
+      assert(await page.evaluate(()=>window.__musicasCaigo[0].loop&&window.__musicasCaigo[0].volume<=.3));
       assert.equal(await page.locator(".ac-participante").count(),11);
       assert.equal(await page.locator(".ac-principal .ac-nombre").textContent(),"Gonzalo");
       assert((await page.locator(".ac-principal .ac-avatar").getAttribute("src")).endsWith("avatar-02.webp"));
@@ -98,10 +112,22 @@ const server=http.createServer((req,res)=>{
         assert(layout.fits&&layout.inside,"all eleven figures fit: "+JSON.stringify(viewport));
       }
       await page.setViewportSize({width:1280,height:900});
-      await page.clock.install();
+
+      await page.evaluate(()=>{musicaOn=false;});await page.clock.runFor(250);
+      assert(await page.evaluate(()=>window.__musicasCaigo[0].paused),"global mute pauses the track");
+      await page.evaluate(()=>{musicaOn=true;});await page.clock.runFor(250);
+      assert(await page.evaluate(()=>!window.__musicasCaigo[0].paused),"unmuting resumes entry music");
+      await page.evaluate(()=>{
+        Object.defineProperty(document,"visibilityState",{configurable:true,get:()=>"hidden"});
+        document.dispatchEvent(new Event("visibilitychange"));
+      });
+      assert(await page.evaluate(()=>window.__musicasCaigo[0].paused),"hidden app pauses music");
+      await page.evaluate(()=>{delete document.visibilityState;document.dispatchEvent(new Event("visibilitychange"));});
+      assert(await page.evaluate(()=>!window.__musicasCaigo[0].paused),"visible entry screen resumes music");
       await page.evaluate(()=>{window.__randomOriginal=Math.random;Math.random=()=>.99;});
       await iniciarDuelo();
       assert(await page.locator(".ac-sortear").isDisabled());
+      assert(await page.evaluate(()=>!window.__musicasCaigo[0].paused),"music accompanies the draw");
       await page.evaluate(()=>{Math.random=()=>0;});
       await page.clock.runFor(12000);
       await page.evaluate(()=>{Math.random=()=>.99;});
@@ -109,6 +135,7 @@ const server=http.createServer((req,res)=>{
       assert.equal(await page.locator(".ac-iluminado").count(),1);
       assert(await page.locator(".ac-duelo").isVisible());
       assert.equal(await page.locator(".ac-turno-texto").textContent(),"TE TOCA");
+      assert(await page.evaluate(()=>window.__musicasCaigo[0].paused),"player questions are silent");
       assert.equal(await page.locator(".ac-identidad.ac-activo").count(),1);
       assert.equal(await page.locator(".ac-identidad.ac-activo .ac-tu-nombre").textContent(),"Gonzalo");
       assert.equal(await page.locator(".ac-identidad.ac-activo").getAttribute("aria-current"),"true");
@@ -160,14 +187,17 @@ const server=http.createServer((req,res)=>{
       await page.locator(".ac-responder button").click();
       assert.match(await page.locator(".ac-mensaje").textContent(),/Correcto/);
       assert.equal(await page.locator(".ac-turno-texto").textContent(),"¡CORRECTO!");
+      assert(await page.evaluate(()=>window.__musicasCaigo[0].paused),"answer transition stays silent");
       await page.clock.runFor(1501);
       assert.equal(await page.locator(".ac-turno-texto").textContent(),"RESPONDE EL RIVAL");
+      assert(await page.evaluate(()=>window.__musicasCaigo[0].paused),"rival questions are silent too");
       assert.equal(await page.locator(".ac-identidad.ac-activo .ac-rival-nombre").textContent(),"Participante 10");
       assert.notEqual(await page.locator(".ac-pregunta").textContent(),pista,"different question for the rival");
       assert(await page.locator(".ac-responder").isHidden());
       await page.clock.runFor(30000);
       assert.match(await page.locator(".ac-estado").textContent(),/Ganaste el duelo/);
       await comprobarPopup(/Ganaste el duelo/);
+      assert(await page.evaluate(()=>!window.__musicasCaigo[0].paused),"result popup resumes music");
       if(process.env.SCREENSHOT_RESULT_PATH)await page.locator(".ac-final").screenshot({path:process.env.SCREENSHOT_RESULT_PATH,animations:"disabled"});
       assert.equal(await page.locator(".ac-caido").count(),1);
       await page.evaluate(()=>{Math.random=()=>.99;});
@@ -289,11 +319,12 @@ const server=http.createServer((req,res)=>{
       await page.locator(".ac-final-salir").click();
       assert.equal(await page.locator("dialog:modal").count(),0,"leaving closes the result popup");
       assert.equal(await page.locator(".ac-preguntando").count(),0,"leaving restores the normal shell");
+      assert(await page.evaluate(()=>window.__musicasCaigo[0].paused&&window.__musicasCaigo[0].currentTime===0),"exit stops and resets the music");
       await page.evaluate(()=>{Math.random=window.__randomOriginal;Extensiones.cerrar();});
       assert.equal(await page.locator(".ac-abierta").count(),0);
       assert.deepEqual(errors,[],"no browser errors");
       await context.close();
     }
-    console.log("PASS: access for Gonzalo/Vale and blocked for other profiles, existing assets, 11 figures at 3 sizes, single-screen layout and keyboard, profile avatars, speech results/errors/cleanup, hints, unlimited retries, rival-first turns, 3 passes per game, same question/20-second transfer, active turn indicators and result popups");
+    console.log("PASS: access for Gonzalo/Vale and blocked for other profiles, existing assets, 11 figures at 3 sizes, single-screen layout and keyboard, profile avatars, speech results/errors/cleanup, hints, unlimited retries, rival-first turns, 3 passes per game, same question/20-second transfer, active turn indicators, result popups and music only outside questions");
   }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});

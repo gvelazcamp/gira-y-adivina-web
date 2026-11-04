@@ -8,11 +8,36 @@ window.AhoraCaigo=(()=>{
   const POSICIONES=[[9,88,15],[16,75,14],[24,63,13],[32,54,12],[40,47,11],
     [60,47,11],[68,54,12],[76,63,13],[84,75,14],[91,88,15]];
   let raiz=null,timer=null,reloj=null,voz=null,quitarAjuste=null;
+  let musica=null,controlMusica=null,musicaDeseada=false,iniciandoMusica=false,musicaBloqueada=false,generacionMusica=0;
+  function sonidoHabilitado(){return document.visibilityState!=="hidden"&&(typeof sonidoPermitido!=="function"||sonidoPermitido());}
+  function sincronizarMusicaCaigo(){
+    if(!raiz||!musicaDeseada||!sonidoHabilitado()){
+      try{if(musica&&(!musica.paused||iniciandoMusica))musica.pause();}catch(e){}return;
+    }
+    if(musicaBloqueada||iniciandoMusica)return;
+    try{
+      if(!musica){musica=new Audio("assets/audio/ahora-caigo-musica-v1.mp3");musica.loop=true;musica.volume=.24;}
+      if(!musica.paused)return;
+      iniciandoMusica=true;const generacion=generacionMusica;
+      Promise.resolve(musica.play()).then(()=>{
+        if(generacion===generacionMusica)iniciandoMusica=false;
+        if(!raiz||!musicaDeseada||!sonidoHabilitado())musica.pause();
+      }).catch(e=>{if(generacion!==generacionMusica)return;iniciandoMusica=false;if(e?.name!=="AbortError")musicaBloqueada=true;});
+    }catch(e){iniciandoMusica=false;musicaBloqueada=true;}
+  }
+  function ambiente(encendido){
+    generacionMusica++;iniciandoMusica=false;musicaDeseada=encendido;
+    if(encendido)musicaBloqueada=false;else try{musica?.pause();}catch(e){}
+    sincronizarMusicaCaigo();
+  }
   function detenerVoz(){const r=voz;voz=null;if(r){r.onresult=r.onerror=r.onend=null;try{r.abort();}catch(e){}}}
   const pendientes=new Set();
   const normalizar=s=>String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]/g,"");
   function despues(fn,ms){const t=setTimeout(()=>{pendientes.delete(t);fn();},ms);pendientes.add(t);return t;}
   function salir(){
+    generacionMusica++;iniciandoMusica=false;musicaDeseada=false;clearInterval(controlMusica);controlMusica=null;
+    document.removeEventListener("visibilitychange",sincronizarMusicaCaigo);
+    try{if(musica){musica.pause();musica.currentTime=0;}}catch(e){}
     raiz?.querySelector(".ac-final")?.close();
     detenerVoz();quitarAjuste?.();quitarAjuste=null;
     clearTimeout(timer);timer=null;clearInterval(reloj);reloj=null;
@@ -119,7 +144,7 @@ window.AhoraCaigo=(()=>{
       final.querySelector(".ac-final-pases").textContent=pases+(pases===1?" pase disponible":" pases disponibles");
       final.querySelector(".ac-final-escena").appendChild(escenario);
       final.querySelector(".ac-final-primaria").textContent=fase==="listo"?"Sortear próximo rival":"Volver a jugar";
-      ajustarPantalla();if(!final.open)final.showModal();
+      ajustarPantalla();if(!final.open)final.showModal();ambiente(true);
     }
     final.querySelector(".ac-final-primaria").onclick=()=>{
       if(!activo())return;
@@ -195,6 +220,7 @@ window.AhoraCaigo=(()=>{
     }
     function siguiente({conservar=false,segundos=30}={}){
       if(!activo())return;
+      ambiente(false);
       pararReloj();pararEscucha();if(!conservar)pregunta=sacarPregunta();
       if(!pregunta){
         fase="fin";vistaPregunta(false);pasar.hidden=true;microfono.hidden=true;form.hidden=true;buscar(".ac-bot").hidden=true;
@@ -286,7 +312,7 @@ window.AhoraCaigo=(()=>{
     boton.onclick=()=>{
       if(fase==="fin"){abrir(contenedor);return;}
       if(fase!=="listo")return;
-      fase="sorteo";panel.hidden=true;vistaPregunta(false);
+      fase="sorteo";panel.hidden=true;vistaPregunta(false);ambiente(true);
       const opciones=[...vivos],destino=opciones[Math.floor(Math.random()*opciones.length)];
       const pasos=opciones.length*3+opciones.indexOf(destino);let paso=0;
       boton.disabled=true;estado.textContent="Buscando rival…";
@@ -304,6 +330,9 @@ window.AhoraCaigo=(()=>{
         paso++;timer=setTimeout(avanzar,45+Math.pow(paso/pasos,4)*210);
       };avanzar();
     };
+    ambiente(true);
+    controlMusica=setInterval(sincronizarMusicaCaigo,250);
+    document.addEventListener("visibilitychange",sincronizarMusicaCaigo);
   }
   return{abrir,salir};
 })();
