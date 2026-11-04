@@ -1,4 +1,4 @@
-/* Piloto de duelo contra bots, visible para los perfiles de prueba Gonzalo y Vale.
+/* No te caigas: duelo contra bots, visible para los perfiles de prueba Gonzalo y Vale.
    Reutiliza las poses de atril y el atril oficial; no modifica el progreso. */
 window.AhoraCaigo=(()=>{
   "use strict";
@@ -66,7 +66,7 @@ window.AhoraCaigo=(()=>{
     let usuario="";try{usuario=(perfil?.nombre||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}catch(e){}
     if(!["gonzalo","vale"].includes(usuario))return;
     raiz=document.createElement("section");raiz.className="ac-juego";
-    raiz.innerHTML=`<header class="ac-cabecera"><span>PRUEBA · CONTRA BOTS</span><h2>Ahora Caigo</h2><p>Una pregunta para vos. Otra para tu rival.</p></header>
+    raiz.innerHTML=`<header class="ac-cabecera"><span>PRUEBA · CONTRA BOTS</span><h2><img class="ac-logo" src="assets/no-te-caigas/logo-v1.webp" alt="No te caigas"></h2><p>Una pregunta para vos. Otra para tu rival.</p></header>
       <div class="ac-escenario" role="group" aria-label="Escenario con once participantes"><div class="ac-ronda" aria-hidden="true"></div></div>
       <section class="ac-duelo" aria-label="Duelo de preguntas" hidden>
         <div class="ac-marcador"><div class="ac-identidad"><img class="ac-tu-avatar" alt=""><span><small>VOS · <span class="ac-vidas">3 pases</span></small><strong class="ac-tu-nombre"></strong></span></div><span>VS</span><div class="ac-identidad"><img class="ac-rival-avatar" alt=""><span><small>RIVAL · BOT</small><strong class="ac-rival-nombre"></strong></span></div></div>

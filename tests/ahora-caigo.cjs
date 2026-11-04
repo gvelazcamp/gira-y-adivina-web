@@ -68,9 +68,14 @@ const server=http.createServer((req,res)=>{
         document.querySelector("#splash")?.remove();document.documentElement.classList.remove("cargando");
         Extensiones.abrirLobby();
       });
-      assert.equal(await page.getByRole("button",{name:/Ahora Caigo/}).count(),["Gonzalo","Vale"].includes(name)?1:0,"catalog visibility");
-      await page.evaluate(()=>Extensiones.abrirJuego("ahora-caigo"));
+      assert.equal(await page.getByRole("button",{name:/No te caigas/}).count(),["Gonzalo","Vale"].includes(name)?1:0,"catalog visibility");
+      await page.evaluate(()=>Extensiones.abrirJuego("no-te-caigas"));
       assert.equal(await page.locator(".ac-juego").count(),["Gonzalo","Vale"].includes(name)?1:0,"direct entry gate");
+      if(name!=="Romina"){
+        assert.equal(await page.locator("#extTitulo").textContent(),"No te caigas");
+        assert.equal(await page.locator(".ac-logo").getAttribute("alt"),"No te caigas");
+        await page.waitForFunction(()=>document.querySelector(".ac-logo")?.naturalWidth>0);
+      }
       if(name==="Romina"){
         await page.evaluate(()=>AhoraCaigo.abrir(document.getElementById("extContenido")));
         assert.equal(await page.locator(".ac-juego").count(),0,"module entry gate");

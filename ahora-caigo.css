@@ -226,3 +226,6 @@
 .ac-pasar:disabled small{color:inherit}
 .ac-pasar:not(:disabled):active{transform:translateY(2px);box-shadow:0 1px 0 #97601a}
 .ac-muy-bajo .ac-pasar small{font-size:.46rem}
+/* Identidad de la extensión No te caigas. Se oculta con la entrada al empezar el duelo. */
+.ac-logo{display:block;width:min(300px,65vw);max-height:205px;object-fit:contain;margin:0 auto 5px;filter:drop-shadow(0 4px 12px #0005)}
+@media(orientation:landscape) and (max-height:540px){.ac-logo{max-height:120px;width:190px}}
