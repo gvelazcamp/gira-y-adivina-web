@@ -63,7 +63,8 @@ const server=http.createServer((req,res)=>{
       },name);
       await page.goto(base,{waitUntil:"load"});
       await page.waitForFunction(()=>window.Extensiones&&window.AhoraCaigo);
-      await page.clock.install();
+      await page.clock.install({time:new Date("2026-11-04T12:00:00Z")});
+      await page.clock.pauseAt(new Date("2026-11-04T12:00:01Z"));
       await page.evaluate(()=>{
         document.querySelector("#splash")?.remove();document.documentElement.classList.remove("cargando");
         Extensiones.abrirLobby();
@@ -298,7 +299,8 @@ const server=http.createServer((req,res)=>{
       for(const respuesta of ["SOLIDIFICACIÓN","DISYUNTOR"]){
         await page.evaluate(palabra=>{
           window.__bancoOriginal=window.__bancoOriginal||AHORA_CAIGO_DATOS;
-          const item=window.__bancoOriginal.find(q=>q.respuesta===palabra);
+          const item={id:"ac-geometria-"+palabra,categoria:"Prueba de geometría",
+            pregunta:"¿Cómo se muestra una pregunta larga junto a una respuesta larga en una pantalla pequeña?",respuesta:palabra,alternativas:[]};
           window.AHORA_CAIGO_DATOS=[item,{...item,id:item.id+"-geometria"}];
           Math.random=()=>0;Extensiones.abrirJuego("ahora-caigo");
         },respuesta);
