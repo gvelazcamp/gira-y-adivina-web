@@ -1649,6 +1649,9 @@
     let ronda=0,item=null,fichas=[],restante=0,fase="jugando",timer=null,muerto=false;
     let resueltos={},lugar=0,fallos={},puntos={},items=[],armado={};
     const jugadores=T.jug.map(j=>({pid:j.pid,n:j.n}));jugadores.forEach(j=>puntos[j.pid]=0);
+    /* En Silabario, si entran exactamente dos, uno completa sus 8 palabras y después el otro juega sus 8. */
+    const alterno=SIL&&jugadores.length===2;let partida=0;
+    const activo=()=>alterno?jugadores[partida].pid:null;
     function base(){
       if(SIL){const d=typeof SILABARIO_DATOS!=="undefined"?SILABARIO_DATOS:[];
         return d.map(x=>Array.isArray(x)?{pista:x[0],piezas:x[1],nivel:x[3]||1}:{pista:x.pista,piezas:x.silabas||[],nivel:x.nivel||1}).filter(x=>x.piezas.length);}
@@ -1676,7 +1679,7 @@
       if(ronda>1)SND.turno();actualizar();
     }
     function revelar(){if(fase!=="jugando")return;fase="revela";actualizar();clearTimeout(timer);
-      timer=setTimeout(()=>{if(muerto)return;if(ronda>=items.length)terminar();else nueva();},4200);}
+      timer=setTimeout(()=>{if(muerto)return;if(ronda>=items.length){if(alterno&&partida===0){partida=1;ronda=0;nueva();}else terminar();}else nueva();},4200);}
     function terminar(){fase="fin";clearTimeout(timer);
       const f=jugadores.map(j=>({n:j.n,av:avDe(T,j.pid),v:puntos[j.pid]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
       podioTele({juego:CFG.nombre,titulo:f.length<2?"¡"+String(f[0]?f[0].n:"").toUpperCase()+" SUMÓ "+(f[0]?f[0].v:0)+"!":emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",
@@ -1686,15 +1689,15 @@
       if(m.a==="otra"&&fase==="fin"&&m.pid===T.mando){T.otra();return;}
       if(m.a==="or_saltar"&&fase==="jugando"&&m.pid===T.mando){revelar();return;}
       /* Lo que cada uno va tocando en el celular aparece en la tele al instante (31/10/2026). */
-      if(m.a==="or_arma"){if(fase!=="jugando"||Number(m.r)!==ronda||resueltos[m.pid]||!(m.pid in puntos))return;
+      if(m.a==="or_arma"){if(fase!=="jugando"||Number(m.r)!==ronda||resueltos[m.pid]||!(m.pid in puntos)||(alterno&&m.pid!==activo()))return;
         const o=(Array.isArray(m.orden)?m.orden.map(Number):[]).slice(0,item.piezas.length);
         if(new Set(o).size!==o.length||o.some(i=>!(i>=0&&i<fichas.length)))return;armado[m.pid]=o;actualizar();return;}
-      if(m.a!=="or_resp"||fase!=="jugando"||Number(m.r)!==ronda||resueltos[m.pid]||!(m.pid in puntos))return;
+      if(m.a!=="or_resp"||fase!=="jugando"||Number(m.r)!==ronda||resueltos[m.pid]||!(m.pid in puntos)||(alterno&&m.pid!==activo()))return;
       const o=Array.isArray(m.orden)?m.orden.map(Number):[];
       if(o.length!==item.piezas.length||new Set(o).size!==o.length||o.some(i=>!(i>=0&&i<fichas.length)))return;
       const bien=o.every((i,k)=>sinTilde(fichas[i])===sinTilde(item.piezas[k]));
       if(bien){resueltos[m.pid]=++lugar;puntos[m.pid]+=PTS[Math.min(lugar-1,PTS.length-1)];SND.ok();
-        if(jugadores.every(j=>resueltos[j.pid])){actualizar();setTimeout(revelar,900);return;}}
+        if(alterno?!!resueltos[activo()]:jugadores.every(j=>resueltos[j.pid])){actualizar();setTimeout(revelar,900);return;}}
       else{fallos[m.pid]=(fallos[m.pid]||0)+1;armado[m.pid]=[];SND.mal();}
       actualizar();
     }
@@ -1706,21 +1709,21 @@
       if(!item){raiz.innerHTML=`<div class="tl-centro"><h1>Preparando…</h1></div>`;return;}
       const rev=fase!=="jugando";
       /* Uno solo: lo que toca se arma en los casilleros grandes. Varios: cada uno ve su armado debajo de su nombre. */
-      const solo=jugadores.length===1,mio=solo?(armado[jugadores[0].pid]||[]):[],usadas=new Set(mio);
+      const solo=jugadores.length===1||alterno,mio=solo?(armado[alterno?activo():jugadores[0].pid]||[]):[],usadas=new Set(mio);
       const jug=jugadores.map(j=>{const a=armado[j.pid]||[];
-        return`<span class="${resueltos[j.pid]?"tl-or-ok":""}">${resueltos[j.pid]?resueltos[j.pid]+"º ✓ ":""}${esc(j.n)} · <b>${puntos[j.pid]}</b>${!solo&&!rev&&!resueltos[j.pid]&&a.length?`<em class="tl-or-mini">${a.map(i=>esc(fichas[i])).join(SIL?"·":" ")}</em>`:""}</span>`;}).join("");
+        return`<span class="${resueltos[j.pid]?"tl-or-ok":""}">${alterno&&j.pid===activo()?"🎮 ":""}${resueltos[j.pid]?resueltos[j.pid]+"º ✓ ":""}${esc(j.n)} · <b>${puntos[j.pid]}</b>${!solo&&!rev&&!resueltos[j.pid]&&a.length?`<em class="tl-or-mini">${a.map(i=>esc(fichas[i])).join(SIL?"·":" ")}</em>`:""}</span>`;}).join("");
       raiz.innerHTML=`<div class="tl-or${SIL?" tl-or-sil":" tl-or-fra"}"><img class="tl-or-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
-        <div class="tl-or-top"><span>${CFG.icono} ${CFG.nombre}</span><span>RONDA ${ronda}/${items.length}</span><span class="tl-or-reloj" id="tlOrReloj">${Math.ceil(restante/1000)}</span></div>
+        <div class="tl-or-top"><span>${CFG.icono} ${CFG.nombre}</span><span>${alterno?"PARTIDA "+(partida+1)+"/2 · ":""}RONDA ${ronda}/${items.length}</span><span class="tl-or-reloj" id="tlOrReloj">${Math.ceil(restante/1000)}</span></div>
         <div class="tl-or-card"><small>${CFG.etiqueta}</small><p class="tl-or-pista">${esc(item.pista)}</p>
           <div class="tl-or-slots">${item.piezas.map((x,k)=>rev?`<span class="tl-or-vista">${esc(x)}</span>`:mio[k]!=null?`<span class="tl-or-puesta">${esc(fichas[mio[k]])}</span>`:`<span></span>`).join("")}</div>
           ${rev?"":`<div class="tl-or-fichas">${fichas.map((x,i)=>`<span class="${usadas.has(i)?"tl-or-usada":""}">${esc(x)}</span>`).join("")}</div>`}</div>
         <div class="tl-or-jug">${jug}</div>
-        <p class="tl-or-ayuda">${rev?"⏳ Ya viene la siguiente…":"📱 Armalo tocando las piezas en tu celular · ¡ojo que hay de más!"}</p></div>`;
+        <p class="tl-or-ayuda">${rev?"⏳ Ya viene la siguiente…":alterno?"🎮 Juega "+esc(nombreDe(T,activo()))+" · el otro espera su partida":"📱 Armalo tocando las piezas en tu celular · ¡ojo que hay de más!"}</p></div>`;
     }
     function cel(){
       if(fase==="fin")return{pantalla:"fin",juego:id,resumen:"Mirá el podio en la tele 🏆"};
       return{pantalla:"ordenar",juego:id,fase,ronda,pista:item?item.pista:"",fichas,n:item?item.piezas.length:0,unir:CFG.unir,
-        resueltos:Object.keys(resueltos),mal:fallos,respuesta:fase==="revela"&&item?item.piezas.join(CFG.unir):""};
+        resueltos:Object.keys(resueltos),mal:fallos,alterno,turno:activo(),nombreTurno:alterno?nombreDe(T,activo()):"",partida:partida+1,pts:puntos,respuesta:fase==="revela"&&item?item.piezas.join(CFG.unir):""};
     }
     items=armar().slice(0,CFG.rondas);setTimeout(()=>{if(!muerto)nueva();},50);
     return{accion,tic,pintar,cel,fin(){muerto=true;clearTimeout(timer);}};
