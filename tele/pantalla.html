@@ -4,15 +4,42 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#160b24">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Girá y Adiviná TV">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="../icono-192.png">
+<link rel="manifest" href="manifest-tv.json">
 <title>Celular como TV · Girá y Adiviná</title>
 <style>
 *{box-sizing:border-box}
 html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#160B24}
 #tvVirtual{position:absolute;left:0;top:0;width:1280px;height:720px;min-width:1280px;min-height:720px;border:0;display:block;transform-origin:0 0;background:#160B24}
+#pantallaBtn{position:fixed;z-index:100;right:max(6px,env(safe-area-inset-right));top:max(6px,env(safe-area-inset-top));width:43px;height:43px;border:1px solid #F5B30188;border-radius:12px;background:#160B24DD;color:#F5B301;display:grid;place-items:center;font-size:25px;line-height:1;cursor:pointer;box-shadow:0 2px 8px #0008}
+#pantallaBtn:focus-visible,#cerrarAyuda:focus-visible{outline:3px solid #37D6C0;outline-offset:2px}
+html.modo-pantalla #pantallaBtn,html.instalada #pantallaBtn{display:none}
+#rotar{display:none;position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:99;width:max-content;max-width:90%;border:1px solid #F5B30188;border-radius:14px;background:#160B24E8;color:#F6EFE2;font:700 15px/1.35 system-ui,sans-serif;padding:12px 16px;text-align:center;pointer-events:none}
+@media(orientation:portrait){#rotar{display:block}}
+#ayuda{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;background:#0A0412CC}
+#ayuda[hidden]{display:none}
+#ayudaCaja{position:relative;width:min(420px,100%);max-height:90%;overflow:auto;border:1px solid #F5B30199;border-radius:20px;background:#241331;color:#F6EFE2;padding:28px 24px 22px;font:16px/1.5 system-ui,sans-serif;box-shadow:0 14px 36px #0009}
+#ayudaCaja h2{font-size:21px;color:#F5B301;margin:0 30px 12px 0}
+#ayudaCaja p{margin:0 0 10px}
+#ayudaCaja ol{margin:8px 0;padding-left:24px}
+#ayudaCaja li{margin:6px 0}
+#cerrarAyuda{position:absolute;right:10px;top:10px;width:36px;height:36px;border:0;border-radius:9px;background:#3A2650;color:#fff;font-size:22px;cursor:pointer}
 </style>
 </head>
 <body>
 <iframe id="tvVirtual" width="1280" height="720" scrolling="no" title="Girá y Adiviná · Pantalla de TV" allow="autoplay; microphone; fullscreen; screen-wake-lock"></iframe>
+<button type="button" id="pantallaBtn" aria-label="Abrir pantalla completa" title="Pantalla completa">📺</button>
+<div id="rotar" role="status">Girá el celular horizontalmente para ver la TV.</div>
+<div id="ayuda" hidden role="dialog" aria-modal="true" aria-labelledby="ayudaTitulo">
+  <div id="ayudaCaja">
+    <button type="button" id="cerrarAyuda" aria-label="Cerrar">×</button>
+    <h2 id="ayudaTitulo">Pantalla completa</h2>
+    <div id="ayudaTexto"></div>
+  </div>
+</div>
 <script>
 /* Solo se abre cuando un celular hace de TV. Se conserva la presentación
    16:9 de la tele real, sin tocar el diseño de juegos ni los controles. */
@@ -40,6 +67,43 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#160B24}
     window.visualViewport.addEventListener('resize',ajustar);
     window.visualViewport.addEventListener('scroll',ajustar);
   }
+  const ayuda=document.getElementById('ayuda');
+  const texto=document.getElementById('ayudaTexto');
+  const boton=document.getElementById('pantallaBtn');
+  const ios=/iPhone|iPod/i.test(navigator.userAgent);
+  const instalada=window.navigator.standalone===true||
+    matchMedia('(display-mode: standalone)').matches||
+    matchMedia('(display-mode: fullscreen)').matches;
+  if(instalada)document.documentElement.classList.add('instalada');
+  function mostrarAyuda(){
+    texto.innerHTML=ios
+      ?'<p>En iPhone, Safari no permite ocultar la barra ni forzar el giro desde un botón web.</p><ol><li>En Safari tocá <b>Compartir</b>.</li><li>Elegí <b>Agregar a pantalla de inicio</b>.</li><li>Abrí el ícono <b>Girá y Adiviná TV</b> desde tu inicio.</li><li>Giralo horizontalmente para jugar sin la barra de direcciones.</li></ol>'
+      :'<p>El navegador no pudo abrir pantalla completa.</p><p>Probá desde Chrome en Android, o agregá <b>Girá y Adiviná TV</b> a la pantalla de inicio para abrirla sin la barra de direcciones.</p>';
+    ayuda.hidden=false;
+    document.getElementById('cerrarAyuda').focus();
+  }
+  function cerrarAyuda(){ayuda.hidden=true;boton.focus();}
+  document.getElementById('cerrarAyuda').addEventListener('click',cerrarAyuda);
+  ayuda.addEventListener('click',e=>{if(e.target===ayuda)cerrarAyuda();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!ayuda.hidden)cerrarAyuda();});
+  function actualizarPantalla(){
+    const completa=!!(document.fullscreenElement||document.webkitFullscreenElement);
+    document.documentElement.classList.toggle('modo-pantalla',completa);
+    ajustar();
+  }
+  document.addEventListener('fullscreenchange',actualizarPantalla);
+  document.addEventListener('webkitfullscreenchange',actualizarPantalla);
+  boton.addEventListener('click',async()=>{
+    if(ios){mostrarAyuda();return;}
+    const raiz=document.documentElement;
+    const solicitar=raiz.requestFullscreen||raiz.webkitRequestFullscreen;
+    if(!solicitar){mostrarAyuda();return;}
+    try{
+      await solicitar.call(raiz,{navigationUI:'hide'});
+      actualizarPantalla();
+      try{if(screen.orientation&&typeof screen.orientation.lock==='function')await screen.orientation.lock('landscape');}catch(_){}
+    }catch(_){mostrarAyuda();}
+  });
   ajustar();
 })();
 </script>
