@@ -161,9 +161,17 @@ const PalabraSecreta=(()=>{
     const f=raiz.querySelector("#psFinal");
     f.replaceChildren();f.hidden=!partida.terminada;
     if(!partida.terminada)return;
-    /* Popup en el medio, adelante del tablero. Al cerrarlo queda "Ver resultado". */
+    /* Al cerrar el popup se puede revisar el tablero y continuar desde ahí. */
     const c=document.createElement("div");c.className="ps-final-caja";f.appendChild(c);
-    const ocultar=()=>{f.hidden=true;const m=raiz.querySelector("#psMensaje");m.innerHTML='<button type="button" class="ps-reabrir">🏁 Ver resultado</button>';m.querySelector("button").onclick=()=>{f.hidden=false;m.textContent="";};};
+    const ocultar=()=>{
+      f.hidden=true;const m=raiz.querySelector("#psMensaje");
+      m.innerHTML='<button type="button" class="ps-reabrir">🏁 Ver resultado</button>';
+      m.querySelector("button").onclick=()=>{f.hidden=false;m.textContent="";};
+      const continuar=f.querySelector(".ps-continuar");
+      if(continuar){const seguir=document.createElement("button");seguir.type="button";seguir.className="ps-reabrir ps-siguiente";
+        seguir.textContent=colaborativo?continuar.textContent:partida.gano?`Siguiente nivel ${datos.nivel}`:`Otra palabra del nivel ${datos.nivel}`;
+        seguir.onclick=continuar.onclick;m.append(" ",seguir);}
+    };
     f.onclick=e=>{if(e.target===f&&!duelo)ocultar();};
     const dib=document.createElement("img");dib.className="ps-final-dibujo";dib.src=ARTE(partida.gano?"gano":"perdio");dib.alt="";dib.draggable=false;dib.style.maxHeight="min(15vh,120px)";c.appendChild(dib);
     const p=document.createElement("p");
@@ -172,7 +180,7 @@ const PalabraSecreta=(()=>{
     if(duelo)return;
     if(colaborativo){
       const cerrar=document.createElement("button");cerrar.type="button";cerrar.textContent="Ver el tablero";cerrar.onclick=ocultar;c.appendChild(cerrar);
-      if(colaborativo.host){const otra=document.createElement("button");otra.type="button";otra.textContent="Otra palabra juntos";otra.onclick=()=>{colaborativo.ronda++;colaborativo.editor="host";colaborativo.control++;colaborativo.revision++;colaborativo.pendiente=null;iniciarNivel();mensaje("");tablero();publicarEquipo("");};c.appendChild(otra);}
+      if(colaborativo.host){const otra=document.createElement("button");otra.type="button";otra.className="ps-continuar";otra.textContent="Otra palabra juntos";otra.onclick=()=>{colaborativo.ronda++;colaborativo.editor="host";colaborativo.control++;colaborativo.revision++;colaborativo.pendiente=null;iniciarNivel();mensaje("");tablero();publicarEquipo("");};c.appendChild(otra);}
       else{const aviso=document.createElement("p");aviso.textContent="Tu compañero puede iniciar otra palabra juntos.";c.appendChild(aviso);}
       const salir=document.createElement("button");salir.type="button";salir.textContent="Salir del colaborativo";salir.onclick=salirColaborativo;c.appendChild(salir);return;
     }
@@ -186,7 +194,7 @@ const PalabraSecreta=(()=>{
     const cerrar=document.createElement("button");cerrar.type="button";cerrar.className="ps-final-x";cerrar.setAttribute("aria-label","Ver el tablero");cerrar.textContent="✕";cerrar.onclick=ocultar;c.appendChild(cerrar);
     const compartir=document.createElement("button");compartir.type="button";compartir.className="ps-foto-compartir";compartir.textContent="📲 Compartir foto";compartir.onclick=compartirWhatsApp;c.appendChild(compartir);
     const copiar=document.createElement("button");copiar.type="button";copiar.textContent="Copiar resultado";copiar.onclick=compartirResultado;c.appendChild(copiar);
-    const jugar=document.createElement("button");jugar.type="button";jugar.innerHTML=ico("extra")+(partida.gano?`Jugar nivel ${datos.nivel}`:`Otra palabra del nivel ${datos.nivel}`);jugar.onclick=siguienteNivel;c.appendChild(jugar);
+    const jugar=document.createElement("button");jugar.type="button";jugar.className="ps-continuar";jugar.innerHTML=ico("extra")+(partida.gano?`Jugar nivel ${datos.nivel}`:`Otra palabra del nivel ${datos.nivel}`);jugar.onclick=siguienteNivel;c.appendChild(jugar);
   }
   /* Elegir casillero (03/11/2026, Gonzalo: "dejame seleccionar el casillero para poner la letra"): tocando un
      casillero de la fila que estás escribiendo, la próxima letra va ahí. Los vacíos quedan como espacio. */

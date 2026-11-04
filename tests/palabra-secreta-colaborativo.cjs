@@ -96,6 +96,10 @@ const server=http.createServer((req,res)=>{
   assert.equal((await saved(host)).nivel,3);assert.equal((await saved(host)).ganadas,6);
   assert.deepEqual(await saved(guest),guestSeed);assert.equal(await guest.evaluate(()=>window.__charges),0);
   assert.equal(await host.evaluate(()=>window.__charges),0,'already-paid host word is not charged twice');
+  await guest.getByRole('button',{name:'Ver el tablero',exact:true}).click();
+  assert.equal(await guest.locator('.ps-siguiente').count(),0,'only the host can start the next shared word');
+  await host.getByRole('button',{name:'Ver el tablero',exact:true}).click();
+  assert(await host.locator('.ps-siguiente').isVisible());
   await host.getByRole('button',{name:'Otra palabra juntos',exact:true}).click();
   await guest.waitForFunction(()=>document.querySelector('#psFinal').hidden);
   assert.equal(await attempts(host),0);assert.equal(await attempts(guest),0);

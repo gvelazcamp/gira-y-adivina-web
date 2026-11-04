@@ -86,6 +86,10 @@ const server=http.createServer((req,res)=>{
     const result=await page.locator('.ps-final-caja').boundingBox();
     assert(result&&result.x>=0&&result.x+result.width<=844,'El popup final debe entrar en el ancho horizontal');
     assert(await page.evaluate(()=>{const el=document.querySelector('.ps-final-caja');return el.scrollWidth<=el.clientWidth+1;}),'El popup final no debe requerir scroll horizontal');
+    await page.locator('#psFinal').click({position:{x:4,y:180}});
+    assert(await page.locator('.ps-siguiente').isVisible(),'Debe poder seguirse desde el tablero cerrado el popup');
+    const siguiente=await page.locator('.ps-siguiente').boundingBox();
+    assert(siguiente.x>=0&&siguiente.x+siguiente.width<=844&&siguiente.y>=0&&siguiente.y+siguiente.height<=390,'Siguiente nivel debe quedar visible en horizontal');
     await page.evaluate(()=>{Extensiones.cerrar();navigator.mediaDevices.getUserMedia=async()=>{window.__psMic.requests++;throw new DOMException('Se cerró el permiso','AbortError');};Extensiones.abrirJuego('palabra-secreta');});
     await page.locator('#psAyudaPanel .sf-principal').click();
     await page.locator('#psVozSi').click();

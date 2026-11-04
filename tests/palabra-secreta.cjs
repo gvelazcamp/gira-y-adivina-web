@@ -36,7 +36,14 @@ async function state(page){return page.evaluate(()=>({data:JSON.parse(localStora
   await guess(page,first);s=await state(page);assert.equal(s.data.nivel,2);assert.equal(s.data.ganadas,4);assert.equal(s.data.distribucion[1],1);assert.equal(await page.evaluate(()=>window.psCharges),0,'reload must not charge same word again');
   assert.match(await page.locator('#psFinal').textContent(),/Pasaste al nivel 2/);
   assert.match(await page.evaluate(()=>PalabraSecreta.textoCompartir()),/nivel 1: la saqué en 2\/6/);
-  await page.locator('#psFinal button').filter({hasText:'Jugar nivel 2'}).click();s=await state(page);assert.equal(s.rows,5);assert.match(s.label,/Nivel 2 · 5 intentos/);assert.notEqual(s.data.partidaNivel.objetivo,first);
+  await page.locator('#psFinal .ps-final-x').click();
+  assert(await page.locator('#psFinal').isHidden());
+  assert(await page.getByRole('button',{name:'Siguiente nivel 2',exact:true}).isVisible());
+  assert.equal((await state(page)).data.nivel,2,'closing the result does not advance twice');
+  await page.getByRole('button',{name:'🏁 Ver resultado',exact:true}).click();
+  assert(await page.locator('#psFinal').isVisible());
+  await page.locator('#psFinal .ps-final-x').click();
+  await page.getByRole('button',{name:'Siguiente nivel 2',exact:true}).click();s=await state(page);assert.equal(s.rows,5);assert.match(s.label,/Nivel 2 · 5 intentos/);assert.notEqual(s.data.partidaNivel.objetivo,first);
   const second=s.data.partidaNivel.objetivo;await guess(page,second);s=await state(page);assert.equal(s.data.nivel,3);await page.locator('#psFinal button').filter({hasText:'Jugar nivel 3'}).click();s=await state(page);assert.equal(s.rows,6);assert.equal(s.data.partidaNivel.repeticiones,3);assert.match(s.label,/primera palabra que pensás 3 veces/);
   const third=s.data.partidaNivel.objetivo,repeat=await page.evaluate(secret=>PALABRA_SECRETAS.find(w=>w!==secret),third);
   await guess(page,repeat);s=await state(page);assert.equal(s.data.partidaNivel.intentos.length,1);assert.match(s.label,new RegExp('Repetí '+repeat+' 2 veces'));
@@ -50,7 +57,7 @@ async function state(page){return page.evaluate(()=>({data:JSON.parse(localStora
   const wrong=await page.evaluate(secret=>PALABRA_SECRETAS.find(w=>w!==secret),fourth);
   for(let i=0;i<3;i++)await guess(page,wrong);
   s=await state(page);assert(s.data.partidaNivel.terminada);assert.equal(s.data.nivel,4,'loss keeps current level');
-  await page.locator('#psFinal button').filter({hasText:'Otra palabra del nivel 4'}).click();s=await state(page);assert.equal(s.rows,3);assert.notEqual(s.data.partidaNivel.objetivo,fourth);assert.equal(s.data.nivel,4);
+  await page.locator('#psFinal .ps-final-x').click();await page.getByRole('button',{name:'Otra palabra del nivel 4',exact:true}).click();s=await state(page);assert.equal(s.rows,3);assert.notEqual(s.data.partidaNivel.objetivo,fourth);assert.equal(s.data.nivel,4);
   const solo=s.data.partidaNivel.objetivo;
   await page.evaluate(()=>{Duelo.mostrarLobby=(_nombre,_juego,opts)=>opts.onListo(true);Duelo.onProgresoRival=()=>{};Duelo.enviarRonda=()=>{};Duelo.mostrarBadge=()=>{};Duelo.actualizarBadge=()=>{};document.querySelector('#psDuelo').click();});
   s=await state(page);assert.equal(s.rows,6,'duel keeps six attempts');assert.match(s.label,/Duelo · 6 intentos/);assert.equal(s.data.partidaNivel.objetivo,solo,'duel does not replace solo level');
