@@ -49,7 +49,7 @@ const indicado=(q.get("codigo")||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slic
 if(indicado){codigo.value=indicado;document.querySelector(".tv-box").hidden=true;if(!nombre.value.trim())setTimeout(()=>nombre.focus(),300);if(perfilN){document.getElementById("c").readOnly=true;}}
 /* En iPhone y Android, "Esta pantalla es la tele" usa la presentación
    16:9 ajustada al celular. En las TV reales se conserva el enlace anterior. */
-if(/iPhone|iPod|Android.*Mobile/i.test(navigator.userAgent))document.getElementById("tvLink").href="pantalla.html";
+if(/iPhone|iPod|Android.*Mobile/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&Math.min(screen.width,screen.height)<=500&&matchMedia("(pointer:coarse)").matches))document.getElementById("tvLink").href="pantalla.html";
 if(q.get("telered")==="local"){
   const link=document.getElementById("tvLink"),url=new URL(link.href,location.href);
   url.searchParams.set("telered","local");
