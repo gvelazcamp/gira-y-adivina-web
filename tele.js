@@ -2341,7 +2341,7 @@
           <button type="button" class="tl-boton tl-oro" id="tlSeguirP">▶ Seguir</button></div>`;
         raiz.querySelector("#tlSeguirP").onclick=()=>accion("rs_reanudar");
         const b=raiz.querySelector("#tlApVivo");if(b)b.onclick=()=>{if(confirm("¿Apelar? Los demás votan si vale."))accion("rs_apelar",{k:Number(b.dataset.k),i:Number(b.dataset.i)});};return;}
-      if(!soyMando&&!(c.pantalla==="rosco"&&c.dos)&&!(c.pantalla==="fin"&&c.rosco&&c.rosco.dos)){
+      if(!soyMando&&!(c.pantalla==="cien"&&c.turno)&&!(c.pantalla==="rosco"&&c.dos)&&!(c.pantalla==="fin"&&c.rosco&&c.rosco.dos)){
         const mando=(m.jug.find(j=>j.pid===m.mando)||{}).n||"otro";
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2><p>El control lo tiene <b>${esc(mando)}</b>. Ayudalo con las respuestas 😉</p><button type="button" class="tl-boton" id="tlTomar">Tomar el control</button></div>`;
         raiz.querySelector("#tlTomar").onclick=()=>mandar({t:"tomar"});return;}
