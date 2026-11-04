@@ -69,7 +69,9 @@ const server=http.createServer((req,res)=>{
       await page.evaluate(()=>{window.__randomOriginal=Math.random;Math.random=()=>.99;});
       await page.locator(".ac-sortear").click();
       assert(await page.locator(".ac-sortear").isDisabled());
-      await page.clock.runFor(9000);
+      await page.evaluate(()=>{Math.random=()=>0;});
+      await page.clock.runFor(12000);
+      await page.evaluate(()=>{Math.random=()=>.99;});
       assert.equal(await page.locator(".ac-elegido .ac-nombre").textContent(),"10");
       assert.equal(await page.locator(".ac-iluminado").count(),1);
       assert(await page.locator(".ac-duelo").isVisible());
@@ -85,7 +87,7 @@ const server=http.createServer((req,res)=>{
         const medidas=await page.evaluate(()=>{
           const shell=document.querySelector(".ext-shell"),panel=document.querySelector(".ac-duelo"),r=panel.getBoundingClientRect();
           const vv=window.visualViewport,borde=(vv?.offsetTop||0)+(vv?.height||innerHeight);
-          const selectores=[".ac-marcador",".ac-pregunta",".ac-letras","#acRespuesta",".ac-responder button",".ac-voz",".ac-mensaje"];
+          const selectores=[".ac-marcador",".ac-pregunta",".ac-letras","#acRespuesta",".ac-responder button",".ac-voz",".ac-pasar",".ac-mensaje"];
           return{panel:r.toJSON(),borde,ancho:innerWidth,scroll:shell.scrollHeight-shell.clientHeight,
             fuera:selectores.flatMap(sel=>{
               const el=document.querySelector(sel);if(!el||!el.getClientRects().length)return[];
@@ -130,7 +132,8 @@ const server=http.createServer((req,res)=>{
       assert.equal(await page.locator(".ac-caido").count(),1);
       await page.evaluate(()=>{Math.random=()=>.99;});
       await page.locator(".ac-sortear").click();
-      await page.clock.runFor(9000);
+      await page.evaluate(()=>{Math.random=()=>0;});await page.clock.runFor(12000);
+      await page.evaluate(()=>{Math.random=()=>.99;});
       assert.equal(await page.locator(".ac-elegido .ac-nombre").textContent(),"9","fallen rival is excluded");
       await page.locator(".ac-voz").click();
       await page.evaluate(()=>{window.__lateSpeech=window.__speechInstances.at(-1).onresult;});
@@ -142,7 +145,7 @@ const server=http.createServer((req,res)=>{
       await page.locator(".ac-sortear").click();
       assert.equal(await page.locator(".ac-caido").count(),0,"restart restores the stage");
       await page.evaluate(()=>{Math.random=()=>0;});
-      await page.locator(".ac-sortear").click();await page.clock.runFor(7000);
+      await page.locator(".ac-sortear").click();await page.clock.runFor(12000);
       const responder=async(porVoz=false)=>{
         const r=await page.evaluate(()=>AHORA_CAIGO_DATOS.find(q=>q.pregunta===document.querySelector(".ac-pregunta").textContent).respuesta);
         if(porVoz){
@@ -172,24 +175,57 @@ const server=http.createServer((req,res)=>{
       await page.evaluate(()=>{Math.random=()=>.99;});
       const vistas=new Set();
       for(let ronda=0;ronda<10;ronda++){
-        await page.locator(".ac-sortear").click();await page.clock.runFor(9000);
-        const yo=await page.locator(".ac-pregunta").textContent();
-        assert(!vistas.has(yo),"player questions do not repeat");vistas.add(yo);
-        await responder();await page.clock.runFor(1501);
+        await page.locator(".ac-sortear").click();await page.clock.runFor(7000);
+        assert.equal(await page.locator(".ac-turno-texto").textContent(),"TURNO DEL RIVAL","rival starts every duel");
         const bot=await page.locator(".ac-pregunta").textContent();
-        assert(!vistas.has(bot),"rival questions do not repeat");vistas.add(bot);
+        assert(!vistas.has(bot),"questions do not repeat");vistas.add(bot);
         await page.clock.runFor(30000);
         assert.equal(await page.locator(".ac-caido").count(),ronda+1);
       }
       assert.match(await page.locator(".ac-estado").textContent(),/Eliminaste a los diez/);
-      assert.equal(vistas.size,20);
+      assert.equal(vistas.size,10);
+      await page.evaluate(()=>{Math.random=()=>0;Extensiones.abrirJuego("ahora-caigo");});
+      await page.locator(".ac-sortear").click();await page.clock.runFor(12000);
+      assert.equal(await page.locator(".ac-vidas").textContent(),"3 pases");
+      for(let uso=0;uso<3;uso++){
+        const q=await page.locator(".ac-pregunta").textContent();
+        const mascara=await page.locator(".ac-letras").textContent();
+        const historial=await page.evaluate(()=>Vistas.cargar("ahora_caigo").size);
+        if(uso===1){await page.locator(".ac-voz").click();await page.evaluate(()=>window.__speechInstances.at(-1).emit(["pase"]));}
+        else await page.locator(".ac-pasar").click();
+        assert.equal(await page.locator(".ac-pregunta").textContent(),q,"pass transfers the same question");
+        assert.equal(await page.locator(".ac-letras").textContent(),mascara,"pass preserves the revealed letters");
+        assert.equal(await page.evaluate(()=>Vistas.cargar("ahora_caigo").size),historial,"pass does not spend another question");
+        assert.equal(await page.locator(".ac-reloj b").textContent(),"20");
+        assert.equal(await page.locator(".ac-vidas").textContent(),(2-uso)+((2-uso)===1?" pase":" pases"));
+        await page.clock.runFor(3500);await page.clock.runFor(1500);
+        assert.equal(await page.locator(".ac-turno-texto").textContent(),"TU TURNO");
+        assert.notEqual(await page.locator(".ac-pregunta").textContent(),q,"correct pass response returns a new question to the leader");
+      }
+      assert(await page.locator(".ac-pasar").isDisabled(),"only three passes per game");
+      await page.locator(".ac-voz").click();await page.evaluate(()=>window.__speechInstances.at(-1).emit(["pase"]));
+      assert.match(await page.locator(".ac-mensaje").textContent(),/No te quedan pases/);
+      await page.evaluate(()=>{Math.random=()=>.99;});
+      await responder();await page.clock.runFor(1501);await page.clock.runFor(30000);
+      assert.match(await page.locator(".ac-estado").textContent(),/Ganaste el duelo/);
+      await page.locator(".ac-sortear").click();await page.clock.runFor(7000);
+      assert.equal(await page.locator(".ac-vidas").textContent(),"0 pases","passes do not refill between duels");
+      await page.evaluate(()=>{Math.random=()=>0;Extensiones.abrirJuego("ahora-caigo");});
+      await page.locator(".ac-sortear").click();await page.clock.runFor(12000);
+      await page.evaluate(()=>{Math.random=()=>.99;});
+      await page.locator(".ac-pasar").click();await page.clock.runFor(19999);
+      assert.equal(await page.locator(".ac-caido").count(),0);
+      await page.clock.runFor(1);
+      assert.equal(await page.locator(".ac-caido").count(),1,"a passed question expires at 20 seconds");
+      assert.match(await page.locator(".ac-mensaje").textContent(),/20 segundos/);
       for(const respuesta of ["SOLIDIFICACIÓN","DISYUNTOR"]){
         await page.evaluate(palabra=>{
           window.__bancoOriginal=window.__bancoOriginal||AHORA_CAIGO_DATOS;
-          window.AHORA_CAIGO_DATOS=window.__bancoOriginal.filter(q=>q.respuesta===palabra);
-          Extensiones.abrirJuego("ahora-caigo");
+          const item=window.__bancoOriginal.find(q=>q.respuesta===palabra);
+          window.AHORA_CAIGO_DATOS=[item,{...item,id:item.id+"-geometria"}];
+          Math.random=()=>0;Extensiones.abrirJuego("ahora-caigo");
         },respuesta);
-        await page.locator(".ac-sortear").click();await page.clock.runFor(9000);
+        await page.locator(".ac-sortear").click();await page.clock.runFor(12000);
         for(const viewport of [{width:390,height:736},{width:360,height:640},{width:390,height:450},{width:844,height:390}])await comprobarPantalla(viewport);
         await page.setViewportSize({width:390,height:844});
         await page.evaluate(()=>{
@@ -200,10 +236,10 @@ const server=http.createServer((req,res)=>{
         await page.evaluate(()=>{delete visualViewport.height;visualViewport.dispatchEvent(new Event("resize"));});
       }
       await page.evaluate(()=>{
-        window.AHORA_CAIGO_DATOS=window.__bancoOriginal;window.SpeechRecognition=undefined;window.webkitSpeechRecognition=undefined;
+        Math.random=()=>0;window.AHORA_CAIGO_DATOS=window.__bancoOriginal;window.SpeechRecognition=undefined;window.webkitSpeechRecognition=undefined;
         Extensiones.abrirJuego("ahora-caigo");
       });
-      await page.locator(".ac-sortear").click();await page.clock.runFor(9000);
+      await page.locator(".ac-sortear").click();await page.clock.runFor(12000);
       assert(await page.locator(".ac-voz").isDisabled(),"typing remains available without speech recognition");
       assert(await page.locator("#acRespuesta").isEnabled());
       await page.evaluate(()=>{Math.random=window.__randomOriginal;Extensiones.cerrar();});
@@ -211,6 +247,6 @@ const server=http.createServer((req,res)=>{
       assert.deepEqual(errors,[],"no browser errors");
       await context.close();
     }
-    console.log("PASS: Gonzalo-only access, existing assets, 11 figures at 3 sizes, single-screen layout and keyboard, profile avatars, speech results/errors/cleanup, hints, retries, alternating turns and victory");
+    console.log("PASS: Gonzalo-only access, existing assets, 11 figures at 3 sizes, single-screen layout and keyboard, profile avatars, speech results/errors/cleanup, hints, unlimited retries, rival-first turns, 3 passes per game, same question/20-second transfer, falls and victory");
   }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});

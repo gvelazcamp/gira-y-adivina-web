@@ -156,3 +156,9 @@
   .ac-bajo .ac-voz{grid-area:voz}
   .ac-bajo .ac-mensaje{grid-area:mensaje}
 }
+.ac-pasar{flex:0 0 auto;min-height:40px;padding:7px 12px;border:1px solid #d5af5f;border-radius:12px;background:#594324;color:#ffe7aa;font:inherit;font-size:.75rem;font-weight:900;cursor:pointer}
+.ac-pasar[hidden]{display:none}
+.ac-pasar:disabled{opacity:.55;cursor:default}
+.ac-pasar:focus-visible{outline:2px solid #ffdf85;outline-offset:2px}
+.ac-bajo .ac-pasar{min-height:34px;padding:5px 8px;font-size:.68rem}
+.ac-muy-bajo .ac-pasar{min-height:28px;padding:3px 6px;font-size:.6rem}
