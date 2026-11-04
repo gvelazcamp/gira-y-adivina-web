@@ -1653,8 +1653,8 @@
     let ronda=0,item=null,fichas=[],restante=0,fase="jugando",timer=null,muerto=false;
     let resueltos={},lugar=0,fallos={},puntos={},items=[],armado={};
     const jugadores=T.jug.map(j=>({pid:j.pid,n:j.n}));jugadores.forEach(j=>puntos[j.pid]=0);
-    /* En Silabario, si entran exactamente dos, uno completa sus 8 palabras y después el otro juega sus 8. */
-    const alterno=SIL&&jugadores.length===2;let partida=0;
+    /* En Silabario de a dos: una palabra cada uno, alternando hasta completar 8 por jugador. */
+    const alterno=SIL&&jugadores.length===2;let partida=0,itemsPorJugador=null;
     const activo=()=>alterno?jugadores[partida].pid:null;
     function base(){
       if(SIL){const d=typeof SILABARIO_DATOS!=="undefined"?SILABARIO_DATOS:[];
@@ -1662,11 +1662,12 @@
       const d=typeof FRASES_EN_GIRO_DATOS!=="undefined"?FRASES_EN_GIRO_DATOS:[];
       return d.map(x=>({pista:x.pista,piezas:String(x.texto).split(/\s+/),trampas:x.trampas||[],nivel:x.nivel||1}));
     }
-    function armar(){
-      const todos=base();const clave=x=>x.piezas.join(" ");
+    function armar(excluir=[]){
+      const todos=base();const clave=x=>x.piezas.join(" "),usadasPorOtro=new Set(excluir.map(clave));
       let libres=todos;try{libres=Vistas.filtrar(SIL?"silabario_tele":"frases_tele",todos,clave);}catch(e){}
-      const out=[];CFG.niveles.forEach((k,i)=>{let nv=mezclar(libres.filter(x=>x.nivel===i+1));if(nv.length<k)nv=nv.concat(mezclar(todos.filter(x=>x.nivel===i+1&&!nv.includes(x))));out.push(...nv.slice(0,k));});
-      return out.length?out:mezclar(todos).slice(0,CFG.rondas);
+      if(usadasPorOtro.size)libres=libres.filter(x=>!usadasPorOtro.has(clave(x)));
+      const out=[];CFG.niveles.forEach((k,i)=>{let nv=mezclar(libres.filter(x=>x.nivel===i+1));if(nv.length<k)nv=nv.concat(mezclar(todos.filter(x=>x.nivel===i+1&&!nv.includes(x)&&!usadasPorOtro.has(clave(x)))));out.push(...nv.slice(0,k));});
+      return out.length?out:mezclar(todos.filter(x=>!usadasPorOtro.has(clave(x)))).slice(0,CFG.rondas);
     }
     function trampas(it){
       if(!SIL)return (it.trampas||[]).slice(0,2);
@@ -1683,11 +1684,24 @@
       if(ronda>1)SND.turno();actualizar();
     }
     function revelar(){if(fase!=="jugando")return;fase="revela";actualizar();clearTimeout(timer);
-      timer=setTimeout(()=>{if(muerto)return;if(ronda>=items.length){if(alterno&&partida===0){partida=1;ronda=0;items=armar().slice(0,CFG.rondas);nueva();}else terminar();}else nueva();},4200);}
+      timer=setTimeout(()=>{
+        if(muerto)return;
+        if(!alterno){if(ronda>=items.length)terminar();else nueva();return;}
+        if(partida===0){
+          /* Termina una palabra de A: B responde su palabra del mismo número. */
+          partida=1;items=itemsPorJugador[1];ronda--;nueva();
+        }else if(ronda>=itemsPorJugador[0].length){
+          /* A y B respondieron ocho palabras cada uno. */
+          terminar();
+        }else{
+          /* Termina la palabra de B: continúa A con la siguiente. */
+          partida=0;items=itemsPorJugador[0];nueva();
+        }
+      },4200);}
     function terminar(){fase="fin";clearTimeout(timer);
       const f=jugadores.map(j=>({n:j.n,av:avDe(T,j.pid),v:puntos[j.pid]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
       podioTele({juego:CFG.nombre,titulo:f.length<2?"¡"+String(f[0]?f[0].n:"").toUpperCase()+" SUMÓ "+(f[0]?f[0].v:0)+"!":emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",
-        sub:alterno?"Cada jugador completó su propia partida de 8 palabras":"El más rápido en armar"+(SIL?" las palabras":" las frases"),equipo:f.length<2,filas:f.map(x=>({n:x.n,av:x.av,pts:x.v+" pts"}))});
+        sub:alterno?"Una palabra cada uno por turno · 8 palabras por jugador":"El más rápido en armar"+(SIL?" las palabras":" las frases"),equipo:f.length<2,filas:f.map(x=>({n:x.n,av:x.av,pts:x.v+" pts"}))});
       actualizar();}
     function accion(m){
       if(m.a==="otra"&&fase==="fin"&&m.pid===T.mando){T.otra();return;}
@@ -1717,19 +1731,19 @@
       const jug=jugadores.map(j=>{const a=armado[j.pid]||[];
         return`<span class="${resueltos[j.pid]?"tl-or-ok":""}">${alterno&&j.pid===activo()?"🎮 ":""}${resueltos[j.pid]?resueltos[j.pid]+"º ✓ ":""}${esc(j.n)} · <b>${puntos[j.pid]}</b>${!solo&&!rev&&!resueltos[j.pid]&&a.length?`<em class="tl-or-mini">${a.map(i=>esc(fichas[i])).join(SIL?"·":" ")}</em>`:""}</span>`;}).join("");
       raiz.innerHTML=`<div class="tl-or${SIL?" tl-or-sil":" tl-or-fra"}"><img class="tl-or-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
-        <div class="tl-or-top"><span>${CFG.icono} ${CFG.nombre}</span><span>${alterno?"PARTIDA "+(partida+1)+"/2 · ":""}RONDA ${ronda}/${items.length}</span><span class="tl-or-reloj" id="tlOrReloj">${Math.ceil(restante/1000)}</span></div>
+        <div class="tl-or-top"><span>${CFG.icono} ${CFG.nombre}</span><span>${alterno?"PALABRA "+ronda+"/"+items.length+" · "+esc(nombreDe(T,activo())):"RONDA "+ronda+"/"+items.length}</span><span class="tl-or-reloj" id="tlOrReloj">${Math.ceil(restante/1000)}</span></div>
         <div class="tl-or-card"><small>${CFG.etiqueta}</small><p class="tl-or-pista">${esc(item.pista)}</p>
           <div class="tl-or-slots">${item.piezas.map((x,k)=>rev?`<span class="tl-or-vista">${esc(x)}</span>`:mio[k]!=null?`<span class="tl-or-puesta">${esc(fichas[mio[k]])}</span>`:`<span></span>`).join("")}</div>
           ${rev?"":`<div class="tl-or-fichas">${fichas.map((x,i)=>`<span class="${usadas.has(i)?"tl-or-usada":""}">${esc(x)}</span>`).join("")}</div>`}</div>
         <div class="tl-or-jug">${jug}</div>
-        <p class="tl-or-ayuda">${rev?"⏳ Ya viene la siguiente…":alterno?"🎮 Juega "+esc(nombreDe(T,activo()))+" · el otro espera su partida":"📱 Armalo tocando las piezas en tu celular · ¡ojo que hay de más!"}</p></div>`;
+        <p class="tl-or-ayuda">${rev?"⏳ Ya viene la siguiente…":alterno?"🎮 Juega "+esc(nombreDe(T,activo()))+" · el otro espera su turno":"📱 Armalo tocando las piezas en tu celular · ¡ojo que hay de más!"}</p></div>`;
     }
     function cel(){
       if(fase==="fin")return{pantalla:"fin",juego:id,resumen:"Mirá el podio en la tele 🏆"};
       return{pantalla:"ordenar",juego:id,fase,ronda,pista:item?item.pista:"",fichas,n:item?item.piezas.length:0,unir:CFG.unir,
         resueltos:Object.keys(resueltos),mal:fallos,alterno,turno:activo(),nombreTurno:alterno?nombreDe(T,activo()):"",partida:partida+1,pts:puntos,respuesta:fase==="revela"&&item?item.piezas.join(CFG.unir):""};
     }
-    items=armar().slice(0,CFG.rondas);setTimeout(()=>{if(!muerto)nueva();},50);
+    items=armar().slice(0,CFG.rondas);if(alterno)itemsPorJugador=[items,armar(items).slice(0,CFG.rondas)];setTimeout(()=>{if(!muerto)nueva();},50);
     return{accion,tic,pintar,cel,fin(){muerto=true;clearTimeout(timer);}};
   }
   function juegoCien(T,actualizar){
@@ -2212,7 +2226,7 @@
       const menu=soyMando?`<button type="button" class="tl-boton tl-chico" id="tlOrSaltar">⏭ Saltar esta</button><button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>`:"";
       const enlazar=()=>{raiz.querySelector("#tlOrSaltar")?.addEventListener("click",()=>accion("or_saltar"));const b=raiz.querySelector("#tlMenu");if(b)b.onclick=()=>{if(confirm("¿Volver al menú?"))accion("menu");};};
       if(c.fase==="revela"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>${(c.resueltos||[]).includes(yo)?"✅ ¡Bien!":"⏱ ¡Tiempo!"}</h2><p>Era:</p><p class="tl-or-cel-resp">${esc(c.respuesta)}</p>${menu}</div>`;enlazar();return;}
-      if(c.alterno&&c.turno!==yo){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏳ Esperá tu partida</h2><p>Ahora juega <b>${esc(c.nombreTurno||"el otro jugador")}</b> · partida ${c.partida}/2.</p><p>Cuando termine sus 8 palabras, te toca jugar las tuyas.</p>${menu}</div>`;enlazar();return;}
+      if(c.alterno&&c.turno!==yo){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏳ Esperá tu turno</h2><p>Ahora responde <b>${esc(c.nombreTurno||"el otro jugador")}</b> · palabra ${c.ronda}/8.</p><p>Se turnan una palabra cada uno. Al final se comparan los puntos.</p>${menu}</div>`;enlazar();return;}
       if((c.resueltos||[]).includes(yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>✅ ¡Lo armaste!</h2><p>Mirá la tele 📺 mientras los demás terminan.</p>${menu}</div>`;enlazar();return;}
       const armado=orSel.map(i=>c.fichas[i]).join(c.unir);
       raiz.innerHTML=cab+`<div class="tl-cel-caja tl-or-cel${c.juego==="silabario"?" tl-or-cel-sil":""}"><p class="tl-or-cel-pista">${esc(c.pista)}</p>
