@@ -2391,7 +2391,7 @@
         raiz.innerHTML=cab+(termine?`<div class="tl-cel-caja tl-rd-termine">${marcadorCel(c)}${botonApelar(c)}<h2>🏁 ¡Rosco terminado!</h2><p>Tu rosco ya terminó. Esperá a que <b>${esc(c.nombreActivo||"")}</b> termine el suyo para ver quién gana.</p><button type="button" class="tl-boton tl-chico" id="tlPausa">⏸️ Pausa</button>${soyMando?menu:""}</div>`
           :`<div class="tl-cel-caja">${marcadorCel(c)}${botonApelar(c)}<h2>🔤 Le toca a ${esc(c.nombreActivo||"")}</h2><p>Mirá la tele 📺 · cuando erre o pase, te toca a vos.</p><button type="button" class="tl-boton tl-chico" id="tlPausa">⏸️ Pausa</button>${soyMando?menu:""}</div>`);enlazarApelar(c);raiz.querySelector("#tlPausa").onclick=()=>accion("rs_pausa");
         raiz.querySelector("#tlMenu")?.addEventListener("click",()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");});return;}
-      if(c.pantalla==="cien"&&c.turno&&c.turno!==yo){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏳ Esperá tu respuesta</h2><p>Ahora responde <b>${esc(c.nombreTurno||"el otro jugador")}</b>.</p><p>Después de su respuesta te toca a vos.</p>${menu}</div>`;
+      if(c.pantalla==="cien"&&c.turno&&c.turno!==yo){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏳ Esperá tu respuesta</h2><p>Ahora responde <b>${esc(c.nombreTurno||"el otro jugador")}</b>.</p><p>Después de su respuesta te toca a vos.</p>${soyMando?menu:""}</div>`;
         raiz.querySelector("#tlMenu")?.addEventListener("click",()=>accion("menu"));return;}
       if(c.pantalla==="rosco"||c.pantalla==="cien"){
         const rosco=c.pantalla==="rosco";
@@ -2399,12 +2399,12 @@
           ${dcPermiso?`<div class="tl-dc-mic${c.escucha===yo?" tl-dc-on":""}" id="tlDcMic">${c.puede===false?"🔇 Giro está hablando · esperá":dcOyendo?"🎙 Te escucho · decí la palabra o «Pasar»":"🎙 Activando micrófono…"}</div><p class="tl-dc-oi" id="tlDcOi"></p>`:`<button type="button" class="tl-boton tl-oro" id="tlDcPermiso">🎙 Responder hablando</button>`}`:`<p class="tl-cel-preg">${esc(c.pregunta||"")}</p>`}
           <input id="tlTexto" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${rosco?"Tu respuesta":"Lo que dice el grupo"}" ${c.puede===false?"disabled":""}>
           <button type="button" class="tl-boton tl-oro" id="tlEnviar" ${c.puede===false?"disabled":""}>Enviar</button>
-          ${rosco?`<button type="button" class="tl-boton" id="tlPasar" ${c.puede===false?"disabled":""}>⏭ Pasar</button><button type="button" class="tl-boton tl-chico" id="tlPausa">⏸️ Pausa</button>`:""}${menu}</div>`;
+          ${rosco?`<button type="button" class="tl-boton" id="tlPasar" ${c.puede===false?"disabled":""}>⏭ Pasar</button><button type="button" class="tl-boton tl-chico" id="tlPausa">⏸️ Pausa</button>`:""}${rosco||soyMando?menu:""}</div>`;
         const t=raiz.querySelector("#tlTexto");if(escribiendo)t.value=escribiendo;
         const enviar=()=>{const v=t.value.trim();if(!v)return;accion("responder",{txt:v});t.value="";t.focus();};
         raiz.querySelector("#tlEnviar").onclick=enviar;t.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();enviar();}};
         if(rosco){enlazarApelar(c);raiz.querySelector("#tlPausa").onclick=()=>accion("rs_pausa");raiz.querySelector("#tlPasar").onclick=()=>{accion("pasar");t.value="";};raiz.querySelector("#tlDcPermiso")?.addEventListener("click",pedirPermisoDc);}
-        raiz.querySelector("#tlMenu").onclick=()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");};
+        raiz.querySelector("#tlMenu")?.addEventListener("click",()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");});
         if(c.puede!==false&&!(rosco&&dcPermiso))t.focus();return;}
       if(c.pantalla==="ahorcado"){
         const us=new Set(c.usadas||[]);
