@@ -27,10 +27,52 @@ html.modo-pantalla #pantallaBtn,html.instalada #pantallaBtn{display:none}
 #ayudaCaja ol{margin:8px 0;padding-left:24px}
 #ayudaCaja li{margin:6px 0}
 #cerrarAyuda{position:absolute;right:10px;top:10px;width:36px;height:36px;border:0;border-radius:9px;background:#3A2650;color:#fff;font-size:22px;cursor:pointer}
+
+/* Controles del mismo iPhone: solo existen en la página celular-TV. */
+#jugarTambien{position:fixed;z-index:110;left:max(9px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));max-width:65%;padding:11px 14px;border:1px solid #F5B301;border-radius:12px;background:#241331F2;color:#F5B301;font:900 14px system-ui,sans-serif;cursor:pointer;box-shadow:0 3px 12px #0008}
+#jugarTambien:disabled{opacity:.65;cursor:default}
+#jugarTambien:focus-visible,#volverTV:focus-visible,#registro button:focus-visible,#registro input:focus-visible{outline:3px solid #37D6C0;outline-offset:2px}
+#panelControles{position:fixed;inset:0;z-index:112;background:#160B24;transform:translateX(110%);pointer-events:none}
+#panelControles.activo{transform:none;pointer-events:auto}
+#controlJugador{position:absolute;inset:0;display:block;width:100%;height:100%;border:0;background:#160B24}
+#volverTV{position:absolute;z-index:2;right:max(9px,env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top));border:2px solid #F5B301;border-radius:12px;background:#241331;color:#F6EFE2;font:900 14px system-ui,sans-serif;padding:10px 14px;box-shadow:0 3px 12px #0009;cursor:pointer}
+body.controles-abiertos #jugarTambien,body.controles-abiertos #pantallaBtn,body.controles-abiertos #rotar{display:none}
+#registro{position:fixed;inset:0;z-index:210;display:grid;place-items:center;padding:18px;background:#0A0412E8}
+#registro[hidden]{display:none}
+#registroForm{width:min(380px,100%);border:1px solid #F5B30188;border-radius:18px;background:#241331;color:#F6EFE2;padding:24px;font:16px/1.4 system-ui,sans-serif}
+#registroForm h2{margin:0 0 10px;color:#F5B301;font-size:23px}
+#registroForm p{margin:0 0 15px}
+#registroForm label{display:block;font-weight:800;margin-bottom:7px}
+#nombreJugador{width:100%;padding:13px;border:1px solid #F5B301AA;border-radius:10px;background:#0C0616;color:white;font:700 18px system-ui,sans-serif}
+#registroForm .acciones{display:flex;gap:10px;margin-top:15px}
+#registroForm button{flex:1;border:0;border-radius:10px;padding:13px 8px;background:#F5B301;color:#160B24;font:900 14px system-ui,sans-serif;cursor:pointer}
+#registroForm #cancelarRegistro{background:#3A2650;color:#F6EFE2}
+#mensajeControl{position:fixed;z-index:220;left:50%;bottom:max(70px,env(safe-area-inset-bottom));transform:translateX(-50%);width:max-content;max-width:90%;padding:11px 16px;border:1px solid #F5B30188;border-radius:12px;background:#241331F2;color:#F6EFE2;font:800 14px/1.3 system-ui,sans-serif;text-align:center}
+#mensajeControl[hidden]{display:none}
 </style>
 </head>
 <body>
 <iframe id="tvVirtual" width="1280" height="720" scrolling="no" title="Girá y Adiviná · Pantalla de TV" allow="autoplay; microphone; fullscreen; screen-wake-lock"></iframe>
+
+<!-- La TV sigue cargada; el segundo iframe actúa como celular controlador. -->
+<div id="panelControles" aria-label="Mis controles">
+  <iframe id="controlJugador" title="Controles de jugador" allow="microphone; autoplay"></iframe>
+  <button type="button" id="volverTV">📺 Ver TV</button>
+</div>
+<button type="button" id="jugarTambien">🎮 Yo también juego</button>
+<div id="registro" hidden role="dialog" aria-modal="true" aria-labelledby="registroTitulo">
+  <form id="registroForm">
+    <h2 id="registroTitulo">Yo también juego</h2>
+    <p>Tu iPhone sigue transmitiendo a la TV. Cuando abras los controles, también se verán en la tele.</p>
+    <label for="nombreJugador">Tu nombre</label>
+    <input id="nombreJugador" maxlength="14" required autocomplete="nickname" placeholder="¿Cómo te llamás?">
+    <div class="acciones">
+      <button type="submit">▶ Entrar</button>
+      <button type="button" id="cancelarRegistro">Cancelar</button>
+    </div>
+  </form>
+</div>
+<div id="mensajeControl" role="status" hidden></div>
 <button type="button" id="pantallaBtn" aria-label="Abrir pantalla completa" title="Pantalla completa">📺</button>
 <div id="rotar" role="status">Girá el celular horizontalmente para ver la TV.</div>
 <div id="ayuda" hidden role="dialog" aria-modal="true" aria-labelledby="ayudaTitulo">
@@ -104,6 +146,93 @@ html.modo-pantalla #pantallaBtn,html.instalada #pantallaBtn{display:none}
       try{if(screen.orientation&&typeof screen.orientation.lock==='function')await screen.orientation.lock('landscape');}catch(_){}
     }catch(_){mostrarAyuda();}
   });
+
+  /* "Yo también juego": la pantalla de TV nunca se recarga ni se sustituye.
+     Un segundo iframe se conecta como jugador a la MISMA sala; se deja
+     montado al alternar entre ver la TV y utilizar los controles existentes. */
+  const botonJugar=document.getElementById('jugarTambien');
+  const panelControles=document.getElementById('panelControles');
+  const controlJugador=document.getElementById('controlJugador');
+  const volverTV=document.getElementById('volverTV');
+  const registro=document.getElementById('registro');
+  const formRegistro=document.getElementById('registroForm');
+  const nombreJugador=document.getElementById('nombreJugador');
+  const mensajeControl=document.getElementById('mensajeControl');
+  let jugadorRegistrado=false,controlesAbiertos=false,ocultarMensaje=null;
+
+  function avisoJugador(s){
+    mensajeControl.textContent=s;
+    mensajeControl.hidden=false;
+    clearTimeout(ocultarMensaje);
+    ocultarMensaje=setTimeout(()=>{mensajeControl.hidden=true;},3500);
+  }
+  function codigoTV(){
+    /* No usar un código antiguo si la página de TV aún no arrancó. */
+    try{
+      const raiz=marco.contentDocument?.getElementById('teleTV');
+      if(!raiz)return '';
+      const visible=raiz.querySelector('.tl-codigo')?.textContent?.trim()||'';
+      const codigo=visible||localStorage.getItem('gya_tele_codigo')||'';
+      return /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{5}$/.test(codigo)?codigo:'';
+    }catch(_){return '';}
+  }
+  function esTutti(){
+    try{return !!marco.contentDocument?.querySelector('#teleTV.tl-juego-tutti');}
+    catch(_){return false;}
+  }
+  function verTV(){
+    controlesAbiertos=false;
+    panelControles.classList.remove('activo');
+    document.body.classList.remove('controles-abiertos');
+    botonJugar.focus({preventScroll:true});
+  }
+  function verControles(){
+    if(esTutti()){avisoJugador('En Tutti Frutti mirás la TV: tus respuestas aparecerían en pantalla.');return;}
+    controlesAbiertos=true;
+    panelControles.classList.add('activo');
+    document.body.classList.add('controles-abiertos');
+    volverTV.focus({preventScroll:true});
+  }
+  function iniciarJugador(nombre){
+    const codigo=codigoTV();
+    if(!codigo){avisoJugador('Esperá a que aparezca el código de sala en la TV.');return;}
+    nombre=String(nombre||'').trim().slice(0,14);
+    if(!nombre){registro.hidden=false;nombreJugador.focus();return;}
+    try{localStorage.setItem('gya_tele_nombre',nombre);}catch(_){}
+    const url=new URL('../index.html',location.href);
+    url.searchParams.set('telecel',codigo);
+    url.searchParams.set('n',nombre);
+    url.searchParams.set('teleespejo','1');
+    if(new URLSearchParams(location.search).get('telered')==='local')url.searchParams.set('telered','local');
+    controlJugador.src=url.href;
+    jugadorRegistrado=true;
+    botonJugar.textContent='🎮 Mis controles';
+    registro.hidden=true;
+    verControles();
+  }
+  botonJugar.addEventListener('click',()=>{
+    if(jugadorRegistrado){verControles();return;}
+    if(esTutti()){avisoJugador('Tutti Frutti: este iPhone solo mira.');return;}
+    let n='';
+    try{n=(localStorage.getItem('gya_nombre')||localStorage.getItem('gya_tele_nombre')||'').trim().slice(0,14);}catch(_){}
+    if(n)iniciarJugador(n);
+    else{registro.hidden=false;nombreJugador.value='';nombreJugador.focus();}
+  });
+  volverTV.addEventListener('click',verTV);
+  document.getElementById('cancelarRegistro').addEventListener('click',()=>{registro.hidden=true;botonJugar.focus();});
+  formRegistro.addEventListener('submit',e=>{
+    e.preventDefault();
+    const nombre=nombreJugador.value.trim();
+    if(nombre)iniciarJugador(nombre);
+  });
+  /* El anfitrión que duplica pantalla queda fuera de Tutti Frutti.
+     Si se elige ese juego, volvemos a TV sin destruir el controlador. */
+  setInterval(()=>{
+    const tutti=esTutti();
+    if(tutti&&controlesAbiertos)verTV();
+    botonJugar.disabled=tutti;
+    botonJugar.textContent=tutti?'📺 Tutti: solo mirar':jugadorRegistrado?'🎮 Mis controles':'🎮 Yo también juego';
+  },900);
   ajustar();
 })();
 </script>
