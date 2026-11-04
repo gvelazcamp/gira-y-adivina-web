@@ -176,7 +176,7 @@
       const estado=t=>{const el=capa.querySelector("#tlCastEstado");if(el)el.textContent=t;};
       const ir=capa.querySelector("#tlCastIr");
       if(f.id==="codigo"){ir.onclick=()=>{location.href="tele/";};return;}
-      if(f.id==="celular-tele"){ir.onclick=()=>{location.href="index.html?tele=1";};return;}
+      if(f.id==="celular-tele"){ir.onclick=()=>{location.href="tele/pantalla.html";};return;}
       if(!hayCast)return;
       try{new PresentationRequest([location.href]).getAvailability().then(a=>{const pinta=()=>estado(a.value?"✅ Hay una tele disponible en tu wifi":"No veo teles con Chromecast en tu wifi (igual podés buscar).");pinta();a.onchange=pinta;}).catch(()=>{});}catch(e){}
       ir.onclick=()=>{estado("Buscando teles…");transmitirDirecto(n=>{

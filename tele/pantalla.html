@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#160b24">
+<title>Celular como TV · Girá y Adiviná</title>
+<style>
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#160B24}
+#tvVirtual{position:absolute;left:0;top:0;width:1280px;height:720px;min-width:1280px;min-height:720px;border:0;display:block;transform-origin:0 0;background:#160B24}
+</style>
+</head>
+<body>
+<iframe id="tvVirtual" width="1280" height="720" scrolling="no" title="Girá y Adiviná · Pantalla de TV" allow="autoplay; microphone; fullscreen; screen-wake-lock"></iframe>
+<script>
+/* Solo se abre cuando un celular hace de TV. Se conserva la presentación
+   16:9 de la tele real, sin tocar el diseño de juegos ni los controles. */
+(()=>{
+  const marco=document.getElementById('tvVirtual');
+  const destino=new URL('../index.html',location.href);
+  destino.searchParams.set('tele','1');
+  if(new URLSearchParams(location.search).get('telered')==='local')destino.searchParams.set('telered','local');
+  marco.src=destino.href;
+  const anchoTV=1280,altoTV=720;
+  function ajustar(){
+    const v=window.visualViewport;
+    const ancho=v?.width||window.innerWidth;
+    const alto=v?.height||window.innerHeight;
+    if(ancho<=0||alto<=0)return;
+    const escala=Math.min(ancho/anchoTV,alto/altoTV);
+    const izq=(v?.offsetLeft||0)+(ancho-anchoTV*escala)/2;
+    const arriba=(v?.offsetTop||0)+(alto-altoTV*escala)/2;
+    marco.style.transform='translate('+izq+'px,'+arriba+'px) scale('+escala+')';
+  }
+  window.addEventListener('resize',ajustar);
+  window.addEventListener('orientationchange',ajustar);
+  window.addEventListener('pageshow',ajustar);
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',ajustar);
+    window.visualViewport.addEventListener('scroll',ajustar);
+  }
+  ajustar();
+})();
+</script>
+</body>
+</html>

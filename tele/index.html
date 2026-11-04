@@ -47,7 +47,14 @@ if(!/^[A-Z0-9]{4,6}$/.test(guardado))guardado="";
 const indicado=(q.get("codigo")||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
 /* Si vino del QR de la tele, el código ya está: se oculta "Esta pantalla es la tele" y solo falta el nombre. */
 if(indicado){codigo.value=indicado;document.querySelector(".tv-box").hidden=true;if(!nombre.value.trim())setTimeout(()=>nombre.focus(),300);if(perfilN){document.getElementById("c").readOnly=true;}}
-if(q.get("telered")==="local")document.getElementById("tvLink").href+="&telered=local";
+/* En iPhone y Android, "Esta pantalla es la tele" usa la presentación
+   16:9 ajustada al celular. En las TV reales se conserva el enlace anterior. */
+if(/iPhone|iPod|Android.*Mobile/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&Math.min(screen.width,screen.height)<=500&&matchMedia("(pointer:coarse)").matches))document.getElementById("tvLink").href="pantalla.html";
+if(q.get("telered")==="local"){
+  const link=document.getElementById("tvLink"),url=new URL(link.href,location.href);
+  url.searchParams.set("telered","local");
+  link.href=url.href;
+}
 function entrar(c,n){const destino=new URL("../index.html",location.href);destino.searchParams.set("telecel",c);destino.searchParams.set("n",n);if(q.get("telered")==="local")destino.searchParams.set("telered","local");location.href=destino.href;}
 if(guardado&&!indicado&&!q.has("cambiar")&&nombre.value.trim()){
   linked.hidden=false;form.hidden=true;codigo.value=guardado;
