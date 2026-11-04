@@ -9155,7 +9155,8 @@ if(tvEnLink){
     if(!$("miNombre").value.trim())$("miNombre").value=nTV||(perfil&&perfil.nombre)||"Jugador";}
   if(qTV.get("tvauto")==="1"&&($("miNombre").value.trim()||nTV)){const ir=()=>setTimeout(()=>$("bEntrarTV").click(),300);if(document.readyState==="loading")window.addEventListener("DOMContentLoaded",ir,{once:true});else ir();}
 }
-const salaEnLink=(new URLSearchParams(location.search).get("sala")||"").toUpperCase();
+/* Las invitaciones de extensiones usan su propio lobby; no son salas de la ruleta. */
+const salaEnLink=new URLSearchParams(location.search).has("duelo")?"":(new URLSearchParams(location.search).get("sala")||"").toUpperCase();
 if(salaEnLink){
   $("bJugarOnline").style.display="none";
   $("bBot").style.display="none";$("bTV").style.display="none";$("bEntrarTV").style.display="none";
@@ -12126,7 +12127,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 })();
 </script>
 <script src="cuenta.js?v=7"></script>
-<script src="duelo-extensiones.js?v=18"></script>
+<script src="duelo-extensiones.js?v=19"></script>
 <script src="sopa-fugaz-datos.js?v=7"></script>
 <script src="sopa-fugaz.js?v=15"></script>
 <script src="rueda-de-letras-datos.js?v=4"></script>
@@ -12169,7 +12170,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <link rel="stylesheet" href="ahora-caigo.css?v=8">
 <script src="ahora-caigo-datos.js?v=2"></script>
 <script src="ahora-caigo.js?v=9"></script>
-<script src="extensiones.js?v=122"></script>
+<script src="extensiones.js?v=123"></script>
 <script src="sala-tv.js?v=1"></script>
 <link rel="stylesheet" href="tele.css?v=46">
 <script src="tele.js?v=86"></script>

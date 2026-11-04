@@ -127,7 +127,7 @@ const Duelo=(()=>{
   const CHARS="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let cliente=null,juego=null,sala=null,soyHost=false,rival=null,activo=false;
   /* Invitación por link: ?duelo=<juego>&sala=XXXX&de=<nombre> abre ese juego
-     con el lobby en "Unirme" y el código ya cargado. */
+     con el código cargado. En Palabra Secreta entra directamente a la sala. */
   const DUELO_EXT={ahorcado:"ahorcado-rioplatense",cien:"cien-rioplatenses",frases:"frases-en-giro",memoria:"memoria-en-giro",rosco:"rosco-rioplatense",rueda:"rueda-de-letras",silabario:"silabario-rioplatense",sopa:"sopa-fugaz",palabra:"palabra-secreta","palabra-colaborativa":"palabra-secreta",moon:"moon-tap",puzzle:"puzzle"};
   let invitacion=null;
   try{
@@ -195,6 +195,8 @@ const Duelo=(()=>{
   function mostrarLobby(nombreJuego,idJuego,{onListo,onCancelar,detalle,sub,frase,titulo="Jugar con un amigo"}){
     nombreActual=nombreJuego;onListoJuego=onListo||null;revancha={yo:false,rival:false};rivalSeFue=false;rondaPendiente=null;
     juego=idJuego;activo=false;rival=null;finalRival=null;
+    const entradaDirecta=idJuego==="palabra"||idJuego==="palabra-colaborativa";
+    let uniendose=false;
     const c=activaCapa();
     c.innerHTML='<div class="dl-tarjeta"><h3>'+titulo+'</h3><p class="dl-sub">'+(sub||nombreJuego+' · 1 vs 1')+'</p>'+(detalle?'<p class="dl-detalle">'+detalle+'</p>':'')+
       '<div id="dlElegir" class="dl-fila"><button type="button" id="dlCrear" class="dl-principal">Crear sala</button><button type="button" id="dlUnirse">Unirme con código</button></div>'+
@@ -214,7 +216,7 @@ const Duelo=(()=>{
         cbRivalListo=r=>{estado("");cerrarCapa();if(onListo)onListo(true,r);};
       },()=>estado("No se pudo conectar ("+(window.gyaFalloConexion||"sin respuesta")+"). Probá con otra red (datos del celular)."),cl=>{cliente=cl;});
       const quien=(perfil&&perfil.nombre)||"Un amigo";
-      const texto="¡"+quien+" "+(frase||"te desafía a")+" "+nombreJuego+" en Girá y Adiviná! 👥 Tocá el link y apretá UNIRME: "+linkInvitacion()+" (código "+sala+")";
+      const texto="¡"+quien+" "+(frase||"te desafía a")+" "+nombreJuego+" en Girá y Adiviná! 👥 "+(entradaDirecta?"Tocá el link para entrar directamente a la sala: ":"Tocá el link y apretá UNIRME: ")+linkInvitacion()+" (código "+sala+")";
       c.querySelector("#dlWpp").onclick=()=>window.open("https://wa.me/?text="+encodeURIComponent(texto),"_blank");
       c.querySelector("#dlCopiar").onclick=async()=>{
         try{await navigator.clipboard.writeText(texto);}catch(e){}
@@ -225,15 +227,21 @@ const Duelo=(()=>{
       c.querySelector("#dlElegir").hidden=true;c.querySelector("#dlEntrarZona").hidden=false;c.querySelector("#dlInput").focus();
     };
     const entrar=()=>{
+      if(uniendose)return;
       const cod=c.querySelector("#dlInput").value.trim().toUpperCase();
-      if(cod.length<4){estado("El código tiene 4 caracteres.");return;}
+      if(!/^[A-HJ-NP-Z2-9]{4}$/.test(cod)){estado("El código tiene 4 letras o números. Revisalo y probá otra vez.");return;}
+      uniendose=true;c.querySelector("#dlEntrar").disabled=true;
       soyHost=false;sala=cod;estado("Conectando…");
       MultiBroker.conectar(()=>{
         cliente.subscribe(temaIn());cliente.on("message",recibir);estado("Buscando la sala "+sala+"…");
         cbRivalListo=r=>{estado("");cerrarCapa();if(onListo)onListo(false,r);};
         const hola=()=>mandar({tipo:"hola",nombre:(perfil&&perfil.nombre)||"Jugador",avatar:(perfil&&perfil.avatar)||null,frame:(typeof frameEquipado!=="undefined"?frameEquipado:null)});
         hola();holaTimer=setInterval(hola,2000);
-      },()=>estado("No se pudo conectar ("+(window.gyaFalloConexion||"sin respuesta")+"). Probá con otra red (datos del celular)."),cl=>{cliente=cl;});
+      },()=>{
+        uniendose=false;c.querySelector("#dlEntrar").disabled=false;c.querySelector("#dlEntrarZona").hidden=false;
+        c.querySelector("#dlEntrar").textContent="Reintentar conexión";
+        estado("No se pudo conectar ("+(window.gyaFalloConexion||"sin respuesta")+"). Probá de nuevo o con otra red (datos del celular).");
+      },cl=>{cliente=cl;});
     };
     c.querySelector("#dlEntrar").onclick=entrar;
     c.querySelector("#dlInput").onkeydown=e=>{if(e.key==="Enter")entrar();};
@@ -241,7 +249,10 @@ const Duelo=(()=>{
       const inv=invitacion;invitacion=null;limpiarUrl();
       c.querySelector("#dlElegir").hidden=true;c.querySelector("#dlEntrarZona").hidden=false;
       c.querySelector("#dlInput").value=inv.sala;
-      estado((inv.de?inv.de+" te invitó":"Te invitaron")+" a la sala "+inv.sala+". Tocá UNIRME.");
+      if(entradaDirecta){
+        c.querySelector("#dlEntrarZona").hidden=true;c.querySelector("#dlInput").readOnly=true;
+        entrar();
+      }else estado((inv.de?inv.de+" te invitó":"Te invitaron")+" a la sala "+inv.sala+". Tocá UNIRME.");
     }
   }
   /* --- Durante la partida: progreso propio/rival y badge flotante --- */

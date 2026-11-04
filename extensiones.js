@@ -340,6 +340,9 @@ const Extensiones=(()=>{
     window.addEventListener("resize",ajustarTeclado);
     document.addEventListener("keydown",e=>{
       if(shell.hidden)return;
+      /* El lobby de salas necesita sus teclas nativas (escribir código, Enter,
+         pegar y borrar). Palabra Secreta solo captura letras del tablero. */
+      if(document.querySelector(".dl-capa")||(vista==="palabra-secreta"&&e.target.closest?.("input,textarea,select,[contenteditable='true']")))return;
       if(e.key==="Escape"&&avisoTV){e.preventDefault();e.stopImmediatePropagation();cerrarAvisoTV();return;}
       /* Juegos de previa en pantalla fija: Escape no saca del juego. */
       /* Solo Escape se bloquea: las demás teclas tienen que escribir (en iPhone,

@@ -22,7 +22,7 @@ const server=http.createServer((req,res)=>{
     for(const other of peers)if(other!==page&&!other.isClosed())await other.evaluate(([t,m])=>window.__deliver?.(t,m),[topic,payload]);
    });
    await page.addInitScript(({name,saved})=>{
-    localStorage.setItem('gya_nombre',name);localStorage.setItem('gya_avatar','avatar-02');localStorage.setItem('gya_bienvenida_vista','1');
+    localStorage.setItem('gya_nombre',name);localStorage.setItem('gya_pais','uruguay');localStorage.setItem('gya_avatar','avatar-02');localStorage.setItem('gya_bienvenida_vista','1');
     if(!localStorage.getItem('gya_palabra_secreta'))localStorage.setItem('gya_palabra_secreta',JSON.stringify(saved));
     window.__pausedNetwork=false;
    },{name,saved});
@@ -36,12 +36,13 @@ const server=http.createServer((req,res)=>{
   async function prepare(page,url){
    await page.goto(url);await page.waitForFunction(()=>window.PalabraSecreta&&window.Duelo&&window.MultiBroker);
    await page.evaluate(()=>{
-    document.querySelector('#splash')?.remove();document.documentElement.classList.remove('cargando');document.querySelector('#setup').style.display='none';
-    window.__charges=0;Fichas.usar=()=>{window.__charges++;return true;};
-    MultiBroker.conectar=(ready,_fail,assign)=>{
+    document.querySelector('#splash')?.remove();document.documentElement.classList.remove('cargando');
+    window.__connectionAttempts=0;window.__failNext=false;window.__charges=0;Fichas.usar=()=>{window.__charges++;return true;};
+    MultiBroker.conectar=(ready,fail,assign)=>{
+     window.__connectionAttempts++;
      const cl={connected:true,subs:new Set(),handlers:[],closed:false,subscribe(t){this.subs.add(t);},publish(t,m){if(!this.closed&&!window.__pausedNetwork)window.__publish(t,String(m));},on(ev,fn){if(ev==='message')this.handlers.push(fn);},end(){this.closed=true;this.connected=false;}};
      window.__deliver=(t,m)=>{if(!cl.closed&&!window.__pausedNetwork&&cl.subs.has(t))for(const fn of cl.handlers)fn(t,m);};
-     assign(cl);setTimeout(()=>{if(!cl.closed)ready();},0);
+     assign(cl);setTimeout(()=>{if(cl.closed)return;if(window.__failNext){window.__failNext=false;cl.connected=false;fail();}else ready();},0);
     };
    });
   }
@@ -60,14 +61,13 @@ const server=http.createServer((req,res)=>{
   await host.evaluate(()=>{window.__invitation='';Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async t=>window.__invitation=t}});});
   await host.locator('#dlCopiar').click();
   const invitation=await host.evaluate(()=>window.__invitation);
-  assert.match(invitation,/duelo=palabra-colaborativa/);assert.match(invitation,/ayudarle/);
-  // Recorrido real del link: abre Palabra Secreta y el lobby cooperativo con el código.
+  assert.match(invitation,/duelo=palabra-colaborativa/);assert.match(invitation,/ayudarle/);assert.match(invitation,/entrar directamente/);assert(!invitation.includes('apretá UNIRME'));
+  // Recorrido real del link: abre el juego y se une sin escribir ni pulsar Unirme.
   await prepare(guest,base+'/?duelo=palabra-colaborativa&sala='+code+'&de=Anfitrion');
-  await guest.locator('#dlEntrar').waitFor({state:'visible'});
-  assert.equal(await guest.locator('#dlInput').inputValue(),code);
-  assert.match(await guest.locator('.dl-tarjeta h3').textContent(),/colaborativo/);
-  await guest.locator('#dlEntrar').click();
   await guest.waitForFunction(()=>document.querySelector('#psEquipoEstado')?.textContent.includes('tiene el teclado'));
+  assert.equal(await guest.locator('.dl-capa').count(),0,'the WhatsApp link joins automatically');
+  assert.equal(await guest.evaluate(()=>window.__connectionAttempts),1,'only one connection per invitation');
+  assert(!(await guest.locator('#bUnirse').textContent()).includes('Entrar a la sala '+code),'the invite must not configure the wheel game');
   assert.equal(await text(guest),await text(host),'including the half-written row');
   assert.equal(await attempts(guest),1);assert.equal(await guest.locator('#psTablero .ps-fila').count(),5);
   assert.deepEqual(await saved(guest),guestSeed,'joining does not overwrite the guest solo save');
@@ -154,7 +154,14 @@ const server=http.createServer((req,res)=>{
   await host.waitForFunction(()=>document.querySelector('#dlEstado').textContent.includes('Sala lista'));
   const longCode=await host.locator('#dlCodigo').textContent();
   await guest.locator('#psColaborativo').click();await guest.locator('#dlUnirse').click();
-  await guest.locator('#dlInput').fill(longCode);await guest.locator('#dlEntrar').click();
+  const boardBeforeCode=await text(guest);
+  await guest.locator('#dlInput').pressSequentially(longCode.toLowerCase());
+  assert.equal((await guest.locator('#dlInput').inputValue()).toUpperCase(),longCode,'native typing must reach the room field');
+  await guest.locator('#dlInput').press('Backspace');
+  assert.equal((await guest.locator('#dlInput').inputValue()).length,3,'Backspace must edit the room field');
+  await guest.locator('#dlInput').pressSequentially(longCode.slice(-1));
+  assert.equal(await text(guest),boardBeforeCode,'room keystrokes must not edit the word');
+  await guest.locator('#dlInput').press('Enter');
   await guest.waitForFunction(()=>document.querySelector('#psEquipoEstado').textContent.includes('tiene el teclado'));
   assert.equal(await guest.locator('#psTablero .ps-fila').first().locator('.ps-celda').count(),7);
   await guest.locator('#psTomarTeclado').click();
@@ -167,7 +174,29 @@ const server=http.createServer((req,res)=>{
   await guest.waitForFunction(()=>document.querySelector('#psFinal').textContent.includes('entre los dos'));
   assert.equal((await saved(host)).nivel,9);assert.equal(await host.evaluate(()=>window.__charges),1);
   assert.deepEqual(await saved(guest),guestSeed);assert.equal(await guest.evaluate(()=>window.__charges),0);
+  // La invitación competitiva de Palabra Secreta también entra por enlace.
+  await guest.locator('#psFinal').getByRole('button',{name:'Salir del colaborativo',exact:true}).click();
+  await host.locator('#psFinal').getByRole('button',{name:'Salir del colaborativo',exact:true}).click();
+  await open(host);
+  await host.locator('#psDuelo').click();await host.locator('#dlCrear').click();
+  await host.waitForFunction(()=>document.querySelector('#dlEstado').textContent.includes('Sala lista'));
+  const duelCode=await host.locator('#dlCodigo').textContent();
+  await prepare(guest,base+'/?duelo=palabra&sala='+duelCode);
+  await guest.waitForFunction(()=>document.querySelector('#psReto')?.textContent.includes('Duelo · 6 intentos'));
+  assert.equal(await guest.locator('.dl-capa').count(),0);
+  assert.equal(await guest.evaluate(()=>window.__connectionAttempts),1);
+  // Una falla de red ofrece reintentar con la sala ya cargada, sin pedir el código.
+  await prepare(guest,base+'/?duelo=palabra-colaborativa&sala=B9C4');
+  await guest.evaluate(()=>window.__failNext=true);
+  await guest.getByRole('button',{name:'Reintentar conexión',exact:true}).waitFor({state:'visible'});
+  assert.equal(await guest.locator('#dlInput').inputValue(),'B9C4');
+  assert(await guest.locator('#dlInput').evaluate(el=>el.readOnly));
+  await guest.getByRole('button',{name:'Reintentar conexión',exact:true}).click();
+  await guest.waitForFunction(()=>document.querySelector('#dlEstado').textContent.includes('Buscando la sala B9C4'));
+  assert.equal(await guest.evaluate(()=>window.__connectionAttempts),2);
+  await guest.locator('#dlCancelar').click();
+  assert.equal(await guest.locator('.dl-capa').count(),0);
   assert.deepEqual(errors,[]);
-  console.log('PASS: collaborative invitation, existing board/draft, keyboard handover, shared guesses, invalid words, duplicate/stale delivery, retry after packet loss, host progression, guest save preserved, next round, repetition challenge, seven-letter word, departure, cancel, cleanup and competitive lobby.');
+  console.log('PASS: collaborative invitation, existing board/draft, keyboard handover, shared guesses, invalid words, duplicate/stale delivery, retry after packet loss, host progression, guest save preserved, next round, repetition challenge, seven-letter word, departure, cancel, cleanup, native code typing/Enter, automatic cooperative/competitive links and connection retry.');
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});
