@@ -39,6 +39,12 @@ const server=http.createServer((req,res)=>{
       assert.equal(await page.locator(".ac-participante").count(),11);
       assert.equal(await page.locator(".ac-principal .ac-nombre").textContent(),"Gonzalo");
       assert((await page.locator(".ac-principal .ac-avatar").getAttribute("src")).endsWith("avatar-02.webp"));
+      // The rear pose only applies to Gonzalo's avatar in the centre.
+      await page.evaluate(()=>{localStorage.setItem("gya_avatar","avatar-22");Extensiones.abrirJuego("ahora-caigo");});
+      assert.equal(await page.locator(".ac-de-espaldas").count(),1);
+      assert((await page.locator(".ac-principal .ac-avatar").getAttribute("src")).endsWith("avatar-22-espalda.webp"));
+      assert(await page.locator(".ac-principal").evaluate(el=>
+        +getComputedStyle(el.querySelector(".ac-avatar")).zIndex>+getComputedStyle(el.querySelector(".ac-atril")).zIndex),"podium behind rear-facing player");
       await page.waitForFunction(()=>[...document.querySelectorAll(".ac-juego img")].every(i=>i.complete&&i.naturalWidth>0));
       for(const viewport of [{width:1280,height:900},{width:844,height:390},{width:390,height:844}]){
         await page.setViewportSize(viewport);

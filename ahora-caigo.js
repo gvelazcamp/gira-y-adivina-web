@@ -19,8 +19,10 @@ window.AhoraCaigo=(()=>{
     caja.setAttribute("aria-label",numero===0?nombre+", participante principal":"Participante "+numero);
     const piso=document.createElement("span");piso.className="ac-plataforma";
     const persona=document.createElement("img");persona.className="ac-avatar";persona.alt="";persona.draggable=false;
-    persona.src="assets/atril/"+avatar+".webp";
-    persona.onerror=()=>{persona.onerror=null;persona.src="assets/atril/avatar-01.webp";};
+    const deEspaldas=numero===0&&avatar==="avatar-22";
+    if(deEspaldas)caja.classList.add("ac-de-espaldas");
+    persona.src=deEspaldas?"assets/ahora-caigo/avatar-22-espalda.webp":"assets/atril/"+avatar+".webp";
+    persona.onerror=()=>{persona.onerror=null;caja.classList.remove("ac-de-espaldas");persona.src="assets/atril/"+avatar+".webp";};
     const atril=document.createElement("img");atril.className="ac-atril";atril.alt="";atril.draggable=false;
     atril.src=BASE+"elementos/Giro_atril_oficial_chico.webp";
     const etiqueta=document.createElement("span");etiqueta.className="ac-nombre";

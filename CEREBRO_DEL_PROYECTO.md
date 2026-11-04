@@ -2370,3 +2370,7 @@ Fecha: 31/10/2026 — Duelo de Conocimiento en la tele: las fotos de famosos/fut
 ```text
 Fecha: 04/11/2026 — Ahora Caigo, primera etapa autorizada por Gonzalo: entrada en Más juegos con soloGonzalo:true y control de acceso también en el módulo. Escenario con el avatar y atril del perfil en el centro, diez rivales en semicírculo usando assets/atril y el atril oficial existente; sorteo uniforme con recorrido de luces y frenado. Todavía sin preguntas ni caídas. Archivos ahora-caigo.js/css v1; extensiones.js v119; sw v678. Prueba tests/ahora-caigo.cjs: acceso de Gonzalo y bloqueo de Vale, imágenes cargadas, once figuras dentro del escenario en escritorio/horizontal/vertical, destinos 1 y 10 y limpieza al salir durante el sorteo. Publicado por Git en main (API de GitHub inaccesible desde la sesión).
 ```
+
+```text
+Fecha: 04/11/2026 — Ahora Caigo: Gonzalo pidió verse de espaldas mirando a la ronda. Se generó una pose trasera de su avatar-22 (camisa celeste y conejo) en assets/ahora-caigo/avatar-22-espalda.webp; se aplica únicamente al participante central cuando usa ese avatar, con el atril por delante del personaje hacia los rivales. Los rivales y los otros juegos conservan sus poses. Si la nueva imagen falla, vuelve a la pose frontal. ahora-caigo.js/css v2, sw v679; prueba de acceso, capas, imágenes, tres tamaños y sorteo en tests/ahora-caigo.cjs aprobada.
+```

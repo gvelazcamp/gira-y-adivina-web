@@ -14,6 +14,10 @@
 .ac-nombre{position:absolute;z-index:4;bottom:0;left:0;width:100%;color:#fff;font-size:clamp(.55rem,1.5vw,1rem);font-weight:900;text-shadow:0 2px 4px #000;background:#111031dd;border:1px solid #69d6ff70;border-radius:20px;line-height:1.4;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
 .ac-principal .ac-plataforma{border-color:#c28aff;box-shadow:0 0 14px #b35aff}
 .ac-principal .ac-nombre{border-color:#c28aff;color:#ffe89e}
+/* El principal mira a los rivales: el atril queda por delante de él,
+   detrás de su espalda desde el punto de vista de la cámara. */
+.ac-de-espaldas .ac-avatar{z-index:3;width:106%;left:-3%;bottom:9%}
+.ac-de-espaldas .ac-atril{z-index:2;bottom:22%;filter:brightness(.8) drop-shadow(0 3px 3px #0009)}
 .ac-iluminado .ac-atril,.ac-elegido .ac-atril{filter:drop-shadow(0 0 7px #ffe25c) drop-shadow(0 0 15px #ffc432)}
 .ac-iluminado .ac-plataforma,.ac-elegido .ac-plataforma{background:#b5801e;border-color:#ffe998;box-shadow:0 0 20px #ffce32}
 .ac-iluminado .ac-nombre,.ac-elegido .ac-nombre{background:#ffdf65;color:#342000;border-color:#fff3b5;text-shadow:none}
