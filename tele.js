@@ -295,7 +295,7 @@
       if(m.t==="hola"){
         const n=limpio(m.n,14)||"Jugador";let j=T.jug.find(x=>x.pid===m.pid),cambio=false;
         if(!j){if(T.jug.length>=8)return;j={pid:m.pid,n};T.jug.push(j);sonar(880,.12,"triangle",.06);cambio=true;}
-        if(j.n!==n){j.n=n;cambio=true;}if(m.pj==="hombre"||m.pj==="mujer")j.pj=m.pj;if(/^avatar-\d{2}$/.test(m.av||""))j.av=m.av;if(Array.isArray(m.vr))j.vr=new Set(m.vr.slice(-3000).map(String));j.visto=Date.now();if(!T.mando||!T.jug.some(x=>x.pid===T.mando)){T.mando=m.pid;cambio=true;}
+        if(j.n!==n){j.n=n;cambio=true;}if(!!j.espejo!==(m.espejo===true)){j.espejo=m.espejo===true;cambio=true;}if(m.pj==="hombre"||m.pj==="mujer")j.pj=m.pj;if(/^avatar-\d{2}$/.test(m.av||""))j.av=m.av;if(Array.isArray(m.vr))j.vr=new Set(m.vr.slice(-3000).map(String));j.visto=Date.now();if(!T.mando||!T.jug.some(x=>x.pid===T.mando)){T.mando=m.pid;cambio=true;}
         if(cambio){pintar();difundir();}return;
       }
       const j=T.jug.find(x=>x.pid===m.pid);if(!j)return;j.visto=Date.now();
@@ -317,7 +317,13 @@
     }
     function elegir(id,revancha){
       const j=JUEGOS.find(x=>x.id===id);if(!j||!j.ok)return;
-      if(id==="tutti"&&T.jug.length<2){avisoTele("Tutti Frutti necesita al menos 2 celulares para revisar las respuestas");return;}
+      if(id==="tutti"){
+        /* El iPhone que duplica la TV puede jugar a los demás juegos, pero no es
+           participante de Tutti Frutti: sus respuestas quedarían en la TV. */
+        const participantes=T.jug.filter(j=>!j.espejo);
+        if(participantes.length<2){avisoTele("Tutti Frutti necesita al menos 2 celulares que respondan");return;}
+        if(!participantes.some(j=>j.pid===T.mando))T.mando=participantes[0].pid;
+      }
       despierta();
       /* Todos los juegos arrancan con el programa: apertura y Giro presentando (el Rosco tiene su propio show). */
       /* Rosco con 2 o más celulares: el que tiene el control elige "solo" o "de a dos" (y contra quién). */
@@ -406,7 +412,7 @@
     const elegidas=Array.isArray(config.cats)?config.cats.filter(c=>["Nombre","Apellido","País o ciudad","Comida","Animal","Color","Marca","Fruta o verdura","Cosa","Profesión","Famoso","Película o serie"].includes(c)).slice(0,12):[];
     const cats=elegidas.length>=3?elegidas:BASE.slice();
     const duracion=[60,90,120].includes(config.tiempo)?config.tiempo:90;
-    const jugadores=T.jug.map(j=>({pid:j.pid,n:j.n})),ids=new Set(jugadores.map(j=>j.pid));
+    const jugadores=T.jug.filter(j=>!j.espejo).map(j=>({pid:j.pid,n:j.n})),ids=new Set(jugadores.map(j=>j.pid));
     const totales=Object.fromEntries(jugadores.map(j=>[j.pid,0])),ganadas=Object.fromEntries(jugadores.map(j=>[j.pid,0]));
     const historial=[];
     let ronda=0,letra="",restante=0,fase="jugando",ganador=null,muerto=false,timer=null,corteEn=0,resolucionProgramada=false;
@@ -1794,7 +1800,7 @@
     }
     function entrar(){
       raiz.innerHTML=`<div class="tl-cel-caja"><h2>Conectando con la tele…</h2><p>Código <b>${codCel}</b></p></div>`;
-      conectar(codCel,()=>{conectado=true;const h=()=>{let pj="";try{pj=localStorage.getItem("gya_giro_personaje")||"";}catch(e){}let av="";try{av=localStorage.getItem("gya_avatar")||localStorage.getItem("gya_tele_avatar")||"";}catch(e){}let vr;if(holaN++%6===0)try{vr=[...Vistas.cargar("rosco")].slice(-3000);}catch(e){}mandar({t:"hola",n:nombre,pj,av,vr});};h();hola=setInterval(h,4000);
+      conectar(codCel,()=>{conectado=true;const h=()=>{let pj="";try{pj=localStorage.getItem("gya_giro_personaje")||"";}catch(e){}let av="";try{av=localStorage.getItem("gya_avatar")||localStorage.getItem("gya_tele_avatar")||"";}catch(e){}let vr;if(holaN++%6===0)try{vr=[...Vistas.cargar("rosco")].slice(-3000);}catch(e){}mandar({t:"hola",n:nombre,pj,av,vr,...(P.get("teleespejo")==="1"?{espejo:true}:{})});};h();hola=setInterval(h,4000);
         setTimeout(()=>{if(!ultimo)raiz.innerHTML=`<div class="tl-cel-caja"><h2>No encuentro la tele 🤔</h2><p>Revisá que el código <b>${codCel}</b> sea el que muestra la tele y que la tele siga abierta.</p><button type="button" class="tl-boton" onclick="location.reload()">Probar de nuevo</button><a class="tl-boton tl-chico" href="tele/?cambiar=1">Usar otra tele</a></div>`;},12000);},
         ()=>{raiz.innerHTML=`<div class="tl-cel-caja"><h2>Sin conexión</h2><p>No se pudo conectar (${esc(window.gyaFalloConexion||"sin respuesta")}). Probá con datos del celular.</p><button type="button" class="tl-boton" onclick="location.reload()">Reintentar</button></div>`;},
         m=>{if(m.t==="ruleta_sala"&&m.cod===codCel&&/^[0-9A-Z]{4,6}$/.test(String(m.sala||""))){irRuleta(String(m.sala),nombre);return;}
