@@ -125,7 +125,7 @@ window.DueloConocimiento=DueloConocimiento;
 
 /* Catálogo de minijuegos. Cada entrada habilitada aporta su función abrir. */
 const EXTENSIONES=[
-  {id:"ahora-caigo",soloGonzalo:true,nombre:"Ahora Caigo",descripcion:"Vos en el centro y diez rivales · escenario y sorteo",icono:"presentacion-y-locucion-extensiones/Giro/elementos/Giro_atril_oficial_chico.webp",estado:"disponible",insignia:"🧪 Prueba",abrir:contenedor=>AhoraCaigo.abrir(contenedor),record:()=>"Escenario y sorteo"},
+  {id:"ahora-caigo",soloGonzalo:true,nombre:"Ahora Caigo",descripcion:"Sorteá un rival, descubrí las palabras y evitá la caída",icono:"presentacion-y-locucion-extensiones/Giro/elementos/Giro_atril_oficial_chico.webp",estado:"disponible",insignia:"🧪 Prueba",abrir:contenedor=>AhoraCaigo.abrir(contenedor),record:()=>"Duelo contra bots"},
   {id:"tutti-frutti",nombre:"Tutti Frutti",descripcion:"Cada uno con su celular: letra al azar y ¡BASTA!",icono:"logo-tutti-frutti.svg",estado:"disponible",abrir:contenedor=>TuttiFrutti.abrir(contenedor),record:()=>TuttiFrutti.partidasJugadas()+" partidas"},
   {id:"puzzle",nombre:"Puzzle",descripcion:"Armá rompecabezas de dibujos y ciudades",icono:"assets/puzzle-arte/icono.webp",estado:"disponible",abrir:contenedor=>Puzzle.abrir(contenedor),record:()=>Puzzle.armados()+" armados"},
   {id:"palabra-secreta",nombre:"Palabra Secreta",descripcion:"Adiviná palabras y subí de nivel: cada vez tenés menos intentos",icono:"logo-palabra-secreta.svg",estado:PALABRA_HABILITADA?"disponible":"proximamente",abrir:contenedor=>PalabraSecreta.abrir(contenedor),record:()=>"Nivel "+PalabraSecreta.nivelActual()},

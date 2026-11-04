@@ -38,3 +38,57 @@
   .ac-cabecera p{display:none}
   .ac-escenario{max-width:780px;margin:auto}
 }
+/* Duelo: la pregunta ocupa el primer plano, con el escenario a su lado. */
+.ac-juego{display:flex;flex-direction:column}
+.ac-cabecera{order:0}
+.ac-escenario{order:2}
+.ac-controles{order:3}
+.ac-duelo{order:1;min-width:0;padding:20px;margin-bottom:14px;text-align:left;border:1px solid #6a61b0;border-radius:22px;background:radial-gradient(ellipse at 100% 0,#6743b544,transparent 65%),linear-gradient(155deg,#29204a,#15132d);box-shadow:0 12px 35px #0005}
+.ac-duelo[hidden],.ac-responder[hidden],.ac-bot[hidden],.ac-sortear[hidden]{display:none}
+.ac-marcador{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:14px;border-bottom:1px solid #ffffff20}
+.ac-marcador>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.ac-marcador>div:last-child{text-align:right}
+.ac-marcador small{font-size:.6rem;font-weight:800;letter-spacing:.1em;color:#c2b4e5}
+.ac-marcador strong{font-size:.9rem;color:#ffe6a3;overflow-wrap:anywhere}
+.ac-marcador>span{font-size:.75rem;color:#9686b4;font-weight:900}
+.ac-pregunta-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 6px}
+.ac-turno-texto{font-weight:900;font-size:.75rem;letter-spacing:.09em;color:#7df0e2}
+.ac-reloj{--reloj:360deg;flex:0 0 66px;width:66px;height:66px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,#1d1937 61%,transparent 63%),conic-gradient(#61e8d1 var(--reloj),#ffffff18 0);color:#b1fff4}
+.ac-reloj b{font-size:1.6rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.ac-reloj small{font-size:.5rem;font-weight:800;letter-spacing:.1em}
+.ac-reloj.ac-urgente{color:#ffb0ba;background:radial-gradient(circle,#301425 61%,transparent 63%),conic-gradient(#ff5b7c var(--reloj),#ffffff18 0)}
+.ac-categoria{display:inline-block;color:#f6cf77;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;font-weight:800}
+.ac-pregunta{margin:9px 0 18px;font-size:clamp(1.05rem,2.2vw,1.5rem);line-height:1.4;color:#fff;font-weight:800}
+.ac-letras{container-type:inline-size;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:0 0 8px}
+.ac-palabra{display:flex;gap:3px;max-width:100%}
+.ac-letra{width:min(32px,calc((100cqw - 3px * var(--larga)) / var(--larga)));min-width:11px;aspect-ratio:.8;display:flex;justify-content:center;align-items:center;border:1px solid #645c8a;border-bottom:3px solid #6e609a;border-radius:5px;background:#0c1025;color:#c7badc;font-size:clamp(.65rem,1.7vw,1.25rem);font-weight:900}
+.ac-letra.ac-visible{color:#fff0b3;background:linear-gradient(#654b27,#3b2e25);border-color:#d3a14d;border-bottom-color:#e3b762}
+.ac-cantidad{display:block;text-align:center;color:#aaa0bd;font-size:.65rem}
+.ac-responder{margin-top:18px}
+.ac-responder label{display:block;color:#c9bfd9;font-size:.72rem;margin-bottom:6px}
+.ac-responder>div{display:flex;gap:8px;flex-wrap:wrap}
+.ac-responder input{flex:1 1 150px;min-width:0;width:100%;min-height:46px;border:1px solid #8f83b4;border-radius:12px;padding:10px 12px;background:#101027;color:#fff;font-size:16px;text-transform:uppercase}
+.ac-responder input:focus{outline:2px solid #7ce9d7;outline-offset:1px}
+.ac-responder button{flex:0 0 auto;padding:10px 14px;min-height:46px;border-radius:12px;background:#77ead6;color:#10332e;font:inherit;font-size:.82rem;font-weight:900}
+.ac-mensaje{min-height:2.8em;margin:14px 0 0;font-size:.8rem;line-height:1.4;color:#c8bfdc}
+.ac-mensaje.ac-bien{color:#8af5c7;font-weight:800}
+.ac-mensaje.ac-mal{color:#ffb3bc}
+.ac-bot{padding:20px 6px 6px;text-align:center;font-size:.85rem;color:#d7c9f2}
+.ac-bot>span{display:block;margin-bottom:8px;color:#dfb9ff;letter-spacing:.4em;animation:ac-pensando 1s ease-in-out infinite alternate}
+.ac-turno-bot .ac-turno-texto{color:#dfb9ff}
+.ac-turno .ac-plataforma{border-color:#baffed;box-shadow:0 0 22px #71f9df}
+.ac-caido{clip-path:inset(0 -12% -2%)}
+.ac-caido .ac-avatar,.ac-caido .ac-atril{animation:ac-caer .85s ease-in forwards;pointer-events:none}
+.ac-caido .ac-plataforma{background:#080711;border-color:#4b3d65;box-shadow:inset 0 4px 9px #000}
+.ac-caido .ac-nombre{color:#968aa9;border-color:#473d58;background:#15101d}
+@keyframes ac-caer{to{transform:translateY(160%);opacity:0}}
+@keyframes ac-pensando{to{opacity:.35}}
+@media(min-width:740px){
+  .ac-en-duelo{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,1fr);gap:0 18px;align-items:start}
+  .ac-en-duelo .ac-cabecera{grid-column:1/-1}
+  .ac-en-duelo .ac-escenario{grid-column:1;grid-row:2;align-self:center}
+  .ac-en-duelo .ac-duelo{grid-column:2;grid-row:2;margin:0}
+  .ac-en-duelo .ac-controles{grid-column:1/-1}
+}
+@media(max-width:430px){.ac-duelo{padding:15px}.ac-pregunta{font-size:1.08rem}.ac-responder button{flex:1 1 100%}.ac-letra{font-size:.85rem}}
+@media(prefers-reduced-motion:reduce){.ac-bot>span{animation:none}.ac-caido .ac-avatar,.ac-caido .ac-atril{animation-duration:.01s}}
