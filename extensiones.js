@@ -128,6 +128,7 @@ const EXTENSIONES=[
   {id:"ahora-caigo",soloUsuarios:["gonzalo","vale"],nombre:"No te caigas",descripcion:"Sorteá un rival, descubrí las palabras y evitá la caída",icono:"assets/no-te-caigas/logo-v1.webp",estado:"disponible",insignia:"🧪 Prueba",abrir:contenedor=>AhoraCaigo.abrir(contenedor),record:()=>"Duelo contra bots"},
   {id:"tutti-frutti",nombre:"Tutti Frutti",descripcion:"Cada uno con su celular: letra al azar y ¡BASTA!",icono:"logo-tutti-frutti.svg",estado:"disponible",abrir:contenedor=>TuttiFrutti.abrir(contenedor),record:()=>TuttiFrutti.partidasJugadas()+" partidas"},
   {id:"puzzle",nombre:"Puzzle",descripcion:"Armá rompecabezas de dibujos y ciudades",icono:"assets/puzzle-arte/icono.webp",estado:"disponible",abrir:contenedor=>Puzzle.abrir(contenedor),record:()=>Puzzle.armados()+" armados"},
+  {id:"palabras-cruzadas",nombre:"Palabras Cruzadas",descripcion:"Crucigramas con pistas rioplatenses: completá horizontales y verticales",icono:"logo-palabras-cruzadas.svg",estado:"disponible",abrir:contenedor=>PalabrasCruzadas.abrir(contenedor),record:()=>{const n=PalabrasCruzadas.resueltos();return n+(n===1?" resuelto":" resueltos");}},
   {id:"palabra-secreta",nombre:"Palabra Secreta",descripcion:"Adiviná palabras y subí de nivel: cada vez tenés menos intentos",icono:"logo-palabra-secreta.svg",estado:PALABRA_HABILITADA?"disponible":"proximamente",abrir:contenedor=>PalabraSecreta.abrir(contenedor),record:()=>"Nivel "+PalabraSecreta.nivelActual()},
   {id:"frases-en-giro",nombre:"Frases en Giro",descripcion:"Ordená frases entre giros y señuelos",icono:"logo-frases-en-giro.svg",estado:"disponible",abrir:contenedor=>FrasesEnGiro.abrir(contenedor),record:()=>FrasesEnGiro.mejorPuntaje()+" puntos"},
   {id:"memoria-en-giro",nombre:"Memoria en Giro",descripcion:"Encontrá los pares antes de que giren",icono:"logo-memoria-en-giro.svg",estado:"disponible",abrir:contenedor=>MemoriaEnGiro.abrir(contenedor),record:()=>MemoriaEnGiro.mejorPuntaje()+" puntos"},
@@ -340,9 +341,10 @@ const Extensiones=(()=>{
     window.addEventListener("resize",ajustarTeclado);
     document.addEventListener("keydown",e=>{
       if(shell.hidden)return;
+      if(vista==="palabras-cruzadas"&&document.querySelector(".pc-juego dialog[open]"))return;
       /* El lobby de salas necesita sus teclas nativas (escribir código, Enter,
          pegar y borrar). Palabra Secreta solo captura letras del tablero. */
-      if(document.querySelector(".dl-capa")||(vista==="palabra-secreta"&&e.target.closest?.("input,textarea,select,[contenteditable='true']")))return;
+      if(document.querySelector(".dl-capa")||(["palabra-secreta","palabras-cruzadas"].includes(vista)&&e.target.closest?.("input,textarea,select,[contenteditable='true']")))return;
       if(e.key==="Escape"&&avisoTV){e.preventDefault();e.stopImmediatePropagation();cerrarAvisoTV();return;}
       /* Juegos de previa en pantalla fija: Escape no saca del juego. */
       /* Solo Escape se bloquea: las demás teclas tienen que escribir (en iPhone,
@@ -351,6 +353,10 @@ const Extensiones=(()=>{
       if(vista==="tutti-frutti"&&e.key==="Enter"&&!e.isComposing&&e.target.id==="tfInput"&&window.TuttiFrutti){e.preventDefault();TuttiFrutti.enter();}
       if(e.key==="Escape"){e.preventDefault();e.stopImmediatePropagation();vista==="lobby"?cerrar():abrirLobby();return;}
       if(vista==="palabra-secreta"&&window.PalabraSecreta){if(e.key!=="Tab")e.preventDefault();PalabraSecreta.tecla(e.key);}
+      if(vista==="palabras-cruzadas"&&window.PalabrasCruzadas){
+        if(e.key==="Tab"||e.ctrlKey||e.metaKey||e.altKey||(["Enter"," "].includes(e.key)&&e.target.closest?.("button")))return;
+        if(PalabrasCruzadas.tecla(e.key))e.preventDefault();
+      }
       if(vista==="ahorcado-rioplatense"&&window.AhorcadoRioplatense)AhorcadoRioplatense.tecla(e.key,e);
       if(vista==="moon-tap"&&window.MoonTap)MoonTap.tecla(e.key,e);
       if(vista==="rosco-rioplatense"&&e.key==="Enter"&&!e.isComposing&&e.target.id==="rrEntrada"){e.preventDefault();RoscoRioplatense.enviar();}
@@ -432,7 +438,7 @@ const Extensiones=(()=>{
     if(typeof window.anotarUltimoJuego==="function")window.anotarUltimoJuego(ext.nombre);
     ext.abrir(contenido);shell.scrollTop=0;
   }
-  function salirJuego(){for(const juego of [window.AhoraCaigo,window.SopaFugaz,window.RuedaDeLetras,window.PalabraSecreta,window.FrasesEnGiro,window.MemoriaEnGiro,window.RoscoRioplatense,window.SilabarioRioplatense,window.CienRioplatenses,window.AhorcadoRioplatense,window.ContraRelojRioplatense,window.MoonTap,window.DueloConocimiento,window.Puzzle,window.QueNumeroSoy,window.QuienSoy,window.Bomba,window.Impostor,window.TratoSucio,window.Mimica,window.CantaLaCancion,window.TuttiFrutti])if(juego)juego.salir();}
+  function salirJuego(){for(const juego of [window.PalabrasCruzadas,window.AhoraCaigo,window.SopaFugaz,window.RuedaDeLetras,window.PalabraSecreta,window.FrasesEnGiro,window.MemoriaEnGiro,window.RoscoRioplatense,window.SilabarioRioplatense,window.CienRioplatenses,window.AhorcadoRioplatense,window.ContraRelojRioplatense,window.MoonTap,window.DueloConocimiento,window.Puzzle,window.QueNumeroSoy,window.QuienSoy,window.Bomba,window.Impostor,window.TratoSucio,window.Mimica,window.CantaLaCancion,window.TuttiFrutti])if(juego)juego.salir();}
   function cerrar(){if(!shell)return;cerrarAvisoTV();salirJuego();Fichas.enJuego("");vista="lobby";modoTVElegido=false;versionModo++;salirTV();shell.hidden=true;shell.classList.remove("ext-teclado-abierto");shell.style.top="";shell.style.height="";shell.style.bottom="";document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
   return{abrirLobby,abrirJuego,cerrar,prepararDueloTV};
 })();

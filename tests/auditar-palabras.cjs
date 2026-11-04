@@ -5,7 +5,7 @@
 
    Reglas (errores):
    1. Una respuesta no puede estar en dos juegos de respuesta única:
-      Ahora Caigo, Ahorcado, Contra Reloj, Impostor, Mímica, Quién soy, Rosco, Silabario, Sopa Fugaz.
+      Ahora Caigo, Palabras Cruzadas, Ahorcado, Contra Reloj, Impostor, Mímica, Quién soy, Rosco, Silabario, Sopa Fugaz.
    2. Una pista/definición/pregunta/frase no puede repetirse entre juegos
       (incluye 100 Rioplatenses y Frases en Giro).
    3. Dentro de un juego de respuesta única no se repite una respuesta,
@@ -20,7 +20,7 @@
 const fs=require("node:fs"),path=require("node:path"),vm=require("node:vm");
 const root=path.resolve(__dirname,"..");
 const ctx={};ctx.window=ctx;vm.createContext(ctx);
-for(const f of["ahora-caigo-datos.js","ahorcado-rioplatense-datos.js","canta-la-cancion-datos.js","cien-rioplatenses-datos.js","contra-reloj-rioplatense-datos.js","frases-en-giro-datos.js","impostor-datos.js","mimica-datos.js","palabra-secreta-datos.js","quien-soy-datos.js","rosco-rioplatense-datos.js","rueda-de-letras-datos.js","silabario-rioplatense-datos.js","sopa-fugaz-datos.js"])
+for(const f of["palabras-cruzadas-datos.js","ahora-caigo-datos.js","ahorcado-rioplatense-datos.js","canta-la-cancion-datos.js","cien-rioplatenses-datos.js","contra-reloj-rioplatense-datos.js","frases-en-giro-datos.js","impostor-datos.js","mimica-datos.js","palabra-secreta-datos.js","quien-soy-datos.js","rosco-rioplatense-datos.js","rueda-de-letras-datos.js","silabario-rioplatense-datos.js","sopa-fugaz-datos.js"])
   vm.runInContext(fs.readFileSync(path.join(root,f),"utf8").replace(/^(const|let) /gm,"var "),ctx);
 
 const norm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().replace(/[^A-Z0-9Ñ]+/g," ").trim();
@@ -28,6 +28,7 @@ const junto=s=>norm(s).replace(/ /g,"");
 const unicas={},avisos={},pistas={};
 const add=(obj,juego,item)=>{(obj[juego]=obj[juego]||[]).push(item);};
 
+ctx.PALABRAS_CRUZADAS_DATOS.forEach(d=>d.palabras.forEach(p=>{add(unicas,"Palabras Cruzadas",{r:p.respuesta,nivel:1,donde:d.id});add(pistas,"Palabras Cruzadas",{p:p.pista,donde:d.id+" "+p.respuesta});}));
 ctx.AHORA_CAIGO_DATOS.forEach(d=>{add(unicas,"Ahora Caigo",{r:d.respuesta,nivel:1,donde:d.id});add(pistas,"Ahora Caigo",{p:d.pregunta,donde:d.id});});
 ctx.AHORCADO_DATOS.forEach(d=>add(unicas,"Ahorcado",{r:d.palabra,nivel:1,donde:d.categoria}));
 ctx.CONTRA_RELOJ_TARJETAS.forEach((t,i)=>t.forEach(w=>add(unicas,"Contra Reloj",{r:w,nivel:1,donde:"tarjeta "+(i+1)})));

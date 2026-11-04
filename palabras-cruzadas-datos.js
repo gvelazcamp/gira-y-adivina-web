@@ -1,0 +1,604 @@
+/* Crucigramas revisados: los cruces coinciden y cada palabra tiene pista propia.
+   Sin espacios ni tildes en el tablero; se conserva la Ñ. */
+window.PALABRAS_CRUZADAS_DATOS=[
+  {
+    "id": "pc-1",
+    "titulo": "De este lado del río",
+    "filas": 8,
+    "columnas": 10,
+    "palabras": [
+      {
+        "respuesta": "GUARDA",
+        "pista": "Trabajador que tradicionalmente cobraba el boleto en el ómnibus.",
+        "fila": 0,
+        "columna": 4,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "PAMPA",
+        "pista": "Gran llanura argentina que le da nombre a una provincia.",
+        "fila": 2,
+        "columna": 0,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "MACANA",
+        "pista": "Equivocación o problema: «Me mandé una ___».",
+        "fila": 2,
+        "columna": 7,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "CHE",
+        "pista": "Vocativo rioplatense que usamos para llamar la atención de alguien.",
+        "fila": 4,
+        "columna": 7,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "TARTA",
+        "pista": "Preparación al horno con base de masa y relleno, como la de jamón y queso.",
+        "fila": 5,
+        "columna": 3,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "BOCHA",
+        "pista": "Bola que se tira para acercarla al bochín.",
+        "fila": 7,
+        "columna": 3,
+        "direccion": "H"
+      }
+    ]
+  },
+  {
+    "id": "pc-2",
+    "titulo": "Charlas de vereda",
+    "filas": 7,
+    "columnas": 11,
+    "palabras": [
+      {
+        "respuesta": "ZARPADO",
+        "pista": "En lenguaje rioplatense, alguien que se pasó de la raya está ___.",
+        "fila": 0,
+        "columna": 1,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "ZAFAR",
+        "pista": "Salir de un apuro o evitar una situación complicada.",
+        "fila": 1,
+        "columna": 0,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "ACHURA",
+        "pista": "Cada una de las vísceras, como la molleja, que se cocina a la parrilla.",
+        "fila": 1,
+        "columna": 9,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "PINGO",
+        "pista": "Forma gauchesca y cariñosa de llamar al caballo.",
+        "fila": 2,
+        "columna": 6,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "PELOPINCHO",
+        "pista": "Marca que se usa popularmente para nombrar una pileta de lona.",
+        "fila": 3,
+        "columna": 1,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "RATONEAR",
+        "pista": "En rioplatense, escatimar dinero de manera exagerada.",
+        "fila": 6,
+        "columna": 3,
+        "direccion": "H"
+      }
+    ]
+  },
+  {
+    "id": "pc-3",
+    "titulo": "Entre mates y canciones",
+    "filas": 8,
+    "columnas": 10,
+    "palabras": [
+      {
+        "respuesta": "CROTO",
+        "pista": "Forma coloquial de describir a alguien vestido de manera muy desaliñada.",
+        "fila": 0,
+        "columna": 9,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "PÁEZ",
+        "pista": "Apellido de Fito, músico argentino de «El amor después del amor».",
+        "fila": 1,
+        "columna": 1,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "DI MARÍA",
+        "pista": "Apellido del futbolista argentino al que apodan «Fideo».",
+        "fila": 1,
+        "columna": 7,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "SANGUCHITO",
+        "pista": "Diminutivo rioplatense de sánguche, muy usado para los de miga.",
+        "fila": 2,
+        "columna": 0,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "BOLAZO",
+        "pista": "Mentira grande o historia difícil de creer, en rioplatense.",
+        "fila": 4,
+        "columna": 4,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "ALCAUCIL",
+        "pista": "Nombre que se le da a la alcachofa en Uruguay y Argentina.",
+        "fila": 6,
+        "columna": 1,
+        "direccion": "H"
+      }
+    ]
+  },
+  {
+    "id": "pc-4",
+    "titulo": "Una vuelta por el barrio",
+    "filas": 7,
+    "columnas": 9,
+    "palabras": [
+      {
+        "respuesta": "MANGAZO",
+        "pista": "Pedido de dinero o de un favor, en lenguaje rioplatense.",
+        "fila": 0,
+        "columna": 1,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "VIEJA",
+        "pista": "Manera familiar y afectuosa de referirse a la madre.",
+        "fila": 0,
+        "columna": 6,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "CAPUCHINO",
+        "pista": "Café que se sirve con leche y una capa abundante de espuma.",
+        "fila": 1,
+        "columna": 0,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "OCHAVA",
+        "pista": "Esquina de un edificio recortada en diagonal.",
+        "fila": 1,
+        "columna": 8,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "LÁGRIMA",
+        "pista": "Pedido de cafetería con mucha leche y apenas un poco de café.",
+        "fila": 4,
+        "columna": 0,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "LONGANIZA",
+        "pista": "Embutido alargado y curado que puede sumarse a una tabla de fiambres.",
+        "fila": 6,
+        "columna": 0,
+        "direccion": "H"
+      }
+    ]
+  },
+  {
+    "id": "pc-5",
+    "titulo": "Sabores y recuerdos",
+    "filas": 6,
+    "columnas": 11,
+    "palabras": [
+      {
+        "respuesta": "VILAS",
+        "pista": "Apellido de Guillermo, uno de los grandes nombres del tenis argentino.",
+        "fila": 0,
+        "columna": 4,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "MORENO",
+        "pista": "Apellido de Mariano, secretario de la Primera Junta de 1810.",
+        "fila": 0,
+        "columna": 10,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "SARMIENTO",
+        "pista": "Apellido de Domingo Faustino, presidente argentino recordado por impulsar la educación.",
+        "fila": 1,
+        "columna": 0,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "ORIBE",
+        "pista": "Apellido de Manuel, segundo presidente del Uruguay.",
+        "fila": 1,
+        "columna": 8,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "IGUAZÚ",
+        "pista": "Nombre de las famosas cataratas situadas entre Argentina y Brasil.",
+        "fila": 3,
+        "columna": 1,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "MUÑECO",
+        "pista": "Apodo de Marcelo Gallardo, exfutbolista y entrenador de River Plate.",
+        "fila": 5,
+        "columna": 5,
+        "direccion": "H"
+      }
+    ]
+  },
+  {
+    "id": "pc-6",
+    "titulo": "Del campo a la ciudad",
+    "filas": 10,
+    "columnas": 11,
+    "palabras": [
+      {
+        "respuesta": "SACRAMENTO",
+        "pista": "Bizcocho uruguayo alargado que también se vende relleno de jamón y queso.",
+        "fila": 0,
+        "columna": 4,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "SPINETTA",
+        "pista": "Apellido de Luis Alberto, músico argentino apodado «el Flaco».",
+        "fila": 1,
+        "columna": 2,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "BALDOSÓN",
+        "pista": "Pieza grande de cemento o piedra con la que se pavimenta una vereda.",
+        "fila": 1,
+        "columna": 10,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "SALAMÍN",
+        "pista": "Embutido pequeño y curado que suele cortarse en rodajas para la picada.",
+        "fila": 2,
+        "columna": 0,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "MENGANO",
+        "pista": "Nombre ficticio que suele acompañar a «fulano y ___».",
+        "fila": 5,
+        "columna": 4,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "MITRE",
+        "pista": "Apellido de Bartolomé, presidente argentino e historiador.",
+        "fila": 6,
+        "columna": 0,
+        "direccion": "H"
+      }
+    ]
+  },
+  {
+    "id": "pc-7",
+    "titulo": "Palabras de acá",
+    "filas": 9,
+    "columnas": 9,
+    "palabras": [
+      {
+        "respuesta": "DESPELOTE",
+        "pista": "Gran desorden o confusión, dicho en rioplatense.",
+        "fila": 0,
+        "columna": 2,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "GUAPO",
+        "pista": "En el habla tradicional del tango, hombre valiente y dispuesto a pelear.",
+        "fila": 2,
+        "columna": 4,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "PATRIA",
+        "pista": "Tierra natal a la que se refieren los actos del 25 de Mayo y del 25 de Agosto.",
+        "fila": 2,
+        "columna": 7,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "CEBADA",
+        "pista": "Cereal cuya malta se usa para elaborar cerveza.",
+        "fila": 3,
+        "columna": 0,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "BILLETERA",
+        "pista": "Objeto de bolsillo donde se guardan billetes, documentos y tarjetas.",
+        "fila": 5,
+        "columna": 0,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "TAJAMAR",
+        "pista": "Depósito de agua de lluvia, habitual en establecimientos rurales uruguayos.",
+        "fila": 7,
+        "columna": 2,
+        "direccion": "H"
+      }
+    ]
+  },
+  {
+    "id": "pc-8",
+    "titulo": "Pasión rioplatense",
+    "filas": 8,
+    "columnas": 10,
+    "palabras": [
+      {
+        "respuesta": "BAGUAL",
+        "pista": "Caballo que todavía no ha sido domado.",
+        "fila": 0,
+        "columna": 4,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "PAPPO",
+        "pista": "Apodo del guitarrista argentino Norberto Napolitano.",
+        "fila": 0,
+        "columna": 9,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "RIVADAVIA",
+        "pista": "Apellido de Bernardino, primer presidente de las Provincias Unidas del Río de la Plata.",
+        "fila": 1,
+        "columna": 1,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "RUGGERI",
+        "pista": "Apellido de Óscar, defensor argentino campeón del mundo en México 1986.",
+        "fila": 1,
+        "columna": 1,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "CARRERO",
+        "pista": "Quien conduce una carreta o un carro.",
+        "fila": 4,
+        "columna": 3,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "TIRABUZÓN",
+        "pista": "Forma en espiral que le da nombre a un tipo de fideo.",
+        "fila": 7,
+        "columna": 0,
+        "direccion": "H"
+      }
+    ]
+  },
+  {
+    "id": "pc-9",
+    "titulo": "La mesa está servida",
+    "filas": 9,
+    "columnas": 10,
+    "palabras": [
+      {
+        "respuesta": "GÜEMES",
+        "pista": "Apellido de Martín Miguel, líder de los gauchos salteños durante la Independencia.",
+        "fila": 0,
+        "columna": 6,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "CHARLY",
+        "pista": "Nombre artístico de García, figura del rock argentino y exintegrante de Sui Generis.",
+        "fila": 0,
+        "columna": 8,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "CUCURUCHO",
+        "pista": "Cono de barquillo en el que se sirve un helado.",
+        "fila": 1,
+        "columna": 1,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "BATLLE",
+        "pista": "Apellido de José, presidente uruguayo asociado a la creación del batllismo.",
+        "fila": 3,
+        "columna": 2,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "CHAMAMÉ",
+        "pista": "Música y danza del litoral argentino, especialmente de Corrientes.",
+        "fila": 4,
+        "columna": 0,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "PALENQUE",
+        "pista": "Poste o baranda donde se atan los caballos en el campo.",
+        "fila": 7,
+        "columna": 0,
+        "direccion": "H"
+      }
+    ]
+  },
+  {
+    "id": "pc-10",
+    "titulo": "Historias compartidas",
+    "filas": 9,
+    "columnas": 11,
+    "palabras": [
+      {
+        "respuesta": "MORTADELA",
+        "pista": "Fiambre rosado de fetas anchas, con pequeños trozos blancos de grasa.",
+        "fila": 0,
+        "columna": 5,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "CUARTETO",
+        "pista": "Género musical cordobés asociado a La Mona Jiménez y Rodrigo.",
+        "fila": 1,
+        "columna": 9,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "ENGRUDO",
+        "pista": "Pegamento casero de harina y agua, usado para pegar papel.",
+        "fila": 2,
+        "columna": 3,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "AGUANTE",
+        "pista": "Aliento de la hinchada: «¡Arriba, no aflojes!». En el Río de la Plata se dice «¡___!».",
+        "fila": 2,
+        "columna": 7,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "AGÜERO",
+        "pista": "Apellido de Sergio, el futbolista argentino conocido como «el Kun».",
+        "fila": 4,
+        "columna": 5,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "PATOVA",
+        "pista": "Nombre coloquial del personal de seguridad de un boliche.",
+        "fila": 8,
+        "columna": 0,
+        "direccion": "H"
+      }
+    ]
+  },
+  {
+    "id": "pc-11",
+    "titulo": "Entre amigos",
+    "filas": 10,
+    "columnas": 10,
+    "palabras": [
+      {
+        "respuesta": "FULANO",
+        "pista": "Nombre que usamos para hablar de alguien sin decir cómo se llama: «___ de tal».",
+        "fila": 0,
+        "columna": 4,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "FULBITO",
+        "pista": "Partido informal de fútbol entre amigos, dicho en diminutivo.",
+        "fila": 1,
+        "columna": 3,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "TABÁREZ",
+        "pista": "Apellido de Óscar Washington, entrenador uruguayo conocido como «el Maestro».",
+        "fila": 2,
+        "columna": 2,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "LAVALLEJA",
+        "pista": "Apellido de Juan Antonio, jefe de los Treinta y Tres Orientales.",
+        "fila": 3,
+        "columna": 1,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "BARDO",
+        "pista": "Lío o discusión, dicho en lenguaje rioplatense.",
+        "fila": 5,
+        "columna": 6,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "PUESTERO",
+        "pista": "Trabajador rural que vive y trabaja en un puesto de una estancia.",
+        "fila": 7,
+        "columna": 0,
+        "direccion": "H"
+      }
+    ]
+  },
+  {
+    "id": "pc-12",
+    "titulo": "Nuestro crucigrama",
+    "filas": 10,
+    "columnas": 11,
+    "palabras": [
+      {
+        "respuesta": "SABATINI",
+        "pista": "Apellido de Gabriela, la tenista argentina que ganó el Abierto de Estados Unidos de 1990.",
+        "fila": 0,
+        "columna": 0,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "CALAMARO",
+        "pista": "Apellido de Andrés, músico argentino de Los Rodríguez y «Flaca».",
+        "fila": 0,
+        "columna": 2,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "VENTANAL",
+        "pista": "Ventana de grandes dimensiones, como la que da al frente de una casa.",
+        "fila": 0,
+        "columna": 6,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "AMARGUE",
+        "pista": "Sabor que buscamos en el mate cuando no le agregamos azúcar.",
+        "fila": 1,
+        "columna": 0,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "PALMERITA",
+        "pista": "Masa dulce de hojaldre, enrollada a ambos lados, con forma de corazón.",
+        "fila": 1,
+        "columna": 10,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "LITORAL",
+        "pista": "Región argentina que incluye Corrientes y Entre Ríos, entre otras provincias.",
+        "fila": 3,
+        "columna": 4,
+        "direccion": "H"
+      }
+    ]
+  }
+];
