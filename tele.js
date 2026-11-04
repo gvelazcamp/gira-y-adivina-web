@@ -304,7 +304,7 @@
       if(m.t!=="accion")return;
       /* Micrófono de un celular prendido/apagado: la música de la tele se pausa mientras alguien habla. */
       if(m.a==="mic"){if(m.on)micTele[m.pid]=Date.now()+20000;else delete micTele[m.pid];return;}
-      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="sopa"&&m.a==="sp_marca")||(T.juego==="palabra"&&m.a==="ps_intento")||(T.juego==="memoria"&&m.a==="mg_carta")||(T.juego==="rueda"&&m.a==="rl_palabra")||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz","rs_apelar","rs_ver","rs_voto","rs_pausa","rs_reanudar","rs_rev"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
+      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="sopa"&&m.a==="sp_marca")||(T.juego==="cien"&&m.a==="responder")||(T.juego==="palabra"&&m.a==="ps_intento")||(T.juego==="memoria"&&m.a==="mg_carta")||(T.juego==="rueda"&&m.a==="rl_palabra")||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz","rs_apelar","rs_ver","rs_voto","rs_pausa","rs_reanudar","rs_rev"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
       if(m.a==="elegir"&&T.fase==="menu"){elegir(String(m.juego||""));return;}
       if(m.a==="rosco_modo"&&T.fase==="rosco_modo"){
         /* De a 2 a 6 (01/11/2026; antes hasta 4): el del control elige con quiénes juega (hasta 5 más). */
@@ -1282,6 +1282,7 @@
     const libre=k=>!mask||mask[Math.floor(k/N)][k%N]==="#";
     const COL=["#F5B301","#37D6C0","#E5197C","#9B6BFF","#2ED18A","#FF8A3D","#3DA5FF","#FFFFFF"];
     const jugadores=T.jug.map(j=>({pid:j.pid,n:j.n})),puntos={},color={};
+    const cooperativo=jugadores.length===2;
     jugadores.forEach((j,i)=>{puntos[j.pid]=0;color[j.pid]=COL[i%COL.length];});
     const lim=w=>String(w||"").toUpperCase().replace(/[^A-ZÑ]/g,"");
     const todosTemas=mezclar((typeof SOPA_DATOS!=="undefined"&&SOPA_DATOS.categorias||[]).map(c=>({nombre:c.nombre,
@@ -1392,7 +1393,7 @@
       const extras=[L.experto?"🔥 EXPERTO":"",forma?"🧩 Forma: "+esc(forma.nombre):"",dibujos?"🖼️ Con dibujos":"",L.d===2?"➡️⬇️ Derecho y para abajo":L.d===4?"↘️ También en diagonal":"↔️ 8 direcciones"].filter(Boolean).join(" · ");
       const ranking=[...jugadores].sort((a,b)=>puntos[b.pid]-puntos[a.pid]).map(j=>`<span style="--c:${color[j.pid]}"><i></i>${esc(nombreDe(T,j.pid))} <b>${puntos[j.pid]}</b></span>`).join("");
       raiz.innerHTML=`<div class="tl-sp"><img class="tl-or-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
-        <div class="tl-or-top"><span>🔎 SOPA FUGAZ${giratoria?" 🌀":""}</span><span>${L.experto?"🔥 NIVEL "+ronda+" · EXPERTO":"NIVEL "+ronda+"/"+RONDAS}</span><span class="tl-or-reloj" id="tlSpReloj">${Math.ceil(restante/1000)}</span></div>
+        <div class="tl-or-top"><span>🔎 SOPA FUGAZ${giratoria?" 🌀":""}${cooperativo?" · 🤝 DE A DOS":""}</span><span>${L.experto?"🔥 NIVEL "+ronda+" · EXPERTO":"NIVEL "+ronda+"/"+RONDAS}</span><span class="tl-or-reloj" id="tlSpReloj">${Math.ceil(restante/1000)}</span></div>
         <div class="tl-sp-cuerpo">
           <div class="tl-sp-tablero${gira?" tl-sp-gira":""}${mask?" tl-sp-forma":""}" style="--n:${N}${gira?";animation-delay:-"+giro+"ms":""}">${celdas}</div>
           <aside class="tl-sp-panel"><small>TEMA</small><div class="tl-sp-tema">${esc(tema.nombre)}</div><div class="tl-sp-extra">${extras}</div>
@@ -1406,7 +1407,7 @@
       if(fase==="fin")return{pantalla:"fin",juego:"sopa",resumen:"Mirá el podio en la tele 🏆"};
       if(fase==="config")return{pantalla:"sopa",fase,quien:nombreDe(T,T.mando),guardado:nivelGuardado(),rondas:RONDAS};
       const hc=Object.values(halladas).filter(x=>x.cel).map(x=>({c:x.cel,col:color[x.pid]}));
-      return{pantalla:"sopa",fase,ronda,rondas:RONDAS,experto:!!(NIV[ronda-1]||{}).experto,forma:forma?forma.nombre:"",giratoria,tema:tema?tema.nombre:"",n:N,g:gen,grid:grid.join(""),hc,pal:objetivos.map(w=>[w,halladas[w]?nombreDe(T,halladas[w].pid):"",dibujos&&DIB[w]?DIB[w]:""]),pts:puntos,ult,
+      return{pantalla:"sopa",fase,ronda,rondas:RONDAS,cooperativo,experto:!!(NIV[ronda-1]||{}).experto,forma:forma?forma.nombre:"",giratoria,tema:tema?tema.nombre:"",n:N,g:gen,grid:grid.join(""),hc,pal:objetivos.map(w=>[w,halladas[w]?nombreDe(T,halladas[w].pid):"",dibujos&&DIB[w]?DIB[w]:""]),pts:puntos,ult,
         rest:Math.round(restante),dur:durRonda,muda:giratoria&&fase==="jugando"?Math.round(proxMuda):null,MUDA};
     }
     return{accion,tic,pintar,cel,fin(){muerto=true;clearTimeout(timer);}};
@@ -1485,6 +1486,8 @@
     const NIV=[{n:8,c:4,v:5000,g:3,ver:1500},{n:9,c:5,v:4500,g:3,b:2,ver:1300},{n:11,c:6,v:4000,g:2,parec:true,b:2,ver:1100,ap:2000},{n:14,c:6,v:3500,g:2,parec:true,t:12000,b:2,ver:900,ap:1500},
       {n:17,c:6,v:3000,g:1,parec:true,t:10000,b:2,ver:700,ap:1000,experto:true}];
     const orden=T.jug.map(j=>j.pid);
+    /* De a dos, ambos celulares pueden tocar el tablero compartido al mismo tiempo. */
+    const cooperativo=orden.length===2;
     const COL=["#F5B301","#9B6BFF","#3DA5FF","#FF8A3D","#2ED18A","#E5197C","#37D6C0","#FFFFFF"],color={};orden.forEach((p,i)=>color[p]=COL[i%COL.length]);
     const pares={};orden.forEach(p=>pares[p]=0);
     let nivel=0,L=NIV[0],N=8,COLS=4,GIRO_CADA=3,cartas=[];
@@ -1501,7 +1504,7 @@
     function pasarNivel(){nivel++;if(nivel>=NIV.length){terminar();return;}
       armarNivel();fase="nivel";limite=0;aviso=null;sfx("aplausos");actualizar();clearTimeout(timer);
       timer=setTimeout(()=>{if(!muerto)arrancarVista(L.v);},3800);}
-    function siguiente(){turno=(turno+1)%orden.length;aviso={txt:"🔄 Le toca a "+nombreDe(T,orden[turno]),t:Date.now()};}
+    function siguiente(){if(cooperativo){aviso={txt:"🔄 ¡Sigan buscando entre los dos!",t:Date.now()};return;}turno=(turno+1)%orden.length;aviso={txt:"🔄 Le toca a "+nombreDe(T,orden[turno]),t:Date.now()};}
     function girar(){fase="giro";limite=0;giro++;aviso={txt:"🌀 ¡EL TABLERO GIRA!",t:Date.now()};SND.turno();actualizar();clearTimeout(timer);
       timer=setTimeout(()=>{if(muerto)return;const pend=cartas.map((c,i)=>c.de||c.exp?null:i).filter(i=>i!=null),mez=mezclar(pend.map(i=>cartas[i]));pend.forEach((i,k)=>cartas[i]=mez[k]);
         fase="juego";reloj();actualizar();},2400);}
@@ -1512,7 +1515,8 @@
       if(mios.length){const par=mios[Math.floor(Math.random()*mios.length)];cartas.forEach(c=>{if(c.par===par)c.de=null;});pares[pid]=Math.max(0,pares[pid]-1);txt="💣 ¡BOMBA! "+nombreDe(T,pid)+" pierde un par";}
       aviso={txt,t:Date.now()+1600};actualizar();clearTimeout(timer);timer=setTimeout(()=>{if(!muerto)fallar();},2600);}
     function elegirCarta(m){
-      if(fase!=="juego"||m.pid!==orden[turno])return;const i=Number(m.i);if(!(i>=0&&i<cartas.length)||cartas[i].de||abiertas.includes(i)||abiertas.length>=2)return;
+      if(fase!=="juego"||(cooperativo?!orden.includes(m.pid):m.pid!==orden[turno]))return;const i=Number(m.i);if(!(i>=0&&i<cartas.length)||cartas[i].de||abiertas.includes(i)||abiertas.length>=2)return;
+      if(cooperativo)turno=orden.indexOf(m.pid);
       abiertas.push(i);SND.tic();clearTimeout(apT);apagada=false;
       if(cartas[i].bomba){explotar(i);return;}
       if(abiertas.length<2){if(L.ap)apT=setTimeout(()=>{if(muerto||fase!=="juego"||abiertas.length!==1)return;apagada=true;sonar(300,.12,"sine",.04);actualizar();},L.ap);actualizar();return;}
@@ -1524,7 +1528,7 @@
     }
     function tic(){if(!limite||fase!=="juego")return;const r=limite-Date.now(),sg=Math.max(0,Math.ceil(r/1000));
       if(sg!==ultSeg){ultSeg=sg;if(sg<=3&&sg>0)SND.tic();const el=document.querySelector("#tlMgReloj");if(el)el.textContent="⏱ "+sg+" s";}
-      if(r<=0){limite=0;aviso={txt:"⏰ ¡Se le acabó el tiempo a "+nombreDe(T,orden[turno])+"!",t:Date.now()};SND.mal();fase="fallo";actualizar();clearTimeout(timer);timer=setTimeout(()=>{if(!muerto)fallar();},1200);}}
+      if(r<=0){limite=0;aviso={txt:cooperativo?"⏰ ¡Tiempo! Sigan buscando entre los dos":"⏰ ¡Se le acabó el tiempo a "+nombreDe(T,orden[turno])+"!",t:Date.now()};SND.mal();fase="fallo";actualizar();clearTimeout(timer);timer=setTimeout(()=>{if(!muerto)fallar();},1200);}}
     function terminar(){fase="fin";limite=0;clearTimeout(timer);
       const f=orden.map(p=>({n:nombreDe(T,p),av:avDe(T,p),v:pares[p]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
       podioTele({juego:"MEMORIA EN GIRO",titulo:f.length<2?"¡SUPERASTE LOS "+NIV.length+" NIVELES!":emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",sub:"Gana el que encontró más pares en los "+NIV.length+" niveles",equipo:f.length<2,filas:f.map(x=>({n:x.n,av:x.av,pts:x.v+" pares"}))});actualizar();}
@@ -1533,21 +1537,21 @@
       if(m.a==="mg_carta"){elegirCarta(m);return;}
     }
     const visible=(c,i)=>fase==="vista"||fase==="giro"||!!c.de||!!c.exp||(abiertas.includes(i)&&!(apagada&&fase==="juego"&&abiertas.length===1));
-    const extras=()=>[L.ap?"💡 la 1ª carta se apaga en "+L.ap/1000+" s":"",L.b?"💣 "+L.b+" bombas: si das vuelta una, perdés un par":"",L.parec?"👀 cartas parecidas":"",L.t?"⏱ "+L.t/1000+" s por turno":""].filter(Boolean);
+    const extras=()=>[L.ap?"💡 la 1ª carta se apaga en "+L.ap/1000+" s":"",L.b?"💣 "+L.b+" bombas: si das vuelta una, perdés un par":"",L.parec?"👀 cartas parecidas":"",L.t?"⏱ "+L.t/1000+(cooperativo?" s para encontrar un par":" s por turno"):""].filter(Boolean);
     function pintar(raiz){
-      const ranking=orden.map((p,k)=>`<span class="${k===turno&&fase!=="fin"?"tl-mg-ahora":""}" style="--c:${color[p]}"><i></i>${k===turno&&fase!=="fin"?"🎮 ":""}${esc(nombreDe(T,p))} <b>${pares[p]}</b></span>`).join("");
-      const msg=fase==="bomba"&&aviso?aviso.txt:fase==="vista"?"👀 ¡Memorizá dónde está cada una!":fase==="giro"?"🌀 ¡El tablero gira! Mirá bien…":aviso&&Date.now()-aviso.t<2600?aviso.txt:"🎮 Juega "+nombreDe(T,orden[turno]);
+      const ranking=orden.map((p,k)=>`<span class="${!cooperativo&&k===turno&&fase!=="fin"?"tl-mg-ahora":""}" style="--c:${color[p]}"><i></i>${!cooperativo&&k===turno&&fase!=="fin"?"🎮 ":""}${esc(nombreDe(T,p))} <b>${pares[p]}</b></span>`).join("");
+      const msg=fase==="bomba"&&aviso?aviso.txt:fase==="vista"?"👀 ¡Memorizá dónde está cada una!":fase==="giro"?"🌀 ¡El tablero gira! Mirá bien…":aviso&&Date.now()-aviso.t<2600?aviso.txt:cooperativo?"🎮 ¡Los dos pueden encontrar pares!":"🎮 Juega "+nombreDe(T,orden[turno]);
       const filas=Math.ceil(cartas.length/COLS),tam=Math.min(15,(70-(filas-1)*1.4)/filas,(58-(COLS-1)*1.4)/COLS*1.778);
       const cartel=fase==="nivel"?`<div class="tl-mg-nivel"><b>${L.experto?"🔥 NIVEL EXPERTO":"🔼 NIVEL "+(nivel+1)+" de "+NIV.length}</b><span>${N} pares · ${L.v/1000} s para memorizar · ${GIRO_CADA>1?"gira cada "+GIRO_CADA+" fallos":"gira con cada fallo"}</span>${extras().map(x=>`<em>${x}</em>`).join("")}</div>`:"";
       raiz.innerHTML=`<div class="tl-mg"><img class="tl-or-fondo" src="presentacion-y-locucion-extensiones/Giro/estudios/Giro_estudio_principal_16x9.webp" alt="">
         <div class="tl-or-top"><span>🃏 MEMORIA EN GIRO</span><span>🔼 Nivel ${nivel+1}/${NIV.length} · ${cartas.filter(c=>c.de).length/2}/${N} pares</span><span>🌀 ${GIRO_CADA>1?"gira cada "+GIRO_CADA+" fallos":"gira con cada fallo"}${L.b?" · 💣 "+L.b:""}</span></div>
         <div class="tl-mg-cuerpo"><div class="tl-mg-tablero${fase==="giro"?" tl-mg-girando":""}${fase==="bomba"?" tl-mg-temblor":""}" style="--cols:${COLS};--tam:${tam.toFixed(2)}vh">${cartas.map((c,i)=>`<div class="tl-mg-carta${visible(c,i)?" tl-mg-abierta":""}${c.de?" tl-mg-par":""}${fase==="fallo"&&abiertas.includes(i)?" tl-mg-mal":""}${c.exp?" tl-mg-boom":""}${apagada&&fase==="juego"&&abiertas[0]===i?" tl-mg-sel":""}${c.exp&&fase==="bomba"&&abiertas.includes(i)?" tl-mg-boom-ya":""}" style="${c.de?"--c:"+color[c.de]:""}"><span class="tl-mg-dorso">?</span><span class="tl-mg-cara">${c.s}</span></div>`).join("")}</div>
           <aside class="tl-mg-panel"><div class="tl-mg-msg">${esc(msg)}</div>${limite?`<div class="tl-mg-reloj" id="tlMgReloj">⏱ ${Math.max(0,Math.ceil((limite-Date.now())/1000))} s</div>`:""}<div class="tl-sp-rank tl-mg-rank">${ranking}</div></aside></div>
-        <p class="tl-or-ayuda">📱 El que juega toca dos cartas en su celular · par = sigue jugando${L.b?" · 💣 bomba = perdés un par":""}</p>${cartel}${fase==="bomba"?`<div class="tl-mg-explota"><b>💥</b><span>¡BOMBA!</span></div>`:""}</div>`;
+        <p class="tl-or-ayuda">${cooperativo?"📱 Los dos pueden tocar cartas a la vez · los pares suman a quien completa la pareja":"📱 El que juega toca dos cartas en su celular · par = sigue jugando"}${L.b?" · 💣 bomba = perdés un par":""}</p>${cartel}${fase==="bomba"?`<div class="tl-mg-explota"><b>💥</b><span>¡BOMBA!</span></div>`:""}</div>`;
     }
     function cel(){
       if(fase==="fin")return{pantalla:"fin",juego:"memoria",resumen:"Mirá el podio en la tele 🏆"};
-      return{pantalla:"memoria",fase,nivel:nivel+1,niveles:NIV.length,cols:COLS,turno:orden[turno],nombreTurno:nombreDe(T,orden[turno]),seg:L.t?L.t/1000:0,cartas:cartas.map((c,i)=>visible(c,i)?{s:c.s,de:c.de?color[c.de]:c.exp?"#FF4D6D":"",ab:abiertas.includes(i)}:null),pares,giro,bombas:L.b||0,sel:apagada&&fase==="juego"?abiertas[0]:-1,aviso:fase==="bomba"&&aviso?aviso.txt:""};
+      return{pantalla:"memoria",fase,nivel:nivel+1,niveles:NIV.length,cols:COLS,cooperativo,turno:orden[turno],nombreTurno:nombreDe(T,orden[turno]),seg:L.t?L.t/1000:0,cartas:cartas.map((c,i)=>visible(c,i)?{s:c.s,de:c.de?color[c.de]:c.exp?"#FF4D6D":"",ab:abiertas.includes(i)}:null),pares,giro,bombas:L.b||0,sel:apagada&&fase==="juego"?abiertas[0]:-1,aviso:fase==="bomba"&&aviso?aviso.txt:""};
     }
     armarNivel();arrancarVista(L.v);
     return{accion,tic,pintar,cel,fin(){muerto=true;clearTimeout(timer);clearTimeout(apT);}};
@@ -1649,6 +1653,9 @@
     let ronda=0,item=null,fichas=[],restante=0,fase="jugando",timer=null,muerto=false;
     let resueltos={},lugar=0,fallos={},puntos={},items=[],armado={};
     const jugadores=T.jug.map(j=>({pid:j.pid,n:j.n}));jugadores.forEach(j=>puntos[j.pid]=0);
+    /* En Silabario, si entran exactamente dos, uno completa sus 8 palabras y después el otro juega sus 8. */
+    const alterno=SIL&&jugadores.length===2;let partida=0;
+    const activo=()=>alterno?jugadores[partida].pid:null;
     function base(){
       if(SIL){const d=typeof SILABARIO_DATOS!=="undefined"?SILABARIO_DATOS:[];
         return d.map(x=>Array.isArray(x)?{pista:x[0],piezas:x[1],nivel:x[3]||1}:{pista:x.pista,piezas:x.silabas||[],nivel:x.nivel||1}).filter(x=>x.piezas.length);}
@@ -1676,25 +1683,25 @@
       if(ronda>1)SND.turno();actualizar();
     }
     function revelar(){if(fase!=="jugando")return;fase="revela";actualizar();clearTimeout(timer);
-      timer=setTimeout(()=>{if(muerto)return;if(ronda>=items.length)terminar();else nueva();},4200);}
+      timer=setTimeout(()=>{if(muerto)return;if(ronda>=items.length){if(alterno&&partida===0){partida=1;ronda=0;items=armar().slice(0,CFG.rondas);nueva();}else terminar();}else nueva();},4200);}
     function terminar(){fase="fin";clearTimeout(timer);
       const f=jugadores.map(j=>({n:j.n,av:avDe(T,j.pid),v:puntos[j.pid]||0})).sort((a,b)=>b.v-a.v);const emp=f.length>1&&f[0].v===f[1].v;
       podioTele({juego:CFG.nombre,titulo:f.length<2?"¡"+String(f[0]?f[0].n:"").toUpperCase()+" SUMÓ "+(f[0]?f[0].v:0)+"!":emp?"¡EMPATE!":"¡GANÓ "+String(f[0].n).toUpperCase()+"!",
-        sub:"El más rápido en armar"+(SIL?" las palabras":" las frases"),equipo:f.length<2,filas:f.map(x=>({n:x.n,av:x.av,pts:x.v+" pts"}))});
+        sub:alterno?"Cada jugador completó su propia partida de 8 palabras":"El más rápido en armar"+(SIL?" las palabras":" las frases"),equipo:f.length<2,filas:f.map(x=>({n:x.n,av:x.av,pts:x.v+" pts"}))});
       actualizar();}
     function accion(m){
       if(m.a==="otra"&&fase==="fin"&&m.pid===T.mando){T.otra();return;}
       if(m.a==="or_saltar"&&fase==="jugando"&&m.pid===T.mando){revelar();return;}
       /* Lo que cada uno va tocando en el celular aparece en la tele al instante (31/10/2026). */
-      if(m.a==="or_arma"){if(fase!=="jugando"||Number(m.r)!==ronda||resueltos[m.pid]||!(m.pid in puntos))return;
+      if(m.a==="or_arma"){if(fase!=="jugando"||Number(m.r)!==ronda||resueltos[m.pid]||!(m.pid in puntos)||(alterno&&m.pid!==activo()))return;
         const o=(Array.isArray(m.orden)?m.orden.map(Number):[]).slice(0,item.piezas.length);
         if(new Set(o).size!==o.length||o.some(i=>!(i>=0&&i<fichas.length)))return;armado[m.pid]=o;actualizar();return;}
-      if(m.a!=="or_resp"||fase!=="jugando"||Number(m.r)!==ronda||resueltos[m.pid]||!(m.pid in puntos))return;
+      if(m.a!=="or_resp"||fase!=="jugando"||Number(m.r)!==ronda||resueltos[m.pid]||!(m.pid in puntos)||(alterno&&m.pid!==activo()))return;
       const o=Array.isArray(m.orden)?m.orden.map(Number):[];
       if(o.length!==item.piezas.length||new Set(o).size!==o.length||o.some(i=>!(i>=0&&i<fichas.length)))return;
       const bien=o.every((i,k)=>sinTilde(fichas[i])===sinTilde(item.piezas[k]));
       if(bien){resueltos[m.pid]=++lugar;puntos[m.pid]+=PTS[Math.min(lugar-1,PTS.length-1)];SND.ok();
-        if(jugadores.every(j=>resueltos[j.pid])){actualizar();setTimeout(revelar,900);return;}}
+        if(alterno?!!resueltos[activo()]:jugadores.every(j=>resueltos[j.pid])){actualizar();setTimeout(revelar,900);return;}}
       else{fallos[m.pid]=(fallos[m.pid]||0)+1;armado[m.pid]=[];SND.mal();}
       actualizar();
     }
@@ -1706,27 +1713,32 @@
       if(!item){raiz.innerHTML=`<div class="tl-centro"><h1>Preparando…</h1></div>`;return;}
       const rev=fase!=="jugando";
       /* Uno solo: lo que toca se arma en los casilleros grandes. Varios: cada uno ve su armado debajo de su nombre. */
-      const solo=jugadores.length===1,mio=solo?(armado[jugadores[0].pid]||[]):[],usadas=new Set(mio);
+      const solo=jugadores.length===1||alterno,mio=solo?(armado[alterno?activo():jugadores[0].pid]||[]):[],usadas=new Set(mio);
       const jug=jugadores.map(j=>{const a=armado[j.pid]||[];
-        return`<span class="${resueltos[j.pid]?"tl-or-ok":""}">${resueltos[j.pid]?resueltos[j.pid]+"º ✓ ":""}${esc(j.n)} · <b>${puntos[j.pid]}</b>${!solo&&!rev&&!resueltos[j.pid]&&a.length?`<em class="tl-or-mini">${a.map(i=>esc(fichas[i])).join(SIL?"·":" ")}</em>`:""}</span>`;}).join("");
+        return`<span class="${resueltos[j.pid]?"tl-or-ok":""}">${alterno&&j.pid===activo()?"🎮 ":""}${resueltos[j.pid]?resueltos[j.pid]+"º ✓ ":""}${esc(j.n)} · <b>${puntos[j.pid]}</b>${!solo&&!rev&&!resueltos[j.pid]&&a.length?`<em class="tl-or-mini">${a.map(i=>esc(fichas[i])).join(SIL?"·":" ")}</em>`:""}</span>`;}).join("");
       raiz.innerHTML=`<div class="tl-or${SIL?" tl-or-sil":" tl-or-fra"}"><img class="tl-or-fondo" src="${GB}estudios/Giro_estudio_principal_16x9.webp" alt="">
-        <div class="tl-or-top"><span>${CFG.icono} ${CFG.nombre}</span><span>RONDA ${ronda}/${items.length}</span><span class="tl-or-reloj" id="tlOrReloj">${Math.ceil(restante/1000)}</span></div>
+        <div class="tl-or-top"><span>${CFG.icono} ${CFG.nombre}</span><span>${alterno?"PARTIDA "+(partida+1)+"/2 · ":""}RONDA ${ronda}/${items.length}</span><span class="tl-or-reloj" id="tlOrReloj">${Math.ceil(restante/1000)}</span></div>
         <div class="tl-or-card"><small>${CFG.etiqueta}</small><p class="tl-or-pista">${esc(item.pista)}</p>
           <div class="tl-or-slots">${item.piezas.map((x,k)=>rev?`<span class="tl-or-vista">${esc(x)}</span>`:mio[k]!=null?`<span class="tl-or-puesta">${esc(fichas[mio[k]])}</span>`:`<span></span>`).join("")}</div>
           ${rev?"":`<div class="tl-or-fichas">${fichas.map((x,i)=>`<span class="${usadas.has(i)?"tl-or-usada":""}">${esc(x)}</span>`).join("")}</div>`}</div>
         <div class="tl-or-jug">${jug}</div>
-        <p class="tl-or-ayuda">${rev?"⏳ Ya viene la siguiente…":"📱 Armalo tocando las piezas en tu celular · ¡ojo que hay de más!"}</p></div>`;
+        <p class="tl-or-ayuda">${rev?"⏳ Ya viene la siguiente…":alterno?"🎮 Juega "+esc(nombreDe(T,activo()))+" · el otro espera su partida":"📱 Armalo tocando las piezas en tu celular · ¡ojo que hay de más!"}</p></div>`;
     }
     function cel(){
       if(fase==="fin")return{pantalla:"fin",juego:id,resumen:"Mirá el podio en la tele 🏆"};
       return{pantalla:"ordenar",juego:id,fase,ronda,pista:item?item.pista:"",fichas,n:item?item.piezas.length:0,unir:CFG.unir,
-        resueltos:Object.keys(resueltos),mal:fallos,respuesta:fase==="revela"&&item?item.piezas.join(CFG.unir):""};
+        resueltos:Object.keys(resueltos),mal:fallos,alterno,turno:activo(),nombreTurno:alterno?nombreDe(T,activo()):"",partida:partida+1,pts:puntos,respuesta:fase==="revela"&&item?item.piezas.join(CFG.unir):""};
     }
     items=armar().slice(0,CFG.rondas);setTimeout(()=>{if(!muerto)nueva();},50);
     return{accion,tic,pintar,cel,fin(){muerto=true;clearTimeout(timer);}};
   }
   function juegoCien(T,actualizar){
     const MULT=[1,2,3],ERRORES=3;
+    /* Con dos celulares, alternan una respuesta cada uno sobre el mismo tablero. */
+    const ordenDos=T.jug.length===2?T.jug.map(j=>j.pid):[];
+    const dos=ordenDos.length===2;
+    let turnoDos=dos?Math.max(0,ordenDos.indexOf(T.mando)):0;
+    const turnoActual=()=>dos?ordenDos[turnoDos]:T.mando;
     const norm=s=>sinTilde(s).replace(/[^A-Z0-9]/g,"");
     const sing=s=>{const f=new Set([s]);if(s.length>4&&s.endsWith("CES"))f.add(s.slice(0,-3)+"Z");if(s.length>3&&s.endsWith("ES")){f.add(s.slice(0,-2));f.add(s.slice(0,-1));}else if(s.length>2&&s.endsWith("S"))f.add(s.slice(0,-1));return f;};
     const misma=(a,b)=>{const fa=sing(a);for(const x of sing(b))if(fa.has(x))return true;return false;};
@@ -1755,7 +1767,8 @@
         actualizar();}else{SND.turno();nueva();}},4500);}
     function accion(m){
       if(fase==="fin"){if(m.a==="otra")T.otra();return;}
-      if(m.a!=="responder"||fase!=="jugando")return;const v=norm(limpio(m.txt,40));if(!v)return;
+      if(m.a!=="responder"||fase!=="jugando"||(dos&&m.pid!==turnoActual()))return;const v=norm(limpio(m.txt,40));if(!v)return;
+      if(dos)turnoDos=(turnoDos+1)%2;
       const i=preg.respuestas.findIndex(r=>[r.texto,...r.alias].some(a=>{const an=norm(a);return an&&(an===v||misma(an,v));}));
       cambio=Date.now();
       if(i>=0&&!abiertas.has(i)){abiertas.add(i);recien=i;pose="festejando";puntos+=preg.respuestas[i].puntos*MULT[ronda];ultimo={tipo:"ok",i};SND.ok();
@@ -1768,6 +1781,7 @@
     function pintar(raiz,quien){
       if(fase==="fin"){let r={};try{r=JSON.parse(localStorage.getItem("gya_tele_records")||"{}");}catch(e){}
         raiz.innerHTML=`<div class="tl-centro tl-fin"><h1>¡${puntos} puntos! 🎉</h1><p class="tl-ayuda">Récord del grupo en esta tele: ${r.cien||puntos} puntos</p><p class="tl-ayuda">${quien?esc(quien)+": desde el celular podés jugar otra vez o volver al menú.":""}</p></div>`;return;}
+      const quienResponde=dos?nombreDe(T,turnoActual()):quien;
       const cat=(typeof CIEN_CATEGORIAS!=="undefined"?CIEN_CATEGORIAS:[]).find(c=>c.id===preg.categoria)||{icono:"💬",nombre:""};
       const panel=preg.respuestas.map((r,i)=>abiertas.has(i)?`<div class="tl-resp tl-abierta${i===recien?" tl-recien":""}"><span class="tl-resp-n">${i+1}</span><b>${esc(r.texto)}</b><em>${r.puntos}</em></div>`:`<div class="tl-resp"><span class="tl-resp-n">${i+1}</span></div>`).join("");
       const flash=ultimo&&Date.now()-cambio<1600?(ultimo.tipo==="mal"?`<div class="tl-equis-grande">✘<small>«${esc(ultimo.txt)}» no está</small></div>`:ultimo.tipo==="repe"?`<div class="tl-flash tl-paso">${esc(ultimo.txt)} ya está</div>`:""):"";
@@ -1776,10 +1790,10 @@
         <div class="tl-cien-centro"><div class="tl-cien-top"><span>${cat.icono} ${esc(cat.nombre)}</span><span>RONDA ${ronda+1}/3 · VALE x${MULT[ronda]}</span><span class="tl-cien-pts">⭐ ${puntos}</span></div>
         <h1 class="tl-pregunta">${esc(preg.pregunta)}</h1><div class="tl-tablero">${panel}</div>
         <div class="tl-equis">${[0,1,2].map(i=>`<span class="${i<errores?"tl-on":""}">✘</span>`).join("")}</div>
-        <p class="tl-ayuda">🎮 ${esc(quien||"…")} escribe lo que dice el grupo</p></div>${flash}</div>`;
+        <p class="tl-ayuda">🎮 ${esc(quienResponde||"…")} responde ahora${dos?" · después juega el otro":""}</p></div>${flash}</div>`;
     }
     nueva();
-    return{accion,pintar,fin(){muerto=true;clearTimeout(timer);try{speechSynthesis.cancel();}catch(e){}try{if(audioGiro)audioGiro.pause();}catch(e){}},cel(){return fase==="fin"?{pantalla:"fin",juego:"cien",resumen:puntos+" puntos"}:{pantalla:"cien",puede:fase==="jugando",pregunta:preg.pregunta};}};
+    return{accion,pintar,fin(){muerto=true;clearTimeout(timer);try{speechSynthesis.cancel();}catch(e){}try{if(audioGiro)audioGiro.pause();}catch(e){}},cel(){return fase==="fin"?{pantalla:"fin",juego:"cien",resumen:puntos+" puntos"}:{pantalla:"cien",puede:fase==="jugando",turno:dos?turnoActual():null,nombreTurno:dos?nombreDe(T,turnoActual()):"",pregunta:preg.pregunta};}};
   }
 
   /* =====================================================================
@@ -2102,8 +2116,8 @@
       enlazarX("ps_saltar");
     }
     function pintarMemoria(c,cab,soyMando){
-      const mio=c.turno===yo,puedo=mio&&c.fase==="juego";
-      const tit=c.fase==="bomba"?esc(c.aviso||"💣 ¡BOMBA!"):c.fase==="nivel"?"🔼 ¡Nivel "+c.nivel+"! Mirá la tele":c.fase==="vista"?"👀 ¡Memorizá!":c.fase==="giro"?"🌀 ¡El tablero gira!":mio?"🎮 ¡Te toca! Tocá dos cartas"+(c.seg?" ("+c.seg+" s)":""):"⏳ Le toca a "+esc(c.nombreTurno||"");
+      const mio=c.turno===yo,puedo=(c.cooperativo||mio)&&c.fase==="juego";
+      const tit=c.fase==="bomba"?esc(c.aviso||"💣 ¡BOMBA!"):c.fase==="nivel"?"🔼 ¡Nivel "+c.nivel+"! Mirá la tele":c.fase==="vista"?"👀 ¡Memorizá!":c.fase==="giro"?"🌀 ¡El tablero gira!":c.cooperativo?"🤝 ¡Los dos pueden tocar cartas!":mio?"🎮 ¡Te toca! Tocá dos cartas"+(c.seg?" ("+c.seg+" s)":""):"⏳ Le toca a "+esc(c.nombreTurno||"");
       raiz.innerHTML=cab+`<div class="tl-cel-caja tl-mgc"><h2 class="${mio&&c.fase==="juego"?"tl-mgc-mio":""}">${tit}</h2>
         <div class="tl-mgc-tab" style="grid-template-columns:repeat(${c.cols},1fr)">${(c.cartas||[]).map((x,i)=>x?`<button type="button" class="tl-mgc-c tl-mgc-ab" style="${x.de?"border-color:"+x.de+";background:"+x.de+"33":""}" disabled>${x.s}</button>`:`<button type="button" class="tl-mgc-c${c.sel===i?" tl-mgc-sel":""}" data-i="${i}" ${puedo&&c.sel!==i?"":"disabled"}>${c.sel===i?"💡":"?"}</button>`).join("")}</div>
         <p class="tl-mgc-pares">Nivel <b>${c.nivel||1}/${c.niveles||1}</b> · Tus pares: <b>${(c.pares||{})[yo]||0}</b>${c.bombas?` · 💣 ${c.bombas} bombas`:""}</p>${menuX(soyMando,false)}</div>`;
@@ -2166,7 +2180,7 @@
       if(c.fase==="revela"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏱ ¡Terminó el nivel!</h2><p>Mirá la tele 📺 · ya viene la siguiente.</p><p>Tus puntos: <b>${mios}</b> · vas ${puesto}º</p>${menu}</div>`;enlazar();return;}
       const n=c.n,hechas=(c.pal||[]).filter(x=>x[1]).length;
       raiz.innerHTML=cab+`<div class="sf-game tl-sp-real${c.giratoria?" giratoria":""}">
-        <div class="sf-cabeza"><img src="logo-sopa-fugaz.svg" alt=""><div><small>${c.giratoria?"Sopa giratoria 🌀":"Sopa clásica"} · ${c.experto?"🔥 Experto":"Nivel "+c.ronda+"/"+(c.rondas||10)}${c.forma?" · "+esc(c.forma):""}</small><b>${esc(c.tema)}</b></div><span class="sf-cuenta">${hechas}/${(c.pal||[]).length}</span></div>
+        <div class="sf-cabeza"><img src="logo-sopa-fugaz.svg" alt=""><div><small>${c.cooperativo?"🤝 Cooperativo de a dos · ":""}${c.giratoria?"Sopa giratoria 🌀":"Sopa clásica"} · ${c.experto?"🔥 Experto":"Nivel "+c.ronda+"/"+(c.rondas||10)}${c.forma?" · "+esc(c.forma):""}</small><b>${esc(c.tema)}</b></div><span class="sf-cuenta">${hechas}/${(c.pal||[]).length}</span></div>
         <div class="sf-hud"><div><small>Nivel</small><b>${c.ronda}</b></div><div><small>Puntos</small><b>${mios}</b></div><div><small>Puesto</small><b>${puesto}º</b></div><div><small>Tiempo</small><b id="tlSpCelT">–</b></div></div>
         <div class="sf-bar"><i id="tlSpCelBar"></i></div>
         <div class="sf-grid-caja"><div class="sf-tablero"><div class="sf-grid" id="tlSpGrid" style="--sf-n:${n}">${[...c.grid].map((l,i)=>l==="."?`<div class="sf-celda tl-sf-vacia"></div>`:`<div class="sf-celda${spSel===i?" sel":""}" data-k="${i}">${esc(l)}</div>`).join("")}
@@ -2193,11 +2207,12 @@
       enlazar();
     }
     function pintarOrdenar(c,cab,soyMando){
-      const k=c.juego+"-"+c.ronda;if(k!==orClave){orClave=k;orSel=[];orMalVisto=(c.mal||{})[yo]||0;orAviso="";}
+      const k=c.juego+"-"+c.ronda+(c.alterno?"-p"+c.partida:"");if(k!==orClave){orClave=k;orSel=[];orMalVisto=(c.mal||{})[yo]||0;orAviso="";}
       const malAhora=(c.mal||{})[yo]||0;if(malAhora>orMalVisto){orMalVisto=malAhora;orSel=[];orAviso="❌ No era así, probá de nuevo";}
       const menu=soyMando?`<button type="button" class="tl-boton tl-chico" id="tlOrSaltar">⏭ Saltar esta</button><button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button>`:"";
       const enlazar=()=>{raiz.querySelector("#tlOrSaltar")?.addEventListener("click",()=>accion("or_saltar"));const b=raiz.querySelector("#tlMenu");if(b)b.onclick=()=>{if(confirm("¿Volver al menú?"))accion("menu");};};
       if(c.fase==="revela"){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>${(c.resueltos||[]).includes(yo)?"✅ ¡Bien!":"⏱ ¡Tiempo!"}</h2><p>Era:</p><p class="tl-or-cel-resp">${esc(c.respuesta)}</p>${menu}</div>`;enlazar();return;}
+      if(c.alterno&&c.turno!==yo){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏳ Esperá tu partida</h2><p>Ahora juega <b>${esc(c.nombreTurno||"el otro jugador")}</b> · partida ${c.partida}/2.</p><p>Cuando termine sus 8 palabras, te toca jugar las tuyas.</p>${menu}</div>`;enlazar();return;}
       if((c.resueltos||[]).includes(yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>✅ ¡Lo armaste!</h2><p>Mirá la tele 📺 mientras los demás terminan.</p>${menu}</div>`;enlazar();return;}
       const armado=orSel.map(i=>c.fichas[i]).join(c.unir);
       raiz.innerHTML=cab+`<div class="tl-cel-caja tl-or-cel${c.juego==="silabario"?" tl-or-cel-sil":""}"><p class="tl-or-cel-pista">${esc(c.pista)}</p>
@@ -2326,7 +2341,7 @@
           <button type="button" class="tl-boton tl-oro" id="tlSeguirP">▶ Seguir</button></div>`;
         raiz.querySelector("#tlSeguirP").onclick=()=>accion("rs_reanudar");
         const b=raiz.querySelector("#tlApVivo");if(b)b.onclick=()=>{if(confirm("¿Apelar? Los demás votan si vale."))accion("rs_apelar",{k:Number(b.dataset.k),i:Number(b.dataset.i)});};return;}
-      if(!soyMando&&!(c.pantalla==="rosco"&&c.dos)&&!(c.pantalla==="fin"&&c.rosco&&c.rosco.dos)){
+      if(!soyMando&&!(c.pantalla==="cien"&&c.turno)&&!(c.pantalla==="rosco"&&c.dos)&&!(c.pantalla==="fin"&&c.rosco&&c.rosco.dos)){
         const mando=(m.jug.find(j=>j.pid===m.mando)||{}).n||"otro";
         raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Mirá la tele 📺</h2><p>El control lo tiene <b>${esc(mando)}</b>. Ayudalo con las respuestas 😉</p><button type="button" class="tl-boton" id="tlTomar">Tomar el control</button></div>`;
         raiz.querySelector("#tlTomar").onclick=()=>mandar({t:"tomar"});return;}
@@ -2376,18 +2391,20 @@
         raiz.innerHTML=cab+(termine?`<div class="tl-cel-caja tl-rd-termine">${marcadorCel(c)}${botonApelar(c)}<h2>🏁 ¡Rosco terminado!</h2><p>Tu rosco ya terminó. Esperá a que <b>${esc(c.nombreActivo||"")}</b> termine el suyo para ver quién gana.</p><button type="button" class="tl-boton tl-chico" id="tlPausa">⏸️ Pausa</button>${soyMando?menu:""}</div>`
           :`<div class="tl-cel-caja">${marcadorCel(c)}${botonApelar(c)}<h2>🔤 Le toca a ${esc(c.nombreActivo||"")}</h2><p>Mirá la tele 📺 · cuando erre o pase, te toca a vos.</p><button type="button" class="tl-boton tl-chico" id="tlPausa">⏸️ Pausa</button>${soyMando?menu:""}</div>`);enlazarApelar(c);raiz.querySelector("#tlPausa").onclick=()=>accion("rs_pausa");
         raiz.querySelector("#tlMenu")?.addEventListener("click",()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");});return;}
+      if(c.pantalla==="cien"&&c.turno&&c.turno!==yo){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>⏳ Esperá tu respuesta</h2><p>Ahora responde <b>${esc(c.nombreTurno||"el otro jugador")}</b>.</p><p>Después de su respuesta te toca a vos.</p>${soyMando?menu:""}</div>`;
+        raiz.querySelector("#tlMenu")?.addEventListener("click",()=>accion("menu"));return;}
       if(c.pantalla==="rosco"||c.pantalla==="cien"){
         const rosco=c.pantalla==="rosco";
         raiz.innerHTML=cab+`<div class="tl-cel-caja">${rosco?`${marcadorCel(c)}${botonApelar(c)}<div class="tl-cel-letra">${esc(c.letra)}</div><p>${esc(c.regla||"")}</p>
           ${dcPermiso?`<div class="tl-dc-mic${c.escucha===yo?" tl-dc-on":""}" id="tlDcMic">${c.puede===false?"🔇 Giro está hablando · esperá":dcOyendo?"🎙 Te escucho · decí la palabra o «Pasar»":"🎙 Activando micrófono…"}</div><p class="tl-dc-oi" id="tlDcOi"></p>`:`<button type="button" class="tl-boton tl-oro" id="tlDcPermiso">🎙 Responder hablando</button>`}`:`<p class="tl-cel-preg">${esc(c.pregunta||"")}</p>`}
           <input id="tlTexto" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${rosco?"Tu respuesta":"Lo que dice el grupo"}" ${c.puede===false?"disabled":""}>
           <button type="button" class="tl-boton tl-oro" id="tlEnviar" ${c.puede===false?"disabled":""}>Enviar</button>
-          ${rosco?`<button type="button" class="tl-boton" id="tlPasar" ${c.puede===false?"disabled":""}>⏭ Pasar</button><button type="button" class="tl-boton tl-chico" id="tlPausa">⏸️ Pausa</button>`:""}${menu}</div>`;
+          ${rosco?`<button type="button" class="tl-boton" id="tlPasar" ${c.puede===false?"disabled":""}>⏭ Pasar</button><button type="button" class="tl-boton tl-chico" id="tlPausa">⏸️ Pausa</button>`:""}${rosco||soyMando?menu:""}</div>`;
         const t=raiz.querySelector("#tlTexto");if(escribiendo)t.value=escribiendo;
         const enviar=()=>{const v=t.value.trim();if(!v)return;accion("responder",{txt:v});t.value="";t.focus();};
         raiz.querySelector("#tlEnviar").onclick=enviar;t.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();enviar();}};
         if(rosco){enlazarApelar(c);raiz.querySelector("#tlPausa").onclick=()=>accion("rs_pausa");raiz.querySelector("#tlPasar").onclick=()=>{accion("pasar");t.value="";};raiz.querySelector("#tlDcPermiso")?.addEventListener("click",pedirPermisoDc);}
-        raiz.querySelector("#tlMenu").onclick=()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");};
+        raiz.querySelector("#tlMenu")?.addEventListener("click",()=>{if(confirm("¿Volver al menú? Se termina este juego."))accion("menu");});
         if(c.puede!==false&&!(rosco&&dcPermiso))t.focus();return;}
       if(c.pantalla==="ahorcado"){
         const us=new Set(c.usadas||[]);
