@@ -19,6 +19,14 @@ const server=http.createServer((req,res)=>{
       const errors=[];page.on("pageerror",e=>errors.push(e.message));
       await page.route("**/*",route=>route.request().url().startsWith(base)?route.continue():route.fulfill({status:200,body:""}));
       await page.addInitScript(n=>{
+        window.__speechInstances=[];
+        window.SpeechRecognition=class{
+          constructor(){window.__speechInstances.push(this);}
+          start(){this.started=true;}
+          abort(){this.aborted=true;}
+          emit(textos){this.onresult?.({results:[textos.map(transcript=>({transcript}))]});}
+          fail(error){this.onerror?.({error});}
+        };
         localStorage.setItem("gya_nombre",n);localStorage.setItem("gya_avatar","avatar-02");
         localStorage.setItem("gya_pais","uruguay");localStorage.setItem("gya_bienvenida_vista","1");
       },name);
@@ -69,14 +77,39 @@ const server=http.createServer((req,res)=>{
       const pista=await page.locator(".ac-pregunta").textContent();
       const ayuda=await page.locator(".ac-visible").count(),total=await page.locator(".ac-letra").count();
       assert(ayuda>0&&ayuda<total,"some letters revealed, never the whole answer");
-      for(const viewport of [{width:1280,height:900},{width:844,height:390},{width:390,height:844}]){
+      async function comprobarPantalla(viewport){
         await page.setViewportSize(viewport);
-        assert(await page.locator(".ac-duelo").evaluate(el=>{
-          const r=el.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1&&el.scrollWidth<=el.clientWidth+1;
-        }),"question card fits "+JSON.stringify(viewport));
+        await page.evaluate(()=>window.dispatchEvent(new Event("resize")));
+        assert(await page.locator(".ac-escenario").isHidden(),"only the question panel during a duel");
+        assert(await page.locator(".ac-cabecera").isHidden());
+        const medidas=await page.evaluate(()=>{
+          const shell=document.querySelector(".ext-shell"),panel=document.querySelector(".ac-duelo"),r=panel.getBoundingClientRect();
+          const vv=window.visualViewport,borde=(vv?.offsetTop||0)+(vv?.height||innerHeight);
+          const selectores=[".ac-marcador",".ac-pregunta",".ac-letras","#acRespuesta",".ac-responder button",".ac-voz",".ac-mensaje"];
+          return{panel:r.toJSON(),borde,ancho:innerWidth,scroll:shell.scrollHeight-shell.clientHeight,
+            fuera:selectores.flatMap(sel=>{
+              const el=document.querySelector(sel);if(!el||!el.getClientRects().length)return[];
+              const b=el.getBoundingClientRect();return b.bottom>borde+1||b.top<r.top-1||b.right>r.right+1||b.left<r.left-1?[{sel,r:b.toJSON()}]:[];
+            })};
+        });
+        assert(medidas.panel.left>=0&&medidas.panel.right<=medidas.ancho+1&&medidas.panel.bottom<=medidas.borde+1&&medidas.scroll<=1&&medidas.fuera.length===0,"single-screen question: "+JSON.stringify({viewport,...medidas}));
       }
+      for(const viewport of [{width:1280,height:900},{width:844,height:390},{width:390,height:844},{width:360,height:640},{width:390,height:450}])await comprobarPantalla(viewport);
+      assert((await page.locator(".ac-tu-avatar").getAttribute("src")).endsWith("avatar-22.webp"));
+      assert((await page.locator(".ac-rival-avatar").getAttribute("src")).endsWith("avatar-10.webp"));
       await page.setViewportSize({width:1280,height:900});
       if(process.env.SCREENSHOT_PATH)await page.locator(".ext-wrap").screenshot({path:process.env.SCREENSHOT_PATH,animations:"disabled"});
+      await page.locator(".ac-voz").click();
+      assert.equal(await page.locator(".ac-voz").getAttribute("aria-pressed"),"true");
+      await page.evaluate(()=>window.__speechInstances.at(-1).fail("not-allowed"));
+      assert.match(await page.locator(".ac-mensaje").textContent(),/Permití el micrófono/);
+      assert(await page.locator("#acRespuesta").isEnabled());
+      if(process.env.SCREENSHOT_MOBILE_PATH){
+        await page.setViewportSize({width:390,height:736});
+        await page.evaluate(()=>window.dispatchEvent(new Event("resize")));
+        await page.locator(".ext-wrap").screenshot({path:process.env.SCREENSHOT_MOBILE_PATH,animations:"disabled"});
+        await page.setViewportSize({width:1280,height:900});
+      }
       const segundos=+(await page.locator(".ac-reloj b").textContent());
       await page.locator("#acRespuesta").fill("respuesta equivocada");
       await page.locator(".ac-responder button").click();
@@ -99,27 +132,40 @@ const server=http.createServer((req,res)=>{
       await page.locator(".ac-sortear").click();
       await page.clock.runFor(9000);
       assert.equal(await page.locator(".ac-elegido .ac-nombre").textContent(),"9","fallen rival is excluded");
+      await page.locator(".ac-voz").click();
+      await page.evaluate(()=>{window.__lateSpeech=window.__speechInstances.at(-1).onresult;});
       await page.clock.runFor(30000);
+      assert(await page.evaluate(()=>window.__speechInstances.at(-1).aborted),"deadline aborts microphone");
+      await page.evaluate(()=>window.__lateSpeech({results:[[{transcript:"tarde"}]]}));
       assert.match(await page.locator(".ac-estado").textContent(),/Caíste/);
       assert.equal(await page.locator(".ac-principal.ac-caido").count(),1);
       await page.locator(".ac-sortear").click();
       assert.equal(await page.locator(".ac-caido").count(),0,"restart restores the stage");
       await page.evaluate(()=>{Math.random=()=>0;});
       await page.locator(".ac-sortear").click();await page.clock.runFor(7000);
-      const responder=async()=>{
+      const responder=async(porVoz=false)=>{
         const r=await page.evaluate(()=>AHORA_CAIGO_DATOS.find(q=>q.pregunta===document.querySelector(".ac-pregunta").textContent).respuesta);
-        await page.locator("#acRespuesta").fill(r);await page.locator(".ac-responder button").click();
+        if(porVoz){
+          await page.locator(".ac-voz").click();
+          await page.evaluate(respuesta=>window.__speechInstances.at(-1).emit(["transcripción incorrecta",respuesta]),r);
+        }else{
+          await page.locator("#acRespuesta").fill(r);await page.locator("#acRespuesta").press("Enter");
+        }
       };
-      await responder();await page.clock.runFor(1501);
+      await responder(true);
+      assert.equal(await page.locator(".ac-voz").getAttribute("aria-pressed"),"false");
+      await page.clock.runFor(1501);
       assert.equal(await page.locator(".ac-turno-texto").textContent(),"TURNO DEL RIVAL");
       await page.clock.runFor(3500);
       assert.match(await page.locator(".ac-mensaje").textContent(),/rival acertó/);
       await page.clock.runFor(1500);
       assert.equal(await page.locator(".ac-turno-texto").textContent(),"TU TURNO","bot answer returns turn to player");
-      await responder();await page.clock.runFor(1501);
-      await page.evaluate(()=>Extensiones.abrirLobby());
+      await page.locator(".ac-voz").click();
+      await page.evaluate(()=>{window.__lateSpeech=window.__speechInstances.at(-1).onresult;Extensiones.abrirLobby();});
+      assert(await page.evaluate(()=>window.__speechInstances.at(-1).aborted),"exit aborts microphone");
       assert.equal(await page.locator(".ac-abierta").count(),0,"scenario styles cleaned up");
       await page.evaluate(()=>Extensiones.abrirJuego("ahora-caigo"));
+      await page.evaluate(()=>window.__lateSpeech({results:[[{transcript:"tarde"}]]}));
       await page.clock.runFor(35000);
       assert(await page.locator(".ac-duelo").isHidden(),"old bot and deadline callbacks are cancelled on exit");
       assert.equal(await page.locator(".ac-caido").count(),0);
@@ -137,11 +183,34 @@ const server=http.createServer((req,res)=>{
       }
       assert.match(await page.locator(".ac-estado").textContent(),/Eliminaste a los diez/);
       assert.equal(vistas.size,20);
+      for(const respuesta of ["SOLIDIFICACIÓN","DISYUNTOR"]){
+        await page.evaluate(palabra=>{
+          window.__bancoOriginal=window.__bancoOriginal||AHORA_CAIGO_DATOS;
+          window.AHORA_CAIGO_DATOS=window.__bancoOriginal.filter(q=>q.respuesta===palabra);
+          Extensiones.abrirJuego("ahora-caigo");
+        },respuesta);
+        await page.locator(".ac-sortear").click();await page.clock.runFor(9000);
+        for(const viewport of [{width:390,height:736},{width:360,height:640},{width:390,height:450},{width:844,height:390}])await comprobarPantalla(viewport);
+        await page.setViewportSize({width:390,height:844});
+        await page.evaluate(()=>{
+          Object.defineProperty(visualViewport,"height",{configurable:true,get:()=>400});
+          visualViewport.dispatchEvent(new Event("resize"));
+        });
+        await comprobarPantalla({width:390,height:844});
+        await page.evaluate(()=>{delete visualViewport.height;visualViewport.dispatchEvent(new Event("resize"));});
+      }
+      await page.evaluate(()=>{
+        window.AHORA_CAIGO_DATOS=window.__bancoOriginal;window.SpeechRecognition=undefined;window.webkitSpeechRecognition=undefined;
+        Extensiones.abrirJuego("ahora-caigo");
+      });
+      await page.locator(".ac-sortear").click();await page.clock.runFor(9000);
+      assert(await page.locator(".ac-voz").isDisabled(),"typing remains available without speech recognition");
+      assert(await page.locator("#acRespuesta").isEnabled());
       await page.evaluate(()=>{Math.random=window.__randomOriginal;Extensiones.cerrar();});
       assert.equal(await page.locator(".ac-abierta").count(),0);
       assert.deepEqual(errors,[],"no browser errors");
       await context.close();
     }
-    console.log("PASS: Gonzalo-only access, existing assets, 11 figures at 3 sizes, hints, retries, alternating turns, bot answers, falls, next draw and exit cleanup");
+    console.log("PASS: Gonzalo-only access, existing assets, 11 figures at 3 sizes, single-screen layout and keyboard, profile avatars, speech results/errors/cleanup, hints, retries, alternating turns and victory");
   }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});
