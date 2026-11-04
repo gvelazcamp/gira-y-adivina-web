@@ -2366,3 +2366,7 @@ Fecha: 31/10/2026 — Juegos en la tele: 3 nuevos en el menú (ahora 15). (1) PA
 ```text
 Fecha: 31/10/2026 — Duelo de Conocimiento en la tele: las fotos de famosos/futbolistas se veían cortadas (solo los ojos) porque el iframe de la tele (duelo-conocimiento.html?tv=1, que se dibuja a 2/3 y se agranda ×1,5) caía en el diseño del celular acostado (duelo-conocimiento-horizontal.css: caja de 185×78). Ahora con ?tv=1 el html lleva la clase dc-tv: la foto va GRANDE (≈52% del alto, proporción retrato, cara arriba), las banderas y dibujos también más grandes, y en la tele se ocultan los botones de responder (micrófono, escribir, paso) porque eso se hace desde el celular. El juego en el celular no cambia.
 ```
+
+```text
+Fecha: 04/11/2026 — Ahora Caigo, primera etapa autorizada por Gonzalo: entrada en Más juegos con soloGonzalo:true y control de acceso también en el módulo. Escenario con el avatar y atril del perfil en el centro, diez rivales en semicírculo usando assets/atril y el atril oficial existente; sorteo uniforme con recorrido de luces y frenado. Todavía sin preguntas ni caídas. Archivos ahora-caigo.js/css v1; extensiones.js v119; sw v678. Prueba tests/ahora-caigo.cjs: acceso de Gonzalo y bloqueo de Vale, imágenes cargadas, once figuras dentro del escenario en escritorio/horizontal/vertical, destinos 1 y 10 y limpieza al salir durante el sorteo. Publicado por Git en main (API de GitHub inaccesible desde la sesión).
+```
