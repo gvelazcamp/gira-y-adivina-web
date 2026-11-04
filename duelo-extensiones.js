@@ -128,7 +128,7 @@ const Duelo=(()=>{
   let cliente=null,juego=null,sala=null,soyHost=false,rival=null,activo=false;
   /* Invitación por link: ?duelo=<juego>&sala=XXXX&de=<nombre> abre ese juego
      con el lobby en "Unirme" y el código ya cargado. */
-  const DUELO_EXT={ahorcado:"ahorcado-rioplatense",cien:"cien-rioplatenses",frases:"frases-en-giro",memoria:"memoria-en-giro",rosco:"rosco-rioplatense",rueda:"rueda-de-letras",silabario:"silabario-rioplatense",sopa:"sopa-fugaz",palabra:"palabra-secreta",moon:"moon-tap",puzzle:"puzzle"};
+  const DUELO_EXT={ahorcado:"ahorcado-rioplatense",cien:"cien-rioplatenses",frases:"frases-en-giro",memoria:"memoria-en-giro",rosco:"rosco-rioplatense",rueda:"rueda-de-letras",silabario:"silabario-rioplatense",sopa:"sopa-fugaz",palabra:"palabra-secreta","palabra-colaborativa":"palabra-secreta",moon:"moon-tap",puzzle:"puzzle"};
   let invitacion=null;
   try{
     const q=new URLSearchParams(location.search),j=q.get("duelo"),s=(q.get("sala")||"").toUpperCase();
@@ -143,7 +143,7 @@ const Duelo=(()=>{
     if(!invitacion||typeof Extensiones==="undefined")return;
     Extensiones.abrirJuego(DUELO_EXT[invitacion.juego]);
     let n=0;const t=setInterval(()=>{
-      const b=[...document.querySelectorAll("#extContenido button")].find(x=>/con un amigo|👥/i.test(x.textContent)&&x.offsetParent);
+      const b=invitacion?.juego==="palabra-colaborativa"?document.querySelector("#psColaborativo"):[...document.querySelectorAll("#extContenido button")].find(x=>/con un amigo|👥/i.test(x.textContent)&&x.offsetParent);
       if(b){clearInterval(t);b.click();}else if(++n>24)clearInterval(t);
     },250);
   }
@@ -192,11 +192,11 @@ const Duelo=(()=>{
   function cerrarCapa(){if(capa){capa.remove();capa=null;}}
   /* --- Lobby: elegir crear o unirse, mostrar código, esperar rival --- */
   let nombreActual="";
-  function mostrarLobby(nombreJuego,idJuego,{onListo,onCancelar,detalle,sub,frase}){
+  function mostrarLobby(nombreJuego,idJuego,{onListo,onCancelar,detalle,sub,frase,titulo="Jugar con un amigo"}){
     nombreActual=nombreJuego;onListoJuego=onListo||null;revancha={yo:false,rival:false};rivalSeFue=false;rondaPendiente=null;
     juego=idJuego;activo=false;rival=null;finalRival=null;
     const c=activaCapa();
-    c.innerHTML='<div class="dl-tarjeta"><h3>Jugar con un amigo</h3><p class="dl-sub">'+(sub||nombreJuego+' · 1 vs 1')+'</p>'+(detalle?'<p class="dl-detalle">'+detalle+'</p>':'')+
+    c.innerHTML='<div class="dl-tarjeta"><h3>'+titulo+'</h3><p class="dl-sub">'+(sub||nombreJuego+' · 1 vs 1')+'</p>'+(detalle?'<p class="dl-detalle">'+detalle+'</p>':'')+
       '<div id="dlElegir" class="dl-fila"><button type="button" id="dlCrear" class="dl-principal">Crear sala</button><button type="button" id="dlUnirse">Unirme con código</button></div>'+
       '<div id="dlCodigoZona" hidden><button type="button" id="dlWpp" class="dl-wpp">📲 Invitar por WhatsApp</button><p>o pasale este código:</p><div class="dl-codigo" id="dlCodigo"></div>'+
       '<div class="dl-fila"><button type="button" id="dlCopiar">Copiar invitación</button></div></div>'+

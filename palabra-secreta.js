@@ -2,6 +2,7 @@ const PalabraSecreta=(()=>{
   const CLAVE="gya_palabra_secreta",MAX=6,COLORES={ausente:"⬛",presente:"🟨",exacta:"🟩"};
   let datos=cargar(),raiz=null,partida=null,borrador="",cursor=null,animando=false,token=0,duelo=false;
   let audioMusica=null;
+  let colaborativo=null,colaborativoLobby=false;
   let fotoGuardadaPartida=null,fotoGuardadaPromesa=null;
   const horizontal=()=>matchMedia("(orientation: landscape) and (min-width:600px) and (max-width:1024px) and (max-height:600px)").matches
     &&(matchMedia("(pointer: coarse)").matches||navigator.maxTouchPoints>0);
@@ -45,13 +46,16 @@ const PalabraSecreta=(()=>{
   function iniciarNivel(){if(!datos.partidaNivel||datos.partidaNivel.terminada||!esSecreta(datos.partidaNivel.objetivo)){if(datos.diaria?.objetivo)Vistas.marcar("palabra",datos.diaria.objetivo);datos.partidaNivel=nueva(elegirPalabra(largoDelNivel(datos.nivel)),datos.nivel);guardar();}else if(datos.partidaNivel.repeticiones===undefined){/* Una ronda empezada antes de esta regla conserva sus intentos. */datos.partidaNivel.repeticiones=datos.partidaNivel.intentos.length<=1?repeticionesDelNivel(datos.partidaNivel.nivel):0;if(datos.partidaNivel.repeticiones)datos.partidaNivel.max=MAX;guardar();}partida=datos.partidaNivel;borrador="";cursor=null;}
   function siguienteNivel(){iniciarNivel();tablero();mensaje("");}
   function pantalla(){
-    raiz.innerHTML='<div class="ps-game"><button type="button" class="ext-volver" id="psVolver">⟵ Extensiones</button><div class="ps-top"><div><h2 class="ps-logo-h"><img class="ps-logo" src="'+ARTE("logo")+'" alt="Palabra Secreta" draggable="false"></h2><p class="ps-aviso">💡 Tocá "?" para ver cómo se juega</p></div><button type="button" id="psEstadisticas" class="ps-btn-img" aria-label="Estadísticas">'+ico("stats")+'</button><button type="button" id="psAyuda" aria-label="Cómo se juega">?</button></div><div class="ps-reto" id="psReto"></div><div class="ps-stats" id="psStats"></div><div class="ps-play"><div class="ps-tablero" id="psTablero"></div><div class="ps-entrada"><div class="ps-mensaje" id="psMensaje" aria-live="polite"></div><button type="button" class="ps-mic-btn" id="psMic" aria-pressed="false">🎙️ Activar micrófono</button><div class="ps-teclado" id="psTeclado"></div><div class="ps-acciones"><button type="button" id="psEnviar">Enviar</button><button type="button" id="psBorrar">Borrar</button></div><button type="button" class="ps-duelo" id="psDuelo">👥 Jugar con un amigo</button></div></div><div class="ps-final" id="psFinal" hidden></div><div class="sf-panel-capa" id="psAyudaPanel" hidden></div><div class="ps-mic-aviso" id="psMicAviso" role="dialog" aria-modal="true" aria-labelledby="psMicTitulo" hidden><div class="ps-mic-aviso-caja"><button type="button" class="ps-mic-aviso-cerrar" id="psVozCerrar" aria-label="Cerrar y jugar sin micrófono">✕</button><h3 id="psMicTitulo">🎙️ Micrófono para jugar</h3><p>En horizontal podés decir una palabra de cinco letras. Si está en el diccionario, se envía sola.</p><p>El micrófono seguirá activo durante la partida. Podés apagarlo o prenderlo con el botón del juego.</p><div class="ps-mic-aviso-botones"><button type="button" id="psVozNo">No, usar teclado</button><button type="button" id="psVozSi">Sí, usar micrófono</button></div><small id="psVozPermiso" role="status"></small></div></div></div>';
+    raiz.innerHTML='<div class="ps-game"><button type="button" class="ext-volver" id="psVolver">⟵ Extensiones</button><div class="ps-top"><div><h2 class="ps-logo-h"><img class="ps-logo" src="'+ARTE("logo")+'" alt="Palabra Secreta" draggable="false"></h2><p class="ps-aviso">💡 Tocá "?" para ver cómo se juega</p></div><button type="button" id="psEstadisticas" class="ps-btn-img" aria-label="Estadísticas">'+ico("stats")+'</button><button type="button" id="psAyuda" aria-label="Cómo se juega">?</button></div><div class="ps-reto" id="psReto"></div><div class="ps-stats" id="psStats"></div><div class="ps-play"><div class="ps-tablero" id="psTablero"></div><div class="ps-entrada"><div class="ps-mensaje" id="psMensaje" aria-live="polite"></div><button type="button" class="ps-mic-btn" id="psMic" aria-pressed="false">🎙️ Activar micrófono</button><div class="ps-teclado" id="psTeclado"></div><div class="ps-acciones"><button type="button" id="psEnviar">Enviar</button><button type="button" id="psBorrar">Borrar</button></div><div class="ps-online"><button type="button" class="ps-duelo" id="psDuelo">👥 Jugar con un amigo</button><button type="button" class="ps-duelo ps-colaborativo" id="psColaborativo">🤝 Jugar colaborativo</button></div><section id="psEquipo" class="ps-equipo" aria-label="Equipo colaborativo" hidden><p id="psEquipoEstado" role="status" aria-live="polite"></p><button type="button" id="psTomarTeclado">Tomar el teclado</button><button type="button" id="psSalirEquipo">Salir del colaborativo</button></section></div></div><div class="ps-final" id="psFinal" hidden></div><div class="sf-panel-capa" id="psAyudaPanel" hidden></div><div class="ps-mic-aviso" id="psMicAviso" role="dialog" aria-modal="true" aria-labelledby="psMicTitulo" hidden><div class="ps-mic-aviso-caja"><button type="button" class="ps-mic-aviso-cerrar" id="psVozCerrar" aria-label="Cerrar y jugar sin micrófono">✕</button><h3 id="psMicTitulo">🎙️ Micrófono para jugar</h3><p>En horizontal podés decir una palabra de cinco letras. Si está en el diccionario, se envía sola.</p><p>El micrófono seguirá activo durante la partida. Podés apagarlo o prenderlo con el botón del juego.</p><div class="ps-mic-aviso-botones"><button type="button" id="psVozNo">No, usar teclado</button><button type="button" id="psVozSi">Sí, usar micrófono</button></div><small id="psVozPermiso" role="status"></small></div></div></div>';
     raiz.querySelector("#psVolver").onclick=()=>Extensiones.abrirLobby();
     raiz.querySelector("#psAyuda").onclick=ayuda;
     raiz.querySelector("#psEstadisticas").onclick=mostrarEstadisticas;
     raiz.querySelector("#psEnviar").onclick=enviar;
     raiz.querySelector("#psBorrar").onclick=()=>tecla("Backspace");
     raiz.querySelector("#psDuelo").onclick=iniciarDuelo;
+    raiz.querySelector("#psColaborativo").onclick=iniciarColaborativo;
+    raiz.querySelector("#psTomarTeclado").onclick=()=>accionColaborativa("tomar");
+    raiz.querySelector("#psSalirEquipo").onclick=salirColaborativo;
     raiz.querySelector("#psMic").onclick=()=>micActivo?pararMicrofono():activarMicrofono();
     const rechazarMicrofono=()=>{pararMicrofono();const aviso=raiz?.querySelector("#psMicAviso");if(aviso)aviso.hidden=true;};
     raiz.querySelector("#psVozNo").onclick=rechazarMicrofono;
@@ -114,7 +118,8 @@ const PalabraSecreta=(()=>{
         if(!palabra)continue;
         if(palabra.length!==L()){mensaje("Escuché «"+palabra+"». Decí una palabra de "+NUM[L()]+" letras.");continue;}
         if(L()===5&&!PALABRA_VALIDAS.has(palabra)&&!PALABRA_SECRETAS.includes(palabra)){mensaje("«"+palabra+"» no está en el diccionario. Probá otra palabra.");continue;}
-        borrador=palabra;tablero();enviar();
+        if(!puedoEscribir())continue;
+        borrador=palabra;tablero();if(colaborativo)accionColaborativa("enviar");else enviar();
         if(partida?.terminada)pararMicrofono();
         break;
       }
@@ -151,7 +156,7 @@ const PalabraSecreta=(()=>{
   function teclado(){const t=raiz.querySelector("#psTeclado");t.replaceChildren();const estado={};for(const x of partida.intentos)for(let i=0;i<x.palabra.length;i++){const k=x.palabra[i],e=x.colores[i];if(!estado[k]||({ausente:0,presente:1,exacta:2})[e]>({ausente:0,presente:1,exacta:2})[estado[k]])estado[k]=e;}for(const fila of ["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"]){const d=document.createElement("div");d.className="ps-teclado-fila";for(const l of fila){const b=document.createElement("button");b.type="button";b.textContent=l;b.className=estado[l]||"";b.setAttribute("aria-label","Letra "+l);b.onclick=()=>tecla(l);d.appendChild(b);}t.appendChild(d);}}
   function tablero(){const t=raiz.querySelector("#psTablero");t.replaceChildren();t.style.maxWidth=L()>5?(L()===6?"318px":"360px"):"";t.classList.toggle("ps-largo",L()>5);for(let fila=0;fila<partida.max;fila++){const d=document.createElement("div");d.className="ps-fila";if(L()!==5)d.style.gridTemplateColumns="repeat("+L()+",1fr)";const jugada=partida.intentos[fila],texto=jugada?.palabra||(fila===partida.intentos.length&&!partida.terminada?borrador:"");const actual=!jugada&&fila===partida.intentos.length&&!partida.terminada,arr=actual?filaArr():null,marca=actual?(cursor!=null?cursor:arr.indexOf(" ")):-1;
           for(let i=0;i<L();i++){const celda=document.createElement("span");celda.className="ps-celda"+(jugada?" "+jugada.colores[i]:"")+(actual&&i===marca?" ps-cursor":"");celda.textContent=(texto[i]||"").trim();
-            if(actual){celda.classList.add("ps-tocable");celda.onclick=()=>{if(partida.terminada||animando)return;cursor=i;tablero();};}d.appendChild(celda);}t.appendChild(d);}teclado();estadisticas();final();}
+            if(actual){celda.classList.add("ps-tocable");celda.onclick=()=>{if(partida.terminada||animando||!puedoEscribir())return;cursor=i;tablero();};}d.appendChild(celda);}t.appendChild(d);}teclado();estadisticas();pintarEquipo();final();}
   function final(){
     const f=raiz.querySelector("#psFinal");
     f.replaceChildren();f.hidden=!partida.terminada;
@@ -162,9 +167,15 @@ const PalabraSecreta=(()=>{
     f.onclick=e=>{if(e.target===f&&!duelo)ocultar();};
     const dib=document.createElement("img");dib.className="ps-final-dibujo";dib.src=ARTE(partida.gano?"gano":"perdio");dib.alt="";dib.draggable=false;dib.style.maxHeight="min(15vh,120px)";c.appendChild(dib);
     const p=document.createElement("p");
-    p.textContent=partida.gano?`¡La encontraste en ${partida.intentos.length} intento${partida.intentos.length===1?"":"s"}! La palabra era ${partida.objetivo}.${duelo?"":` Pasaste al nivel ${datos.nivel}.`}`:`La palabra era ${partida.objetivo}. Seguís en el nivel ${partida.nivel}.`;
+    p.textContent=colaborativo?(partida.gano?`¡La encontraron entre los dos en ${partida.intentos.length} intento${partida.intentos.length===1?"":"s"}! La palabra era ${partida.objetivo}.`:`Esta vez no salió. La palabra era ${partida.objetivo}.`):partida.gano?`¡La encontraste en ${partida.intentos.length} intento${partida.intentos.length===1?"":"s"}! La palabra era ${partida.objetivo}.${duelo?"":` Pasaste al nivel ${datos.nivel}.`}`:`La palabra era ${partida.objetivo}. Seguís en el nivel ${partida.nivel}.`;
     c.appendChild(p);
     if(duelo)return;
+    if(colaborativo){
+      const cerrar=document.createElement("button");cerrar.type="button";cerrar.textContent="Ver el tablero";cerrar.onclick=ocultar;c.appendChild(cerrar);
+      if(colaborativo.host){const otra=document.createElement("button");otra.type="button";otra.textContent="Otra palabra juntos";otra.onclick=()=>{colaborativo.ronda++;colaborativo.editor="host";colaborativo.control++;colaborativo.revision++;colaborativo.pendiente=null;iniciarNivel();mensaje("");tablero();publicarEquipo("");};c.appendChild(otra);}
+      else{const aviso=document.createElement("p");aviso.textContent="Tu compañero puede iniciar otra palabra juntos.";c.appendChild(aviso);}
+      const salir=document.createElement("button");salir.type="button";salir.textContent="Salir del colaborativo";salir.onclick=salirColaborativo;c.appendChild(salir);return;
+    }
     /* Vista del tablero final tal cual quedó, con sus casillas y colores originales. */
     const vista=raiz.querySelector("#psTablero").cloneNode(true);
     vista.removeAttribute("id");vista.classList.add("ps-final-tablero");
@@ -185,11 +196,11 @@ const PalabraSecreta=(()=>{
     let sig=-1;for(let k=1;k<=L();k++){const j=(i+k)%L();if(arr[j]===" "){sig=j;break;}}cursor=sig>=0?sig:null;return true;}
   function borrarLetra(){const arr=filaArr();if(cursor!=null&&arr[cursor]!==" "){arr[cursor]=" ";fijar(arr);return;}
     const desde=cursor!=null?cursor-1:L()-1;for(let k=desde;k>=0;k--)if(arr[k]!==" "){arr[k]=" ";cursor=k;fijar(arr);return;}}
-  function tecla(valor){if(!raiz||partida.terminada||animando)return;if(valor==="Backspace"){borrarLetra();tablero();return;}if(valor==="Enter"){enviar();return;}const l=valor.toUpperCase();if(/^[A-Z]$/.test(l)&&ponerLetra(l)){tablero();if(typeof tac==="function")tac();}}
+  function tecla(valor){if(!raiz||partida.terminada||animando||!puedoEscribir())return;if(valor==="Backspace"){borrarLetra();tablero();if(colaborativo)accionColaborativa("borrador");return;}if(valor==="Enter"){enviar();return;}const l=valor.toUpperCase();if(/^[A-Z]$/.test(l)&&ponerLetra(l)){tablero();if(colaborativo)accionColaborativa("borrador");if(typeof tac==="function")tac();}}
   let validando=false;
-  function enviar(ya){if(!raiz||partida.terminada||animando||validando)return;if(borrador.length!==L()||/\s/.test(borrador)){mensaje("Escribí "+NUM[L()]+" letras.");return;}
-    if(L()>5&&ya!==true){const w=borrador;validando=true;mensaje("Buscando en el diccionario…");valeLarga(w).then(ok=>{validando=false;if(!raiz||borrador!==w)return;if(!ok){mensaje("Esa palabra no está en el diccionario.");return;}mensaje("");enviar(true);});return;}
-    if(L()===5&&!PALABRA_VALIDAS.has(borrador)&&!PALABRA_SECRETAS.includes(borrador)){mensaje("Esa palabra no está en el diccionario.");return;}if(!duelo&&partida.repeticiones&&partida.intentos.length>0&&partida.intentos.length<partida.repeticiones&&borrador!==partida.intentos[0].palabra){mensaje(`Tenés que repetir ${partida.intentos[0].palabra} ${partida.repeticiones-partida.intentos.length} ${partida.repeticiones-partida.intentos.length===1?"vez":"veces"} más.`);return;}/* Cada palabra gasta 1 ficha al primer intento; los duelos no gastan. */if(!duelo&&!partida.cobrada){if(window.Fichas&&!Fichas.usar("palabra-secreta",enviar))return;partida.cobrada=true;guardar();}const colores=evaluar(borrador,partida.objetivo);const jugada={palabra:borrador,colores};partida.intentos.push(jugada);borrador="";cursor=null;partida.gano=jugada.palabra===partida.objetivo;partida.terminada=partida.gano||partida.intentos.length>=partida.max;if(partida.terminada&&!duelo){datos.jugadas++;if(partida.gano){datos.ganadas++;datos.distribucion[partida.intentos.length-1]=(datos.distribucion[partida.intentos.length-1]||0)+1;const hoy=indiceDia();datos.racha=datos.ultimoGanado===hoy?datos.racha:datos.ultimoGanado===hoy-1?datos.racha+1:1;datos.mejorRacha=Math.max(datos.mejorRacha,datos.racha);datos.ultimoGanado=hoy;datos.nivel=partida.nivel+1;if(typeof objSumar==="function")objSumar("palabraDiaria",1);if(typeof logroDesbloquear==="function"){logroDesbloquear("palabraPrimera");if(partida.intentos.length<=2)logroDesbloquear("palabraRapida");if(datos.racha>=7)logroDesbloquear("palabraRacha");}}else datos.racha=0;}if(!duelo)guardar();if(typeof bip==="function")bip(partida.gano?900:500,.09);mensaje("");tablero();if(partida.terminada&&micActivo)pararMicrofono();if(duelo)progresoDuelo();const ultima=raiz.querySelectorAll(".ps-fila")[partida.intentos.length-1];if(!matchMedia("(prefers-reduced-motion: reduce)").matches){animando=true;ultima.querySelectorAll(".ps-celda").forEach((c,i)=>{c.style.animationDelay=i*.12+"s";c.classList.add("voltear");});const t=++token;setTimeout(()=>{if(t===token)animando=false;},850);}try{if(typeof vibrar==="function")vibrar(20);}catch(e){}}
+  function enviar(ya){if(colaborativo&&ya!=="equipo"&&ya!=="equipo-validado"){if(puedoEscribir())accionColaborativa("enviar");return;}if(!raiz||partida.terminada||animando||validando)return;if(borrador.length!==L()||/\s/.test(borrador)){mensaje("Escribí "+NUM[L()]+" letras.");return;}
+    if(L()>5&&ya!==true&&ya!=="equipo-validado"){const w=borrador,sesion=colaborativo,validada=partida;validando=true;mensaje("Buscando en el diccionario…");valeLarga(w).then(ok=>{if(!raiz||partida!==validada||colaborativo!==sesion)return;validando=false;if(borrador!==w)return;if(!ok){mensaje("Esa palabra no está en el diccionario.");if(colaborativo)publicarEquipo("Esa palabra no está en el diccionario.");return;}mensaje("");enviar(colaborativo?"equipo-validado":true);if(colaborativo)publicarEquipo(raiz.querySelector("#psMensaje").textContent);});return;}
+    if(L()===5&&!PALABRA_VALIDAS.has(borrador)&&!PALABRA_SECRETAS.includes(borrador)){mensaje("Esa palabra no está en el diccionario.");return;}if(!duelo&&partida.repeticiones&&partida.intentos.length>0&&partida.intentos.length<partida.repeticiones&&borrador!==partida.intentos[0].palabra){mensaje(`Tenés que repetir ${partida.intentos[0].palabra} ${partida.repeticiones-partida.intentos.length} ${partida.repeticiones-partida.intentos.length===1?"vez":"veces"} más.`);return;}/* Cada palabra gasta 1 ficha al primer intento; los duelos no gastan. */if(!duelo&&!partida.cobrada){const actual=partida,equipo=colaborativo,palabra=borrador;if(window.Fichas&&!Fichas.usar("palabra-secreta",()=>{if(raiz&&partida===actual&&colaborativo===equipo&&borrador===palabra)enviar(equipo?"equipo":undefined);})){if(equipo)mensaje("Se necesita una ficha de quien creó la sala para enviar la palabra.");return;}partida.cobrada=true;guardar();}const colores=evaluar(borrador,partida.objetivo);const jugada={palabra:borrador,colores};partida.intentos.push(jugada);borrador="";cursor=null;partida.gano=jugada.palabra===partida.objetivo;partida.terminada=partida.gano||partida.intentos.length>=partida.max;if(partida.terminada&&!duelo){datos.jugadas++;if(partida.gano){datos.ganadas++;datos.distribucion[partida.intentos.length-1]=(datos.distribucion[partida.intentos.length-1]||0)+1;const hoy=indiceDia();datos.racha=datos.ultimoGanado===hoy?datos.racha:datos.ultimoGanado===hoy-1?datos.racha+1:1;datos.mejorRacha=Math.max(datos.mejorRacha,datos.racha);datos.ultimoGanado=hoy;datos.nivel=partida.nivel+1;if(typeof objSumar==="function")objSumar("palabraDiaria",1);if(typeof logroDesbloquear==="function"){logroDesbloquear("palabraPrimera");if(partida.intentos.length<=2)logroDesbloquear("palabraRapida");if(datos.racha>=7)logroDesbloquear("palabraRacha");}}else datos.racha=0;}if(!duelo)guardar();if(typeof bip==="function")bip(partida.gano?900:500,.09);mensaje("");tablero();if(colaborativo){colaborativo.revision++;publicarEquipo("");}if(partida.terminada&&micActivo)pararMicrofono();if(duelo)progresoDuelo();const ultima=raiz.querySelectorAll(".ps-fila")[partida.intentos.length-1];if(!matchMedia("(prefers-reduced-motion: reduce)").matches){animando=true;ultima.querySelectorAll(".ps-celda").forEach((c,i)=>{c.style.animationDelay=i*.12+"s";c.classList.add("voltear");});const t=++token;setTimeout(()=>{if(t===token)animando=false;},850);}try{if(typeof vibrar==="function")vibrar(20);}catch(e){}}
   function textoCompartir(){/* Sin revelar la palabra: WhatsApp muestra la tarjeta del juego. */return`🟩 Palabra Secreta ${duelo?"duelo":"nivel "+partida.nivel}: ${partida.gano?"la saqué en "+partida.intentos.length+"/"+partida.max+" ✅":"no la saqué ❌"}`;}
   async function compartirResultado(){const txt=textoCompartir()+"\n¿Me ganás? 👉 "+linkJuego();try{await navigator.clipboard.writeText(txt);mensaje("Resultado copiado. ¡Compartilo!");}catch(e){const a=document.createElement("textarea");a.value=txt;document.body.appendChild(a);a.select();const ok=document.execCommand("copy");a.remove();mensaje(ok?"Resultado copiado. ¡Compartilo!":"No se pudo copiar el resultado.");}}
   /* Link corto (ps.html): WhatsApp muestra una tarjeta chica de Palabra Secreta y abre el juego directo. */
@@ -253,6 +264,143 @@ const PalabraSecreta=(()=>{
       if(boton)boton.textContent="Foto guardada · adjuntala en WhatsApp";
     }catch(e){if(boton)boton.textContent="No se pudo crear la foto";}
   }
+  /* Una sala cooperativa continúa la partida del anfitrión. El anfitrión valida
+     las jugadas y guarda su progreso; el invitado conserva su partida individual.
+     Un solo teclado compartido evita mezclar dos respuestas al mismo tiempo. */
+  const ladoEquipo=()=>colaborativo?.host?"host":"guest";
+  function puedoEscribir(){
+    const c=colaborativo;
+    if(!c)return !colaborativoLobby;
+    return c.listo&&!c.salio&&Date.now()-c.recibido<12000&&c.editor===ladoEquipo()&&!c.esperando&&!validando;
+  }
+  function pintarEquipo(){
+    if(!raiz)return;
+    const c=colaborativo,z=raiz.querySelector("#psEquipo");if(!z)return;
+    z.hidden=!c;
+    raiz.querySelector(".ps-online").hidden=!!c||duelo;
+    if(!c)return;
+    const conectado=!c.salio&&Date.now()-c.recibido<12000;
+    const nombre=String(Duelo.rivalActual()?.nombre||"Tu compañero").slice(0,30);
+    raiz.querySelector("#psEquipoEstado").textContent=c.salio?nombre+" salió. Podés salir del colaborativo y seguir tu partida.":!c.listo?"Recibiendo el tablero de tu compañero…":!conectado?"Esperando conexión con "+nombre+"…":partida.terminada?"🤝 Partida compartida con "+nombre:c.editor===ladoEquipo()?"🤝 Con "+nombre+" · Vos tenés el teclado. Ambos ven lo que escribís.":"🤝 "+nombre+" tiene el teclado. Podés tomarlo para ayudar.";
+    const tomar=raiz.querySelector("#psTomarTeclado");
+    tomar.hidden=c.editor===ladoEquipo()||partida.terminada;
+    tomar.disabled=!c.listo||!conectado||c.esperando||validando;
+    raiz.querySelector("#psEnviar").disabled=!puedoEscribir()||partida.terminada;
+    raiz.querySelector("#psBorrar").disabled=!puedoEscribir()||partida.terminada;
+    raiz.querySelectorAll("#psTeclado button").forEach(b=>b.disabled=!puedoEscribir()||partida.terminada);
+    if(c.editor!==ladoEquipo())raiz.querySelectorAll(".ps-cursor").forEach(el=>el.classList.remove("ps-cursor"));
+  }
+  function publicarEquipo(aviso=null){
+    const c=colaborativo;if(!c?.host||!raiz)return;
+    if(aviso!==null)c.aviso=aviso;
+    const estado={objetivo:partida.objetivo,nivel:partida.nivel,max:partida.max,repeticiones:partida.repeticiones||0,
+      intentos:partida.intentos.map(x=>({palabra:x.palabra,colores:[...x.colores]})),terminada:partida.terminada,gano:partida.gano};
+    const contenido={partida:estado,borrador,editor:c.editor,control:c.control,ronda:c.ronda,ack:c.ack,validando,aviso:c.aviso||""};
+    const firma=JSON.stringify(contenido);if(firma!==c.firma){c.firma=firma;c.revision++;}
+    Duelo.enviarRonda({tipo:"ps-equipo",sesion:c.sesion,revision:c.revision,...contenido});
+    pintarEquipo();
+  }
+  function accionColaborativa(accion){
+    const c=colaborativo;if(!c||!c.listo||c.salio)return;
+    if(accion!=="tomar"&&!puedoEscribir())return;
+    const m={tipo:"ps-equipo",accion,sesion:c.sesion,ronda:c.ronda,control:c.control,n:partida.intentos.length,seq:++c.seq,texto:borrador};
+    if(c.host)aplicarAccionEquipo(m,"host");
+    else{c.pendiente=m;c.esperando=accion!=="borrador";Duelo.enviarProgreso(m);pintarEquipo();}
+  }
+  function aplicarAccionEquipo(m,lado){
+    const c=colaborativo;if(!c?.host||!m||m.sesion!==c.sesion)return;
+    if(lado==="guest"){
+      if(!Number.isSafeInteger(m.seq)||m.seq<1||m.seq<=c.ack){publicarEquipo();return;}
+      c.ack=m.seq;
+    }
+    if(m.ronda!==c.ronda||m.control!==c.control||m.n!==partida.intentos.length||partida.terminada||validando){publicarEquipo();return;}
+    if(m.accion==="tomar"){
+      c.editor=lado;c.control++;cursor=null;pararMicrofono();mensaje("");tablero();publicarEquipo("");return;
+    }
+    if(c.editor!==lado){publicarEquipo();return;}
+    if(!["borrador","enviar"].includes(m.accion)||typeof m.texto!=="string"||m.texto.length>L()||!/^[A-Z ]*$/.test(m.texto)){publicarEquipo();return;}
+    borrador=m.texto;
+    if(m.accion==="borrador"){mensaje("");tablero();publicarEquipo("");return;}
+    if(animando){publicarEquipo("Esperá a que termine de mostrarse la jugada.");return;}
+    enviar("equipo");
+    publicarEquipo(raiz.querySelector("#psMensaje").textContent);
+  }
+  function estadoEquipoValido(m){
+    const p=m?.partida;
+    return m?.tipo==="ps-equipo"&&typeof m.sesion==="string"&&m.sesion.length<100&&Number.isSafeInteger(m.revision)&&m.revision>0&&
+      Number.isSafeInteger(m.control)&&Number.isSafeInteger(m.ronda)&&Number.isSafeInteger(m.ack)&&["host","guest"].includes(m.editor)&&
+      p&&typeof p.objetivo==="string"&&esSecreta(p.objetivo)&&Number.isInteger(p.nivel)&&p.nivel>0&&Number.isInteger(p.max)&&p.max>=3&&p.max<=6&&
+      [0,3,4].includes(p.repeticiones)&&Array.isArray(p.intentos)&&p.intentos.length<=p.max&&p.intentos.every(x=>typeof x.palabra==="string"&&x.palabra.length===p.objetivo.length&&/^[A-Z]+$/.test(x.palabra))&&
+      typeof m.borrador==="string"&&m.borrador.length<=p.objetivo.length&&/^[A-Z ]*$/.test(m.borrador);
+  }
+  function recibirEstadoEquipo(m){
+    const c=colaborativo;if(!c||c.host||!estadoEquipoValido(m)||(c.sesion&&m.sesion!==c.sesion)||m.revision<c.revision)return;
+    c.recibido=Date.now();c.salio=false;
+    if(c.pendiente&&m.ack>=c.pendiente.seq){c.pendiente=null;c.esperando=false;}
+    if(c.listo&&m.revision===c.revision){pintarEquipo();return;}
+    const mismaFila=c.ronda===m.ronda&&partida.intentos.length===m.partida.intentos.length;
+    const conservar=c.pendiente?.accion==="borrador"&&c.control===m.control&&m.editor==="guest"&&mismaFila;
+    c.sesion=m.sesion;c.control=m.control;c.ronda=m.ronda;c.editor=m.editor;c.revision=m.revision;c.listo=true;
+    validando=!!m.validando;
+    const p=m.partida,intentos=p.intentos.map(x=>({palabra:x.palabra,colores:evaluar(x.palabra,p.objetivo)}));
+    const gano=intentos.some(x=>x.palabra===p.objetivo);
+    partida={...p,intentos,gano,terminada:gano||intentos.length>=p.max};
+    if(!conservar){borrador=m.borrador;cursor=null;}
+    if(!mismaFila||c.editor!=="guest"){c.pendiente=null;c.esperando=false;}
+    tablero();if(m.aviso)mensaje(String(m.aviso).slice(0,200));else mensaje("");
+    if(partida.terminada)pararMicrofono();
+  }
+  function pulsoEquipo(){
+    const c=colaborativo;if(!c||!raiz)return;
+    if(c.host)publicarEquipo();
+    else{
+      Duelo.enviarProgreso({tipo:"ps-equipo",accion:"sincronizar",sesion:c.sesion});
+      if(c.pendiente)Duelo.enviarProgreso(c.pendiente);
+    }
+    pintarEquipo();
+  }
+  function detenerEquipo(){
+    const c=colaborativo;if(!c)return;
+    clearInterval(c.timer);colaborativo=null;validando=false;
+    if(typeof Duelo!=="undefined")Duelo.salir();
+  }
+  function salirColaborativo(){
+    const c=colaborativo;if(!c)return;
+    const eraHost=c.host,previo=c.borradorSolo;
+    pararMicrofono();detenerEquipo();token++;animando=false;
+    if(!eraHost){iniciarNivel();borrador=previo;}
+    cursor=null;
+    raiz.querySelector("#psEnviar").disabled=false;raiz.querySelector("#psBorrar").disabled=false;
+    tablero();mensaje("Saliste del colaborativo. Podés seguir tu partida individual.");
+  }
+  function iniciarColaborativo(){
+    if(duelo||colaborativo||colaborativoLobby||typeof Duelo==="undefined")return;
+    pararMicrofono();const borradorSolo=borrador;colaborativoLobby=true;
+    Duelo.mostrarLobby("Palabra Secreta","palabra-colaborativa",{
+      titulo:"Jugar colaborativo",sub:"Una palabra · Un tablero · Entre los dos",
+      frase:"te invita a ayudarle en",detalle:"Creá una sala para pedir ayuda con <b>tu partida actual</b>, o unite a la de otra persona. Comparten las letras, los colores y los intentos. Pueden pasarse el teclado para completar y enviar la palabra.",
+      onCancelar:()=>{colaborativoLobby=false;Duelo.salir();},
+      onListo:host=>{
+        if(!raiz)return;
+        colaborativoLobby=false;token++;animando=false;
+        if(host&&partida.terminada)iniciarNivel();
+        colaborativo={host,borradorSolo,sesion:host?crypto.randomUUID():null,ronda:1,control:1,editor:"host",seq:0,ack:0,revision:0,recibido:Date.now(),listo:host,pendiente:null,esperando:false,salio:false};
+        raiz.querySelector("#psAyudaPanel").hidden=true;
+        Duelo.onRondaRecibida(recibirEstadoEquipo);
+        Duelo.onProgresoRival(m=>{
+          if(!colaborativo||m?.tipo!=="ps-equipo")return;
+          if(colaborativo.host){
+            if(m.accion==="sincronizar"){colaborativo.recibido=Date.now();colaborativo.salio=false;publicarEquipo();}
+            else if(m.sesion===colaborativo.sesion){colaborativo.recibido=Date.now();aplicarAccionEquipo(m,"guest");}
+          }
+        });
+        Duelo.onRivalSeFue(()=>{if(colaborativo){colaborativo.salio=true;pararMicrofono();pintarEquipo();mensaje("Tu compañero salió de la sala.");}});
+        colaborativo.timer=setInterval(pulsoEquipo,2000);
+        tablero();pulsoEquipo();
+      }
+    });
+  }
+
   /* Duelo 1 vs 1: los dos adivinan la MISMA palabra (no la del día).
      Puntos = 7 − intentos si la encontrás (0 si no): gana quien la saca en menos intentos. */
   const ptsDuelo=()=>partida.gano?7-partida.intentos.length:0;
@@ -264,6 +412,7 @@ const PalabraSecreta=(()=>{
     }
   }
   function iniciarDuelo(){
+    if(colaborativo||colaborativoLobby)return;
     if(typeof Duelo==="undefined")return;
     Duelo.mostrarLobby("Palabra Secreta","palabra",{detalle:"Los dos adivinan la <b>misma palabra</b>, cada uno en su tablero. Gana el que la descubre en <b>menos intentos</b>.",onListo:soyHost=>{
       const arrancar=w=>{duelo=true;partida=nueva(w);borrador="";cursor=null;Duelo.mostrarBadge();Duelo.actualizarBadge("0/6");if(raiz){raiz.querySelector("#psAyudaPanel").hidden=true;tablero();mensaje("👥 Duelo: misma palabra para los dos.");}};
@@ -273,7 +422,7 @@ const PalabraSecreta=(()=>{
     }});
   }
   function abrir(contenedor){salir();raiz=contenedor;avisoVisto=false;iniciarNivel();pantalla();tablero();document.addEventListener("visibilitychange",alVisibilidad);window.addEventListener("resize",revisarHorizontal);iniciarMusicaJuego();ayuda();}
-  function salir(){pararMicrofono();token++;animando=false;if(duelo&&typeof Duelo!=="undefined")Duelo.salir();duelo=false;document.removeEventListener("visibilitychange",alVisibilidad);window.removeEventListener("resize",revisarHorizontal);detenerMusicaJuego();raiz=null;partida=null;borrador="";cursor=null;}
+  function salir(){detenerEquipo();pararMicrofono();token++;animando=false;if((duelo||colaborativoLobby)&&typeof Duelo!=="undefined")Duelo.salir();duelo=false;colaborativoLobby=false;document.removeEventListener("visibilitychange",alVisibilidad);window.removeEventListener("resize",revisarHorizontal);detenerMusicaJuego();raiz=null;partida=null;borrador="";cursor=null;}
   return{abrir,salir,tecla,indiceDia,palabraDia,evaluar,rachaActual,nivelActual:()=>datos.nivel,estadisticasGuardadas:()=>({...datos}),textoCompartir};
 })();
 window.PalabraSecreta=PalabraSecreta;

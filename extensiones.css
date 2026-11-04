@@ -260,6 +260,10 @@ body.ext-abierta{overflow:hidden}
 #mtLanzar{background:linear-gradient(180deg,#fff192,#ffd85b);color:#241a00;font-size:1.05rem}
 #mtReiniciar{padding:0 16px;color:#fff;background:rgba(17,12,36,.78);border:1px solid rgba(255,255,255,.14)}
 .ps-duelo{display:block;width:100%;max-width:300px;margin:4px auto 0;background:#352146;color:#fff;border:1px solid #FFFFFF2A;border-radius:11px;padding:6px 8px;font-weight:900;font-size:.8rem}
+.ps-online{display:grid;grid-template-columns:1fr;gap:4px;max-width:300px;margin:4px auto 0}.ps-online .ps-duelo{margin:0;max-width:none}.ps-online[hidden],.ps-equipo[hidden]{display:none!important}
+.ps-colaborativo{background:#145C55;border-color:#37D6C077}.ps-equipo{max-width:360px;margin:5px auto 0;padding:6px 8px;border:1px solid #37D6C066;border-radius:11px;background:#153C3B;color:#E8FFF8;text-align:center}.ps-equipo p{margin:0 0 4px;font-size:.72rem;line-height:1.3;font-weight:800}.ps-equipo button{min-height:29px;margin:2px;padding:4px 8px;border-radius:8px;background:#37D6C0;color:#102E2A;font-weight:900;font-size:.72rem}.ps-equipo #psSalirEquipo{background:#352146;color:#fff}.ps-equipo button[hidden]{display:none}.ps-game #psTeclado button:disabled,.ps-game .ps-acciones button:disabled{opacity:.5}
+@media(orientation:landscape){.ps-online{grid-template-columns:1fr 1fr;width:100%;max-width:none;margin:0}.ps-equipo{margin:0;padding:3px 5px}.ps-equipo p{margin-bottom:1px;font-size:.65rem}.ps-equipo button{min-height:26px;padding:2px 5px}}
+
 .dl-resultado #dlVolver{display:block;width:100%;padding:12px;border-radius:13px;color:#fff;font-weight:900;margin-top:8px}
 .dl-resultado .dl-revancha{display:block;width:100%;padding:14px;border-radius:13px;color:#fff;font-weight:900;font-size:1.05rem;margin:4px 0 8px;box-shadow:0 4px 0 #8E0F4C}
 .dl-resultado #dlVolver.dl-salir{background:transparent!important;border:1px solid #FFFFFF2E;color:#D7C8E5}
