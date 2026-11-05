@@ -200,19 +200,19 @@ window.GiraEncaja=(()=>{
   }
   function round(x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();}}
   function draw(){
-    ctx.clearRect(0,0,W,H);const shades=ctx.createLinearGradient(0,0,0,H);shades.addColorStop(0,'#09214314');shades.addColorStop(1,'#061b4055');ctx.fillStyle=shades;ctx.fillRect(0,0,W,H);
+    ctx.clearRect(0,0,W,H);const shades=ctx.createLinearGradient(0,0,0,H);shades.addColorStop(0,'#1E103314');shades.addColorStop(1,'#160B2455');ctx.fillStyle=shades;ctx.fillRect(0,0,W,H);
     const g=gateY();round(12,g-33,W-24,128,16,'#242147df','#9a8cd080');
     const entries=gates(),quiz=state?.phase==='question';
     entries.forEach((slot,i)=>{
       const x=slot.x;ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=quiz?'800 21px system-ui':'25px system-ui';ctx.fillStyle=quiz?slot.color:'#fff';ctx.fillText(quiz?slot.text:slot.icono,x,g-13,quiz?200:45);
       const w=slot.vertical?43:99,h=slot.vertical?67:36,y=g+10+(67-h)/2;
-      ctx.shadowColor=slot.color;ctx.shadowBlur=10;round(x-w/2,y,w,h,8,'#020c23',slot.color);ctx.shadowBlur=0;
+      ctx.shadowColor=slot.color;ctx.shadowBlur=10;round(x-w/2,y,w,h,8,'#100818',slot.color);ctx.shadowBlur=0;
       ctx.fillStyle='#edf6ff';ctx.font='600 11px system-ui';ctx.fillText(quiz?'Opción '+(i?'B':'A'):slot.nombre,x,H-6);
     });
     if(!state?.pieces.length)return;
     const pieces=[...state.pieces].sort((a,b)=>(a.id===state.selected)-(b.id===state.selected));
     pieces.forEach(p=>drawPiece(p));
-    if(state.level===1&&!quiz){ctx.textAlign='center';ctx.font='12px system-ui';ctx.fillStyle='#d7f4ff';ctx.fillText('Tocá una ficha para girarla · Arrastrala para moverla',W/2,Math.max(18,g-68));}
+    if(state.level===1&&!quiz){ctx.textAlign='center';ctx.font='12px system-ui';ctx.fillStyle='#e2d7ed';ctx.fillText('Tocá una ficha para girarla · Arrastrala para moverla',W/2,Math.max(18,g-68));}
   }
   function drawPiece(p){
     const quiz=p.kind==='question',item=quiz?['❔','?']:CATS[p.cat].items[p.item],selected=p.id===state.selected;

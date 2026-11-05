@@ -394,6 +394,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Juegos nuevos con la paleta oscura y popups sin scroll
+- Qué: Girá y encajá vuelve a su icono anterior (icono.svg; a Gonzalo no le gustó el v2). Su pantalla y paneles pasan del azul marino/celeste a la paleta violeta oscura del resto (#160B24/#2A1A3C, dorado #F5B301, turquesa #37D6C0, Archivo Black en títulos). Palabras Cruzadas: la palabra elegida y el cursor pasan de celeste/azul a violeta (textos de ayuda y leyenda dicen "violeta"). Regla de Gonzalo: todo popup tiene que entrar sin scroll; se comprobó en 360×640 y 390×844 (Girá y encajá, No te caigas, Palabras Cruzadas).
+- Dónde: extensiones.js (v132), gira-encaja.css (v5), gira-encaja.js (v7), palabras-cruzadas.css (v7), palabras-cruzadas.js (v8), sw gya-cache-v716, ahora-caigo.js (v10: logo-v2 de No te caigas en el juego).
 ### 05/11/2026 — ¿Qué número soy?: solo el número en horizontal, elección de micrófono y toques
 
 Gonzalo precisó que la pregunta no debe verse: la partida muestra únicamente el número gigante a pantalla completa y horizontal, como el número antiguo. NumeroVoz deja de dibujar pregunta, reloj y marcador en la superficie que ven los demás; el control de la tele tampoco muestra la pregunta escrita. La locución sigue leyéndola. En el celular, PantallaFija pide landscape al comenzar/reanudar y lo libera al pausar/salir; una rotación CSS limitada a nv-local-play mantiene el juego horizontal si no se admite el bloqueo nativo, sin cambiar html/body ni el deslizamiento. Número ajustado al área horizontal real, con ResizeObserver para giros/tamaños. Controles secundarios dentro de ⋯ para no ocupar la partida.
