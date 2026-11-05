@@ -277,9 +277,10 @@ window.PalabrasCruzadas=(()=>{
     estructura();pintar();
     window.addEventListener("resize",ajustarPantalla);window.visualViewport?.addEventListener("resize",ajustarPantalla);window.visualViewport?.addEventListener("scroll",ajustarPantalla);
     if(typeof ResizeObserver!=="undefined"){observador=new ResizeObserver(ajustarCuadricula);observador.observe(raiz.querySelector(".pc-grilla-marco"));}
-    if(!datos.guiaVista)mostrarGuia();
+    PantallaFija.bienvenida(raiz.closest("#extContenido")||document.body,{logo:"assets/palabras-cruzadas/logo-v2.webp",alt:"Palabras Cruzadas",dibujo:"assets/palabras-cruzadas/como.webp",sinFija:true,items:[["📝","Leé la <b>pista</b> y tocá sus casillas."],["⌨️","Escribí la respuesta: el <b>borde violeta</b> marca dónde va la letra."],["✅","<b>Comprobar</b> revisa tus letras; tenés 3 ayudas para revelar."],["🏆","Completá todas las palabras para ganar el crucigrama."]]});
   }
   function salir(){
+    document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());
     window.removeEventListener("resize",ajustarPantalla);window.visualViewport?.removeEventListener("resize",ajustarPantalla);window.visualViewport?.removeEventListener("scroll",ajustarPantalla);observador?.disconnect();observador=null;
     if(raiz){const shell=raiz.closest(".ext-shell");shell?.classList.remove("pc-abierta");shell?.style.removeProperty("--pc-vh");shell?.style.removeProperty("--pc-vy");guardar();raiz.querySelectorAll("dialog[open]").forEach(d=>d.close());}
     raiz=null;crucigrama=null;palabras=[];celdas=new Map();
