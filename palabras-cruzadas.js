@@ -267,6 +267,7 @@ window.PalabrasCruzadas=(()=>{
   }
   function siguiente(){
     if(!terminado())return;
+    if(window.Fichas&&!Fichas.usar("palabras-cruzadas",siguiente))return;
     raiz.querySelector("#pcFinal").close();const indice=banco().indexOf(crucigrama),nuevo=(indice+1)%banco().length;
     if(nuevo===0)datos.resueltos=[];
     datos.actual=banco()[nuevo].id;datos.letras={};datos.ayudas=[];datos.revisadas=[];datos.seleccion=0;preparar();pintar();

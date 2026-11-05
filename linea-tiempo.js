@@ -34,6 +34,8 @@
   }
 
   function empezar(){
+    if(window.Fichas&&!Fichas.usar("linea-tiempo",empezar))return;
+    document.querySelector(".lt-final")?.remove();
     const mazo=mezclar(hechos());
     estado={linea:[mazo[0]],mazo:mazo.slice(1,POR_RONDA+1),actual:null,puntos:0,racha:0,vidas:VIDAS,hechas:0,resultado:null};
     siguiente();
