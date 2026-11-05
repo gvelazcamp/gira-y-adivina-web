@@ -17,6 +17,10 @@ window.PalabrasCruzadas=(()=>{
   const completa=p=>p.casillas.every(k=>datos.letras[k]===celdas.get(k).letra);
   const terminado=()=>palabras.length>0&&palabras.every(completa);
   const fija=k=>datos.ayudas.includes(k);
+  // Se fija cuando se muestra verde: comprobada o parte de una palabra resuelta.
+  const correcta=k=>!!datos.letras[k]&&datos.letras[k]===celdas.get(k)?.letra&&(datos.revisadas.includes(k)||celdas.get(k).palabras.some(i=>completa(palabras[i])));
+  const bloqueada=k=>fija(k)||correcta(k);
+  const avisoFija=k=>fija(k)?"Esta letra es una ayuda fija y no se puede cambiar.":"Esta letra ya es correcta y no se puede cambiar.";
   function preparar(){
     crucigrama=banco().find(p=>p.id===datos.actual)||banco()[0];if(!crucigrama)return false;
     datos.actual=crucigrama.id;celdas=new Map();
@@ -36,7 +40,7 @@ window.PalabrasCruzadas=(()=>{
     datos.revisadas=[...new Set(datos.revisadas)].filter(k=>celdas.has(k)&&datos.letras[k]);
     datos.resueltos=[...new Set(datos.resueltos)].filter(id=>banco().some(p=>p.id===id));
     seleccion=datos.seleccion>=0&&datos.seleccion<palabras.length?datos.seleccion:0;
-    cursor=palabras[seleccion].casillas.find(k=>!datos.letras[k])||palabras[seleccion].casillas.find(k=>!fija(k))||palabras[seleccion].casillas[0];
+    cursor=palabras[seleccion].casillas.find(k=>!datos.letras[k])||palabras[seleccion].casillas.find(k=>!bloqueada(k))||palabras[seleccion].casillas[0];
     errores=new Set();mensajeActual="";guardar();return true;
   }
   function ajustarCuadricula(){
@@ -107,13 +111,13 @@ window.PalabrasCruzadas=(()=>{
       </section></div>
       <dialog id="pcPistas" class="pc-dialogo pc-dialogo-pistas"><button type="button" class="pc-cerrar" aria-label="Cerrar pistas">×</button><h2>Elegí una pista</h2><div class="pc-pistas-tabs"><button type="button" id="pcTabHorizontal" aria-pressed="true">Horizontales →</button><button type="button" id="pcTabVertical" aria-pressed="false">Verticales ↓</button></div><div class="pc-panel-pistas"><div id="pcHorizontales"></div><div id="pcVerticales" hidden></div></div><div class="pc-paginador"><button type="button" id="pcPistasAnterior">Anterior</button><span id="pcPistasPagina"></span><button type="button" id="pcPistasSiguiente">Siguiente</button></div></dialog>
       <dialog id="pcAyuda" class="pc-dialogo pc-dialogo-guia"><button type="button" class="pc-cerrar" aria-label="Cerrar ayuda">×</button><h2>Así se juega</h2><small id="pcGuiaPagina"></small>
-        <section class="pc-guia-pagina"><p>Leé la pista: <b>«Lugar donde vivís»</b> (4 letras). Tocá sus casillas celestes y escribí CASA. El borde azul muestra dónde va la próxima letra.</p><div class="pc-demo" role="img" aria-label="CASA horizontal comparte la S con SOL vertical. Falta la A en la casilla con borde azul."><span>C</span><span>A</span><span>S</span><span class="pc-demo-activa">_</span><i></i><i></i><span class="pc-demo-cruce">O</span><i></i><i></i><i></i><span class="pc-demo-cruce">L</span><i></i></div><p>Falta la última A de CASA. La S se comparte con SOL.</p></section>
-        <section class="pc-guia-pagina" hidden><div class="pc-guia-colores"><p>⬜ <b>Blanco:</b> letra sin comprobar.</p><p>🟦 <b>Celeste:</b> palabra que elegiste.</p><p>🔵 <b>Borde azul:</b> próxima letra que escribís.</p><p>🟩 <b>Verde ✓:</b> letra correcta.</p><p>🟥 <b>Rojo ×:</b> letra incorrecta: tocala y cambiala.</p><p>🔒 <b>Dorado:</b> ayuda fija, no se puede cambiar.</p></div></section>
+        <section class="pc-guia-pagina"><p>Leé la pista: <b>«Lugar donde vivís»</b> (4 letras). Tocá sus casillas celestes y escribí CASA. El borde azul muestra dónde va la próxima letra.</p><div class="pc-demo" role="img" aria-label="CASA horizontal comparte la S con SOL vertical. Falta la A en la casilla con borde azul."><span>C</span><span>A</span><span>S</span><span class="pc-demo-activa"></span><i></i><i></i><span class="pc-demo-cruce">O</span><i></i><i></i><i></i><span class="pc-demo-cruce">L</span><i></i></div><p>Falta la última A de CASA. La S se comparte con SOL.</p></section>
+        <section class="pc-guia-pagina" hidden><div class="pc-guia-colores"><p>⬜ <b>Blanco:</b> letra sin comprobar.</p><p>🟦 <b>Celeste:</b> palabra que elegiste.</p><p>🔵 <b>Borde azul:</b> próxima letra que escribís.</p><p>🟩 <b>Verde ✓:</b> letra correcta, queda fija.</p><p>🟥 <b>Rojo ×:</b> letra incorrecta: tocala y cambiala.</p><p>🔒 <b>Dorado:</b> ayuda fija, no se puede cambiar.</p></div></section>
         <section class="pc-guia-pagina" hidden><p><b>Comprobar palabra</b> revisa las letras escritas.</p><p><b>Revelar letra</b> escribe una por vos. Hay tres ayudas por crucigrama.</p><p><b>Pistas</b> permite elegir otra palabra. En un cruce, usá <b>Cambiar dirección</b>.</p><p>Escribí sin tildes ni espacios, conservando la Ñ. La partida se guarda.</p></section>
         <div class="pc-paginador"><button type="button" id="pcGuiaAnterior">Anterior</button><button type="button" id="pcGuiaSiguiente">Siguiente</button><button type="button" class="pc-principal pc-entendido" autofocus>Jugar</button></div></dialog>
       <dialog id="pcFinal" class="pc-dialogo"><button type="button" class="pc-cerrar" aria-label="Ver el tablero">×</button><span class="pc-trofeo" aria-hidden="true">✦</span><h2>¡Crucigrama completo!</h2><p id="pcResumen"></p><button type="button" id="pcSiguienteFinal" class="pc-principal">Siguiente crucigrama</button><button type="button" id="pcRevisar">Ver el tablero</button></dialog>
     </div>`;
-    const significados=["Blanco: sin comprobar","Celeste: palabra elegida","Borde azul: escribís acá","Verde: letra correcta","Rojo: letra incorrecta","Dorado: ayuda fija"];
+    const significados=["Blanco: sin comprobar","Celeste: palabra elegida","Borde azul: escribís acá","Verde: letra correcta, no se puede cambiar","Rojo: letra incorrecta","Dorado: ayuda fija"];
     raiz.querySelectorAll(".pc-leyenda>span").forEach((el,i)=>{el.title=significados[i];el.setAttribute("aria-label",significados[i]);el.querySelector("i").setAttribute("aria-hidden","true");});
     raiz.querySelector("#pcAyudaBoton").onclick=mostrarGuia;
     raiz.querySelector("#pcAyuda").addEventListener("close",()=>{datos.guiaVista=true;guardar();});
@@ -142,7 +146,7 @@ window.PalabrasCruzadas=(()=>{
     }
   }
   function elegir(i,k=null){
-    if(!raiz)return;seleccion=i;cursor=k||palabras[i].casillas[0];
+    if(!raiz)return;seleccion=i;cursor=k||palabras[i].casillas.find(x=>!bloqueada(x))||palabras[i].casillas[0];
     mensajeActual="";guardar();pintar();
   }
   function tocar(k){
@@ -165,7 +169,7 @@ window.PalabrasCruzadas=(()=>{
       const comienzo=palabras.find(p=>p.casillas[0]===k);
       if(comienzo){const n=document.createElement("small");n.textContent=comienzo.numero;b.appendChild(n);}
       const l=document.createElement("span");l.textContent=datos.letras[k]||"";b.appendChild(l);
-      b.setAttribute("aria-label",`Fila ${f+1}, columna ${c+1}: ${datos.letras[k]||"vacía"}${cursor===k?", escribís aquí":""}${datos.ayudas.includes(k)?", ayuda fija, no editable":errores.has(k)?", letra incorrecta":verdes.has(k)?", letra correcta":""}`);b.onclick=()=>tocar(k);g.appendChild(b);
+      b.setAttribute("aria-label",`Fila ${f+1}, columna ${c+1}: ${datos.letras[k]||"vacía"}${cursor===k?(bloqueada(k)?", seleccionada":", escribís aquí"):""}${datos.ayudas.includes(k)?", ayuda fija, no editable":errores.has(k)?", letra incorrecta":verdes.has(k)?", letra correcta, no editable":""}`);b.onclick=()=>tocar(k);g.appendChild(b);
     }
     if(foco)g.querySelector('[data-casilla="'+cursor+'"]').focus({preventScroll:true});
     raiz.querySelector("#pcNivel").textContent="Crucigrama "+(banco().indexOf(crucigrama)+1)+" / "+banco().length;
@@ -176,7 +180,7 @@ window.PalabrasCruzadas=(()=>{
     raiz.querySelector("#pcLargo").textContent=largos.length>1?largos.join(" + ")+" letras · sin espacio":largos[0]+" letras";
     pintarPistas();
     const posicion=raiz.querySelector("#pcPosicion");
-    posicion.textContent=completa(seleccionada)?"✓ Resuelta. Elegí otra pista.":fija(cursor)?"🔒 Ayuda fija. Elegí otra casilla.":"Borde azul: "+(seleccionada.casillas.indexOf(cursor)+1)+" de "+seleccionada.casillas.length;
+    posicion.textContent=completa(seleccionada)?"✓ Resuelta. Elegí otra pista.":fija(cursor)?"🔒 Ayuda fija. Elegí otra casilla.":correcta(cursor)?"✓ Letra correcta y fija. Elegí otra casilla.":"Borde azul: "+(seleccionada.casillas.indexOf(cursor)+1)+" de "+seleccionada.casillas.length;
     const cambiar=raiz.querySelector("#pcCambiarDireccion");cambiar.hidden=celdas.get(cursor).palabras.length<2;
     raiz.querySelector("#pcMensaje").textContent=mensajeActual;raiz.querySelector("#pcMensaje").hidden=!mensajeActual;
     const fin=terminado();raiz.querySelector("#pcRevelar").textContent="Revelar letra ("+(AYUDAS-datos.ayudas.length)+")";
@@ -194,7 +198,7 @@ window.PalabrasCruzadas=(()=>{
   }
   function avanzar(){
     const lista=palabras[seleccion].casillas,pos=lista.indexOf(cursor);
-    if(pos<lista.length-1)cursor=lista[pos+1];
+    const siguiente=lista.find((k,i)=>i>pos&&!bloqueada(k));if(siguiente)cursor=siguiente;
   }
   function tecla(valor){
     if(!raiz||raiz.querySelector("dialog[open]")||terminado())return false;
@@ -207,12 +211,13 @@ window.PalabrasCruzadas=(()=>{
       return true;
     }
     if(valor==="Backspace"||valor==="Delete"){
-      if(!fija(cursor)&&datos.letras[cursor])delete datos.letras[cursor];
-      else if(valor==="Backspace"){const lista=palabras[seleccion].casillas;for(let i=lista.indexOf(cursor)-1;i>=0;i--)if(!fija(lista[i])){cursor=lista[i];delete datos.letras[cursor];break;}}
+      if(bloqueada(cursor)){mensajeActual=avisoFija(cursor);pintar();return true;}
+      if(datos.letras[cursor])delete datos.letras[cursor];
+      else if(valor==="Backspace"){const lista=palabras[seleccion].casillas;for(let i=lista.indexOf(cursor)-1;i>=0;i--)if(!bloqueada(lista[i])){cursor=lista[i];delete datos.letras[cursor];break;}}
       datos.revisadas=datos.revisadas.filter(k=>k!==cursor);errores.delete(cursor);mensajeActual="";guardar();pintar();return true;
     }
     const letra=normalizar(valor);if(letra.length!==1||valor.length!==1)return false;
-    if(fija(cursor)){if(datos.letras[cursor]===letra){avanzar();mensajeActual="";}else mensajeActual="Esta letra está revelada y no se puede cambiar.";guardar();pintar();return true;}
+    if(bloqueada(cursor)){mensajeActual=avisoFija(cursor);pintar();return true;}
     datos.letras[cursor]=letra;datos.revisadas=datos.revisadas.filter(k=>k!==cursor);errores.delete(cursor);mensajeActual="";avanzar();guardar();pintar();verificarFinal();return true;
   }
   function comprobar(){
@@ -227,7 +232,7 @@ window.PalabrasCruzadas=(()=>{
     const lista=palabras[seleccion].casillas;
     const k=datos.letras[cursor]!==celdas.get(cursor).letra?cursor:lista.find(x=>datos.letras[x]!==celdas.get(x).letra);if(!k)return;
     datos.letras[k]=celdas.get(k).letra;datos.ayudas.push(k);datos.revisadas=datos.revisadas.filter(x=>x!==k);
-    const pos=lista.indexOf(k);cursor=lista.find((x,i)=>i>pos&&!fija(x)&&datos.letras[x]!==celdas.get(x).letra)||lista.find(x=>!fija(x)&&datos.letras[x]!==celdas.get(x).letra)||k;
+    const pos=lista.indexOf(k);cursor=lista.find((x,i)=>i>pos&&!bloqueada(x)&&datos.letras[x]!==celdas.get(x).letra)||lista.find(x=>!bloqueada(x)&&datos.letras[x]!==celdas.get(x).letra)||k;
     mensajeActual="Mostramos una letra dorada con 🔒. Seguí en la casilla con borde azul.";
     guardar();pintar();verificarFinal();
   }

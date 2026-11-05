@@ -43,6 +43,10 @@ const server=http.createServer((req,res)=>{
    for(let n=0;n<6&&!await clue(i).count();n++)await page.locator('#pcPistasSiguiente').click();
    await clue(i).click();assert(await page.locator('#pcPistas').isHidden());
   }
+  async function typeWord(w){
+   const locked=await page.locator('.pc-correcta,.pc-revelada').evaluateAll(nodes=>nodes.map(e=>e.dataset.casilla));
+   const answer=norm(w.respuesta);await page.keyboard.type(keys(w).flatMap((k,i)=>locked.includes(k)?[]:[answer[i]]).join(''));
+  }
   await page.goto(base);await loaded();await page.evaluate(()=>Extensiones.abrirLobby());
   assert.equal(await page.getByRole('button',{name:/Palabras Cruzadas/}).count(),1);
   await page.getByRole('button',{name:/Palabras Cruzadas/}).click();
@@ -56,14 +60,26 @@ const server=http.createServer((req,res)=>{
   assert.equal(await page.locator('.pc-leyenda>span').count(),6);
   assert(await page.locator('.pc-instruccion').isVisible());
   const first=puzzles[0],board=cells(first),w0=first.palabras[0],k0=keys(w0)[0];
+  const blank=page.locator('.pc-activa>span');assert.equal(await blank.textContent(),'');
+  assert(['none','normal','""'].includes(await blank.evaluate(el=>getComputedStyle(el,'::after').content)),'empty cell has no line or letter-like marker');
+  assert.notEqual(await page.locator('.pc-activa').evaluate(el=>getComputedStyle(el).backgroundColor),await page.locator('.pc-seleccionada:not(.pc-activa)').first().evaluate(el=>getComputedStyle(el).backgroundColor),'active cell uses a distinct background');
   await page.keyboard.type('X');assert.equal(await value(k0),'X');
   await page.locator('#pcComprobar').click();assert.equal(await page.locator('.pc-error').count(),1);
   await page.keyboard.press('Backspace');assert.equal(await value(k0),'');
-  await selectClue(0);await page.keyboard.type(norm(w0.respuesta).toLowerCase());
+  await selectClue(0);await typeWord(w0);
   assert(await clue(0).evaluate(el=>el.classList.contains('pc-lista')));
+  // Every green in a solved word is fixed, through either keyboard and either delete key.
+  const solvedLetters=(await state()).letras;
+  for(const k of keys(w0)){
+   await page.locator('.pc-celda[data-casilla="'+k+'"]').click();
+   await page.keyboard.type('X');await page.keyboard.press('Backspace');await page.keyboard.press('Delete');
+   await page.getByRole('button',{name:'Letra Z',exact:true}).click();await page.getByRole('button',{name:'Borrar letra',exact:true}).click();
+   assert.deepEqual((await state()).letras,solvedLetters,'green '+k+' cannot be overwritten or erased');
+  }
   const cross=[...board].find(([,c])=>c.palabras.length===2&&c.palabras.includes(0))[0];
   const crossButton=page.locator('.pc-celda[data-casilla="'+cross+'"]');
   await crossButton.click();const dir=await page.locator('#pcDireccion').textContent();assert(await page.locator('#pcCambiarDireccion').isVisible());await page.locator('#pcCambiarDireccion').click();assert.notEqual(await page.locator('#pcDireccion').textContent(),dir,'explicit button changes direction at a crossing');
+  const crossedLetters=(await state()).letras;await page.keyboard.type('Z');await page.keyboard.press('Backspace');assert.deepEqual((await state()).letras,crossedLetters,'a solved crossing stays green and fixed from the unfinished direction');
   const i=first.palabras.findIndex((w,n)=>n!==0&&keys(w).some(k=>!(keys(w0).includes(k))));
   await selectClue(i);const ki=keys(first.palabras[i])[0],letter=norm(first.palabras[i].respuesta)[0];
   await page.getByRole('button',{name:'Letra '+letter,exact:true}).click();assert.equal(await value(ki),letter);
@@ -74,7 +90,7 @@ const server=http.createServer((req,res)=>{
   await page.locator('.pc-celda[data-casilla="'+hint+'"]').click();
   assert.match(await page.locator('#pcPosicion').textContent(),/ayuda fija/i);
   await page.keyboard.type(hintValue==='X'?'Y':'X');assert.equal(await value(hint),hintValue,'hint is protected');
-  await selectClue(i);await page.keyboard.type(norm(first.palabras[i].respuesta));
+  await selectClue(i);await typeWord(first.palabras[i]);
   assert(await clue(i).evaluate(el=>el.classList.contains('pc-lista')));
   const before=await state();await page.reload();await loaded();await page.evaluate(()=>Extensiones.abrirJuego('palabras-cruzadas'));
   assert.deepEqual((await state()).letras,before.letras);assert.deepEqual((await state()).ayudas,before.ayudas);assert(await page.locator('#pcAyuda').isHidden(),'guide is shown once, and remains available on demand');
@@ -95,7 +111,7 @@ const server=http.createServer((req,res)=>{
   assert.equal((await state()).ayudas.length,3);assert(await page.locator('#pcRevelar').isDisabled(),'three-letter help limit');
   for(let n=0;n<first.palabras.length;n++){
    const w=first.palabras[n],s=await state();if(keys(w).every(k=>s.letras[k]===board.get(k).letra))continue;
-   await selectClue(n);await page.keyboard.type(norm(w.respuesta));
+   await selectClue(n);await typeWord(w);
   }
   assert(await page.locator('#pcFinal').isVisible());assert.equal(await page.locator('dialog:modal').count(),1);
   assert.equal((await state()).total,1);
@@ -140,10 +156,18 @@ const server=http.createServer((req,res)=>{
   if(process.env.ERROR_SCREENSHOT_PATH)await oldPage.screenshot({path:process.env.ERROR_SCREENSHOT_PATH,fullPage:true});
   await oldPage.reload();await oldPage.evaluate(()=>{document.querySelector('#splash')?.remove();document.documentElement.classList.remove('cargando');document.querySelector('#setup').style.display='none';Extensiones.abrirJuego('palabras-cruzadas');});
   assert(await oldPage.locator('#pcAyuda').isHidden());assert.equal(await oldPage.locator('.pc-error').count(),2,'review survives closing and reopening');
+  const reviewedLetters=await oldPage.evaluate(()=>JSON.parse(localStorage.getItem('gya_palabras_cruzadas')).letras);
+  for(const k of keys(w0).filter((_,i)=>[2,4].includes(i))){
+   await oldPage.locator('.pc-celda[data-casilla="'+k+'"]').click();
+   assert.match(await oldPage.locator('#pcPosicion').textContent(),/correcta y fija/);
+   await oldPage.keyboard.type('X');await oldPage.keyboard.press('Backspace');await oldPage.keyboard.press('Delete');
+   await oldPage.getByRole('button',{name:'Letra Z',exact:true}).click();await oldPage.getByRole('button',{name:'Borrar letra',exact:true}).click();
+   assert.deepEqual(await oldPage.evaluate(()=>JSON.parse(localStorage.getItem('gya_palabras_cruzadas')).letras),reviewedLetters,'checked green in an unfinished word stays fixed after reload');
+  }
   const wrong=keys(w0)[1];await oldPage.locator('.pc-celda[data-casilla="'+wrong+'"]').click();await oldPage.getByRole('button',{name:'Letra U',exact:true}).click();
   await oldPage.locator('#pcComprobar').click();assert.equal(await oldPage.locator('.pc-error').count(),1);assert.equal(await oldPage.locator('.pc-correcta').count(),4);
   await oldPage.evaluate(()=>Extensiones.cerrar());await oldContext.close();
   assert.deepEqual(errors,[]);
-  console.log('PASS: 12 valid connected crosswords/72 unique answers, real lobby entry, physical/on-screen keyboards, cross direction, proactive guide, persistent legend, individual red/green checks, hints, old-save upgrade and verified states after reload, native dialogs, responsive grid, win/next from board, Ñ, individual progress unchanged and cleanup.');
+  console.log('PASS: 12 valid connected crosswords/72 unique answers, real lobby entry, physical/on-screen keyboards, cross direction, proactive guide, persistent legend, individual red/green checks, fixed greens through both keyboards and deletion after reload, empty colorful selection without a caret, hints, old-save upgrade and verified states after reload, native dialogs, responsive grid, win/next from board, Ñ, individual progress unchanged and cleanup.');
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});

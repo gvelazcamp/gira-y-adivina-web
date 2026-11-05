@@ -27,7 +27,7 @@ const server=http.createServer((req,res)=>{const file=path.join(root,new URL(req
    for(let n=0;n<12;n++){
     await page.evaluate(n=>{PalabrasCruzadas.salir();window.PALABRAS_CRUZADAS_DATOS=[window.__pcBanco[n]];PalabrasCruzadas.abrir(document.querySelector('#extContenido'));},n);
     // Exercise every clue, including the longest descriptions and crossing controls.
-    for(let clue=0;clue<6;clue++){await page.locator('#pcProxima').click();await fits(JSON.stringify(size)+' board '+(n+1)+' clue '+clue);}
+    for(let clue=0;clue<6;clue++){await page.locator('#pcProxima').evaluate(b=>b.click());await fits(JSON.stringify(size)+' board '+(n+1)+' clue '+clue);}
     await page.locator('#pcComprobar').click();await fits('feedback '+JSON.stringify(size)+' board '+(n+1));
     await page.locator('#pcPistasBoton').click();
     for(const direction of ['#pcTabHorizontal','#pcTabVertical']){
@@ -37,6 +37,16 @@ const server=http.createServer((req,res)=>{const file=path.join(root,new URL(req
     }
     await page.keyboard.press('Escape');
    }
+   // A checked green remains selectable for its clue, with a fixed-letter message.
+   const checked=await page.evaluate(()=>{
+    const k=document.querySelector('.pc-activa').dataset.casilla,[f,c]=k.split(',').map(Number);
+    const word=PALABRAS_CRUZADAS_DATOS[0].palabras.find(w=>{const n=w.direccion==='V'?f-w.fila:c-w.columna;return n>=0&&n<w.respuesta.length&&(w.direccion==='V'?c===w.columna:f===w.fila);});
+    const n=word.direccion==='V'?f-word.fila:c-word.columna;
+    const answer=word.respuesta.toUpperCase().replace(/Ñ/g,'!').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/!/g,'Ñ').replace(/[^A-ZÑ]/g,'');
+    PalabrasCruzadas.tecla(answer[n]);document.querySelector('#pcComprobar').click();return k;
+   });
+   await page.locator('.pc-celda[data-casilla="'+checked+'"]').click();await page.keyboard.press('Delete');
+   await fits('fixed green feedback '+JSON.stringify(size));
    if(process.env.SCREENSHOT_PATH)await page.screenshot({path:process.env.SCREENSHOT_PATH.replace('.png','-'+size.width+'x'+size.height+'.png')});
    console.log('Fit verified:',size.width+'x'+size.height);
    await page.locator('#pcAyudaBoton').click();
