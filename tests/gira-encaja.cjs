@@ -31,7 +31,14 @@ const names=[['Gato','Perro','León','Rana','Tortuga','Mariposa','Delfín','Elef
       assert(await page.evaluate(()=>document.querySelector('.ge-canvas').height>0));
       assert(await page.evaluate(()=>{const r=document.querySelector('.ge-game').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.bottom<=innerHeight+2;}),'game fits viewport '+JSON.stringify(viewport));
       const cards=()=>page.evaluate(words=>window.__geDraw.filter(p=>words.includes(p.text)),names.flat());
-      let first=await cards();assert.equal(first.length,3,'three cards immediately');
+      assert.equal((await cards()).length,1,'only one card at the start');
+      await page.clock.runFor(900);assert.equal((await cards()).length,1,'second card waits its short interval');
+      await page.locator('.ge-pause').click();await page.clock.runFor(15000);
+      assert.equal((await cards()).length,1,'pause also freezes pending releases');
+      await page.locator('[data-resume]').click();await page.clock.runFor(300);
+      assert.equal((await cards()).length,2,'second card releases after its delay');
+      await page.clock.runFor(1000);assert.equal((await cards()).length,2,'third card also waits its turn');
+      await page.clock.runFor(300);let first=await cards();assert.equal(first.length,3,'third card releases separately');
       assert.equal(new Set(first.map(p=>names.findIndex(a=>a.includes(p.text)))).size,3,'mixed categories in first cluster');
       const before=await page.locator('.ge-canvas').getAttribute('aria-label');
       await page.locator('.ge-pause').click();await page.clock.runFor(15000);
@@ -52,13 +59,21 @@ const names=[['Gato','Perro','León','Rana','Tortuga','Mariposa','Delfín','Elef
       const label=await page.locator('.ge-canvas').getAttribute('aria-label');await page.mouse.click(box.x+5,box.y+box.height*.5);
       assert.equal(await page.locator('.ge-canvas').getAttribute('aria-label'),label,'empty background does not rotate a card');
       const startPositions=await cards();await page.clock.runFor(1000);const falling=await cards();
-      const virtualH=Math.max(200,480*box.height/box.width),oldSpeed=Math.max(25,(virtualH-160)/8)*box.height/virtualH;
-      for(const p of falling)assert(p.y-startPositions.find(q=>q.text===p.text).y>=oldSpeed*1.18,'faster falling');
+      const virtualH=Math.max(200,480*box.height/box.width),expectedSpeed=(virtualH-85-Math.min(52,virtualH*.12))/9*box.height/virtualH;
+      for(const p of falling)assert(Math.abs(p.y-startPositions.find(q=>q.text===p.text).y-expectedSpeed)<2,'nine seconds per card at level one');
+      // Resolving the first card early must keep the next two queued, not start a new wave.
+      await page.evaluate(()=>Extensiones.abrirJuego('gira-encaja'));await page.locator('[data-mode=palabras]').click();await page.locator('[data-start]').click();
+      await page.clock.runFor(20);await page.locator('.ge-canvas').press('ArrowDown');await page.clock.runFor(80);
+      assert.equal((await cards()).length,0,'first card resolved alone');
+      await page.clock.runFor(500);assert.equal((await cards()).length,0,'queued cards still respect spacing');
+      await page.clock.runFor(700);assert.equal((await cards()).length,1,'only second card appears');
+      await page.clock.runFor(1200);assert.equal((await cards()).length,2,'third card appears without extra wave');
+      assert.match(await page.locator('.ge-level').textContent(),/1\/9/);
       // Start clean and complete every level without letting peer cards disappear.
       await page.evaluate(()=>Extensiones.abrirJuego('gira-encaja'));await page.locator('[data-mode=palabras]').click();await page.locator('[data-start]').click();
       let total=0;
       for(let level=1;level<=5;level++)for(let wave=0;wave<3;wave++){
-        await page.clock.runFor(20);assert.equal((await cards()).length,3,'fresh trio for every wave');
+        await page.clock.runFor(2600);assert.equal((await cards()).length,3,'three staggered cards for every wave');
         for(let n=0;n<3;n++){
           const label=await page.locator('.ge-canvas').getAttribute('aria-label'),word=label.split('. ')[0].replace('Ficha: ',''),cat=names.findIndex(list=>list.includes(word));
           assert(cat>=0,'recognized card '+label);
@@ -84,12 +99,13 @@ const names=[['Gato','Perro','León','Rana','Tortuga','Mariposa','Delfín','Elef
         for(let k=0;k<lane;k++)await page.locator('.ge-canvas').press('ArrowRight');
         await page.locator('.ge-canvas').press('ArrowDown');await page.clock.runFor(80);
         assert.equal(await page.locator('.ge-lives').textContent(),'♥'.repeat(2-i)+'♡'.repeat(i+1));
+        if(i<2)await page.clock.runFor(1300);
       }
       assert.match(await page.locator('.ge-panel h2').textContent(),/otra vez/);
       assert.equal(await page.evaluate(()=>GiraEncaja.mejorPuntaje()),record,'losing does not erase record');
       await page.evaluate(()=>Extensiones.abrirLobby());assert.equal(await page.locator('.ge-game').count(),0);
       await page.evaluate(()=>Extensiones.abrirJuego('gira-encaja'));await page.locator('[data-start]').click();
-      await page.clock.runFor(500);
+      await page.clock.runFor(2600);
       if(process.env.UI_SCREENSHOTS){fs.mkdirSync(process.env.UI_SCREENSHOTS,{recursive:true});await page.screenshot({path:path.join(process.env.UI_SCREENSHOTS,'gira-encaja-'+viewport.width+'.png')});}
       await page.evaluate(()=>Extensiones.cerrar());assert.equal(await page.locator('.ge-game').count(),0);
       await page.clock.runFor(10000);assert.deepEqual(errors,[]);await context.close();
@@ -104,6 +120,6 @@ const names=[['Gato','Perro','León','Rana','Tortuga','Mariposa','Delfín','Elef
       await page.evaluate(()=>Extensiones.abrirJuego('gira-encaja'));assert.equal(await page.locator('.ge-game').count(),0);
       await page.evaluate(()=>GiraEncaja.abrir(document.body));assert.equal(await page.locator('.ge-game').count(),0);await ctx.close();
     }
-    console.log('PASS Girá y encajá: trios, individual touch/drag, faster fall, five levels, pause, loss, record, cleanup, four viewports, Gonzalo visibility');
+    console.log('PASS Girá y encajá: staggered releases, pending pause/early resolution, individual touch/drag, gentler fall, five levels, pause, loss, record, cleanup, four viewports, Gonzalo visibility');
   }finally{await browser.close();await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e);process.exitCode=1;});

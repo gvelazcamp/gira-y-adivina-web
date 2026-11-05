@@ -4,6 +4,7 @@ window.GiraEncaja=(()=>{
   'use strict';
   const KEY='gya_gira_encaja_record_v1';
   const PER_LEVEL=9;
+  const RELEASE_SECONDS=1.2;
   const CATS=[
     {nombre:'Animales',icono:'🐾',color:'#75e9f4',items:[['🐱','Gato'],['🐶','Perro'],['🦁','León'],['🐸','Rana'],['🐢','Tortuga'],['🦋','Mariposa'],['🐬','Delfín'],['🐘','Elefante'],['🐧','Pingüino'],['🦊','Zorro'],['🐰','Conejo'],['🦉','Búho']]},
     {nombre:'Plantas',icono:'🌿',color:'#a4fa87',items:[['🌵','Cactus'],['🌻','Girasol'],['🌹','Rosa'],['🌴','Palmera'],['🌷','Tulipán'],['🌳','Roble'],['🍀','Trébol'],['🌲','Pino'],['🌱','Brote'],['🌾','Trigo'],['🍃','Hoja'],['🪻','Lavanda']]},
@@ -41,29 +42,35 @@ window.GiraEncaja=(()=>{
   }
   function panel(html){overlay.innerHTML='<div class="ge-panel">'+html+'</div>';overlay.hidden=false;}
   function intro(){
-    panel('<div class="ge-mark">✧</div><h2>Girá y encajá</h2><p>¡Caen tres fichas juntas! Llevá cada una a su categoría y girala para que entre.</p><p><b>Arrastrá una ficha</b> para moverla · <b>Tocala</b> para girarla.<br>El botón ⇄ cambia la ficha seleccionada.</p><div class="ge-choice"><button data-mode="imagenes" aria-pressed="true">Imágenes</button><button data-mode="palabras" aria-pressed="false">Palabras</button></div><button class="ge-primary" data-start>¡A jugar!</button><p class="ge-note">Prueba de Gonzalo · Récord: '+record()+'<br>4 categorías · 5 niveles · 3 vidas</p>');
+    panel('<div class="ge-mark">✧</div><h2>Girá y encajá</h2><p>Las fichas salen de a una, con un pequeño espacio entre ellas. Llevá cada una a su categoría y girala para que entre.</p><p><b>Arrastrá una ficha</b> para moverla · <b>Tocala</b> para girarla.<br>El botón ⇄ cambia la ficha seleccionada.</p><div class="ge-choice"><button data-mode="imagenes" aria-pressed="true">Imágenes</button><button data-mode="palabras" aria-pressed="false">Palabras</button></div><button class="ge-primary" data-start>¡A jugar!</button><p class="ge-note">Prueba de Gonzalo · Récord: '+record()+'<br>4 categorías · 5 niveles · 3 vidas</p>');
     overlay.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;overlay.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});
     overlay.querySelector('[data-start]').onclick=start;
   }
   function start(){
-    state={running:true,paused:false,score:0,lives:3,level:1,done:0,total:0,streak:0,pieces:[],selected:0,nextId:0,wait:0,bag:[]};
+    state={running:true,paused:false,score:0,lives:3,level:1,done:0,total:0,streak:0,pieces:[],pending:[],releaseIn:0,selected:0,nextId:0,wait:0,bag:[]};
     slots();spawn();overlay.hidden=true;root.querySelector('.ge-pause').disabled=false;hud();canvas.focus({preventScroll:true});
-    feedback('¡Tres juntas! Mové y girá cada ficha',1800);
+    feedback('De a una, con tiempo para acomodarlas',1800);
   }
   function slots(){state.slots=CATS.map((c,i)=>({cat:i,vertical:(i+state.level)%2===1}));}
   function spawn(){
     if(!state.bag.length){state.bag=CATS.flatMap((cat,c)=>cat.items.map((item,i)=>({cat:c,item:i})));for(let i=state.bag.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[state.bag[i],state.bag[j]]=[state.bag[j],state.bag[i]];}}
-    const used=new Set(),top=Math.min(52,H*.12),gap=Math.min(26,H*.06);
+    const used=new Set();
     for(let i=0;i<3;i++){
       const different=state.bag.findLastIndex(p=>!used.has(p.cat));
       const next=state.bag.splice(different<0?state.bag.length-1:different,1)[0];used.add(next.cat);
-      state.pieces.push({...next,id:++state.nextId,x:W/2+(i-1)*100,y:top+[0,2,1][i]*gap,vertical:Math.random()<.5});
+      state.pending.push({...next,id:++state.nextId,x:W/2+(i-1)*100,vertical:Math.random()<.5});
     }
-    state.selected=state.pieces[0].id;
+    releasePiece();
+  }
+  function spawnY(){return Math.min(52,H*.12);}
+  function releasePiece(){
+    const p=state.pending.shift();if(!p)return;
+    p.y=spawnY();state.pieces.push(p);state.releaseIn=RELEASE_SECONDS;
+    if(!selectedPiece())state.selected=p.id;
     describePiece();
   }
   function selectedPiece(){return state?.pieces.find(p=>p.id===state.selected);}
-  function describePiece(){const p=selectedPiece();canvas.setAttribute('aria-label',p?'Ficha: '+CATS[p.cat].items[p.item][1]+'. '+(p.vertical?'Vertical':'Horizontal')+'. '+state.pieces.length+' en caída. Flechas para mover, espacio para girar, C para cambiar de ficha, abajo para soltar.':'Esperando el próximo grupo de tres fichas.');}
+  function describePiece(){const p=selectedPiece();canvas.setAttribute('aria-label',p?'Ficha: '+CATS[p.cat].items[p.item][1]+'. '+(p.vertical?'Vertical':'Horizontal')+'. '+state.pieces.length+' en caída. Flechas para mover, espacio para girar, C para cambiar de ficha, abajo para soltar.':'Esperando la próxima ficha.');}
   function hud(){
     root.querySelector('.ge-score').textContent=state.score;
     root.querySelector('.ge-level').textContent='Nivel '+state.level+' · '+state.done+'/'+PER_LEVEL;
@@ -75,7 +82,7 @@ window.GiraEncaja=(()=>{
     if(a==='next'){const index=state.pieces.indexOf(p);state.selected=state.pieces[(index+1)%state.pieces.length].id;describePiece();return;}
     if(a==='rotate'){p.vertical=!p.vertical;describePiece();}
     if(a==='left'||a==='right'){const lane=Math.floor((p.x-20)/110);p.x=75+Math.max(0,Math.min(3,lane+(a==='left'?-1:1)))*110;}
-    if(a==='drop')p.y=gateY()+14;
+    if(a==='drop')p.y=gateY()+15;
   }
   function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height};}
   function pointerDown(e){
@@ -108,7 +115,7 @@ window.GiraEncaja=(()=>{
     if(state.selected===p.id)state.selected=state.pieces[0]?.id||0;
     state.total++;state.done++;describePiece();
     if(!state.lives){finish(false);return;}
-    if(!state.pieces.length){
+    if(!state.pieces.length&&!state.pending.length){
       state.wait=.55;
       if(state.done===PER_LEVEL){if(state.level===5){finish(true);return;}state.level++;state.done=0;slots();state.wait=1.2;feedback('Nivel '+state.level+' · ¡Cambian las aberturas!',1200);}
       else if(state.level>=3&&state.done===6){state.slots.forEach(s=>s.vertical=!s.vertical);feedback('¡Las aberturas giraron!',1200);state.wait=1.2;}
@@ -150,8 +157,9 @@ window.GiraEncaja=(()=>{
   function loop(now){
     if(!root)return;const dt=last?Math.min((now-last)/1000,.05):0;last=now;
     if(state?.running&&!state.paused){
-      if(state.pieces.length){const speed=Math.max(30,(gateY()-60)/(6.4-(state.level-1)*.84));for(const p of [...state.pieces]){if(!state.running)break;p.y+=speed*dt;if(p.y>=gateY()+15)resolve(p);}}
-      else{state.wait-=dt;if(state.wait<=0)spawn();}
+      if(state.pending.length){state.releaseIn-=dt;if(state.releaseIn<=0)releasePiece();}
+      if(state.pieces.length){const speed=(gateY()+15-spawnY())/(9-(state.level-1)*.9);for(const p of [...state.pieces]){if(!state.running)break;p.y+=speed*dt;if(p.y>=gateY()+15)resolve(p);}}
+      else if(!state.pending.length){state.wait-=dt;if(state.wait<=0)spawn();}
     }
     if(feedbackUntil&&now>=feedbackUntil){root.querySelector('.ge-feedback').classList.remove('ge-show');feedbackUntil=0;}
     draw();raf=requestAnimationFrame(loop);
