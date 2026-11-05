@@ -110,7 +110,7 @@ window.PalabrasCruzadas=(()=>{
 
   function estructura(){
     raiz.innerHTML=`<div class="pc-juego">
-      <header class="pc-barra"><span class="pc-marca"><img src="assets/palabras-cruzadas/logo-v1.png" alt="" class="pc-logo"></span><div class="pc-avance"><span id="pcNivel"></span><span id="pcProgreso" role="status"></span></div><button type="button" id="pcPistasBoton" class="pc-menu-boton">Pistas</button><button type="button" id="pcAyudaBoton" class="pc-menu-boton" aria-label="Cómo jugar">Cómo jugar</button></header>
+      <header class="pc-barra"><span class="pc-marca"><img src="assets/palabras-cruzadas/logo-v2.webp" alt="" class="pc-logo"></span><div class="pc-avance"><span id="pcNivel"></span><span id="pcProgreso" role="status"></span></div><button type="button" id="pcPistasBoton" class="pc-menu-boton">Pistas</button><button type="button" id="pcAyudaBoton" class="pc-menu-boton" aria-label="Cómo jugar">Cómo jugar</button></header>
       <div class="pc-contenido"><section class="pc-panel-tablero" aria-label="Crucigrama">
         <p class="pc-instruccion">Tocá una casilla clara y escribí la respuesta.</p>
         <div class="pc-pista-actual"><button type="button" class="pc-flecha" id="pcAnterior" aria-label="Pista anterior">‹<small>Anterior</small></button><div><b id="pcDireccion"></b><p id="pcPista"></p><small id="pcLargo"></small></div><button type="button" class="pc-flecha" id="pcProxima" aria-label="Pista siguiente">›<small>Otra pista</small></button></div>
