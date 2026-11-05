@@ -34,8 +34,8 @@ const server=http.createServer((req,res)=>{
     assert.equal(await g.locator('[data-nv-name]').count(),2);
     await g.locator('[data-nv-config]').click();await g.locator('[data-nv-start]').click();
     await tv.locator('.nv-answer').waitFor();assert.equal(await tv.locator('.nv-answer').textContent(),'1939');
-    for(const p of [g,v]){await p.locator('.nv-phone-question').waitFor();assert(!(await p.locator('#teleCel').textContent()).includes('1939'),'answer never sent to a phone');}
-    await tv.waitForFunction(()=>window.__spoken.length===1);assert(!(await tv.evaluate(()=>window.__spoken[0].text)).includes('1939'));
+    for(const p of [g,v]){await p.locator('.nv-phone').waitFor();assert.equal(await p.locator('.nv-phone-question').count(),0);assert(!(await p.locator('#teleCel').textContent()).includes('Segunda Guerra Mundial'));assert(!(await p.locator('#teleCel').textContent()).includes('1939'),'answer never sent to a phone');}
+    assert.equal((await tv.locator('#teleTV').innerText()).trim(),'1939');await tv.waitForFunction(()=>window.__spoken.length===1);assert(!(await tv.evaluate(()=>window.__spoken[0].text)).includes('1939'));
     assert.equal(await g.evaluate(()=>window.__mics.length),0,'microphone stays off while question is read');
     await tv.screenshot({path:'/tmp/numero-voz-tv.png'});
     await tv.evaluate(()=>window.__spoken.at(-1).onend());await g.waitForFunction(()=>document.querySelector('.nv-mic-state')?.textContent.includes('Te escucho'));
@@ -61,11 +61,13 @@ const server=http.createServer((req,res)=>{
       localStorage.removeItem('gya_tele_mic');window.__sent=[];const el=document.createElement('div');el.id='probe';document.querySelector('#teleCel').replaceChildren(el);
       window.__probe=NumeroVoz.crearCel(el,'probe',(a,m)=>window.__sent.push({a,...m}));window.__probeModel={pantalla:'numero-voz',fase:'ready',ronda:1,quien:'Prueba',activo:'probe',escucha:null,token:'probe-1',resta:30,jug:[{n:'Prueba',pts:0}]};window.__probe.pintar(window.__probeModel,'<div>Prueba</div>',true);
     });
-    await g.locator('#probe [data-nv-mic]').click();await g.waitForFunction(()=>localStorage.getItem('gya_tele_mic')==='1');
+    await g.locator('#probe [data-nv-start]').click();await g.waitForFunction(()=>localStorage.getItem('gya_tele_mic')==='1');assert(await g.evaluate(()=>window.__sent.some(x=>x.a==='nv_empezar')));
     await g.evaluate(()=>window.__probe.pintar({...window.__probeModel,fase:'arming',escucha:'probe'},'',true));
     await g.waitForFunction(()=>window.__sent.some(x=>x.a==='nv_listo'));
     await g.evaluate(()=>window.__mics.at(-1).onerror({error:'not-allowed'}));
     assert(await g.evaluate(()=>window.__sent.some(x=>x.a==='nv_error')));assert.equal(await g.evaluate(()=>localStorage.getItem('gya_tele_mic')),null);
+    await g.evaluate(()=>{window.__sent=[];window.SpeechRecognition=class{start(){setTimeout(()=>this.onerror?.({error:'not-allowed'}),0);}abort(){}};window.__probe.pintar(window.__probeModel,'<div>Prueba</div>',true);});
+    await g.locator('#probe [data-nv-start]').click();await g.locator('#probe [role="status"]').waitFor();assert(!(await g.evaluate(()=>window.__sent.some(x=>x.a==='nv_empezar'))),'permission denial does not start a turn');
     await g.evaluate(()=>{window.__probe.salir();document.querySelector('#probe').remove();});
     assert.equal(errors.length,0,errors.join('\n'));await context.close();
     // Un perfil común también abre las preguntas por voz, sin lista de testers.

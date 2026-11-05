@@ -2,9 +2,11 @@
 
 Disponible para todos en la extensión ¿Qué número soy?, directamente con un celular, y también en Juegos en la tele. No hay filtro por nombre ni lista de testers. Se reemplazaron las opciones de números de 1 a 10, 1 a 50 y 1 a 100 por preguntas con respuestas numéricas.
 
-Con un celular, se preparan los nombres y el permiso del micrófono. Al comenzar hay tres segundos para darlo vuelta antes de mostrar la respuesta. Los demás ven el número gigante; quien adivina escucha la pregunta y responde hablando. Después de cada turno se pasa el celular al siguiente. Pausar oculta el número antes de volver a mirar la pantalla; continuar vuelve a dar tres segundos. También se puede jugar marcando los aciertos desde la pantalla que ven los demás.
+Con un celular, se preparan los nombres y se elige Jugar con micrófono o Jugar con toques. La primera opción pide el permiso del navegador antes de comenzar si todavía no está concedido; una denegación permite elegir los toques sin iniciar el reloj. Al comenzar hay tres segundos para darlo vuelta antes de mostrar la respuesta. La partida solicita orientación horizontal; si el navegador no permite bloquearla, gira únicamente la superficie del juego. Los demás ven solo el número gigante a pantalla completa; la pregunta no aparece escrita.
 
-Con tele, el grupo ve allí la respuesta numérica gigante. Quien adivina se coloca de espaldas y responde al micrófono del celular. La voz lee únicamente la pregunta; los controles de esta modalidad reciben la pregunta, el reloj y los puntos, sin el número correcto. Ambos formatos comparten el banco inicial de 50 preguntas en español y el historial Vistas.
+En ambos modos del celular, un toque en el número marca un acierto y dos toques rápidos pasan sin sumar. Se esperan 320 ms para distinguirlos y se descartan toques pendientes al cambiar de pregunta, pausar, terminar o salir. La respuesta hablada correcta y un toque coincidentes no suman dos veces. Con micrófono se responde hablando o se dice «paso»; un sonido agudo confirma el acierto y otro grave señala error, conservando la pregunta para seguir intentando. El menú ⋯ permite pausar o marcar manualmente. Al pausar se oculta el número antes de volver a mirar la pantalla; continuar vuelve a dar tres segundos.
+
+Con tele, el grupo ve allí únicamente la respuesta numérica gigante, sin pregunta escrita, reloj o puntuación durante el turno. Quien adivina se coloca de espaldas y responde al micrófono del celular. La voz lee únicamente la pregunta; los controles tampoco la muestran escrita y nunca reciben el número correcto. Ambos formatos comparten el banco inicial de 50 preguntas en español y el historial Vistas.
 
 El control prepara hasta ocho nombres. Cada persona usa su celular si su nombre coincide con uno conectado; con un solo celular, se lo pasan. Cada turno dispone de 30 segundos totales, desde que termina la primera lectura y se abre el audio. Las preguntas siguientes consumen ese mismo reloj. Acierto: un punto y nueva pregunta; error: otro intento; «paso»: pregunta siguiente sin punto. Al terminar todos, gana quien tiene más puntos; se admiten empates y otra ronda.
 
@@ -15,7 +17,7 @@ Archivos: `numero-voz-datos.js`, `numero-voz.js`, `numero-voz.css`; integración
 Validación:
 
 - `node tests/numero-voz-core.cjs`: interpretación de números en español, reloj único, lectura, puntuación, mensajes viejos/tardíos, pausa y clasificación.
-- `node tests/numero-voz-celular.cjs`: partida completa con un celular para dos personas, ausencia de rangos, cuenta previa sin revelar la respuesta, respuestas habladas, cuatro tamaños, pausa y salida, nombres y rondas históricas conservadas.
+- `node tests/numero-voz-celular.cjs`: partida completa para dos personas, permiso previo, ausencia de rangos y pregunta escrita, número a pantalla completa y horizontal incluso con bloqueo rechazado, cuatro tamaños, toques simples/dobles, voz/paso, sonidos, pausa y salida, nombres y rondas históricas conservadas.
 - `node tests/numero-voz-tv.cjs`: Chromium con TV y dos controles por BroadcastChannel, voz simulada, privacidad del número, turno de cada jugador, corrección, permisos y limpieza. Capturas en `/tmp/numero-voz-tv.png` y `/tmp/numero-voz-cel.png`.
 - `BROWSER_EXECUTABLE=/usr/bin/chromium node tests/tele-rosco-giro-microfono.cjs`: regresión del Rosco compartido.
 - `node tests/auditar-palabras.cjs --md`: preguntas sin duplicados en el contenido compartido.

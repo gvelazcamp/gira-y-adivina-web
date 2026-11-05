@@ -23,8 +23,9 @@ function environment(){
   act('nv_config',{nombres:['Gonzalo','Vale']},'v');assert.equal(engine.cel().fase,'config');
   act('nv_config',{nombres:['Gonzalo','Vale']});assert.equal(engine.cel().fase,'ready');
   act('nv_empezar');advance(350);assert.match(spoken[0].text,/Segunda Guerra/);assert(!spoken[0].text.includes('1939'));
-  const tv={};engine.pintar(tv);assert(tv.innerHTML.includes('1939'));assert(!JSON.stringify(engine.cel()).includes('1939'),'answer stays off all controller payloads');
+  const tv={};engine.pintar(tv);assert(tv.innerHTML.includes('1939'));assert(!tv.innerHTML.includes(engine.cel().pregunta),'question is audio-only');assert(!tv.innerHTML.includes('nv-question'));assert(!tv.innerHTML.includes('nv-clock'));assert(!JSON.stringify(engine.cel()).includes('1939'),'answer stays off all controller payloads');
   advance(1500);assert.equal(engine.cel().resta,30,'first reading does not steal the turn');endVoice();assert.equal(engine.cel().fase,'arming');act('nv_listo');
+  act('nv_resp',{alts:['mil novecientos treinta y ocho']});assert.equal(engine.cel().jug[0].pts,0);assert.equal(engine.cel().fase,'playing');assert(e.sounds.includes('mal'),'wrong spoken answers have error feedback');
   act('nv_resp',{alts:['1939']},'v');assert.equal(engine.cel().jug[0].pts,0,'other player cannot answer');
   const old=engine.cel().token;act('nv_resp',{alts:['mil novecientos treinta y nueve']});assert.equal(engine.cel().jug[0].pts,1);
   act('nv_resp',{alts:['1939'],token:old});assert.equal(engine.cel().jug[0].pts,1,'duplicates rejected');
