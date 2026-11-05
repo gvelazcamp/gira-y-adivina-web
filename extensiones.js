@@ -125,6 +125,7 @@ window.DueloConocimiento=DueloConocimiento;
 
 /* Catálogo de minijuegos. Cada entrada habilitada aporta su función abrir. */
 const EXTENSIONES=[
+  {id:"linea-tiempo",soloUsuarios:["gonzalo","vale"],nombre:"Línea del tiempo",descripcion:"Ubicá cada hecho de Uruguay, Argentina y el mundo en su año",icono:"assets/linea-tiempo/icono.svg",estado:"disponible",insignia:"🧪 Prueba",abrir:contenedor=>LineaTiempo.abrir(contenedor),record:()=>LineaTiempo.record()+" puntos"},
   {id:"gira-encaja",soloUsuarios:["gonzalo","vale"],nombre:"Girá y encajá",descripcion:"Clasificá las fichas que caen y giralas para entrar por el huequito",icono:"assets/gira-encaja/logo-v3.webp",estado:"disponible",insignia:"🧪 Prueba",abrir:contenedor=>GiraEncaja.abrir(contenedor),record:()=>GiraEncaja.mejorPuntaje()+" puntos"},
   {id:"ahora-caigo",soloUsuarios:["gonzalo","vale"],nombre:"No te caigas",descripcion:"Sorteá un rival, descubrí las palabras y evitá la caída",icono:"assets/no-te-caigas/logo-v3.webp",estado:"disponible",insignia:"🧪 Prueba",abrir:contenedor=>AhoraCaigo.abrir(contenedor),record:()=>"Duelo contra bots"},
   {id:"tutti-frutti",nombre:"Tutti Frutti",descripcion:"Cada uno con su celular: letra al azar y ¡BASTA!",icono:"logo-tutti-frutti.svg",estado:"disponible",abrir:contenedor=>TuttiFrutti.abrir(contenedor),record:()=>TuttiFrutti.partidasJugadas()+" partidas"},
@@ -444,7 +445,7 @@ const Extensiones=(()=>{
     if(typeof window.anotarUltimoJuego==="function")window.anotarUltimoJuego(ext.nombre);
     ext.abrir(contenido);shell.scrollTop=0;
   }
-  function salirJuego(){for(const juego of [window.GiraEncaja,window.PalabrasCruzadas,window.AhoraCaigo,window.SopaFugaz,window.RuedaDeLetras,window.PalabraSecreta,window.FrasesEnGiro,window.MemoriaEnGiro,window.RoscoRioplatense,window.SilabarioRioplatense,window.CienRioplatenses,window.AhorcadoRioplatense,window.ContraRelojRioplatense,window.MoonTap,window.DueloConocimiento,window.Puzzle,window.QueNumeroSoy,window.QuienSoy,window.Bomba,window.Impostor,window.TratoSucio,window.Mimica,window.CantaLaCancion,window.TuttiFrutti])if(juego)juego.salir();}
+  function salirJuego(){for(const juego of [window.LineaTiempo,window.GiraEncaja,window.PalabrasCruzadas,window.AhoraCaigo,window.SopaFugaz,window.RuedaDeLetras,window.PalabraSecreta,window.FrasesEnGiro,window.MemoriaEnGiro,window.RoscoRioplatense,window.SilabarioRioplatense,window.CienRioplatenses,window.AhorcadoRioplatense,window.ContraRelojRioplatense,window.MoonTap,window.DueloConocimiento,window.Puzzle,window.QueNumeroSoy,window.QuienSoy,window.Bomba,window.Impostor,window.TratoSucio,window.Mimica,window.CantaLaCancion,window.TuttiFrutti])if(juego)juego.salir();}
   function cerrar(){if(!shell)return;cerrarAvisoTV();salirJuego();Fichas.enJuego("");vista="lobby";modoTVElegido=false;versionModo++;salirTV();shell.hidden=true;shell.classList.remove("ext-teclado-abierto");shell.style.top="";shell.style.height="";shell.style.bottom="";document.body.classList.remove("ext-abierta");vista="";if(typeof sincronizarMusica==="function")sincronizarMusica();}
   return{abrirLobby,abrirJuego,cerrar,prepararDueloTV};
 })();
