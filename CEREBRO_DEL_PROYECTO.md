@@ -394,6 +394,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Línea del tiempo: niveles con la línea vacía (reemplaza el modo carta por carta)
+- Qué: Gonzalo: "los niveles tienen que ser toda la pantalla de ¿va acá?… arrancás a arrastrar cada acontecimiento; el que más acontecimientos acierte y rápido gana". Cada nivel muestra todos los lugares vacíos (⬆ más antiguo / ⬇ más nuevo) y una pila de acontecimientos: se arrastra cada uno a un lugar (o se toca el lugar); una carta puesta se puede arrastrar a otro lugar (intercambian) o tocar para devolverla a la pila. Con todas puestas, "¡Listo!" comprueba: verdes/rojas con el año y "Acá iba: …". Puntos = 100 por acierto + bonus por rapidez ((cartas×15 − segundos)×2). Niveles 1–5 = 5 a 9 cartas (años distintos); pasa de nivel con la línea perfecta (gya_linea_tiempo_nivel). Reloj en pantalla. Duelo: 7 cartas iguales para los dos, badge "N bien · tiempo" del rival, gana más puntos (acierta más y más rápido). Ficha ⚡ al empezar desde la pantalla de temas.
+- Prueba: tests/linea-tiempo.cjs reescrito (pasa). Las vidas y la racha del modo anterior se sacaron.
+- Dónde: linea-tiempo.js (v5), linea-tiempo.css (v3), sw gya-cache-v730.
+
 ### 05/11/2026 — Línea del tiempo: arrastrar la carta y duelo en sala
 - Qué: Gonzalo pidió arrastrar la carta hasta el «¿va acá?» y jugar contra otro en una sala fácil y rápida, ganando el de más puntos. La carta de abajo se arrastra (fantasma que sigue el dedo, el hueco más cercano se ilumina, la línea se desplaza sola cerca de los bordes); soltarla fuera no cuenta y tocar el hueco sigue andando. Para que el dedo arrastre y no deslice, la carta (solo ese elemento, .lt-nueva) lleva `touch-action:none`: no toca el deslizado de ninguna pantalla, que sigue intacto (regla del 19/10). Duelo: botón "👥 Jugar con un amigo" en la pantalla de temas → lobby de duelos (id "linea", link ?duelo=linea&sala=XXXX entra directo); el anfitrión manda 11 cartas de la mezcla (números) y los dos juegan las mismas, badge con los puntos del rival, resultado con revancha; no gasta fichas.
 - Prueba nueva: tests/linea-tiempo.cjs (arrastre con hueco iluminado, soltar afuera, duelo por link directo, mismas cartas, sin fichas, gana el de más puntos). También probado arrastre con toque real (CDP).
