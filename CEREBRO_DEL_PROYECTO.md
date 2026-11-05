@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Línea del tiempo: logo, icono y dibujo de bienvenida
+- Qué: Gonzalo pasó el collage de ChatGPT (logo con reloj de arena, icono con cartas, escena de los chicos con la línea). Recortado a assets/linea-tiempo/logo.webp (700×351), icono.webp (320×336, guardado para usos futuros) y como.webp (640×532). La tarjeta de Más juegos usa el logo (misma regla que Girá y encajá y No te caigas) y la bienvenida muestra logo + dibujo. Se borró el icono SVG provisorio.
+- Dónde: linea-tiempo.js (v2), extensiones.js (v138), extensiones.css (v164), sw gya-cache-v724.
+
 ### 05/11/2026 — Nuevo juego de prueba: Línea del tiempo (solo Gonzalo y Vale)
 - Qué: Gonzalo aprobó el diseño ("así tal cual tendría que ser"). Se elige tema (Mezcla, Fútbol, Historia, Música y tango, Tele y famosos, Inventos y el mundo); la línea arranca con una carta y se ubican 10 más tocando el hueco "¿va acá?" (sin arrastrar, para no tocar el deslizado). Acierto: carta verde con el año, +10+10×racha, cartel "¡BIEN!". Error: va roja a su lugar con el año, pierde una vida (3), cartel "¡UY! Era …". Final con puntos, récord (gya_linea_tiempo_record), "Jugar otra vez" y "Elegir tema". Bienvenida con PantallaFija.bienvenida (ahora acepta `titulo` cuando no hay logo). 95 hechos con año en linea-tiempo-datos.js. Icono provisorio SVG.
 - Pendiente: logo, icono y dibujo "como" de ChatGPT; modos duelo y tele; más hechos.

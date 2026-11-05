@@ -11,7 +11,7 @@
   function hechos(){const lista=tema==="mezcla"?D().flatMap(t=>t.hechos.map(h=>h.concat(t.emoji))):D().find(t=>t.id===tema).hechos;
     return lista.map(h=>({anio:h[0],titulo:h[1],detalle:h[2],emoji:h[3]}));}
 
-  function como(){PantallaFija.bienvenida(raiz.closest("#extContenido")||document.body,{titulo:"Línea del tiempo",alt:"Línea del tiempo",sinFija:true,items:[
+  function como(){PantallaFija.bienvenida(raiz.closest("#extContenido")||document.body,{logo:"assets/linea-tiempo/logo.webp",alt:"Línea del tiempo",dibujo:"assets/linea-tiempo/como.webp",sinFija:true,items:[
     ["🃏","Sale una <b>carta</b> con un hecho de Uruguay, Argentina o el mundo."],
     ["👆","<b>Tocá el hueco</b> de la línea donde creés que va: antes, después o en el medio."],
     ["✅","Si acertás, muestra el año y suma más con cada <b>racha</b> 🔥."],
