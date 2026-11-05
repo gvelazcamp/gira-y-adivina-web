@@ -67,3 +67,12 @@
 .lt .lt-listo{background:linear-gradient(#5ff0dc,#37D6C0);box-shadow:0 4px 0 #1b8e7f}
 @media(max-height:700px){.lt .lt-slot.lt-hueco,.lt-linea-niveles .lt-carta{min-height:38px}.lt-linea-niveles .lt-t small{display:none}.lt-slot{margin-bottom:5px}}
 .lt-pila .lt-carta:before,.lt-fantasma .lt-carta:before,.lt-fantasma.lt-carta:before{display:none}
+.lt .lt-compartir{display:block;width:100%;min-height:40px;margin:8px 0 0;border:0;border-radius:14px;background:linear-gradient(#ff4fa3,#E5197C);color:#fff;font:800 .95rem Outfit,system-ui,sans-serif;box-shadow:0 4px 0 #8E0F4C}
+.lt-compartir-capa{position:fixed;inset:0;z-index:9995;display:grid;place-items:center;padding:14px;background:#0A0412E6}
+.lt-compartir-caja{position:relative;width:min(100%,380px);max-height:calc(100dvh - 28px);display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:22px;background:#2A1A3C;border:1px solid #F5B30177;box-shadow:0 18px 45px #0008;text-align:center;box-sizing:border-box}
+.lt-compartir-caja h3{margin:2px 36px 0;font:1.2rem 'Archivo Black',Outfit,sans-serif;color:#F5B301}
+.lt-compartir-foto{flex:1;min-height:120px;display:grid;place-items:center;color:#cdbbdf}
+.lt-compartir-foto img{display:block;max-width:100%;max-height:calc(100dvh - 190px);border-radius:14px;box-shadow:0 8px 24px #0009}
+.lt-compartir-x{position:absolute;top:10px;right:10px;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:#FFFFFF14;color:#F6EFE2;font-weight:900}
+.lt-compartir-ok{min-height:48px;border:0;border-radius:14px;background:#E5197C;color:#fff;font:900 1.05rem Outfit,system-ui,sans-serif;box-shadow:0 5px 0 #8E0F4C}
+.lt-compartir-ok:disabled{opacity:.5}

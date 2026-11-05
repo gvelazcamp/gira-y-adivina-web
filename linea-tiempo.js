@@ -32,7 +32,7 @@
     elegirTema();como();
   }
   function salir(){
-    terminarArrastre();clearInterval(reloj);reloj=null;document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());
+    terminarArrastre();clearInterval(reloj);reloj=null;document.querySelectorAll(".pf-bienv,.lt-compartir-capa").forEach(x=>x.remove());
     if(estado?.duelo&&typeof Duelo!=="undefined")Duelo.salir();
     if(raiz){raiz.remove();raiz=null;}estado=null;
   }
@@ -100,7 +100,7 @@
     let pie;
     if(r){
       const sig=e.duelo?"":r.todo&&e.nivel<MAX_NIVEL?'<button type="button" class="lt-siguiente" data-acc="sig">Nivel '+(e.nivel+1)+' ➜</button>':'<button type="button" class="lt-siguiente" data-acc="otra">'+(r.todo?"Jugar otra":"Probar de nuevo")+' ➜</button>';
-      pie='<div class="lt-cartel '+(r.todo?"":"lt-cartel-mal")+'" role="status"><b>'+(r.todo?"¡PERFECTA!":r.aciertos+" de "+n)+'</b><span>'+r.puntos+' pts · '+tiempo(r.s)+'</span></div>'+sig+(e.duelo?"":'<button type="button" class="lt-temas-btn" data-acc="temas">Elegir tema</button>');
+      pie='<div class="lt-cartel '+(r.todo?"":"lt-cartel-mal")+'" role="status"><b>'+(r.todo?"¡PERFECTA!":r.aciertos+" de "+n)+'</b><span>'+r.puntos+' pts · '+tiempo(r.s)+'</span></div>'+sig+'<button type="button" class="lt-compartir" data-acc="compartir">📲 Compartir mi línea</button>'+(e.duelo?"":'<button type="button" class="lt-temas-btn" data-acc="temas">Elegir tema</button>');
     }else if(e.pila.length){
       pie='<div class="lt-pila"><div class="lt-nueva" aria-label="Acontecimiento para ubicar: arrastralo a un ¿va acá?">'+cartaHtml(e.pila[0])+'</div><span class="lt-quedan">'+(e.pila.length>1?"+"+(e.pila.length-1):"última")+'</span></div><p class="lt-ayuda-txt">Arrastrá cada acontecimiento a su lugar</p>';
     }else pie='<button type="button" class="lt-siguiente lt-listo" data-acc="listo">¡Listo! Ver cómo me fue</button><p class="lt-ayuda-txt">Podés mover las cartas antes de confirmar</p>';
@@ -110,8 +110,58 @@
     raiz.querySelectorAll(".lt-lleno").forEach(s=>{if(!r)s.querySelector(".lt-carta").addEventListener("pointerdown",ev=>empezarArrastre(ev,Number(s.dataset.i)));});
     const nueva=raiz.querySelector(".lt-nueva");if(nueva)nueva.addEventListener("pointerdown",ev=>empezarArrastre(ev,"pila"));
     raiz.querySelectorAll("[data-acc]").forEach(b=>b.onclick=()=>{const a=b.dataset.acc;
-      if(a==="listo")comprobar();else if(a==="sig")jugarNivel(e.nivel+1);else if(a==="otra")jugarNivel(e.nivel);else if(a==="temas")elegirTema();});
+      if(a==="compartir")popupCompartir();else if(a==="listo")comprobar();else if(a==="sig")jugarNivel(e.nivel+1);else if(a==="otra")jugarNivel(e.nivel);else if(a==="temas")elegirTema();});
     if(r&&e.duelo&&!e.finEnviado){e.finEnviado=true;setTimeout(()=>{if(estado===e&&raiz)finDuelo();},1400);}
+  }
+
+  /* --- Compartir: foto 1080×1350 con el logo, la línea armada (verdes/rojas con año) y el puntaje. --- */
+  const imagen=src=>new Promise(ok=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=src;});
+  function recortar(g,t,max){if(g.measureText(t).width<=max)return t;while(t.length>1&&g.measureText(t+"…").width>max)t=t.slice(0,-1);return t+"…";}
+  function redondo(g,x,y,w,h,r){g.beginPath();g.roundRect(x,y,w,h,r);}
+  async function armarFoto(e){
+    try{await Promise.all(['800 40px "Archivo Black"','700 30px Outfit','600 24px Outfit'].map(f=>document.fonts?.load(f)));}catch(err){}
+    const W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
+    const fondo=g.createLinearGradient(0,0,0,H);fondo.addColorStop(0,"#4a2a7a");fondo.addColorStop(.45,"#2A1A3C");fondo.addColorStop(1,"#160B24");g.fillStyle=fondo;g.fillRect(0,0,W,H);
+    const logo=await imagen("assets/linea-tiempo/logo.webp");
+    if(logo){const lw=560,lh=lw*logo.height/logo.width;g.drawImage(logo,(W-lw)/2,36,lw,lh);}
+    const r=e.resultado,n=e.lugares.length;g.textAlign="center";g.textBaseline="middle";
+    g.fillStyle="#37D6C0";g.font='800 40px "Archivo Black",sans-serif';
+    g.fillText(r.todo?"¡LÍNEA PERFECTA!":r.aciertos+" DE "+n+" BIEN UBICADAS",W/2,350);
+    g.fillStyle="#F6EFE2";g.font="600 30px Outfit,sans-serif";
+    g.fillText((e.duelo?"Duelo":"Nivel "+e.nivel)+" · "+r.puntos+" puntos · ⏱ "+tiempo(r.s),W/2,402);
+    const top=450,bottom=H-180,y0b=top+28,paso=Math.min(100,(bottom-y0b-40)/n),alto=paso,gap=Math.round(paso*.16),xL=150,x0=190,x1=W-90;
+    g.fillStyle="#F5B301";g.font='800 22px "Archivo Black",sans-serif';g.textAlign="left";g.fillText("⬆ MÁS ANTIGUO",x0,top);
+    const y0=top+28;g.fillStyle="#F5B301";g.fillRect(xL-4,y0-6,8,n*paso+6);
+    e.lugares.forEach((h,i)=>{
+      const y=y0+i*paso,ok=r.bien[i];
+      g.fillStyle=ok?"#16816b":"#842541";redondo(g,x0,y,x1-x0,alto-gap,18);g.fill();
+      g.fillStyle=ok?"#37D6C0":"#E5197C";g.beginPath();g.arc(xL,y+(alto-gap)/2,13,0,7);g.fill();
+      const mid=y+(alto-gap)/2;g.textAlign="left";g.font=Math.round(alto*.42)+"px sans-serif";g.fillStyle="#fff";g.fillText(h.emoji,x0+20,mid+2);
+      g.font="700 "+Math.round(Math.min(34,alto*.36))+"px Outfit,sans-serif";g.fillText(recortar(g,h.titulo,x1-x0-250),x0+20+alto*.62,mid+2);
+      g.textAlign="right";g.font='800 '+Math.round(Math.min(40,alto*.42))+'px "Archivo Black",sans-serif';g.fillStyle="#FFE08A";g.fillText(String(h.anio),x1-22,mid+2);
+    });
+    g.textAlign="left";g.fillStyle="#F5B301";g.font='800 22px "Archivo Black",sans-serif';g.fillText("⬇ MÁS NUEVO",x0,y0+n*paso+20);
+    g.textAlign="center";g.fillStyle="#F5B301";g.font='800 46px "Archivo Black",sans-serif';g.fillText("¿Me ganás?",W/2,H-110);
+    g.fillStyle="#E4D8EB";g.font="600 28px Outfit,sans-serif";g.fillText("Girá y Adiviná · Línea del tiempo",W/2,H-58);
+    return new Promise(ok=>c.toBlob(ok,"image/png"));
+  }
+  async function popupCompartir(){
+    const e=estado;if(!e?.resultado)return;
+    document.querySelector(".lt-compartir-capa")?.remove();
+    const capa=document.createElement("div");capa.className="lt-compartir-capa";
+    capa.innerHTML='<div class="lt-compartir-caja"><button type="button" class="lt-compartir-x" aria-label="Cerrar">✕</button><h3>Compartí tu línea</h3><div class="lt-compartir-foto"><span>Armando la foto…</span></div><button type="button" class="lt-compartir-ok" disabled>📲 Compartir</button></div>';
+    (raiz.closest("#extContenido")||document.body).appendChild(capa);
+    const cerrar=()=>capa.remove();capa.querySelector(".lt-compartir-x").onclick=cerrar;capa.addEventListener("click",ev=>{if(ev.target===capa)cerrar();});
+    const foto=await armarFoto(e);if(!capa.isConnected)return;
+    const ok=capa.querySelector(".lt-compartir-ok"),zona=capa.querySelector(".lt-compartir-foto");
+    if(!foto){zona.textContent="No se pudo crear la foto.";return;}
+    const url=URL.createObjectURL(foto);zona.innerHTML='<img alt="Mi línea del tiempo">';zona.querySelector("img").src=url;ok.disabled=false;
+    const r=e.resultado,texto="🕰️ Línea del tiempo: "+(r.todo?"¡línea perfecta!":r.aciertos+" de "+e.lugares.length+" bien")+" · "+r.puntos+" pts en "+tiempo(r.s)+". ¿Me ganás? Jugá en Girá y Adiviná 👉 "+(location.origin||"https://girayadivina.com");
+    ok.onclick=async()=>{
+      const archivo=typeof File==="function"?new File([foto],"linea-del-tiempo.png",{type:"image/png"}):null;
+      if(archivo&&typeof navigator.share==="function"){try{if(!navigator.canShare||navigator.canShare({files:[archivo]})){await navigator.share({files:[archivo],text:texto});return;}}catch(err){if(err?.name==="AbortError")return;}}
+      const a=document.createElement("a");a.href=url;a.download="linea-del-tiempo.png";document.body.appendChild(a);a.click();a.remove();ok.textContent="Foto guardada · subila donde quieras";
+    };
   }
 
   /* --- Arrastre: un fantasma sigue el dedo y se ilumina el lugar más cercano. Tocar sin mover una carta puesta la devuelve a la pila. --- */
