@@ -64,7 +64,7 @@ const PantallaFija=(()=>{
     document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());
     const c=document.createElement("div");c.className="pf-bienv";
     c.innerHTML='<div class="pf-bienv-caja"><button type="button" class="pf-bienv-x" aria-label="Cerrar">✕</button>'+
-      '<img class="pf-bienv-logo" src="'+o.logo+'" alt="'+(o.alt||"")+'" draggable="false">'+
+      (o.logo?'<img class="pf-bienv-logo" src="'+o.logo+'" alt="'+(o.alt||"")+'" draggable="false">':'<h2 class="pf-bienv-titulo">'+(o.titulo||o.alt||"")+'</h2>')+
       (o.dibujo?'<img class="pf-bienv-dibujo" src="'+o.dibujo+'" alt="" draggable="false">':'')+
       '<ul>'+o.items.map(([e,t])=>'<li><span>'+e+'</span><em>'+t+'</em></li>').join("")+'</ul>'+
       '<button type="button" class="pf-bienv-ok">¡A jugar!</button></div>';

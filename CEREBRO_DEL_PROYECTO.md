@@ -394,6 +394,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Nuevo juego de prueba: Línea del tiempo (solo Gonzalo y Vale)
+- Qué: Gonzalo aprobó el diseño ("así tal cual tendría que ser"). Se elige tema (Mezcla, Fútbol, Historia, Música y tango, Tele y famosos, Inventos y el mundo); la línea arranca con una carta y se ubican 10 más tocando el hueco "¿va acá?" (sin arrastrar, para no tocar el deslizado). Acierto: carta verde con el año, +10+10×racha, cartel "¡BIEN!". Error: va roja a su lugar con el año, pierde una vida (3), cartel "¡UY! Era …". Final con puntos, récord (gya_linea_tiempo_record), "Jugar otra vez" y "Elegir tema". Bienvenida con PantallaFija.bienvenida (ahora acepta `titulo` cuando no hay logo). 95 hechos con año en linea-tiempo-datos.js. Icono provisorio SVG.
+- Pendiente: logo, icono y dibujo "como" de ChatGPT; modos duelo y tele; más hechos.
+- Dónde: linea-tiempo.js/css/datos (v1), assets/linea-tiempo/icono.svg, extensiones.js (v137), extensiones.css (v163), pantalla-fija.js (v12), sw gya-cache-v723.
+
 ### 05/11/2026 — Bienvenida con dibujo en No te caigas, Girá y encajá y Palabras Cruzadas; tarjetas parejas
 - Qué: los 3 juegos nuevos tienen el cartel de bienvenida de siempre (como Puzzle/Tutti Frutti): logo, dibujo de los chicos (assets/<juego>/como.webp, recortados del collage de Gonzalo), 4 pasos con emoji y "¡A jugar!". Sale al entrar y se reabre con "❓ Cómo se juega" (en Palabras Cruzadas, "Cómo jugar" sigue abriendo la guía paso a paso). Se usa PantallaFija.bienvenida, que ahora acepta `dibujo` y `sinFija` (no pide pantalla completa al cerrar); en horizontal el dibujo va a la izquierda y los pasos a la derecha. El cartel viejo de No te caigas (.ac-como) se sacó. En Girá y encajá el panel de inicio quedó solo con la elección Imágenes/Palabras. Entra sin scroll en 360×640, 390×844 y 844×390.
 - Tarjetas de Más juegos: "Mejor: …" queda pegado abajo en todas (alineado entre tarjetas vecinas) y los logos de Girá y encajá y No te caigas pasan a 78 px de alto (No te caigas se veía chico).
