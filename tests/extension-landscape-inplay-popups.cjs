@@ -30,10 +30,12 @@ const fits=(box,name)=>{
     for(const [width,height] of [[844,390],[700,320]]){
       await page.setViewportSize({width,height});
       await page.evaluate(()=>{Extensiones.cerrar();Extensiones.abrirJuego('que-numero-soy');});
-      await page.locator('.pf-bienv-ok').click();await page.locator('#qnsEmpezar').click();await page.locator('#qnsSalir').click();
-      fits(await inspect(page,'.pf-confirmar .pf-caja'),`confirmación ${width}`);
-      await page.locator('.pf-confirmar [data-r="si"]').click();
-      fits(await inspect(page,'#qnsFin .qns-panel'),`resultado número ${width}`);
+      await page.locator('.pf-bienv-ok').click();await page.locator('[data-nv-config]').click();await page.locator('[data-nv-manual]').click();
+      await page.locator('.nv-local-play .nv-answer').waitFor();
+      fits(await inspect(page,'.nv-local-play .nv-answer'),`número ${width}`);
+      fits(await inspect(page,'.nv-local-actions'),`acciones número ${width}`);
+      await page.locator('[data-qns-pause]').click();await page.locator('[data-nv-resume]').waitFor();
+      assert.equal(await page.locator('.nv-local-play').isVisible(),false,'el número se oculta al pausar');
       await page.evaluate(()=>{Extensiones.cerrar();Extensiones.abrirJuego('bomba');});
       await page.locator('.pf-bienv-ok').click();await page.locator('#bbEmpezar').click();
       await page.evaluate(()=>{window.__oldDateNow=Date.now;Date.now=()=>window.__oldDateNow()+60000;});

@@ -1,95 +1,78 @@
-/* ¿Qué número soy?: el celular muestra un número gigante en pantalla
-   completa (se lo ponen en la frente o lo muestran al grupo). Mientras
-   dura la ronda (PantallaFija) la pantalla no se apaga, los toques no
-   hacen nada y el botón "atrás" no saca del juego: para terminar hay que
-   tocar ✕ Salir y confirmar. Récord en gya_que_numero_soy. */
+/* ¿Qué número soy?: preguntas por voz con un solo celular o en la tele.
+   Quien adivina da vuelta el celular: solo los demás ven la respuesta. */
 const QueNumeroSoy=(()=>{
-  const CLAVE="gya_que_numero_soy",RANGOS=[10,50,100];
-  let raiz=null,capa=null,max=100,numero=0,rondas=0,cuenta=0,bloqueado=false;
-  function cargar(){try{const d=JSON.parse(localStorage.getItem(CLAVE));if(d&&typeof d==="object"){if(RANGOS.includes(d.max))max=d.max;rondas=Number(d.rondas)||0;}}catch(e){}}
-  function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify({max,rondas}));}catch(e){}}
-  cargar();
-  const q=id=>raiz.querySelector("#"+id);
-  /* Arte en assets/que-numero-soy/ (hoja de ChatGPT recortada): tema bingo, el número va dentro de una bolilla. */
-  const src=n=>"assets/que-numero-soy/"+n+".webp";
-  const ARTE_RANGO={10:"facil",50:"medio",100:"dificil"};
-
-  /* Pantalla completa, sin apagarse y sin "atrás": PantallaFija (pantalla-fija.js). */
-  function frenar(e){if(!bloqueado||e.target.closest(".pf-salir"))return;if(e.cancelable)e.preventDefault();e.stopPropagation();}
-
-  function abrir(contenedor){
-    salir();cargar();
-    raiz=document.createElement("section");raiz.className="qns";
-    raiz.innerHTML=`<div class="mg-panel qns-panel"><img class="qn-como" src="${src("como")}" alt="" draggable="false">
-      <p>El celular muestra un número gigante. Ponételo en la frente: los demás te dan pistas y vos adiviná tu número.</p>
-      <p class="qns-nota qn-nota"><img src="${src("candado")}" alt="" draggable="false"><span>Mientras juegan la pantalla no se apaga y los toques no hacen nada. Para terminar tocá <b>✕ Salir</b>.</span></p>
-      <div class="qns-rangos qn-rangos" id="qnsRangos">${RANGOS.map(r=>`<button type="button" data-max="${r}"><img src="${src(ARTE_RANGO[r])}" alt="" draggable="false"><span>1 a ${r}</span></button>`).join("")}</div>
-      <button type="button" class="mg-principal" id="qnsEmpezar">▶ Empezar</button>
-      <button type="button" id="qnsWpp">💬 Invitar por WhatsApp</button>
-    </div>
-    <div class="qns-pantalla qn-escena" id="qnsPantalla" hidden>
-      <div class="qn-bola"><div class="qns-num" id="qnsNum"></div></div>
-      <button type="button" class="pf-salir" id="qnsSalir">✕ Salir</button>
-      <div class="qns-pie" id="qnsPie"></div>
-    </div>
-    <div class="qns-pantalla qns-fin" id="qnsFin" hidden>
-      <div class="mg-panel qns-panel"><img class="qn-revela" src="${src("revela")}" alt="" draggable="false"><h3>Tu número era</h3><div class="qn-bola qn-bola-chica"><div class="qns-num" id="qnsEra"></div></div>
-        <button type="button" class="mg-principal" id="qnsOtro">🔄 Otro número</button>
-        <button type="button" id="qnsTerminar">Terminar</button>
-      </div>
-    </div>`;
-    contenedor.appendChild(raiz);
-    if(window.NumeroVoz){
-      const b=document.createElement("button");b.type="button";b.className="mg-principal";b.textContent="🎙 Preguntas por voz en la tele";
-      b.onclick=()=>window.Tele?.compartirPantalla();raiz.querySelector(".qns-panel").appendChild(b);
-    }
-    PantallaFija.bienvenida(contenedor,{logo:src("logo"),alt:"¿Qué número soy?",items:[["📱","El celular muestra un <b>número gigante</b>: ponételo en la frente sin mirar."],["🗣️","Los demás te dan <b>pistas</b> y vos adivinás tu número."],["🎯","Elegí si el número va de <b>1 a 10</b>, <b>1 a 50</b> o <b>1 a 100</b>."],["🔒","Mientras juegan la pantalla no se apaga. Para terminar tocá <b>✕ Salir</b>."]]});
-    ["bolilla","fondo","revela"].forEach(n=>{const i=new Image();i.src=src(n);});
-    pintarRangos();
-    q("qnsRangos").onclick=e=>{const b=e.target.closest("button[data-max]");if(!b)return;max=Number(b.dataset.max);guardar();pintarRangos();};
-    q("qnsEmpezar").onclick=empezar;
-    q("qnsOtro").onclick=empezar;
-    q("qnsTerminar").onclick=terminar;
-    q("qnsWpp").onclick=()=>PantallaFija.invitar("que-numero-soy","¿Qué número soy?");
-    capa=q("qnsPantalla");
-    PantallaFija.confirmar(q("qnsSalir"),desbloquear);
-    ["touchstart","touchmove","touchend","contextmenu","dblclick","wheel"].forEach(t=>capa.addEventListener(t,frenar,{passive:false}));
+  const CLAVE='gya_que_numero_soy',PID='numero-local';
+  let raiz=null,controles=null,pantalla=null,motor=null,micro=null,tic=null,cuenta=null,pendiente=false,bloqueado=false,rondas=0,nombres=[];
+  function cargar(){
+    let d={};try{d=JSON.parse(localStorage.getItem(CLAVE))||{};}catch(e){}
+    rondas=Number(d.rondas)||0;nombres=Array.isArray(d.nombres)?d.nombres.filter(n=>typeof n==='string'&&n.trim()).slice(0,8):[];
+    if(!nombres.length){let n='';try{n=window.gyaPerfil?.()?.nombre||localStorage.getItem('gya_nombre')||'';}catch(e){}nombres=[n||'Jugador 1'];}
   }
-  function pintarRangos(){raiz.querySelectorAll("#qnsRangos button").forEach(b=>b.classList.toggle("activo",Number(b.dataset.max)===max));}
-  function empezar(){
-    if(!raiz)return;
-    /* Ningún número se repite en ese rango hasta que salieron todos. */
-    const todos=Array.from({length:max},(_,i)=>i+1),libres=Vistas.filtrar("qns_"+max,todos,x=>x);
-    numero=libres[Math.floor(Math.random()*libres.length)];Vistas.marcar("qns_"+max,numero);
-    bloqueado=true;
-    PantallaFija.activar();
-    q("qnsFin").hidden=true;capa.hidden=false;document.body.classList.add("qns-bloqueado");
-    /* Cuenta regresiva para que llegue a ponérselo en la frente sin verlo. */
-    let n=3;const num=q("qnsNum"),pie=q("qnsPie");
-    num.classList.add("qns-cuenta");num.classList.remove("tres");pie.textContent="Ponete el celular en la frente";pie.hidden=false;
-    const paso=()=>{
-      if(!raiz||!bloqueado)return;
-      if(n>0){num.textContent=n;n--;cuenta=setTimeout(paso,1000);return;}
-      num.classList.remove("qns-cuenta");num.textContent=numero;num.classList.toggle("tres",numero>99);
-      pie.hidden=true;
-      if(typeof vibrar==="function")vibrar(40);
+  function guardar(){try{const d=JSON.parse(localStorage.getItem(CLAVE))||{};localStorage.setItem(CLAVE,JSON.stringify({...d,rondas,nombres}));}catch(e){}}
+  const sonido={ok(){try{window.vibrar?.(60);}catch(e){}},tiempo(){try{window.vibrar?.([100,60,100]);}catch(e){}},turno(){}};
+  function fijar(valor){if(valor===bloqueado)return;bloqueado=valor;if(valor)PantallaFija.activar();else PantallaFija.desactivar();}
+  function enviar(a,extra={}){
+    if(!motor)return;
+    if(a==='menu'){iniciar();return;}
+    if(a==='nv_config'&&Array.isArray(extra.nombres)){nombres=extra.nombres.map(n=>String(n).trim()).filter(Boolean).slice(0,8);guardar();}
+    const m={...extra,a,pid:PID};
+    if(a==='nv_empezar'||a==='nv_reanudar'){preparar(m);return;}
+    motor.accion(m);
+  }
+  function preparar(m){
+    if(pendiente||!['ready','paused'].includes(motor.cel().fase))return;
+    pendiente=true;micro.parar();controles.hidden=true;pantalla.hidden=false;fijar(true);
+    let n=3;
+    const dibujar=()=>{
+      pantalla.innerHTML=`<div class="nv-local-count"><p>Da vuelta el celular</p><b>${n}</b><p>Los demás verán el número.<br>Vos escuchás la pregunta y respondés.</p><button type="button" class="tl-boton" data-qns-cancel>Cancelar</button></div>`;
+      pantalla.querySelector('[data-qns-cancel]').onclick=cancelarCuenta;
     };
-    clearTimeout(cuenta);paso();
+    const paso=()=>{if(!raiz||!pendiente)return;if(--n>0){dibujar();cuenta=setTimeout(paso,1000);}else{cuenta=null;pendiente=false;motor.accion(m);}};
+    dibujar();cuenta=setTimeout(paso,1000);
   }
-  function desbloquear(){
-    clearTimeout(cuenta);
-    bloqueado=false;capa.hidden=true;document.body.classList.remove("qns-bloqueado");
-    rondas++;guardar();
-    q("qnsEra").textContent=numero;q("qnsEra").classList.toggle("tres",numero>99);q("qnsFin").hidden=false;
-    if(typeof vibrar==="function")vibrar([30,40,30]);
-    /* La pantalla sigue prendida hasta que tocan "Terminar". */
+  function cancelarCuenta(){clearTimeout(cuenta);cuenta=null;pendiente=false;fijar(false);pintar();}
+  function pausar(){if(pendiente)cancelarCuenta();else if(motor)motor.accion({a:'nv_pausa',pid:PID});}
+  function pintar(){
+    if(!raiz||!motor||pendiente)return;
+    const c=motor.cel(),jugando=['reading','arming','playing'].includes(c.fase);
+    pantalla.hidden=!jugando;controles.hidden=jugando;fijar(jugando);
+    if(jugando){
+      motor.pintar(pantalla);
+      const puntos=c.jug[c.turno]?.pts||0;pantalla.querySelector('.nv-tv header span').textContent=c.quien+' · '+puntos+(puntos===1?' acierto':' aciertos');
+      const numero=pantalla.querySelector('.nv-answer');numero.style.setProperty('--nv-size',`min(${Math.min(52,140/numero.textContent.length)}vw,40vh)`);
+      pantalla.querySelector('.nv-notice').textContent=c.fase==='reading'?'Escuchá la pregunta':c.fase==='arming'?'Preparando micrófono':c.aviso;
+      const acciones=document.createElement('div');acciones.className='nv-local-actions';
+      acciones.innerHTML=`<button type="button" data-qns-pass ${c.fase!=='playing'?'disabled':''}>Paso</button><button type="button" data-qns-ok ${c.fase!=='playing'?'disabled':''}>Lo dijo bien</button><button type="button" data-qns-pause>Ⅱ Pausar</button>`;
+      pantalla.append(acciones);acciones.querySelector('[data-qns-pass]').onclick=()=>enviar('nv_paso',{token:c.token});acciones.querySelector('[data-qns-ok]').onclick=()=>enviar('nv_ok',{token:c.token});acciones.querySelector('[data-qns-pause]').onclick=pausar;
+    }
+    micro.pintar(c,'<div class="nv-local-brand"><img src="assets/que-numero-soy/logo.webp" alt="¿Qué número soy?"><p>Adiviná el número · Preguntas por voz</p></div>',true);
+    if(c.fase==='config'&&!controles.querySelector('[data-qns-tv]')){
+      const b=document.createElement('button');b.type='button';b.className='tl-boton';b.dataset.qnsTv='';b.textContent='📺 Jugar en la tele';b.onclick=()=>window.Tele?.compartirPantalla();controles.querySelector('.nv-phone').append(b);
+      const invitar=document.createElement('button');invitar.type='button';invitar.className='tl-boton';invitar.textContent='💬 Invitar por WhatsApp';invitar.onclick=()=>PantallaFija.invitar('que-numero-soy','¿Qué número soy?');controles.querySelector('.nv-phone').append(invitar);
+    }
   }
-  function terminar(){bloqueado=false;PantallaFija.desactivar();if(raiz){q("qnsFin").hidden=true;capa.hidden=true;}document.body.classList.remove("qns-bloqueado");}
+  function iniciar(){
+    clearTimeout(cuenta);clearInterval(tic);pendiente=false;micro?.salir();motor?.fin();fijar(false);
+    const T={mando:PID,jug:nombres.map(n=>({pid:PID,n}))};
+    motor=NumeroVoz.crearTele(T,pintar,{SND:sonido,local:true,podioTele(){rondas++;guardar();}});
+    micro=NumeroVoz.crearCel(controles,PID,enviar,{local:true});pintar();
+    let antes=performance.now();tic=setInterval(()=>{const ahora=performance.now();motor?.tic(ahora-antes);antes=ahora;},200);
+  }
+  const teclado=e=>{if(!bloqueado||e.key==='Tab')return;e.stopImmediatePropagation();e.preventDefault();if(e.key==='Escape')pausar();};
+  const ocultar=()=>{if(document.hidden&&pendiente)cancelarCuenta();};
+  function abrir(contenedor){
+    salir();cargar();raiz=document.createElement('section');raiz.className='nv-local';
+    raiz.innerHTML='<div class="nv-local-controls"></div><div class="nv-local-play" id="qnsPantalla" hidden></div>';contenedor.append(raiz);
+    controles=raiz.querySelector('.nv-local-controls');pantalla=raiz.querySelector('.nv-local-play');
+    if(!window.NumeroVoz){controles.textContent='No se pudo cargar el juego. Volvé a abrirlo.';return;}
+    iniciar();document.addEventListener('keydown',teclado,true);document.addEventListener('visibilitychange',ocultar);window.addEventListener('pagehide',salir);
+    PantallaFija.bienvenida(contenedor,{logo:'assets/que-numero-soy/logo.webp',alt:'¿Qué número soy?',items:[['📱','<b>Da vuelta el celular</b>: los demás ven el número y vos no.'],['🎙','La voz lee <b>solo la pregunta</b>. Vos respondés hablando.'],['⏱','Tenés <b>30 segundos</b> para acertar la mayor cantidad. Decí «paso» para otra pregunta.'],['🏆','Pasen el celular al siguiente jugador. Gana quien suma más aciertos.']]});
+  }
   function salir(){
-    clearTimeout(cuenta);
-    if(bloqueado||raiz)PantallaFija.salir();bloqueado=false;document.body.classList.remove("qns-bloqueado");
-    if(raiz)raiz.remove();raiz=null;capa=null;
+    clearTimeout(cuenta);clearInterval(tic);cuenta=tic=null;pendiente=false;micro?.salir();motor?.fin();micro=motor=null;
+    document.removeEventListener('keydown',teclado,true);document.removeEventListener('visibilitychange',ocultar);window.removeEventListener('pagehide',salir);
+    if(raiz){fijar(false);PantallaFija.salir();raiz.remove();}raiz=controles=pantalla=null;
   }
-  return{abrir,salir,tecla:(k,e)=>{if(bloqueado&&e){e.preventDefault();}},bloqueado:()=>bloqueado,rondasJugadas:()=>{cargar();return rondas;}};
+  return{abrir,salir,tecla:(k,e)=>{if(bloqueado&&e)teclado(e);},bloqueado:()=>bloqueado,rondasJugadas:()=>{cargar();return rondas;}};
 })();
 window.QueNumeroSoy=QueNumeroSoy;

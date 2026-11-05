@@ -515,28 +515,7 @@
 
   /* ---------- ¿Qué número soy?: la tele muestra el número; el que juega, de espaldas ---------- */
   function juegoNumero(T,actualizar){
-    if(window.NumeroVoz)return NumeroVoz.crearTele(T,actualizar,{SND,podioTele});
-    const RANGOS=[10,50,100];
-    let max=100,numero=0,fase="config",cuenta=0,oculto=false;
-    try{const d=JSON.parse(localStorage.getItem("gya_que_numero_soy"))||{};if(RANGOS.includes(d.max))max=d.max;}catch(e){}
-    function nuevo(){let n;do{n=1+Math.floor(Math.random()*max);}while(n===numero&&max>1);numero=n;fase="cuenta";cuenta=3000;oculto=false;SND.turno();actualizar();}
-    function accion(m){
-      if(m.pid!==T.mando)return;
-      if(m.a==="qn_rango"&&RANGOS.includes(Number(m.max))){max=Number(m.max);try{const d=JSON.parse(localStorage.getItem("gya_que_numero_soy"))||{};d.max=max;localStorage.setItem("gya_que_numero_soy",JSON.stringify(d));}catch(e){}actualizar();return;}
-      if(m.a==="qn_nuevo"){nuevo();return;}
-      if(m.a==="qn_ocultar"&&fase==="numero"){oculto=!oculto;actualizar();}
-    }
-    function tic(dt){if(fase!=="cuenta")return;const antes=Math.ceil(cuenta/1000);cuenta-=dt;const ahora=Math.ceil(cuenta/1000);
-      if(cuenta<=0){fase="numero";SND.arranca();actualizar();return;}
-      if(ahora!==antes){SND.tic();const el=document.querySelector("#tlQnCuenta");if(el)el.textContent=ahora;}}
-    function pintar(raiz,quien){
-      if(fase==="config"){raiz.innerHTML=`<div class="tl-centro tl-qn"><img class="tl-qn-logo" src="assets/que-numero-soy/logo.webp" alt="¿Qué número soy?"><h1>¿Qué número soy?</h1>
-        <p>El que juega se pone <b>de espaldas a la tele</b>. Los demás ven el número y le dan pistas.</p><p>Números del <b>1 al ${max}</b> · ${quien?esc(quien)+" elige desde el celular":""}</p></div>`;return;}
-      if(fase==="cuenta"){raiz.innerHTML=`<div class="tl-centro tl-qn"><h1>¡De espaldas a la tele! 🙈</h1><div class="tl-qn-cuenta" id="tlQnCuenta">${Math.max(1,Math.ceil(cuenta/1000))}</div></div>`;return;}
-      raiz.innerHTML=`<div class="tl-qn-escena"><div class="tl-qn-bola">${oculto?"<span class='tl-qn-oculto'>?</span>":`<span>${numero}</span>`}</div><p class="tl-qn-pie">Del 1 al ${max}${oculto?" · número oculto":""}</p></div>`;
-    }
-    function cel(){return{pantalla:"numero",fase,max,oculto,rangos:RANGOS};}
-    return{accion,tic,pintar,cel,fin(){}};
+    return NumeroVoz.crearTele(T,actualizar,{SND,podioTele});
   }
 
   /* ---------- ¿Quién soy?: la tele muestra quién sos; el que adivina, de espaldas ---------- */
@@ -2267,17 +2246,6 @@
       raiz.querySelector("#tlMmEmpezar").onclick=()=>accion("mm_empezar");enlazarMenu();
     }
     /* ---------- ¿Qué número soy? / ¿Quién soy? ---------- */
-    function pintarNumero(c,cab){
-      raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>🔢 ¿Qué número soy?</h2><p>El que juega, <b>de espaldas a la tele</b>.</p>
-        <div class="tl-dc-opciones">${c.rangos.map(r=>`<button type="button" data-max="${r}" class="${c.max===r?"tl-pz-activo":""}">1 a ${r}</button>`).join("")}</div>
-        <button type="button" class="tl-boton tl-oro" id="tlQnNuevo">${c.fase==="config"?"▶ Mostrar número":"🔄 Otro número"}</button>
-        ${c.fase==="numero"?`<button type="button" class="tl-boton" id="tlQnOcultar">${c.oculto?"👁 Mostrar el número":"🙈 Ocultar el número"}</button>`:""}
-        <button type="button" class="tl-boton tl-chico" id="tlMenu">⟵ Menú de juegos</button></div>`;
-      raiz.querySelectorAll("[data-max]").forEach(b=>b.onclick=()=>accion("qn_rango",{max:Number(b.dataset.max)}));
-      raiz.querySelector("#tlQnNuevo").onclick=()=>accion("qn_nuevo");
-      raiz.querySelector("#tlQnOcultar")?.addEventListener("click",()=>accion("qn_ocultar"));
-      raiz.querySelector("#tlMenu").onclick=()=>accion("menu");
-    }
     function pintarQuien(c,cab,soyMando){
       if(c.fase==="jugando"||c.fase==="cuenta"){
         raiz.innerHTML=cab+`<div class="tl-cel-caja tl-qs-cel"><p>✔ ${c.ok} · ⏭ ${c.pasos}</p>
@@ -2332,7 +2300,6 @@
       if(c.pantalla==="palabra"){pintarPalabra(c,cab,soyMando);return;}
       if(c.pantalla==="memoria"){pintarMemoria(c,cab,soyMando);return;}
       if(c.pantalla==="rueda"){pintarRueda(c,cab,soyMando);return;}
-      if(c.pantalla==="numero"&&soyMando){pintarNumero(c,cab);return;}
       /* Rosco: apelación en curso → el que apeló espera; los demás votan si vale. */
       if((c.pantalla==="rosco"||c.pantalla==="fin")&&c.apel){const a=c.apel;dcVoz(false);
         const ruido=a.tipo==="ruido";

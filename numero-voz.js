@@ -20,7 +20,7 @@ window.NumeroVoz=(()=>{
     if(!match)return null;const a=match[1]?numbers.get(match[1]):1,b=match[2]?numbers.get(match[2]):0;
     return Number.isInteger(a)&&a>0&&Number.isInteger(b)?a*1000+b:null;
   }
-  function crearTele(T,update,{SND,podioTele}){
+  function crearTele(T,update,{SND,podioTele,local=false}){
     let phase='config',players=[],turn=0,round=1,remaining=30000,deadline=0,started=false,current=null,serial=0,reading=null,timer=null,generation=0,dead=false,manual=false,notice='',last='',arming=0;
     const used=new Set(),epoch=Math.random().toString(36).slice(2),name=()=>players[turn]?.n||'',mic=()=>players[turn]?.mic||T.mando;
     const token=()=>epoch+':'+round+':'+turn+':'+serial;
@@ -88,10 +88,10 @@ window.NumeroVoz=(()=>{
       const rows=players.map((p,i)=>`<span class="${i===turn?'nv-active':''}">${escape(p.n)} <b>${p.pts}</b></span>`).join('');
       root.innerHTML=`<section class="nv-tv"><header><span>¿QUÉ NÚMERO SOY? · RONDA ${round}</span><b class="nv-clock">${Math.ceil(remaining/1000)} s</b></header><div class="nv-score">${rows}</div>${['reading','arming','playing','paused'].includes(phase)&&current?`<p class="nv-question">${escape(current.pregunta)}</p><div class="nv-answer">${current.respuesta}</div><p class="nv-notice">${escape(name())} juega de espaldas · ${escape(notice)}</p>`:`<div class="nv-center"><img src="assets/que-numero-soy/logo.webp" alt="¿Qué número soy?"><h1>${phase==='config'?'Preguntas por voz':phase==='ready'?'Le toca a '+escape(name()):phase==='final'?'¡Ronda terminada!':'¡Tiempo!'}</h1><p>${phase==='config'?'Cada jugador tiene 30 segundos para sumar aciertos. Configurá los nombres desde el celular.':phase==='ready'?'Ponete de espaldas a la tele. La voz lee solo la pregunta.':phase==='final'?'Más aciertos: '+escape(notice):escape(name())+' consiguió '+(players[turn]?.pts||0)+' aciertos.'}</p></div>`}</section>`;
     }
-    const onHide=()=>{if(document.hidden)pause('La tele quedó en pausa');};document.addEventListener('visibilitychange',onHide);
+    const onHide=()=>{if(document.hidden)pause(local?'El celular quedó en pausa':'La tele quedó en pausa');};document.addEventListener('visibilitychange',onHide);
     return{accion,tic,cel,pintar,fin(){dead=true;cancelRead();document.removeEventListener('visibilitychange',onHide);}};
   }
-  function crearCel(root,yo,send){
+  function crearCel(root,yo,send,{local=false}={}){
     let model=null,rec=null,retry=null,partial=null,partialTimer=null,micToken='',view='',heard='',wanted=false,permitted=false,listening=false,names=[];
     try{permitted=localStorage.getItem('gya_tele_mic')==='1';}catch(e){}
     const hasMic=()=>!!(window.SpeechRecognition||window.webkitSpeechRecognition);
@@ -130,13 +130,13 @@ window.NumeroVoz=(()=>{
         let body='';
         if(c.fase==='config'){
           if(!names.length)names=(c.jug||[]).map(j=>j.n);
-          body=mando?`<p>Cada jugador responde de espaldas a la tele. Turnos de 30 segundos.</p><div class="nv-names">${names.map((n,i)=>`<label>Jugador ${i+1}<input data-nv-name="${i}" maxlength="20" value="${escape(n)}"></label>`).join('')}</div><button class="tl-boton tl-chico" data-nv-add>＋ Jugador</button><button class="tl-boton tl-oro" data-nv-config>Preparar ronda</button>`:'El control está preparando los jugadores.';
-        }else if(c.fase==='ready')body=`<h2>Le toca a ${escape(c.quien)}</h2><p>De espaldas a la tele. La voz lee la pregunta y vos respondés a este celular.</p>${active&&!permitted?`<button class="tl-boton tl-oro" data-nv-mic>🎙 Activar micrófono</button>`:''}${active||mando?`<button class="tl-boton tl-oro" data-nv-start>Comenzar 30 segundos</button><button class="tl-boton tl-chico" data-nv-manual>Jugar marcando desde el control</button>`:''}`;
+          body=mando?`<p>${local?'Da vuelta el celular para que los demás vean el número.':'Cada jugador responde de espaldas a la tele.'} Turnos de 30 segundos.</p><div class="nv-names">${names.map((n,i)=>`<label>Jugador ${i+1}<input data-nv-name="${i}" maxlength="20" value="${escape(n)}"></label>`).join('')}</div><button class="tl-boton tl-chico" data-nv-add>＋ Jugador</button><button class="tl-boton tl-oro" data-nv-config>Preparar ronda</button>`:'El control está preparando los jugadores.';
+        }else if(c.fase==='ready')body=`<h2>Le toca a ${escape(c.quien)}</h2><p>${local?'Tenés tres segundos para dar vuelta el celular. Los demás ven el número; vos escuchás la pregunta y respondés hablando.':'De espaldas a la tele. La voz lee la pregunta y vos respondés a este celular.'}</p>${active&&!permitted&&hasMic()?`<button class="tl-boton tl-oro" data-nv-mic>🎙 Activar micrófono</button>`:''}${active||mando?`<button class="tl-boton tl-oro" data-nv-start>Comenzar 30 segundos</button><button class="tl-boton tl-chico" data-nv-manual>${local?'Que los demás marquen los aciertos':'Jugar marcando desde el control'}</button>`:''}`;
         else if(c.fase==='turnEnd')body=`<h2>¡Terminó el turno!</h2>${mando?'<button class="tl-boton tl-oro" data-nv-next>Siguiente jugador</button>':''}`;
-        else if(c.fase==='final')body=`<h2>Ronda terminada</h2>${mando?'<button class="tl-boton tl-oro" data-nv-again>Otra ronda</button>':''}`;
-        else if(c.fase==='paused')body=`<h2>En pausa</h2><p>${escape(c.aviso)}</p>${active&&!permitted?'<button class="tl-boton" data-nv-mic>🎙 Activar micrófono</button>':''}${mando?'<button class="tl-boton tl-oro" data-nv-resume>Continuar con micrófono</button><button class="tl-boton" data-nv-resume-manual>Continuar marcando</button>':''}`;
+        else if(c.fase==='final')body=`<h2>Ronda terminada</h2>${local?`<p>Más aciertos: <b>${escape(c.aviso)}</b></p>`:''}${mando?'<button class="tl-boton tl-oro" data-nv-again>Otra ronda</button>':''}`;
+        else if(c.fase==='paused')body=`<h2>En pausa</h2><p>${escape(c.aviso)}</p>${active&&!permitted&&hasMic()?'<button class="tl-boton" data-nv-mic>🎙 Activar micrófono</button>':''}${mando?'<button class="tl-boton tl-oro" data-nv-resume>Continuar con micrófono</button><button class="tl-boton" data-nv-resume-manual>Continuar marcando</button>':''}`;
         else body=`<h2>${escape(c.quien)} · <span class="nv-phone-time">${c.resta}</span> s</h2><p class="nv-phone-question">${escape(c.pregunta)}</p><p class="nv-mic-state">${c.fase==='reading'?'La voz está leyendo…':active?(permitted?'Conectando micrófono…':'Activá el micrófono para responder'):'Escuchá al jugador'}</p><p class="nv-heard">${escape(c.oi||heard)}</p>${active?`${!permitted&&!c.manual?'<button class="tl-boton tl-oro" data-nv-mic>🎙 Activar micrófono</button>':''}<div class="nv-text"><input id="nvTexto" inputmode="numeric" placeholder="O escribí tu respuesta" aria-label="Respuesta numérica"><button class="tl-boton" data-nv-send>Responder</button></div>`:''}${c.fase==='playing'?`${active||mando?'<button class="tl-boton" data-nv-pass>Paso</button>':''}${!active||mando?'<button class="tl-boton" data-nv-ok>Lo dijo bien</button>':''}${mando?'<button class="tl-boton tl-chico" data-nv-pause>Pausar</button>':''}`:''}`;
-        root.innerHTML=cab+`<section class="tl-cel-caja nv-phone"><h3>¿Qué número soy? · Ronda ${c.ronda}</h3>${body}<div class="nv-phone-scores">${(c.jug||[]).map(j=>`<span>${escape(j.n)}: <b>${j.pts}</b></span>`).join('')}</div>${mando?'<button class="tl-boton tl-chico" data-nv-menu>Menú de juegos</button>':''}</section>`;
+        root.innerHTML=cab+`<section class="tl-cel-caja nv-phone"><h3>¿Qué número soy? · Ronda ${c.ronda}</h3>${body}<div class="nv-phone-scores">${(c.jug||[]).map(j=>`<span>${escape(j.n)}: <b>${j.pts}</b></span>`).join('')}</div>${mando?`<button class="tl-boton tl-chico" data-nv-menu>${local?'Volver al inicio':'Menú de juegos'}</button>`:''}</section>`;
         const on=(s,f)=>root.querySelector(s)?.addEventListener('click',f),act=(a,extra={})=>send(a,{token:c.token,...extra});
         root.querySelectorAll('[data-nv-name]').forEach(el=>el.oninput=()=>{names[Number(el.dataset.nvName)]=el.value;});
         on('[data-nv-add]',()=>{if(names.length<8){names.push('');view='';paint(c,cab,mando);}});
@@ -144,7 +144,7 @@ window.NumeroVoz=(()=>{
         on('[data-nv-start]',()=>act('nv_empezar',{manual:!hasMic()}));on('[data-nv-manual]',()=>act('nv_empezar',{manual:true}));
         on('[data-nv-next]',()=>act('nv_siguiente'));on('[data-nv-again]',()=>act('nv_revancha'));
         on('[data-nv-pass]',()=>act('nv_paso'));on('[data-nv-ok]',()=>act('nv_ok'));on('[data-nv-pause]',()=>act('nv_pausa'));
-        on('[data-nv-resume]',()=>act('nv_reanudar'));on('[data-nv-resume-manual]',()=>act('nv_reanudar',{manual:true}));on('[data-nv-menu]',()=>send('menu'));
+        on('[data-nv-resume]',()=>act('nv_reanudar',{manual:!hasMic()}));on('[data-nv-resume-manual]',()=>act('nv_reanudar',{manual:true}));on('[data-nv-menu]',()=>send('menu'));
         const submit=()=>{const el=root.querySelector('#nvTexto');if(el?.value.trim())act('nv_resp',{alts:[el.value.trim()]});};on('[data-nv-send]',submit);root.querySelector('#nvTexto')?.addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
       }
       const clock=root.querySelector('.nv-phone-time');if(clock)clock.textContent=c.resta;

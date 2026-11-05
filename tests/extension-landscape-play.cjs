@@ -30,7 +30,7 @@ const starts = {
   'sopa-fugaz':['#sfPanel button'],
   'quien-soy':['.pf-bienv button:last-of-type','.qs-tarjeta'],
   'bomba':['.pf-bienv button:last-of-type','#bbEmpezar'],
-  'que-numero-soy':['.pf-bienv button:last-of-type','#qnsEmpezar'],
+  'que-numero-soy':['.pf-bienv button:last-of-type','[data-nv-config]','[data-nv-manual]'],
   'rueda-de-letras':['#rlPanel .sf-principal'],
   'moon-tap':['#mtPanel .sf-principal'],
   'tele':['#tlSoyCelular']
