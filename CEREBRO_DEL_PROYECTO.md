@@ -394,6 +394,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Palabra Secreta: la raya violeta avisa desde la primera copia
+- Qué: Gonzalo (BOLERO: puso una O y no había raya; recién apareció al poner las dos). Ahora la raya significa "hay otra más": en cada fila, una letra verde o amarilla lleva raya si la palabra tiene más copias de esa letra que las marcadas en esa fila; cuando ya están todas, desaparece. El teclado la muestra mientras falte encontrar alguna copia. Leyenda "Raya violeta: hay otra más", ayuda y foto para compartir actualizadas. (Antes solo aparecía cuando las pistas ya mostraban dos copias, para no dar pistas de la palabra oculta; Gonzalo prefiere el aviso.)
+- Pruebas: tests/palabra-secreta-repetidas.cjs reescrito con la regla nueva (pasa) y tests/palabra-secreta.cjs pasa.
+- Dónde: palabra-secreta.js (v32), sw gya-cache-v726.
+
 ### 05/11/2026 — Palabra Secreta colaborativa: salas fijas, como el Puzzle
 - Qué: Juan quería que Gonzalo lo ayudara con otra palabra y tuvo que crear otra sala. Ahora el código de la sala sirve siempre: en "Jugar colaborativo" aparece "Tus salas" (código · con quién, últimas 4, gya_palabra_salas). Al tocar una sala, el link viejo o el código: si el compañero está adentro ahora, entrás a ayudarlo; si no, la abrís vos con tu partida actual y esperás que entre (cualquiera de los dos puede pedir ayuda en la misma sala). La fila del anfitrión "late" cada 8 s y se considera activa 45 s; si los dos la abren a la vez, uno recibe "Tocala de nuevo para entrar". Si no se puede leer el servidor, se intenta como invitado (con Reintentar).
 - Pruebas: tests/palabra-secreta-sala.cjs (reabrir cerrada/abandonada, hostActivo) y tests/palabra-secreta-colaborativo.cjs (el ex invitado reabre la sala desde Tus salas y el otro entra) pasan. Sin probar con dos celulares reales.
