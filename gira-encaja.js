@@ -12,15 +12,45 @@ window.GiraEncaja=(()=>{
     {nombre:'Comidas',icono:'🍎',color:'#ef9bff',items:[['🍕','Pizza'],['🍔','Hamburguesa'],['🍩','Dona'],['🍞','Pan'],['🧀','Queso'],['🍦','Helado'],['🍪','Galleta'],['🍰','Torta'],['🍝','Pasta'],['🍣','Sushi'],['🥐','Medialuna'],['🍫','Chocolate']]}
   ];
   let root=null,canvas,ctx,overlay,signal,events,observer,raf=0,last=0,state=null,feedbackUntil=0,drag=null;
+  let music=null,musicPending=false,musicBlocked=false,musicGeneration=0;
   let W=480,H=700,mode='imagenes';
   const record=()=>{try{return Math.max(0,Number(localStorage.getItem(KEY))||0);}catch(e){return 0;}};
   const allowed=()=>{const ext=window.EXTENSIONES?.find(e=>e.id==='gira-encaja');return !!ext&&typeof window.extensionVisible==='function'&&window.extensionVisible(ext);};
+  const soundEnabled=()=>typeof window.sonidoPermitido!=='function'||window.sonidoPermitido();
+  const wantsMusic=()=>!!root&&!document.hidden&&!state?.paused&&soundEnabled();
+  function syncMusic(){
+    if(!root)return;
+    const enabled=soundEnabled(),button=root.querySelector('.ge-sound');
+    if(button.getAttribute('aria-pressed')!==String(enabled)){
+      button.textContent=enabled?'🔊':'🔇';button.setAttribute('aria-label',enabled?'Silenciar sonido':'Activar sonido');button.setAttribute('aria-pressed',String(enabled));
+    }
+    if(!wantsMusic()){if(music&&(!music.paused||musicPending))music.pause();return;}
+    if(musicPending||musicBlocked)return;
+    try{
+      if(!music){music=new Audio('assets/gira-encaja/observatory-in-the-clouds-v1.mp3');music.loop=true;music.volume=.24;music.preload='auto';}
+      if(!music.paused)return;
+      const track=music,generation=musicGeneration;musicPending=true;
+      Promise.resolve(track.play()).then(()=>{
+        if(generation!==musicGeneration||music!==track){track.pause();return;}
+        musicPending=false;if(!wantsMusic())track.pause();
+      }).catch(error=>{
+        if(generation!==musicGeneration||music!==track){track.pause();return;}
+        musicPending=false;if(error?.name!=='AbortError')musicBlocked=true;
+      });
+    }catch(e){musicPending=false;musicBlocked=true;}
+  }
+  function unlockMusic(){musicBlocked=false;syncMusic();}
   function abrir(contenedor){
     salir();if(!allowed())return;
     events=new AbortController();signal=events.signal;
     root=document.createElement('section');root.className='ge-game';root.setAttribute('aria-label','Girá y encajá');
     root.innerHTML='<header class="ge-hud"><div class="ge-status"><small>GIRÁ Y ENCAJÁ</small><span class="ge-level">Nivel 1 · 0/'+PER_LEVEL+'</span></div><b class="ge-score">0</b><span class="ge-lives" aria-label="3 vidas">♥♥♥</span><button class="ge-pause" aria-label="Pausar" disabled>Ⅱ</button></header><div class="ge-question" hidden role="status" aria-live="polite"><small>Momento de pensar</small><p></p></div><canvas class="ge-canvas" tabindex="0" aria-label="Mové con las flechas, girá con espacio, C cambia de ficha y abajo suelta la seleccionada"></canvas><div class="ge-controls"><button data-action="left" aria-label="Mover a la izquierda">←</button><button class="ge-rotate" data-action="rotate">↻ Girar</button><button data-action="right" aria-label="Mover a la derecha">→</button><button data-action="next" aria-label="Seleccionar otra ficha" title="Cambiar de ficha">⇄</button></div><div class="ge-feedback" role="status" aria-live="polite"></div><div class="ge-overlay"></div>';
     contenedor.appendChild(root);canvas=root.querySelector('canvas');ctx=canvas.getContext('2d');overlay=root.querySelector('.ge-overlay');
+    const mute=document.createElement('button');mute.type='button';mute.className='ge-sound';mute.textContent='🔊';mute.setAttribute('aria-label','Silenciar sonido');
+    root.querySelector('.ge-hud').insertBefore(mute,root.querySelector('.ge-pause'));
+    mute.addEventListener('click',()=>{document.getElementById('btnMusica')?.click();unlockMusic();},{signal});
+    root.addEventListener('pointerdown',unlockMusic,{signal,passive:true});
+    root.addEventListener('keydown',unlockMusic,{signal});
     observer=new ResizeObserver(resize);observer.observe(canvas);resize();
     root.querySelector('.ge-pause').addEventListener('click',pause,{signal});
     root.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',()=>action(b.dataset.action),{signal}));
@@ -32,8 +62,10 @@ window.GiraEncaja=(()=>{
       const a={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'rotate',' ':'rotate',ArrowDown:'drop',c:'next',C:'next',p:'pause',Escape:'pause'}[e.key];
       if(a){e.preventDefault();e.stopPropagation();if(a==='pause')pause();else action(a);}
     },{signal});
-    document.addEventListener('visibilitychange',()=>{if(document.hidden&&state?.running&&!state.paused)pause();},{signal});
-    intro();last=0;raf=requestAnimationFrame(loop);
+    document.addEventListener('visibilitychange',()=>{if(document.hidden&&state?.running&&!state.paused)pause();syncMusic();},{signal});
+    window.addEventListener('pagehide',()=>{music?.pause();},{signal});
+    window.addEventListener('pageshow',syncMusic,{signal});
+    intro();syncMusic();last=0;raf=requestAnimationFrame(loop);
   }
   function resize(){
     if(!canvas)return;const r=canvas.getBoundingClientRect();if(!r.width||!r.height)return;
@@ -133,6 +165,7 @@ window.GiraEncaja=(()=>{
     root.querySelector('.ge-pause').textContent=state.paused?'▶':'Ⅱ';root.querySelector('.ge-pause').setAttribute('aria-label',state.paused?'Continuar':'Pausar');
     if(state.paused){panel('<div class="ge-mark">Ⅱ</div><h2>En pausa</h2><p>Tus fichas te esperan.</p><button class="ge-primary" data-resume>Continuar</button>');overlay.querySelector('[data-resume]').onclick=pause;}
     else{overlay.hidden=true;canvas.focus({preventScroll:true});}
+    syncMusic();
   }
   function gateY(){return H-100;}
   function resolve(p){
@@ -194,6 +227,7 @@ window.GiraEncaja=(()=>{
   }
   function loop(now){
     if(!root)return;const dt=last?Math.min((now-last)/1000,.05):0;last=now;
+    syncMusic();
     if(state?.running&&!state.paused){
       if(state.pending.length){state.releaseIn-=dt;if(state.releaseIn<=0)releasePiece();}
       if(state.pieces.length){const speed=(gateY()+15-spawnY())/(9-(state.level-1)*.9);for(const p of [...state.pieces]){if(!state.running)break;p.y+=speed*dt;if(p.y>=gateY()+15)resolve(p);}}
@@ -202,6 +236,10 @@ window.GiraEncaja=(()=>{
     if(feedbackUntil&&now>=feedbackUntil){root.querySelector('.ge-feedback').classList.remove('ge-show');feedbackUntil=0;}
     draw();raf=requestAnimationFrame(loop);
   }
-  function salir(){cancelAnimationFrame(raf);events?.abort();observer?.disconnect();root?.remove();root=null;state=null;canvas=null;drag=null;last=0;feedbackUntil=0;mode='imagenes';}
+  function salir(){
+    musicGeneration++;musicPending=false;musicBlocked=false;
+    try{if(music){music.pause();music.currentTime=0;music.removeAttribute('src');music.load();}}catch(e){}music=null;
+    cancelAnimationFrame(raf);events?.abort();observer?.disconnect();root?.remove();root=null;state=null;canvas=null;drag=null;last=0;feedbackUntil=0;mode='imagenes';
+  }
   return{abrir,salir,mejorPuntaje:record};
 })();

@@ -3,6 +3,7 @@
 .ge-game *{box-sizing:border-box}
 .ge-hud{display:flex;align-items:center;gap:10px;padding:12px 14px;background:linear-gradient(#081b39e8,#10234450);border-radius:20px 20px 0 0;font-size:13px}
 .ge-hud b{color:#ffe39a;font-size:20px}.ge-hud .ge-status{flex:1}.ge-hud small{display:block;color:#bce4ff;font-size:11px;letter-spacing:1px}.ge-lives{color:#ff6da0;letter-spacing:3px;white-space:nowrap}
+.ge-hud{gap:8px}.ge-hud .ge-status{min-width:0}.ge-game .ge-sound{position:relative;z-index:3;padding:8px;min-width:40px}
 .ge-question{margin:0 12px 6px;padding:9px 13px;border:1px solid #e5bbff80;border-radius:14px;background:#17284cef;text-align:center;box-shadow:0 5px 20px #0003}
 .ge-question[hidden]{display:none}.ge-question small{color:#efc9ff;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px}.ge-question p{margin:4px 0 0;font-size:15px;line-height:1.35;font-weight:750;color:#fff4d9}
 .ge-game button{cursor:pointer;font:700 14px system-ui;color:#fff;border:1px solid #8adfff80;border-radius:12px;background:#102b52d9;padding:10px 15px;min-height:44px}
