@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Juegos nuevos con la paleta oscura y popups sin scroll
+- Qué: Girá y encajá vuelve a su icono anterior (icono.svg; a Gonzalo no le gustó el v2). Su pantalla y paneles pasan del azul marino/celeste a la paleta violeta oscura del resto (#160B24/#2A1A3C, dorado #F5B301, turquesa #37D6C0, Archivo Black en títulos). Palabras Cruzadas: la palabra elegida y el cursor pasan de celeste/azul a violeta (textos de ayuda y leyenda dicen "violeta"). Regla de Gonzalo: todo popup tiene que entrar sin scroll; se comprobó en 360×640 y 390×844 (Girá y encajá, No te caigas, Palabras Cruzadas).
+- Dónde: extensiones.js (v132), gira-encaja.css (v5), gira-encaja.js (v7), palabras-cruzadas.css (v7), palabras-cruzadas.js (v8), sw gya-cache-v715.
+
 ### 05/11/2026 — Arte de piezas (collage 2) para Palabras Cruzadas, No te caigas y Girá y encajá
 - Qué: se recortó el segundo collage (fondo transparente, webp). Palabras Cruzadas: casilla-vacia, casilla-correcta (verde), casilla-bloqueada (violeta), casilla-seleccionada (borde dorado). No te caigas: plataforma-cerrada, plataforma-abierta (trampilla con espiral), atril, reflector. Girá y encajá: ficha-perro, ficha-girasol, ficha-cohete, ficha-empanada (Animales, Plantas, Espacio, Comidas). Quedan listas en la carpeta de cada juego; todavía no las usa el código.
 - Dónde: assets/palabras-cruzadas/, assets/no-te-caigas/, assets/gira-encaja/.

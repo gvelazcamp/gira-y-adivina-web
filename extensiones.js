@@ -125,7 +125,7 @@ window.DueloConocimiento=DueloConocimiento;
 
 /* Catálogo de minijuegos. Cada entrada habilitada aporta su función abrir. */
 const EXTENSIONES=[
-  {id:"gira-encaja",soloUsuarios:["gonzalo","vale"],nombre:"Girá y encajá",descripcion:"Clasificá las fichas que caen y giralas para entrar por el huequito",icono:"assets/gira-encaja/icono-v2.webp",estado:"disponible",insignia:"🧪 Prueba",abrir:contenedor=>GiraEncaja.abrir(contenedor),record:()=>GiraEncaja.mejorPuntaje()+" puntos"},
+  {id:"gira-encaja",soloUsuarios:["gonzalo","vale"],nombre:"Girá y encajá",descripcion:"Clasificá las fichas que caen y giralas para entrar por el huequito",icono:"assets/gira-encaja/icono.svg",estado:"disponible",insignia:"🧪 Prueba",abrir:contenedor=>GiraEncaja.abrir(contenedor),record:()=>GiraEncaja.mejorPuntaje()+" puntos"},
   {id:"ahora-caigo",soloUsuarios:["gonzalo","vale"],nombre:"No te caigas",descripcion:"Sorteá un rival, descubrí las palabras y evitá la caída",icono:"assets/no-te-caigas/icono-v2.webp",estado:"disponible",insignia:"🧪 Prueba",abrir:contenedor=>AhoraCaigo.abrir(contenedor),record:()=>"Duelo contra bots"},
   {id:"tutti-frutti",nombre:"Tutti Frutti",descripcion:"Cada uno con su celular: letra al azar y ¡BASTA!",icono:"logo-tutti-frutti.svg",estado:"disponible",abrir:contenedor=>TuttiFrutti.abrir(contenedor),record:()=>TuttiFrutti.partidasJugadas()+" partidas"},
   {id:"puzzle",nombre:"Puzzle",descripcion:"Armá rompecabezas de dibujos y ciudades",icono:"assets/puzzle-arte/icono.webp",estado:"disponible",abrir:contenedor=>Puzzle.abrir(contenedor),record:()=>Puzzle.armados()+" armados"},

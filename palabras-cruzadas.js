@@ -124,13 +124,13 @@ window.PalabrasCruzadas=(()=>{
       </section></div>
       <dialog id="pcPistas" class="pc-dialogo pc-dialogo-pistas"><button type="button" class="pc-cerrar" aria-label="Cerrar pistas">×</button><h2>Elegí una pista</h2><div class="pc-pistas-tabs"><button type="button" id="pcTabHorizontal" aria-pressed="true">Horizontales →</button><button type="button" id="pcTabVertical" aria-pressed="false">Verticales ↓</button></div><div class="pc-panel-pistas"><div id="pcHorizontales"></div><div id="pcVerticales" hidden></div></div><div class="pc-paginador"><button type="button" id="pcPistasAnterior">Anterior</button><span id="pcPistasPagina"></span><button type="button" id="pcPistasSiguiente">Siguiente</button></div></dialog>
       <dialog id="pcAyuda" class="pc-dialogo pc-dialogo-guia"><button type="button" class="pc-cerrar" aria-label="Cerrar ayuda">×</button><h2>Así se juega</h2><small id="pcGuiaPagina"></small>
-        <section class="pc-guia-pagina"><p>Leé la pista: <b>«Lugar donde vivís»</b> (4 letras). Tocá sus casillas celestes y escribí CASA. El borde azul muestra dónde va la próxima letra.</p><div class="pc-demo" role="img" aria-label="CASA horizontal comparte la S con SOL vertical. Falta la A en la casilla con borde azul."><span>C</span><span>A</span><span>S</span><span class="pc-demo-activa"></span><i></i><i></i><span class="pc-demo-cruce">O</span><i></i><i></i><i></i><span class="pc-demo-cruce">L</span><i></i></div><p>Falta la última A de CASA. La S se comparte con SOL.</p></section>
-        <section class="pc-guia-pagina" hidden><div class="pc-guia-colores"><p>⬜ <b>Blanco:</b> letra sin comprobar.</p><p>🟦 <b>Celeste:</b> palabra que elegiste.</p><p>🔵 <b>Borde azul:</b> próxima letra que escribís.</p><p>🟩 <b>Verde ✓:</b> letra correcta, queda fija.</p><p>🟥 <b>Rojo ×:</b> letra incorrecta: tocala y cambiala.</p><p>🔒 <b>Dorado:</b> ayuda fija, no se puede cambiar.</p></div></section>
+        <section class="pc-guia-pagina"><p>Leé la pista: <b>«Lugar donde vivís»</b> (4 letras). Tocá sus casillas violetas y escribí CASA. El borde violeta muestra dónde va la próxima letra.</p><div class="pc-demo" role="img" aria-label="CASA horizontal comparte la S con SOL vertical. Falta la A en la casilla con borde violeta."><span>C</span><span>A</span><span>S</span><span class="pc-demo-activa"></span><i></i><i></i><span class="pc-demo-cruce">O</span><i></i><i></i><i></i><span class="pc-demo-cruce">L</span><i></i></div><p>Falta la última A de CASA. La S se comparte con SOL.</p></section>
+        <section class="pc-guia-pagina" hidden><div class="pc-guia-colores"><p>⬜ <b>Blanco:</b> letra sin comprobar.</p><p>🟪 <b>Violeta:</b> palabra que elegiste.</p><p>🟣 <b>Borde violeta:</b> próxima letra que escribís.</p><p>🟩 <b>Verde ✓:</b> letra correcta, queda fija.</p><p>🟥 <b>Rojo ×:</b> letra incorrecta: tocala y cambiala.</p><p>🔒 <b>Dorado:</b> ayuda fija, no se puede cambiar.</p></div></section>
         <section class="pc-guia-pagina" hidden><p><b>Comprobar palabra</b> revisa las letras escritas.</p><p><b>Revelar letra</b> escribe una por vos. Hay tres ayudas por crucigrama.</p><p><b>Pistas</b> permite elegir otra palabra. En un cruce, usá <b>Cambiar dirección</b>.</p><p>En las grillas grandes, la vista sigue tu casilla. <b>Ver todo</b> muestra el tablero completo.</p><p>Escribí sin tildes ni espacios, conservando la Ñ. La partida se guarda.</p></section>
         <div class="pc-paginador"><button type="button" id="pcGuiaAnterior">Anterior</button><button type="button" id="pcGuiaSiguiente">Siguiente</button><button type="button" class="pc-principal pc-entendido" autofocus>Jugar</button></div></dialog>
       <dialog id="pcFinal" class="pc-dialogo"><button type="button" class="pc-cerrar" aria-label="Ver el tablero">×</button><span class="pc-trofeo" aria-hidden="true">✦</span><h2>¡Crucigrama completo!</h2><p id="pcResumen"></p><button type="button" id="pcSiguienteFinal" class="pc-principal">Siguiente crucigrama</button><button type="button" id="pcRevisar">Ver el tablero</button></dialog>
     </div>`;
-    const significados=["Blanco: sin comprobar","Celeste: palabra elegida","Borde azul: escribís acá","Verde: letra correcta, no se puede cambiar","Rojo: letra incorrecta","Dorado: ayuda fija"];
+    const significados=["Blanco: sin comprobar","Violeta: palabra elegida","Borde violeta: escribís acá","Verde: letra correcta, no se puede cambiar","Rojo: letra incorrecta","Dorado: ayuda fija"];
     raiz.querySelectorAll(".pc-leyenda>span").forEach((el,i)=>{el.title=significados[i];el.setAttribute("aria-label",significados[i]);el.querySelector("i").setAttribute("aria-hidden","true");});
     raiz.querySelector("#pcVistaBoton").onclick=()=>{vistaCompleta=!vistaCompleta;pintar();};
     raiz.querySelector("#pcAyudaBoton").onclick=mostrarGuia;
@@ -199,7 +199,7 @@ window.PalabrasCruzadas=(()=>{
     raiz.querySelector("#pcLargo").textContent=largos.length>1?largos.join(" + ")+" letras · sin espacio":largos[0]+" letras";
     pintarPistas();
     const posicion=raiz.querySelector("#pcPosicion");
-    posicion.textContent=completa(seleccionada)?"✓ Resuelta. Elegí otra pista.":fija(cursor)?"🔒 Ayuda fija. Elegí otra casilla.":correcta(cursor)?"✓ Letra correcta y fija. Elegí otra casilla.":"Borde azul: "+(seleccionada.casillas.indexOf(cursor)+1)+" de "+seleccionada.casillas.length;
+    posicion.textContent=completa(seleccionada)?"✓ Resuelta. Elegí otra pista.":fija(cursor)?"🔒 Ayuda fija. Elegí otra casilla.":correcta(cursor)?"✓ Letra correcta y fija. Elegí otra casilla.":"Borde violeta: "+(seleccionada.casillas.indexOf(cursor)+1)+" de "+seleccionada.casillas.length;
     const cambiar=raiz.querySelector("#pcCambiarDireccion");cambiar.hidden=celdas.get(cursor).palabras.length<2;
     raiz.querySelector("#pcMensaje").textContent=mensajeActual;raiz.querySelector("#pcMensaje").hidden=!mensajeActual;
     const fin=terminado();raiz.querySelector("#pcRevelar").textContent="Revelar letra ("+(AYUDAS-datos.ayudas.length)+")";
@@ -248,7 +248,7 @@ window.PalabrasCruzadas=(()=>{
     datos.revisadas=[...new Set(datos.revisadas.concat(escritas))];
     const buenas=escritas.length-malas.length;
     if(esGrande()&&(malas.length||vacias.length)){cursor=malas[0]||vacias[0];vistaCompleta=false;}
-    mensajeActual=malas.length?buenas+(buenas===1?" correcta · ":" correctas · ")+malas.length+(malas.length===1?" incorrecta. ":" incorrectas. ")+"Tocá una roja para cambiarla.":vacias.length?(escritas.length===0?"Tocá la casilla con borde azul y escribí la respuesta.":vacias.length===1?"Falta una letra para completar esta palabra.":"Faltan "+vacias.length+" letras para completar esta palabra."):"¡Palabra correcta! Elegí otra pista para seguir.";
+    mensajeActual=malas.length?buenas+(buenas===1?" correcta · ":" correctas · ")+malas.length+(malas.length===1?" incorrecta. ":" incorrectas. ")+"Tocá una roja para cambiarla.":vacias.length?(escritas.length===0?"Tocá la casilla con borde violeta y escribí la respuesta.":vacias.length===1?"Falta una letra para completar esta palabra.":"Faltan "+vacias.length+" letras para completar esta palabra."):"¡Palabra correcta! Elegí otra pista para seguir.";
     guardar();pintar();
   }
   function revelar(){
@@ -257,7 +257,7 @@ window.PalabrasCruzadas=(()=>{
     const k=datos.letras[cursor]!==celdas.get(cursor).letra?cursor:lista.find(x=>datos.letras[x]!==celdas.get(x).letra);if(!k)return;
     datos.letras[k]=celdas.get(k).letra;datos.ayudas.push(k);datos.revisadas=datos.revisadas.filter(x=>x!==k);
     const pos=lista.indexOf(k);cursor=lista.find((x,i)=>i>pos&&!bloqueada(x)&&datos.letras[x]!==celdas.get(x).letra)||lista.find(x=>!bloqueada(x)&&datos.letras[x]!==celdas.get(x).letra)||k;
-    mensajeActual="Mostramos una letra dorada con 🔒. Seguí en la casilla con borde azul.";
+    mensajeActual="Mostramos una letra dorada con 🔒. Seguí en la casilla con borde violeta.";
     guardar();pintar();verificarFinal();
   }
   function mostrarResultado(){
