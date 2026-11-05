@@ -170,12 +170,14 @@ window.EXTENSIONES=EXTENSIONES;
 const Fichas=(()=>{
   const MAX=3,MS=30*60*1000,CLAVE="gya_fichas_ext",PRECIO=400;
   const JUEGOS=["palabra-secreta","sopa-fugaz","rueda-de-letras","frases-en-giro","memoria-en-giro","rosco-rioplatense","silabario-rioplatense","cien-rioplatenses","ahorcado-rioplatense","moon-tap","tutti-frutti","puzzle","duelo-conocimiento"];
-  const TESTERS_LIBRES=new Set(["andres","flor","grace","juan e","mari","meg","romina","ruben","vale"]);
+  const TESTERS_LIBRES=new Set(["andres","flor","grace","mari","meg","romina","ruben","vale"]);
   const activo=()=>{
     try{
-      // Juan E, Juan.e y Juan .e son el mismo tester; el nombre guardado no se modifica.
-      const nombre=String(perfil&&perfil.nombre||"").toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\./g," ").replace(/\s+/g," ").trim();
+      // Pedido de Gonzalo: para Juan solo se admite el nombre literal "Juan e.".
+      const nombrePerfil=String(perfil&&perfil.nombre||"");
+      if(nombrePerfil==="Juan e.")return false;
+      const nombre=nombrePerfil.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
       return !TESTERS_LIBRES.has(nombre);
     }catch(e){return true;}
   };

@@ -12,7 +12,7 @@ const server=http.createServer((req,res)=>{
   await new Promise(r=>server.listen(0,'127.0.0.1',r));const base='http://127.0.0.1:'+server.address().port;
   const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_EXECUTABLE||'/usr/bin/chromium'});
   try{
-    for(const name of ['Gonzalo','Grace','Vale','Andres','Andrés','Romina','Meg','Juan E','Juan e.','Juan.e','juan .e',' JUAN  . E. ','Flor','Mari','Ruben','Rubén',' mEg ']){
+    for(const name of ['Gonzalo','Grace','Vale','Andres','Andrés','Romina','Meg','Juan e.','Flor','Mari','Ruben','Rubén',' mEg ']){
       const context=await browser.newContext({serviceWorkers:'block'}),page=await context.newPage(),errors=[];
       page.on('pageerror',e=>errors.push(e.message));
       await page.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.fulfill({status:200,body:''}));
@@ -48,15 +48,15 @@ const server=http.createServer((req,res)=>{
     await page.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.fulfill({status:200,body:''}));
     await page.addInitScript(()=>{localStorage.setItem('gya_nombre','Pepe');localStorage.setItem('gya_pais','uruguay');localStorage.setItem('gya_bienvenida_vista','1');localStorage.setItem('gya_fichas_ext',JSON.stringify({'rosco-rioplatense':{n:1,prox:0}}));});
     await page.goto(base);
-    const controls=await page.evaluate(()=>{
+    const controls=await page.evaluate(games=>{
       window.paseExtActivo=()=>false;
-      const names=['Pepe','Juan','Juana E','Juan E Pérez','Megara','Meg Pérez','Grace2'];
-      const charges=names.map(nombre=>{perfil.nombre=nombre;return Fichas.cobra('rosco-rioplatense');});
+      const names=['Pepe','Juan','Juan E','Juan.e','Juan .e','juan .e','Juan E.','juan e.','JUAN E.','Juan  e.',' Juan e. ','Juan e..','Juán e.','Juan e','Juana E','Juan E Pérez','Megara','Meg Pérez','Grace2'];
+      const charges=names.flatMap(nombre=>{perfil.nombre=nombre;return games.map(id=>Fichas.cobra(id));});
       perfil.nombre='Pepe';const first=Fichas.usar('rosco-rioplatense'),remaining=Fichas.de('rosco-rioplatense').n,second=Fichas.usar('rosco-rioplatense');
       return{charges,first,remaining,second,blocked:!!document.querySelector('.fx-capa')};
-    });
+    },games);
     assert(controls.charges.every(Boolean));assert.equal(controls.first,true);assert.equal(controls.remaining,0);assert.equal(controls.second,false);assert.equal(controls.blocked,true);
     await context.close();
-    console.log('PASS free testers: Juan E punctuation variants, Meg, all previous names, 13 charged games, zero balance, repeated play, Rosco UI, creator display and regular-player controls');
+    console.log('PASS free testers: exact Juan e. only, punctuation/case/space variants charged, Meg and other exemptions preserved, all 13 games, zero balance, Rosco UI and normal-player limits');
   }finally{await browser.close();await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e);process.exitCode=1;});
