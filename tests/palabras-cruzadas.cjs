@@ -43,6 +43,12 @@ const server=http.createServer((req,res)=>{
   assert.equal(await page.locator('#extTitulo').textContent(),'Palabras Cruzadas');
   await page.waitForFunction(()=>document.querySelector('.pc-logo').naturalWidth>0);
   assert.equal((await state()).actual,'pc-1');
+  assert(await page.locator('#pcAyuda').isVisible(),'first visit explains the game proactively');
+  assert.equal(await page.locator('.pc-demo span').count(),6);
+  await page.locator('#pcAyuda .pc-entendido').click();
+  assert.equal((await state()).guiaVista,true);
+  assert.equal(await page.locator('.pc-leyenda>span').count(),6);
+  assert(await page.locator('.pc-instruccion').isVisible());
   const first=puzzles[0],board=cells(first),w0=first.palabras[0],k0=keys(w0)[0];
   await page.keyboard.type('X');assert.equal(await value(k0),'X');
   await page.locator('#pcComprobar').click();assert.equal(await page.locator('.pc-error').count(),1);
@@ -51,18 +57,21 @@ const server=http.createServer((req,res)=>{
   assert(await clue(0).evaluate(el=>el.classList.contains('pc-lista')));
   const cross=[...board].find(([,c])=>c.palabras.length===2&&c.palabras.includes(0))[0];
   const crossButton=page.locator('.pc-celda[data-casilla="'+cross+'"]');
-  await crossButton.click();const dir=await page.locator('#pcDireccion').textContent();await crossButton.click();assert.notEqual(await page.locator('#pcDireccion').textContent(),dir,'tap crossing toggles direction');
+  await crossButton.click();const dir=await page.locator('#pcDireccion').textContent();assert(await page.locator('#pcCambiarDireccion').isVisible());await page.locator('#pcCambiarDireccion').click();assert.notEqual(await page.locator('#pcDireccion').textContent(),dir,'explicit button changes direction at a crossing');
   const i=first.palabras.findIndex((w,n)=>n!==0&&keys(w).some(k=>!(keys(w0).includes(k))));
   await clue(i).click();const ki=keys(first.palabras[i])[0],letter=norm(first.palabras[i].respuesta)[0];
   await page.getByRole('button',{name:'Letra '+letter,exact:true}).click();assert.equal(await value(ki),letter);
   await page.keyboard.press('Backspace');await clue(i).click();await page.locator('#pcRevelar').click();
   assert.equal((await state()).ayudas.length,1);assert.match(await page.locator('#pcRevelar').textContent(),/2/);
   const hint=(await state()).ayudas[0],hintValue=await value(hint);
+  assert.notEqual(await page.locator('.pc-activa').getAttribute('data-casilla'),hint,'help moves to the next editable cell');
+  await page.locator('.pc-celda[data-casilla="'+hint+'"]').click();
+  assert.match(await page.locator('#pcPosicion').textContent(),/ayuda fija/);
   await page.keyboard.type(hintValue==='X'?'Y':'X');assert.equal(await value(hint),hintValue,'hint is protected');
   await clue(i).click();await page.keyboard.type(norm(first.palabras[i].respuesta));
   assert(await clue(i).evaluate(el=>el.classList.contains('pc-lista')));
   const before=await state();await page.reload();await loaded();await page.evaluate(()=>Extensiones.abrirJuego('palabras-cruzadas'));
-  assert.deepEqual((await state()).letras,before.letras);assert.deepEqual((await state()).ayudas,before.ayudas);
+  assert.deepEqual((await state()).letras,before.letras);assert.deepEqual((await state()).ayudas,before.ayudas);assert(await page.locator('#pcAyuda').isHidden(),'guide is shown once, and remains available on demand');
   await page.locator('#pcAyudaBoton').click();assert(await page.locator('#pcAyuda').isVisible());
   const letters=(await state()).letras;await page.keyboard.type('ABC');assert.deepEqual((await state()).letras,letters);
   await page.keyboard.press('Escape');assert(await page.locator('#pcAyuda').isHidden());assert(await page.locator('#extShell').isVisible());
@@ -73,7 +82,10 @@ const server=http.createServer((req,res)=>{
   }
   await page.setViewportSize({width:390,height:844});
   if(process.env.SCREENSHOT_PATH)await page.screenshot({path:process.env.SCREENSHOT_PATH,fullPage:true});
-  await page.locator('#pcRevelar').click();await page.locator('#pcRevelar').click();
+  for(let help=0;help<2;help++){
+   const s=await state(),pending=first.palabras.findIndex(w=>keys(w).some(k=>s.letras[k]!==board.get(k).letra));
+   await clue(pending).click();await page.locator('#pcRevelar').click();
+  }
   assert.equal((await state()).ayudas.length,3);assert(await page.locator('#pcRevelar').isDisabled(),'three-letter help limit');
   for(let n=0;n<first.palabras.length;n++){
    const w=first.palabras[n],s=await state();if(keys(w).every(k=>s.letras[k]===board.get(k).letra))continue;
@@ -99,8 +111,33 @@ const server=http.createServer((req,res)=>{
   assert.equal((await state()).actual,'pc-1');assert.equal((await state()).total,12);assert.deepEqual((await state()).resueltos,[]);
   assert.equal(await page.evaluate(()=>window.__pcCharges),0);
   assert.deepEqual(await page.evaluate(()=>JSON.parse(localStorage.getItem('gya_palabra_secreta'))),{nivel:9,partidaNivel:null,ganadas:14});
-  await page.locator('#pcAyudaBoton').click();await page.evaluate(()=>Extensiones.cerrar());assert.equal(await page.locator('dialog[open]').count(),0);
+  await page.locator('#pcAyudaBoton').click();await page.evaluate(()=>Extensiones.cerrar());assert.equal(await page.locator('dialog[open]').count(),0);assert(!(await page.locator('#extShell').evaluate(el=>el.classList.contains('pc-abierta'))));
+  const oldContext=await browser.newContext({locale:'es-UY',viewport:{width:390,height:844},serviceWorkers:'block',reducedMotion:'reduce'}),oldPage=await oldContext.newPage();
+  oldPage.on('pageerror',e=>errors.push(e.message));
+  await oldPage.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.fulfill({status:200,body:''}));
+  assert.equal(norm(w0.respuesta),'GUARDA');
+  const oldLetters=Object.fromEntries(keys(w0).slice(0,5).map((k,i)=>[k,'GRAND'[i]]));
+  await oldPage.addInitScript(({letras,firstKey})=>{
+   localStorage.setItem('gya_nombre','Prueba anterior');localStorage.setItem('gya_avatar','avatar-02');localStorage.setItem('gya_pais','uruguay');localStorage.setItem('gya_bienvenida_vista','1');
+   if(!localStorage.getItem('gya_palabras_cruzadas'))localStorage.setItem('gya_palabras_cruzadas',JSON.stringify({version:1,actual:'pc-1',letras,ayudas:[firstKey],resueltos:[],total:0,seleccion:0}));
+  },{letras:oldLetters,firstKey:k0});
+  await oldPage.goto(base);await oldPage.evaluate(()=>{document.querySelector('#splash')?.remove();document.documentElement.classList.remove('cargando');document.querySelector('#setup').style.display='none';Extensiones.abrirJuego('palabras-cruzadas');});
+  assert(await oldPage.locator('#pcAyuda').isVisible(),'old players also receive the new explanation once');
+  if(process.env.GUIDE_SCREENSHOT_PATH)await oldPage.screenshot({path:process.env.GUIDE_SCREENSHOT_PATH,fullPage:true});
+  await oldPage.locator('#pcAyuda .pc-entendido').click();
+  assert.deepEqual(await oldPage.evaluate(()=>JSON.parse(localStorage.getItem('gya_palabras_cruzadas')).letras),oldLetters,'no progress is lost');
+  await oldPage.locator('#pcComprobar').click();
+  assert.equal(await oldPage.locator('.pc-error').count(),2);assert.equal(await oldPage.locator('.pc-correcta').count(),3,'checked good letters are explicitly green, even with the word unfinished');
+  assert.match(await oldPage.locator('#pcMensaje').textContent(),/3 correctas.*2 incorrectas/);
+  assert.match(await oldPage.locator('#pcPosicion').textContent(),/6 de 6/);
+  await oldPage.evaluate(()=>document.querySelector('#logroToast')?.classList.remove('ver'));
+  if(process.env.ERROR_SCREENSHOT_PATH)await oldPage.screenshot({path:process.env.ERROR_SCREENSHOT_PATH,fullPage:true});
+  await oldPage.reload();await oldPage.evaluate(()=>{document.querySelector('#splash')?.remove();document.documentElement.classList.remove('cargando');document.querySelector('#setup').style.display='none';Extensiones.abrirJuego('palabras-cruzadas');});
+  assert(await oldPage.locator('#pcAyuda').isHidden());assert.equal(await oldPage.locator('.pc-error').count(),2,'review survives closing and reopening');
+  const wrong=keys(w0)[1];await oldPage.locator('.pc-celda[data-casilla="'+wrong+'"]').click();await oldPage.getByRole('button',{name:'Letra U',exact:true}).click();
+  await oldPage.locator('#pcComprobar').click();assert.equal(await oldPage.locator('.pc-error').count(),1);assert.equal(await oldPage.locator('.pc-correcta').count(),4);
+  await oldPage.evaluate(()=>Extensiones.cerrar());await oldContext.close();
   assert.deepEqual(errors,[]);
-  console.log('PASS: 12 valid connected crosswords/72 unique answers, real lobby entry, physical/on-screen keyboards, cross direction, errors/hints, saved game, native dialogs, responsive grid, win/next from board, Ñ, individual progress unchanged and cleanup.');
+  console.log('PASS: 12 valid connected crosswords/72 unique answers, real lobby entry, physical/on-screen keyboards, cross direction, proactive guide, persistent legend, individual red/green checks, hints, old-save upgrade and verified states after reload, native dialogs, responsive grid, win/next from board, Ñ, individual progress unchanged and cleanup.');
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});
