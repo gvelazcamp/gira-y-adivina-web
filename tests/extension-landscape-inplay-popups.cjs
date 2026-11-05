@@ -34,7 +34,7 @@ const fits=(box,name)=>{
       await page.locator('.nv-local-play .nv-answer').waitFor();
       fits(await inspect(page,'.nv-local-play .nv-answer'),`número ${width}`);
       fits(await inspect(page,'.nv-local-actions'),`acciones número ${width}`);
-      await page.locator('[data-qns-pause]').click();await page.locator('[data-nv-resume]').waitFor();
+      await page.locator('.nv-local-actions summary').click();await page.locator('[data-qns-pause]').click();await page.locator('[data-nv-resume]').waitFor();
       assert.equal(await page.locator('.nv-local-play').isVisible(),false,'el número se oculta al pausar');
       await page.evaluate(()=>{Extensiones.cerrar();Extensiones.abrirJuego('bomba');});
       await page.locator('.pf-bienv-ok').click();await page.locator('#bbEmpezar').click();
