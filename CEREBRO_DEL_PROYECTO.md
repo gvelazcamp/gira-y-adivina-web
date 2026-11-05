@@ -394,6 +394,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Línea del tiempo: arrastrar la carta y duelo en sala
+- Qué: Gonzalo pidió arrastrar la carta hasta el «¿va acá?» y jugar contra otro en una sala fácil y rápida, ganando el de más puntos. La carta de abajo se arrastra (fantasma que sigue el dedo, el hueco más cercano se ilumina, la línea se desplaza sola cerca de los bordes); soltarla fuera no cuenta y tocar el hueco sigue andando. Para que el dedo arrastre y no deslice, la carta (solo ese elemento, .lt-nueva) lleva `touch-action:none`: no toca el deslizado de ninguna pantalla, que sigue intacto (regla del 19/10). Duelo: botón "👥 Jugar con un amigo" en la pantalla de temas → lobby de duelos (id "linea", link ?duelo=linea&sala=XXXX entra directo); el anfitrión manda 11 cartas de la mezcla (números) y los dos juegan las mismas, badge con los puntos del rival, resultado con revancha; no gasta fichas.
+- Prueba nueva: tests/linea-tiempo.cjs (arrastre con hueco iluminado, soltar afuera, duelo por link directo, mismas cartas, sin fichas, gana el de más puntos). También probado arrastre con toque real (CDP).
+- Dónde: linea-tiempo.js (v4), linea-tiempo.css (v2), duelo-extensiones.js (v23), sw gya-cache-v729.
+
 ### 05/11/2026 — Más juegos: nuevo orden
 - Qué: Gonzalo pidió el orden Tutti Frutti, Puzzle, Palabra Secreta, Palabras Cruzadas; después siguen las pruebas (Línea del tiempo, Girá y encajá, No te caigas, solo Gonzalo/Vale) y el resto como estaba. El orden sale del arreglo EXTENSIONES.
 - Dónde: extensiones.js (v140), sw gya-cache-v728.

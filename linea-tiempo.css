@@ -40,3 +40,8 @@
 .lt .lt-temas-btn{display:block;width:100%;min-height:40px;margin:8px 0 0;border-radius:14px;border:1px solid #80678f;background:#ffffff0d;color:#ddcde8;font:700 .9rem Outfit,system-ui,sans-serif}
 @media(max-height:700px){.lt{height:calc(var(--vh-ext,100dvh) - 84px)}.lt-carta{padding:7px 10px;margin-bottom:6px}.lt-e{font-size:1.25rem}.lt-t{font-size:.8rem}.lt .lt-hueco{min-height:28px;margin-bottom:6px}.lt-nueva{padding:9px 12px}.lt-nueva .lt-e{font-size:1.6rem}}
 @media(orientation:landscape) and (max-height:500px){.lt{height:calc(100dvh - 70px);min-height:0}.lt-pie{display:flex;gap:10px;align-items:center}.lt-pie>*{flex:1}.lt-ayuda-txt{display:none}.lt-cartel{margin:0}}
+.lt-nueva{touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.lt-nueva.lt-levantada{opacity:.3}
+.lt-fantasma{position:fixed;z-index:9999;pointer-events:none;margin:0;transform:rotate(-3deg) scale(.92);opacity:.92;box-shadow:0 18px 40px #000c,0 0 0 3px #F5B301;cursor:grabbing}
+.lt .lt-hueco.lt-hueco-on{min-height:52px;background:#37D6C040;box-shadow:0 0 20px #37D6C088;color:#fff;transition:min-height .12s}
+.lt .lt-duelo-btn{display:block;width:100%;min-height:46px;margin:12px 0 0;border:0;border-radius:14px;background:linear-gradient(#ff4fa3,#E5197C);color:#fff;font:800 1rem Outfit,system-ui,sans-serif;box-shadow:0 4px 0 #8E0F4C;cursor:pointer}
