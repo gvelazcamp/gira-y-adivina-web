@@ -21,7 +21,7 @@ const server=http.createServer((req,res)=>{
     if(req.url().startsWith(base))return r.continue();
     const body=req.method()==='POST'?req.postDataJSON():null;
     if(url.pathname==='/rest/v1/gya_ranking'&&(url.searchParams.get('grupo')==='eq.palabra_sala'||body?.grupo==='palabra_sala')){
-     let fail=false;try{fail=await page.evaluate(()=>{const f=window.__failNext;window.__failNext=false;return f;});}catch(e){}
+     let fail=false;try{fail=await page.evaluate(()=>{const f=window.__failNext;window.__failNext=typeof f==="number"&&f>1?f-1:false;return !!f;});}catch(e){}
      if(fail)return r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({message:'Fallo de conexión simulado'})});
      if(body){salasGuardadas.set(body.apodo,JSON.parse(JSON.stringify(body)));return r.fulfill({status:201,body:''});}
      const row=salasGuardadas.get((url.searchParams.get('apodo')||'').replace(/^eq\./,''));
@@ -203,7 +203,7 @@ const server=http.createServer((req,res)=>{
   await host.waitForFunction(()=>document.querySelector('#dlEstado').textContent.includes('Sala lista'));
   const retryCode=await host.locator('#dlCodigo').textContent();
   await prepare(guest,base+'/?duelo=palabra-colaborativa&sala='+retryCode);
-  await guest.evaluate(()=>window.__failNext=true);
+  await guest.evaluate(()=>window.__failNext=2);// 1: buscar si hay anfitrión (sigue como invitado), 2: entrar
   await guest.getByRole('button',{name:'Reintentar conexión',exact:true}).waitFor({state:'visible'});
   assert.equal(await guest.locator('#dlInput').inputValue(),retryCode);
   assert(await guest.locator('#dlInput').evaluate(el=>el.readOnly));
@@ -212,7 +212,18 @@ const server=http.createServer((req,res)=>{
   assert.equal(await guest.evaluate(()=>window.__roomAttempts),2);
   await guest.locator('#psSalirEquipo').click();await host.locator('#psSalirEquipo').click();
   assert.equal(await guest.locator('.dl-capa').count(),0);
+  // Sala fija: el que era invitado la reabre desde "Tus salas" con su partida y el otro entra a la misma sala.
+  await host.waitForTimeout(400);
+  await open(guest);await guest.locator('#psColaborativo').click();
+  await guest.locator('[data-sala-fija="'+retryCode+'"]').click();
+  await guest.waitForFunction(()=>document.querySelector('#dlEstado')?.textContent.includes('Sala lista'));
+  assert.equal(await guest.locator('#dlCodigo').textContent(),retryCode);
+  await open(host);await host.locator('#psColaborativo').click();
+  await host.locator('[data-sala-fija="'+retryCode+'"]').click();
+  await host.waitForFunction(()=>document.querySelector('#psEquipoEstado')?.textContent.length>0&&!document.querySelector('.dl-capa'));
+  await guest.waitForFunction(()=>!document.querySelector('.dl-capa')&&document.querySelector('#psEquipoEstado'));
+  await guest.locator('#psSalirEquipo').click();await host.locator('#psSalirEquipo').click();
   assert.deepEqual(errors,[]);
-  console.log('PASS: collaborative invitation, existing board/draft, keyboard handover, shared guesses, invalid words, duplicate/stale delivery, retry after packet loss, host progression, guest save preserved, next round, repetition challenge, seven-letter word, departure, cancel, cleanup, native code typing/Enter, automatic cooperative/competitive links and connection retry.');
+  console.log('PASS: collaborative invitation, existing board/draft, keyboard handover, shared guesses, invalid words, duplicate/stale delivery, retry after packet loss, host progression, guest save preserved, next round, repetition challenge, seven-letter word, departure, cancel, cleanup, native code typing/Enter, automatic cooperative/competitive links, connection retry and fixed room reopened by the former guest.');
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});
