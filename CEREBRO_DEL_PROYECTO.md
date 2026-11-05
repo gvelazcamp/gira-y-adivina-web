@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — No te caigas: cartel "¿Cómo se juega?" con Giro y logo sin borde
+- Qué: al entrar aparece un popup con Giro_presentando y 4 pasos (sorteá rival, 30 s y letras de ayuda, 3 pases de 20 s, el que falla se cae; eliminá a los 10); botón "¡A jugar!" lo cierra y "❓ Cómo se juega" lo vuelve a abrir. Entra sin scroll en 360×640, 390×844 y horizontal 844×390. El logo tenía un borde claro del recorte: se limpió y pasó a logo-v3.webp (nombre nuevo por el caché de assets). Pendiente: Gonzalo puede mandar el logo suelto en alta resolución para que se vea más nítido.
+- Dónde: ahora-caigo.js (v11), ahora-caigo.css (v9), extensiones.js (v136), assets/no-te-caigas/logo-v3.webp, sw gya-cache-v720.
+
 ### 05/11/2026 — Girá y encajá: logo nuevo (ficha PERRO entrando en ANIMALES)
 - Qué: Gonzalo hizo en ChatGPT un logo que muestra el juego de verdad (fichas con palabras que se giran y entran en la ranura de su categoría, no piezas tipo Tetris). Se recortó a assets/gira-encaja/logo-v3.webp (700×366, fondo transparente) y se usa en la tarjeta de Más juegos (la insignia "Prueba" va arriba, sin taparlo) y en el panel de inicio del juego en lugar del título de texto. El panel sigue entrando sin scroll en 360×640.
 - Dónde: extensiones.js (v135), extensiones.css (v160), gira-encaja.js (v8), gira-encaja.css (v6), sw gya-cache-v719.

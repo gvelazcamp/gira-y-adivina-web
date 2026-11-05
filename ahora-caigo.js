@@ -66,7 +66,7 @@ window.AhoraCaigo=(()=>{
     let usuario="";try{usuario=(perfil?.nombre||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}catch(e){}
     if(!["gonzalo","vale"].includes(usuario))return;
     raiz=document.createElement("section");raiz.className="ac-juego";
-    raiz.innerHTML=`<header class="ac-cabecera"><span>PRUEBA · CONTRA BOTS</span><h2><img class="ac-logo" src="assets/no-te-caigas/logo-v2.webp" alt="No te caigas"></h2><p>Una pregunta para vos. Otra para tu rival.</p></header>
+    raiz.innerHTML=`<header class="ac-cabecera"><span>PRUEBA · CONTRA BOTS</span><h2><img class="ac-logo" src="assets/no-te-caigas/logo-v3.webp" alt="No te caigas"></h2><p>Una pregunta para vos. Otra para tu rival.</p></header>
       <div class="ac-escenario" role="group" aria-label="Escenario con once participantes"><div class="ac-ronda" aria-hidden="true"></div></div>
       <section class="ac-duelo" aria-label="Duelo de preguntas" hidden>
         <div class="ac-marcador"><div class="ac-identidad"><img class="ac-tu-avatar" alt=""><span><small>VOS · <span class="ac-vidas">3 pases</span></small><strong class="ac-tu-nombre"></strong></span></div><span>VS</span><div class="ac-identidad"><img class="ac-rival-avatar" alt=""><span><small>RIVAL · BOT</small><strong class="ac-rival-nombre"></strong></span></div></div>
@@ -78,12 +78,18 @@ window.AhoraCaigo=(()=>{
         <div class="ac-bot" hidden><span aria-hidden="true">● ● ●</span> El rival está pensando…</div>
         <p class="ac-mensaje" role="status" aria-live="polite"></p>
       </section>
-      <div class="ac-controles"><p class="ac-estado" role="status" aria-live="polite">Sorteá con quién te vas a enfrentar.</p><button class="ac-sortear" type="button">Sortear rival</button><small class="ac-ayuda">30 segundos por pregunta · Tres pases para darle tu pregunta al rival con 20 segundos · Podés intentar varias respuestas mientras quede tiempo.</small></div>`;
+      <div class="ac-controles"><p class="ac-estado" role="status" aria-live="polite">Sorteá con quién te vas a enfrentar.</p><button class="ac-sortear" type="button">Sortear rival</button><button class="ac-como-btn" type="button">❓ Cómo se juega</button><small class="ac-ayuda">30 segundos por pregunta · Tres pases para darle tu pregunta al rival con 20 segundos · Podés intentar varias respuestas mientras quede tiempo.</small></div>`;
     const final=document.createElement("dialog");final.className="ac-final";
     final.setAttribute("aria-labelledby","acFinalTitulo");final.setAttribute("aria-describedby","acFinalResumen");
     final.innerHTML='<div class="ac-final-contenido"><header class="ac-final-cabecera"><span class="ac-final-etiqueta">DUELO TERMINADO</span><h3 id="acFinalTitulo"></h3><p id="acFinalResumen"></p></header><div class="ac-final-escena"></div><div class="ac-final-detalle"><div class="ac-final-respuesta"><small>LA RESPUESTA ERA</small><strong></strong></div><div class="ac-final-cifras"><span class="ac-final-eliminados"></span><span class="ac-final-pases"></span></div><div class="ac-final-acciones"><button type="button" class="ac-final-primaria" autofocus></button><button type="button" class="ac-final-salir">Volver a Más juegos</button></div></div></div>';
     raiz.appendChild(final);
+    const como=document.createElement("dialog");como.className="ac-como";como.setAttribute("aria-labelledby","acComoTitulo");
+    como.innerHTML='<div class="ac-como-contenido"><img class="ac-como-giro" src="presentacion-y-locucion-extensiones/Giro/Giro_presentando.webp" alt=""><div class="ac-como-texto"><h3 id="acComoTitulo">¿Cómo se juega?</h3><ol><li><b>Sorteá un rival</b> entre los 10 del estudio.</li><li>Una pregunta para vos, otra para él. Tenés <b>30 segundos</b> y algunas letras de ayuda.</li><li>¿No la sabés? <b>Pasásela</b>: tiene 20 segundos. Tenés 3 pases.</li><li>Quien falla <b>se cae por la trampilla</b>. ¡Eliminá a los 10!</li></ol><button type="button" class="ac-como-ok">¡A jugar!</button></div></div>';
+    como.querySelector(".ac-como-ok").onclick=()=>como.close();
+    raiz.appendChild(como);
     contenedor.appendChild(raiz);raiz.closest(".ext-shell")?.classList.add("ac-abierta");
+    raiz.querySelector(".ac-como-btn").onclick=()=>{if(!como.open)como.showModal();};
+    setTimeout(()=>{if(raiz&&raiz.isConnected&&!como.open&&!final.open)como.showModal();},250);
     const actual=raiz;
     let avatar="avatar-01",nombre="Gonzalo";
     try{avatar=localStorage.getItem("gya_avatar")||avatar;nombre=perfil.nombre||nombre;}catch(e){}
