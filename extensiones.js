@@ -125,7 +125,7 @@ window.DueloConocimiento=DueloConocimiento;
 
 /* Catálogo de minijuegos. Cada entrada habilitada aporta su función abrir. */
 const EXTENSIONES=[
-  {id:"linea-tiempo",soloUsuarios:["gonzalo","vale"],nombre:"Línea del tiempo",descripcion:"Ubicá cada hecho de Uruguay, Argentina y el mundo en su año",icono:"assets/linea-tiempo/icono.svg",estado:"disponible",insignia:"🧪 Prueba",abrir:contenedor=>LineaTiempo.abrir(contenedor),record:()=>LineaTiempo.record()+" puntos"},
+  {id:"linea-tiempo",soloUsuarios:["gonzalo","vale"],nombre:"Línea del tiempo",descripcion:"Ubicá cada hecho de Uruguay, Argentina y el mundo en su año",icono:"assets/linea-tiempo/logo.webp",estado:"disponible",insignia:"🧪 Prueba",abrir:contenedor=>LineaTiempo.abrir(contenedor),record:()=>LineaTiempo.record()+" puntos"},
   {id:"gira-encaja",soloUsuarios:["gonzalo","vale"],nombre:"Girá y encajá",descripcion:"Clasificá las fichas que caen y giralas para entrar por el huequito",icono:"assets/gira-encaja/logo-v3.webp",estado:"disponible",insignia:"🧪 Prueba",abrir:contenedor=>GiraEncaja.abrir(contenedor),record:()=>GiraEncaja.mejorPuntaje()+" puntos"},
   {id:"ahora-caigo",soloUsuarios:["gonzalo","vale"],nombre:"No te caigas",descripcion:"Sorteá un rival, descubrí las palabras y evitá la caída",icono:"assets/no-te-caigas/logo-v3.webp",estado:"disponible",insignia:"🧪 Prueba",abrir:contenedor=>AhoraCaigo.abrir(contenedor),record:()=>"Duelo contra bots"},
   {id:"tutti-frutti",nombre:"Tutti Frutti",descripcion:"Cada uno con su celular: letra al azar y ¡BASTA!",icono:"logo-tutti-frutti.svg",estado:"disponible",abrir:contenedor=>TuttiFrutti.abrir(contenedor),record:()=>TuttiFrutti.partidasJugadas()+" partidas"},
