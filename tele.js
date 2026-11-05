@@ -266,7 +266,7 @@
     const fundir=(a,hasta,fin)=>{if(a._t)clearInterval(a._t);a._t=setInterval(()=>{let v=a.volume;v=hasta>v?Math.min(hasta,v+.02):Math.max(hasta,v-.04);try{a.volume=v;}catch(e){}if(v===hasta){clearInterval(a._t);a._t=null;fin&&fin();}},60);};
     setInterval(()=>{
       let id="";
-      if(T.fase==="juego"&&T.g&&MUSICA_TELE[T.juego]&&!document.querySelector(".grp-overlay,.grp-apertura,.tl-podio,.tl-rd-presenta"))id=MUSICA_TELE[T.juego];
+      if(T.fase==="juego"&&T.g&&T.g.cel?.().pantalla!=="numero-voz"&&MUSICA_TELE[T.juego]&&!document.querySelector(".grp-overlay,.grp-apertura,.tl-podio,.tl-rd-presenta"))id=MUSICA_TELE[T.juego];
       const ahora=Date.now();Object.keys(micTele).forEach(k=>{if(micTele[k]<ahora)delete micTele[k];});
       const hablan=Object.keys(micTele).length>0;
       if(id!==musTeleId){
@@ -304,7 +304,8 @@
       if(m.t!=="accion")return;
       /* Micrófono de un celular prendido/apagado: la música de la tele se pausa mientras alguien habla. */
       if(m.a==="mic"){if(m.on)micTele[m.pid]=Date.now()+20000;else delete micTele[m.pid];return;}
-      if(m.pid!==T.mando&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="sopa"&&m.a==="sp_marca")||(T.juego==="cien"&&m.a==="responder")||(T.juego==="palabra"&&m.a==="ps_intento")||(T.juego==="memoria"&&m.a==="mg_carta")||(T.juego==="rueda"&&m.a==="rl_palabra")||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz","rs_apelar","rs_ver","rs_voto","rs_pausa","rs_reanudar","rs_rev"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
+      const numeroVozAccion=T.fase==="juego"&&T.juego==="numero"&&T.g?.cel?.().pantalla==="numero-voz"&&/^nv_/.test(m.a||"");
+      if(m.pid!==T.mando&&!numeroVozAccion&&!(T.fase==="juego"&&((T.juego==="tutti"&&m.a!=="menu"&&m.a!=="otra"&&m.a!=="siguiente")||(T.juego==="duelo"&&/^dc_(voz|listo|pasar|texto)$/.test(m.a))||(T.juego==="quien"&&(m.a==="qs_ok"||m.a==="qs_paso"))||(T.juego==="mimica"&&(m.a==="mm_ok"||m.a==="mm_paso"))||(T.juego==="sopa"&&m.a==="sp_marca")||(T.juego==="cien"&&m.a==="responder")||(T.juego==="palabra"&&m.a==="ps_intento")||(T.juego==="memoria"&&m.a==="mg_carta")||(T.juego==="rueda"&&m.a==="rl_palabra")||((T.juego==="silabario"||T.juego==="frases")&&(m.a==="or_resp"||m.a==="or_arma"))||(T.juego==="rosco"&&["responder","pasar","dc_voz","rs_apelar","rs_ver","rs_voto","rs_pausa","rs_reanudar","rs_rev"].includes(m.a))||(T.juego==="puzzle"&&["pz_bajar","pz_mover","pz_soltar","pz_girar","pz_acercar","pz_alejar","pz_encuadrar","pz_guia","pz_imagen"].includes(m.a)))))return;
       if(m.a==="elegir"&&T.fase==="menu"){elegir(String(m.juego||""));return;}
       if(m.a==="rosco_modo"&&T.fase==="rosco_modo"){
         /* De a 2 a 6 (01/11/2026; antes hasta 4): el del control elige con quiénes juega (hasta 5 más). */
@@ -330,6 +331,7 @@
       if(id==="rosco"&&!revancha&&T.jug.length>=2&&!T.roscoListo){T.roscoModo=null;T.fase="rosco_modo";T.juego="rosco";pintar();difundir();return;}
       T.roscoListo=false;
       if(id==="rosco"){if(!revancha){giroAperturaVista=false;if(T.jug.length<2)T.roscoModo=null;}arrancar(id);return;}
+      if(id==="numero"&&window.NumeroVoz?.habilitado(nombreMando())){arrancar(id);return;}
       if(!revancha&&GIRO_INTROS[id]){introTele(id,j,()=>arrancar(id));return;}
       arrancar(id);
     }
@@ -513,6 +515,7 @@
 
   /* ---------- ¿Qué número soy?: la tele muestra el número; el que juega, de espaldas ---------- */
   function juegoNumero(T,actualizar){
+    if(window.NumeroVoz?.habilitado(nombreDe(T,T.mando)))return NumeroVoz.crearTele(T,actualizar,{SND,podioTele});
     const RANGOS=[10,50,100];
     let max=100,numero=0,fase="config",cuenta=0,oculto=false;
     try{const d=JSON.parse(localStorage.getItem("gya_que_numero_soy"))||{};if(RANGOS.includes(d.max))max=d.max;}catch(e){}
@@ -1819,7 +1822,7 @@
     let nombre=limpio(P.get("n")||"",14);try{if(!nombre)nombre=limpio(localStorage.getItem("gya_tele_nombre")||localStorage.getItem("gya_nombre")||"",14);}catch(e){}
     let ultimo=null,conectado=false,visto=0,hola=null,pantallaPintada="",holaN=0;
     let tfRonda=0,tfCategoria=0,tfRespuestas=[],tfInicioReloj=0,tfSegundos=0,tfEnvio=0,tfCompleto=null;
-    let pzUltimo={x:.5,y:.5};
+    let pzUltimo={x:.5,y:.5},numeroVozCel=null;
     const mandar=m=>{if(red)red.mandar(m);};
     function pedirNombre(){
       raiz.innerHTML=`<div class="tl-cel-caja"><h2>📺 Sala de la tele</h2><p>Código <b>${codCel}</b></p><label>Tu nombre<input id="tlNombre" maxlength="14" value="${esc(nombre)}" placeholder="¿Cómo te llamás?"></label><button type="button" class="tl-boton tl-oro" id="tlEntrar">Entrar</button></div>`;
@@ -2305,6 +2308,7 @@
       const escribiendo=document.activeElement&&document.activeElement.id==="tlTexto"?document.activeElement.value:"";
       if(c.pantalla!=="tutti"&&c.pantalla!=="puzzle"&&c.pantalla!=="ruleta_nativa"&&c.pantalla!=="sopa")pantallaPintada=clave;
       const cab=`<div class="tl-cel-cab">📺 Sala ${esc(m.cod)} · ${esc(nombre)}${soyMando?" · 🎮":""}</div>`;
+      if(c.pantalla!=="numero-voz")numeroVozCel?.parar();
       if(!m.jug.some(j=>j.pid===yo)){raiz.innerHTML=cab+`<div class="tl-cel-caja"><h2>Entrando…</h2></div>`;return;}
       if(c.pantalla==="ruleta_nativa"){pintarRuletaNativa(c,cab,soyMando,yo);return;}
       /* Mientras la tele abre la Ruleta, el celular entra solo (irRuleta): sin código ni nombre. Solo si a los
@@ -2314,6 +2318,7 @@
         clearTimeout(ruletaT);ruletaT=setTimeout(()=>{const b=document.getElementById("tlRuletaMano");if(b)b.hidden=false;},Math.max(0,40000-(Date.now()-ruletaDesde)));return;}
       if(c.pantalla==="tutti"){pintarTutti(c,cab,soyMando);return;}
       if(c.pantalla==="puzzle"){pintarPuzzle(c,cab,soyMando);return;}
+      if(c.pantalla==="numero-voz"&&window.NumeroVoz){dcVoz(false);numeroVozCel=numeroVozCel||NumeroVoz.crearCel(raiz,yo,accion);numeroVozCel.pintar(c,cab,soyMando);return;}
       if(c.pantalla!=="duelo"&&c.pantalla!=="rosco")dcVoz(false);
       if(c.pantalla==="rosco"){const debe=c.escucha===yo;
         if(dcRec&&(dcLetra!==c.i||dcTurno!==c.turno))dcVoz(false);

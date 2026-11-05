@@ -39,6 +39,10 @@ const QueNumeroSoy=(()=>{
       </div>
     </div>`;
     contenedor.appendChild(raiz);
+    if(window.NumeroVoz?.habilitado(window.gyaPerfil?.()?.nombre)){
+      const b=document.createElement("button");b.type="button";b.className="mg-principal";b.textContent="🎙 Preguntas por voz en la tele · Prueba";
+      b.onclick=()=>window.Tele?.compartirPantalla();raiz.querySelector(".qns-panel").appendChild(b);
+    }
     PantallaFija.bienvenida(contenedor,{logo:src("logo"),alt:"¿Qué número soy?",items:[["📱","El celular muestra un <b>número gigante</b>: ponételo en la frente sin mirar."],["🗣️","Los demás te dan <b>pistas</b> y vos adivinás tu número."],["🎯","Elegí si el número va de <b>1 a 10</b>, <b>1 a 50</b> o <b>1 a 100</b>."],["🔒","Mientras juegan la pantalla no se apaga. Para terminar tocá <b>✕ Salir</b>."]]});
     ["bolilla","fondo","revela"].forEach(n=>{const i=new Image();i.src=src(n);});
     pintarRangos();
