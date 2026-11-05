@@ -18,6 +18,7 @@ const server=http.createServer((req,res)=>{
       const page=await context.newPage();
       const errors=[];page.on("pageerror",e=>errors.push(e.message));
       async function iniciarDuelo(){
+        if(await page.locator(".pf-bienv-ok").count())await page.locator(".pf-bienv-ok").click();
         if(await page.locator(".ac-final[open]").count())await page.locator(".ac-final-primaria").click();
         else await page.locator(".ac-sortear").click();
       }
@@ -69,9 +70,9 @@ const server=http.createServer((req,res)=>{
         document.querySelector("#splash")?.remove();document.documentElement.classList.remove("cargando");
         Extensiones.abrirLobby();
       });
-      assert.equal(await page.getByRole("button",{name:/No te caigas/}).count(),["Gonzalo","Vale"].includes(name)?1:0,"catalog visibility");
+      assert.equal(await page.getByRole("button",{name:/No te caigas/}).count(),1,"catalog visibility (published for everyone)");
       await page.evaluate(()=>Extensiones.abrirJuego("no-te-caigas"));
-      assert.equal(await page.locator(".ac-juego").count(),["Gonzalo","Vale"].includes(name)?1:0,"direct entry gate");
+      assert.equal(await page.locator(".ac-juego").count(),1,"direct entry for everyone");
       if(name!=="Romina"){
         assert.equal(await page.locator("#extTitulo").textContent(),"No te caigas");
         assert.equal(await page.locator(".ac-logo").getAttribute("alt"),"No te caigas");
@@ -79,7 +80,7 @@ const server=http.createServer((req,res)=>{
       }
       if(name==="Romina"){
         await page.evaluate(()=>AhoraCaigo.abrir(document.getElementById("extContenido")));
-        assert.equal(await page.locator(".ac-juego").count(),0,"module entry gate");
+        assert.equal(await page.locator(".ac-juego").count(),1,"module open for everyone");
         await context.close();continue;
       }
       if(name==="Vale"){
@@ -332,6 +333,6 @@ const server=http.createServer((req,res)=>{
       assert.deepEqual(errors,[],"no browser errors");
       await context.close();
     }
-    console.log("PASS: access for Gonzalo/Vale and blocked for other profiles, existing assets, 11 figures at 3 sizes, single-screen layout and keyboard, profile avatars, speech results/errors/cleanup, hints, unlimited retries, rival-first turns, 3 passes per game, same question/20-second transfer, active turn indicators, result popups and music only outside questions");
+    console.log("PASS: open for every profile, existing assets, 11 figures at 3 sizes, single-screen layout and keyboard, profile avatars, speech results/errors/cleanup, hints, unlimited retries, rival-first turns, 3 passes per game, same question/20-second transfer, active turn indicators, result popups and music only outside questions");
   }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});

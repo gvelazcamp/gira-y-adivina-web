@@ -21,25 +21,26 @@ const server=http.createServer((req,res)=>{
       },name);
       await page.goto(base,{waitUntil:'load'});
       await page.evaluate(()=>{document.querySelector('#splash')?.remove();document.documentElement.classList.remove('cargando');Extensiones.abrirLobby();});
-      const allowed=['Gonzalo','Vale'].includes(name),card=page.locator('.ext-tarjeta').filter({hasText:'Girá y encajá'});
+      const allowed=true,libre=['Gonzalo','Vale','Meg','Grace','Juan e.'].includes(name),card=page.locator('.ext-tarjeta').filter({hasText:'Girá y encajá'});
       assert.equal(await card.count(),allowed?1:0,name+': catalog visibility');
       const before=await page.evaluate(()=>localStorage.getItem('gya_fichas_ext'));
       if(allowed){
         await card.click();assert.equal(await page.locator('.ge-game').count(),1);
+        if(await page.locator('.pf-bienv-ok').count())await page.locator('.pf-bienv-ok').click();
         await page.locator('[data-start]').click();
         const canvas=page.locator('.ge-canvas'),label=await canvas.getAttribute('aria-label');assert.match(label,/1 en caída/);
         await page.locator('.ge-rotate').click();assert.notEqual(await canvas.getAttribute('aria-label'),label,'rotation works for '+name);
         await page.locator('.ge-pause').click();assert.equal(await page.locator('[data-resume]').count(),1);await page.locator('[data-resume]').click();
-        assert.equal(await page.locator('.fx-capa').count(),0);assert.equal(await page.locator('#extFichas').evaluate(e=>e.hidden),true);
+        assert.equal(await page.locator('.fx-capa').count(),0);
         await page.evaluate(()=>Extensiones.cerrar());assert.equal(await page.locator('.ge-game').count(),0);
       }else{
         await page.evaluate(()=>Extensiones.abrirJuego('gira-encaja'));assert.equal(await page.locator('.ge-game').count(),0,name+': direct catalog opening blocked');
       }
       await page.evaluate(()=>GiraEncaja.abrir(document.body));assert.equal(await page.locator('.ge-game').count(),allowed?1:0,name+': module uses same permission');
       await page.evaluate(()=>GiraEncaja.salir());
-      assert.equal(await page.evaluate(()=>localStorage.getItem('gya_fichas_ext')),before,name+': no rayitos charged');assert.deepEqual(errors,[]);
+      if(libre)assert.equal(await page.evaluate(()=>localStorage.getItem('gya_fichas_ext')),before,name+': no rayitos charged');else assert.equal(JSON.parse(await page.evaluate(()=>localStorage.getItem('gya_fichas_ext')))['gira-encaja'].n,2,name+': one rayito per game');assert.deepEqual(errors,[]);
       await context.close();
     }
-    console.log('PASS Girá y encajá access: Gonzalo/Vale can open and play; six other profiles blocked in catalog and module; no rayitos charged');
+    console.log('PASS Girá y encajá access: published for everyone, every profile can open and play; testers and Gonzalo do not spend rayitos, the rest spend one per game');
   }finally{await browser.close();await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e);process.exitCode=1;});
