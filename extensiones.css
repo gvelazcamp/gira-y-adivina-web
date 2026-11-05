@@ -1326,6 +1326,8 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .ps-teclado button.ps-repetida::after{top:3px;height:3px}
 .ps-leyenda .ps-color-repetida{height:4px;background:#C24FFF;border-color:#E3BDFF}
 
-/* No te caigas: logo a todo el ancho de la tarjeta y Prueba fuera del dibujo. */
-.ext-tarjeta img[src="assets/no-te-caigas/logo-v1.webp"]{width:100%;height:auto;aspect-ratio:3/2;object-fit:contain;border-radius:10px}
+/* Logos horizontales: misma altura que los demás iconos, con ancho contenido. */
+.ext-tarjeta img[src="assets/no-te-caigas/logo-v1.webp"],.ext-tarjeta img[src="assets/palabras-cruzadas/logo-v1.png"]{width:min(128px,100%);height:64px;object-fit:contain;object-position:left center;border-radius:10px}
+.ext-tarjeta img[src="assets/palabras-cruzadas/logo-v1.png"]{object-fit:cover;object-position:center}
 .ext-tarjeta img[src="assets/no-te-caigas/logo-v1.webp"]~.ext-insignia{position:static;align-self:flex-end}
+@media (orientation:landscape) and (max-width:1024px) and (max-height:600px){.ext-tarjeta img[src="assets/no-te-caigas/logo-v1.webp"],.ext-tarjeta img[src="assets/palabras-cruzadas/logo-v1.png"]{width:min(80px,100%);height:40px}}

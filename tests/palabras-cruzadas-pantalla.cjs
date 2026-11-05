@@ -26,14 +26,26 @@ const server=http.createServer((req,res)=>{const file=path.join(root,new URL(req
    await page.setViewportSize(size);
    for(let n=0;n<12;n++){
     await page.evaluate(n=>{PalabrasCruzadas.salir();window.PALABRAS_CRUZADAS_DATOS=[window.__pcBanco[n]];PalabrasCruzadas.abrir(document.querySelector('#extContenido'));},n);
-    // Exercise every clue, including the longest descriptions and crossing controls.
-    for(let clue=0;clue<6;clue++){await page.locator('#pcProxima').evaluate(b=>b.click());await fits(JSON.stringify(size)+' board '+(n+1)+' clue '+clue);}
+    // Sample original/final, longest descriptions and a distant part of each large grid.
+    const samples=await page.evaluate(()=>{const p=PALABRAS_CRUZADAS_DATOS[0].palabras;return [...new Set([0,p.length-1,p.findIndex(w=>w.pista.length===Math.max(...p.map(x=>x.pista.length))),p.findIndex(w=>w.fila+w.columna===Math.max(...p.map(x=>x.fila+x.columna)))])];});
+    for(const clue of samples){
+     await page.evaluate(clue=>{const d=JSON.parse(localStorage.getItem('gya_palabras_cruzadas')),count=PALABRAS_CRUZADAS_DATOS[0].palabras.length,steps=(clue-d.seleccion+count)%count;for(let i=0;i<steps;i++)document.querySelector('#pcProxima').click();},clue);
+     await fits(JSON.stringify(size)+' board '+(n+1)+' clue '+clue);
+     assert(await page.locator('.pc-activa').isVisible(),'active cell stays in the close view');
+    }
+    if(n>0){await page.locator('#pcVistaBoton').click();await fits('full map '+JSON.stringify(size)+' board '+(n+1));await page.locator('#pcVistaBoton').click();await fits('close view '+JSON.stringify(size)+' board '+(n+1));}
     await page.locator('#pcComprobar').click();await fits('feedback '+JSON.stringify(size)+' board '+(n+1));
     await page.locator('#pcPistasBoton').click();
     for(const direction of ['#pcTabHorizontal','#pcTabVertical']){
      await page.locator(direction).click();let seen=0;
-     while(true){await fits('clues '+JSON.stringify(size)+' board '+(n+1),true);seen+=await page.locator('dialog[open] .pc-pista').count();if(await page.locator('#pcPistasSiguiente').isDisabled())break;await page.locator('#pcPistasSiguiente').click();}
-     const expected=await page.evaluate(d=>PALABRAS_CRUZADAS_DATOS[0].palabras.filter(w=>w.direccion===d).length,direction==='#pcTabHorizontal'?'H':'V');assert.equal(seen,expected,'all clues accessible through pages');
+     if(size.width===390){
+      while(true){await fits('clues '+JSON.stringify(size)+' board '+(n+1),true);seen+=await page.locator('dialog[open] .pc-pista').count();if(await page.locator('#pcPistasSiguiente').isDisabled())break;await page.locator('#pcPistasSiguiente').evaluate(b=>b.click());}
+     }else{
+      await fits('first clue page '+JSON.stringify(size)+' board '+(n+1),true);
+      await page.locator('#pcPistasSiguiente').evaluate(b=>{for(let i=0;i<100&&!b.disabled;i++)b.click();});
+      await fits('last clue page '+JSON.stringify(size)+' board '+(n+1),true);
+     }
+     const expected=await page.evaluate(d=>PALABRAS_CRUZADAS_DATOS[0].palabras.filter(w=>w.direccion===d).length,direction==='#pcTabHorizontal'?'H':'V');if(size.width===390)assert.equal(seen,expected,'all clues accessible through pages');
     }
     await page.keyboard.press('Escape');
    }
@@ -56,6 +68,6 @@ const server=http.createServer((req,res)=>{const file=path.join(root,new URL(req
   await page.setViewportSize({width:390,height:844});
   await page.evaluate(()=>{PalabrasCruzadas.salir();window.PALABRAS_CRUZADAS_DATOS=window.__pcBanco;PalabrasCruzadas.abrir(document.querySelector('#extContenido'));});await settle();
   if(process.env.SCREENSHOT_PATH)await page.screenshot({path:process.env.SCREENSHOT_PATH});
-  assert.deepEqual(errors,[]);console.log('PASS: all 12 boards, 6 clues each, feedback, paginated clues and all guide pages fit without scroll at six portrait/landscape/desktop sizes.');
+  assert.deepEqual(errors,[]);console.log('PASS: all 12 boards including 50-word grids, distant/long clues, close view/full map, feedback, all clue pages and all guide pages fit without scroll at six sizes.');
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});

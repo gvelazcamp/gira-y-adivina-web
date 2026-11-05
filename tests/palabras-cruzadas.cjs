@@ -7,7 +7,7 @@ const cells=p=>{const out=new Map();p.palabras.forEach((w,i)=>{[...norm(w.respue
 const keys=w=>[...norm(w.respuesta)].map((_,n)=>(w.fila+(w.direccion==='V'?n:0))+','+(w.columna+(w.direccion==='H'?n:0)));
 assert.equal(puzzles.length,12);const allAnswers=new Set();
 for(const p of puzzles){
- assert.equal(p.palabras.length,6);assert(p.filas<=11&&p.columnas<=11);
+ assert.equal(p.palabras.length,p.id==='pc-1'?6:50);assert(p.filas<=36&&p.columnas<=36);
  const board=cells(p);
  for(const w of p.palabras){assert(w.pista);const answer=norm(w.respuesta);assert(!allAnswers.has(answer));allAnswers.add(answer);for(const k of keys(w)){const c=board.get(k);assert(c.f>=0&&c.f<p.filas&&c.c>=0&&c.c<p.columnas);}}
  const connected=new Set([0]);let change=true;while(change){change=false;for(const c of board.values())if(c.palabras.some(i=>connected.has(i)))for(const i of c.palabras)if(!connected.has(i)){connected.add(i);change=true;}}
@@ -19,7 +19,7 @@ for(const p of puzzles){
   if(run.length>1)assert.equal(p.palabras.filter(w=>w.direccion===dir&&keys(w).join('|')===run.join('|')).length,1,'unclued or duplicate run');
  }
 }
-assert.equal(allAnswers.size,72);
+assert.equal(allAnswers.size,556);
 const server=http.createServer((req,res)=>{
  const pathname=new URL(req.url,'http://local').pathname,file=path.join(root,pathname==='/'?'index.html':pathname);
  if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);return res.end();}
@@ -40,7 +40,7 @@ const server=http.createServer((req,res)=>{
   async function selectClue(i,puzzle=puzzles[0]){
    await page.locator('#pcPistasBoton').click();
    await page.locator(puzzle.palabras[i].direccion==='H'?'#pcTabHorizontal':'#pcTabVertical').click();
-   for(let n=0;n<6&&!await clue(i).count();n++)await page.locator('#pcPistasSiguiente').click();
+   for(let n=0;n<puzzle.palabras.length&&!await clue(i).count();n++)await page.locator('#pcPistasSiguiente').click();
    await clue(i).click();assert(await page.locator('#pcPistas').isHidden());
   }
   async function typeWord(w){
@@ -168,6 +168,6 @@ const server=http.createServer((req,res)=>{
   await oldPage.locator('#pcComprobar').click();assert.equal(await oldPage.locator('.pc-error').count(),1);assert.equal(await oldPage.locator('.pc-correcta').count(),4);
   await oldPage.evaluate(()=>Extensiones.cerrar());await oldContext.close();
   assert.deepEqual(errors,[]);
-  console.log('PASS: 12 valid connected crosswords/72 unique answers, real lobby entry, physical/on-screen keyboards, cross direction, proactive guide, persistent legend, individual red/green checks, fixed greens through both keyboards and deletion after reload, empty colorful selection without a caret, hints, old-save upgrade and verified states after reload, native dialogs, responsive grid, win/next from board, Ñ, individual progress unchanged and cleanup.');
+  console.log('PASS: 12 valid connected crosswords/556 unique answers (50 per board from level 2), real lobby entry, physical/on-screen keyboards, cross direction, proactive guide, persistent legend, individual red/green checks, fixed greens through both keyboards and deletion after reload, empty colorful selection without a caret, hints, old-save upgrade and verified states after reload, native dialogs, responsive grid, win/next from board, Ñ, individual progress unchanged and cleanup.');
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});

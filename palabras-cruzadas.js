@@ -5,7 +5,7 @@ window.PalabrasCruzadas=(()=>{
   const normalizar=s=>String(s||"").toUpperCase().replace(/Ñ/g,"\u0001").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\u0001/g,"Ñ").replace(/[^A-ZÑ]/g,"");
   const clave=(f,c)=>f+","+c;
   let raiz=null,crucigrama=null,palabras=[],celdas=new Map(),seleccion=0,cursor=null,errores=new Set(),mensajeActual="";
-  let datos=cargar(),observador=null,paginaPistas=0,direccionPistas="H",paginaGuia=0;
+  let datos=cargar(),observador=null,paginaPistas=0,direccionPistas="H",paginaGuia=0,vistaCompleta=false,firmaVista="";
   function cargar(){
     try{
       const d=JSON.parse(localStorage.getItem(CLAVE)||"null");
@@ -41,14 +41,27 @@ window.PalabrasCruzadas=(()=>{
     datos.resueltos=[...new Set(datos.resueltos)].filter(id=>banco().some(p=>p.id===id));
     seleccion=datos.seleccion>=0&&datos.seleccion<palabras.length?datos.seleccion:0;
     cursor=palabras[seleccion].casillas.find(k=>!datos.letras[k])||palabras[seleccion].casillas.find(k=>!bloqueada(k))||palabras[seleccion].casillas[0];
-    errores=new Set();mensajeActual="";guardar();return true;
+    errores=new Set();mensajeActual="";vistaCompleta=false;firmaVista="";guardar();return true;
   }
+  const esGrande=()=>crucigrama&&(crucigrama.filas>13||crucigrama.columnas>15);
+  function limitesVista(){
+    if(!esGrande()||vistaCompleta)return{f:0,c:0,filas:crucigrama.filas,columnas:crucigrama.columnas};
+    const marco=raiz.querySelector(".pc-grilla-marco"),foco=celdas.get(cursor);
+    const filas=Math.min(crucigrama.filas,Math.max(3,Math.floor((marco.clientHeight-12)/28)));
+    const columnas=Math.min(crucigrama.columnas,Math.max(3,Math.floor((marco.clientWidth-12)/28)));
+    const anterior=firmaVista.split(",").map(Number);
+    // Mantener la grilla quieta mientras la casilla siga dentro de la vista.
+    if(anterior.length===4&&anterior[2]===filas&&anterior[3]===columnas&&foco.fila>=anterior[0]&&foco.fila<anterior[0]+filas&&foco.columna>=anterior[1]&&foco.columna<anterior[1]+columnas)return{f:anterior[0],c:anterior[1],filas,columnas};
+    return{f:Math.max(0,Math.min(crucigrama.filas-filas,foco.fila-Math.floor(filas/2))),c:Math.max(0,Math.min(crucigrama.columnas-columnas,foco.columna-Math.floor(columnas/2))),filas,columnas};
+  }
+  const firmaDeVista=v=>[v.f,v.c,v.filas,v.columnas].join(",");
   function ajustarCuadricula(){
     if(!raiz||!crucigrama)return;
-    const zona=raiz.querySelector(".pc-zona-grilla"),g=raiz.querySelector("#pcGrilla");if(!zona||!g)return;
+    const zona=raiz.querySelector(".pc-grilla-marco"),g=raiz.querySelector("#pcGrilla");if(!zona||!g)return;
+    const vista=limitesVista();if(firmaDeVista(vista)!==firmaVista){pintar();return;}
     const ancho=zona.clientWidth,alto=zona.clientHeight;
-    const tam=Math.max(6,Math.floor(Math.min((ancho-12-(crucigrama.columnas-1)*2)/crucigrama.columnas,(alto-12-(crucigrama.filas-1)*2)/crucigrama.filas,46)));
-    g.style.setProperty("--pc-casilla",tam+"px");
+    const tam=Math.max(1,Math.floor(Math.min((ancho-12-(vista.columnas-1)*2)/vista.columnas,(alto-12-(vista.filas-1)*2)/vista.filas,46)));
+    g.style.setProperty("--pc-casilla",tam+"px");g.classList.toggle("pc-mini-mapa",tam<12);
   }
   function ajustarPantalla(){
     if(!raiz)return;
@@ -72,14 +85,14 @@ window.PalabrasCruzadas=(()=>{
   function mostrarPistas(){
     direccionPistas=palabras[seleccion].direccion;
     const porPagina=(window.visualViewport?.height||innerHeight)<480?1:3;
-    paginaPistas=Math.floor(palabras.filter(p=>p.direccion===direccionPistas).indexOf(palabras[seleccion])/porPagina);
+    paginaPistas=Math.floor(palabras.filter(p=>p.direccion===direccionPistas).sort((a,b)=>a.numero-b.numero).indexOf(palabras[seleccion])/porPagina);
     pintarPistas();raiz.querySelector("#pcPistas").showModal();
   }
   function pintarPistas(){
     if(!raiz)return;
     const dialogo=raiz.querySelector("#pcPistas");if(!dialogo)return;
     const porPagina=(window.visualViewport?.height||innerHeight)<480?1:3;
-    const filtradas=palabras.map((p,i)=>({p,i})).filter(x=>x.p.direccion===direccionPistas);
+    const filtradas=palabras.map((p,i)=>({p,i})).filter(x=>x.p.direccion===direccionPistas).sort((a,b)=>a.p.numero-b.p.numero);
     const paginas=Math.max(1,Math.ceil(filtradas.length/porPagina));paginaPistas=Math.max(0,Math.min(paginaPistas,paginas-1));
     for(const [dir,id] of [["H","pcHorizontales"],["V","pcVerticales"]]){
       const panel=raiz.querySelector("#"+id);panel.replaceChildren();panel.hidden=dir!==direccionPistas;
@@ -102,7 +115,7 @@ window.PalabrasCruzadas=(()=>{
         <p class="pc-instruccion">Tocá una casilla clara y escribí la respuesta.</p>
         <div class="pc-pista-actual"><button type="button" class="pc-flecha" id="pcAnterior" aria-label="Pista anterior">‹<small>Anterior</small></button><div><b id="pcDireccion"></b><p id="pcPista"></p><small id="pcLargo"></small></div><button type="button" class="pc-flecha" id="pcProxima" aria-label="Pista siguiente">›<small>Otra pista</small></button></div>
         <div class="pc-leyenda" role="group" aria-label="Qué significa cada color"><span><i class="pc-muestra-blanca"></i>Sin revisar</span><span><i class="pc-muestra-palabra"></i>Elegida</span><span><i class="pc-muestra-cursor"></i>Escribís</span><span><i class="pc-muestra-bien">✓</i>Correcta</span><span><i class="pc-muestra-mal">×</i>Error</span><span><i class="pc-muestra-ayuda">🔒</i>Fija</span></div>
-        <div class="pc-zona-grilla"><div id="pcGrilla" class="pc-grilla" role="group" aria-label="Tablero de palabras cruzadas"></div></div>
+        <div class="pc-zona-grilla"><div class="pc-vista-controles" hidden><small id="pcVistaEstado"></small><button type="button" id="pcVistaBoton" aria-pressed="false">Ver todo</button></div><div class="pc-grilla-marco"><div id="pcGrilla" class="pc-grilla" role="group" aria-label="Tablero de palabras cruzadas"></div></div></div>
         <div class="pc-seleccion-info"><span id="pcPosicion" role="status" aria-live="polite"></span><button type="button" id="pcCambiarDireccion" hidden>↔ Cambiar dirección</button></div>
         <p id="pcMensaje" class="pc-mensaje" role="status" aria-live="polite"></p>
         <div class="pc-acciones"><button type="button" id="pcComprobar">Comprobar palabra</button><button type="button" id="pcRevelar">Revelar letra (3)</button></div>
@@ -113,12 +126,13 @@ window.PalabrasCruzadas=(()=>{
       <dialog id="pcAyuda" class="pc-dialogo pc-dialogo-guia"><button type="button" class="pc-cerrar" aria-label="Cerrar ayuda">×</button><h2>Así se juega</h2><small id="pcGuiaPagina"></small>
         <section class="pc-guia-pagina"><p>Leé la pista: <b>«Lugar donde vivís»</b> (4 letras). Tocá sus casillas celestes y escribí CASA. El borde azul muestra dónde va la próxima letra.</p><div class="pc-demo" role="img" aria-label="CASA horizontal comparte la S con SOL vertical. Falta la A en la casilla con borde azul."><span>C</span><span>A</span><span>S</span><span class="pc-demo-activa"></span><i></i><i></i><span class="pc-demo-cruce">O</span><i></i><i></i><i></i><span class="pc-demo-cruce">L</span><i></i></div><p>Falta la última A de CASA. La S se comparte con SOL.</p></section>
         <section class="pc-guia-pagina" hidden><div class="pc-guia-colores"><p>⬜ <b>Blanco:</b> letra sin comprobar.</p><p>🟦 <b>Celeste:</b> palabra que elegiste.</p><p>🔵 <b>Borde azul:</b> próxima letra que escribís.</p><p>🟩 <b>Verde ✓:</b> letra correcta, queda fija.</p><p>🟥 <b>Rojo ×:</b> letra incorrecta: tocala y cambiala.</p><p>🔒 <b>Dorado:</b> ayuda fija, no se puede cambiar.</p></div></section>
-        <section class="pc-guia-pagina" hidden><p><b>Comprobar palabra</b> revisa las letras escritas.</p><p><b>Revelar letra</b> escribe una por vos. Hay tres ayudas por crucigrama.</p><p><b>Pistas</b> permite elegir otra palabra. En un cruce, usá <b>Cambiar dirección</b>.</p><p>Escribí sin tildes ni espacios, conservando la Ñ. La partida se guarda.</p></section>
+        <section class="pc-guia-pagina" hidden><p><b>Comprobar palabra</b> revisa las letras escritas.</p><p><b>Revelar letra</b> escribe una por vos. Hay tres ayudas por crucigrama.</p><p><b>Pistas</b> permite elegir otra palabra. En un cruce, usá <b>Cambiar dirección</b>.</p><p>En las grillas grandes, la vista sigue tu casilla. <b>Ver todo</b> muestra el tablero completo.</p><p>Escribí sin tildes ni espacios, conservando la Ñ. La partida se guarda.</p></section>
         <div class="pc-paginador"><button type="button" id="pcGuiaAnterior">Anterior</button><button type="button" id="pcGuiaSiguiente">Siguiente</button><button type="button" class="pc-principal pc-entendido" autofocus>Jugar</button></div></dialog>
       <dialog id="pcFinal" class="pc-dialogo"><button type="button" class="pc-cerrar" aria-label="Ver el tablero">×</button><span class="pc-trofeo" aria-hidden="true">✦</span><h2>¡Crucigrama completo!</h2><p id="pcResumen"></p><button type="button" id="pcSiguienteFinal" class="pc-principal">Siguiente crucigrama</button><button type="button" id="pcRevisar">Ver el tablero</button></dialog>
     </div>`;
     const significados=["Blanco: sin comprobar","Celeste: palabra elegida","Borde azul: escribís acá","Verde: letra correcta, no se puede cambiar","Rojo: letra incorrecta","Dorado: ayuda fija"];
     raiz.querySelectorAll(".pc-leyenda>span").forEach((el,i)=>{el.title=significados[i];el.setAttribute("aria-label",significados[i]);el.querySelector("i").setAttribute("aria-hidden","true");});
+    raiz.querySelector("#pcVistaBoton").onclick=()=>{vistaCompleta=!vistaCompleta;pintar();};
     raiz.querySelector("#pcAyudaBoton").onclick=mostrarGuia;
     raiz.querySelector("#pcAyuda").addEventListener("close",()=>{datos.guiaVista=true;guardar();});
     raiz.querySelectorAll("#pcAyuda .pc-cerrar,#pcAyuda .pc-entendido").forEach(b=>b.onclick=()=>raiz.querySelector("#pcAyuda").close());
@@ -146,7 +160,7 @@ window.PalabrasCruzadas=(()=>{
     }
   }
   function elegir(i,k=null){
-    if(!raiz)return;seleccion=i;cursor=k||palabras[i].casillas.find(x=>!bloqueada(x))||palabras[i].casillas[0];
+    if(!raiz)return;vistaCompleta=false;firmaVista="";seleccion=i;cursor=k||palabras[i].casillas.find(x=>!bloqueada(x))||palabras[i].casillas[0];
     mensajeActual="";guardar();pintar();
   }
   function tocar(k){
@@ -159,9 +173,14 @@ window.PalabrasCruzadas=(()=>{
     if(!raiz)return;
     errores=new Set(datos.revisadas.filter(k=>datos.letras[k]&&datos.letras[k]!==celdas.get(k).letra));
     const g=raiz.querySelector("#pcGrilla"),foco=document.activeElement?.classList.contains("pc-celda");
-    g.style.setProperty("--pc-cols",crucigrama.columnas);g.style.setProperty("--pc-filas",crucigrama.filas);g.replaceChildren();
+    const controles=raiz.querySelector(".pc-vista-controles");controles.hidden=!esGrande();
+    raiz.querySelector("#pcVistaEstado").textContent=vistaCompleta?"Tablero completo":"Vista cercana";
+    const botonVista=raiz.querySelector("#pcVistaBoton");botonVista.textContent=vistaCompleta?"Acercar":"Ver todo";botonVista.setAttribute("aria-label",vistaCompleta?"Acercar a la casilla seleccionada":"Ver tablero completo");botonVista.setAttribute("aria-pressed",String(vistaCompleta));
+    const vista=limitesVista();firmaVista=firmaDeVista(vista);
+    g.dataset.filaInicial=vista.f;g.dataset.columnaInicial=vista.c;g.setAttribute("aria-label",esGrande()&&!vistaCompleta?"Vista cercana de la casilla seleccionada":"Tablero completo de palabras cruzadas");
+    g.style.setProperty("--pc-cols",vista.columnas);g.style.setProperty("--pc-filas",vista.filas);g.replaceChildren();
     const seleccionada=palabras[seleccion],ganadas=palabras.filter(completa),verdes=new Set(ganadas.flatMap(p=>p.casillas).concat(datos.revisadas.filter(k=>datos.letras[k]===celdas.get(k).letra)));
-    for(let f=0;f<crucigrama.filas;f++)for(let c=0;c<crucigrama.columnas;c++){
+    for(let f=vista.f;f<vista.f+vista.filas;f++)for(let c=vista.c;c<vista.c+vista.columnas;c++){
       const k=clave(f,c),celda=celdas.get(k);
       if(!celda){const negro=document.createElement("span");negro.className="pc-negra";negro.setAttribute("aria-hidden","true");g.appendChild(negro);continue;}
       const b=document.createElement("button");b.type="button";b.className="pc-celda"+(seleccionada.casillas.includes(k)?" pc-seleccionada":"")+(cursor===k?" pc-activa":"")+(verdes.has(k)?" pc-correcta":"")+(errores.has(k)?" pc-error":"")+(datos.ayudas.includes(k)?" pc-revelada":"");
@@ -172,7 +191,7 @@ window.PalabrasCruzadas=(()=>{
       b.setAttribute("aria-label",`Fila ${f+1}, columna ${c+1}: ${datos.letras[k]||"vacía"}${cursor===k?(bloqueada(k)?", seleccionada":", escribís aquí"):""}${datos.ayudas.includes(k)?", ayuda fija, no editable":errores.has(k)?", letra incorrecta":verdes.has(k)?", letra correcta, no editable":""}`);b.onclick=()=>tocar(k);g.appendChild(b);
     }
     if(foco)g.querySelector('[data-casilla="'+cursor+'"]').focus({preventScroll:true});
-    raiz.querySelector("#pcNivel").textContent="Crucigrama "+(banco().indexOf(crucigrama)+1)+" / "+banco().length;
+    raiz.querySelector("#pcNivel").textContent="Nivel "+(crucigrama.nivel||banco().indexOf(crucigrama)+1)+" · "+(crucigrama.dificultad||"Inicial");
     raiz.querySelector("#pcProgreso").textContent="Resueltas: "+ganadas.length+" / "+palabras.length;
     raiz.querySelector("#pcDireccion").textContent="Pista "+seleccionada.numero+" · "+(seleccionada.direccion==="H"?"Horizontal →":"Vertical ↓");
     raiz.querySelector("#pcPista").textContent=seleccionada.pista;
@@ -194,7 +213,10 @@ window.PalabrasCruzadas=(()=>{
   }
   function verificarFinal(){
     const fin=terminado();
-    if(fin&&!datos.resueltos.includes(crucigrama.id)){datos.resueltos.push(crucigrama.id);datos.total++;guardar();pintar();mostrarResultado();if(typeof bip==="function")bip(900,.1);}
+    if(fin){
+      if(!datos.resueltos.includes(crucigrama.id)){datos.resueltos.push(crucigrama.id);datos.total++;guardar();}
+      pintar();mostrarResultado();if(typeof bip==="function")bip(900,.1);
+    }
   }
   function avanzar(){
     const lista=palabras[seleccion].casillas,pos=lista.indexOf(cursor);
@@ -202,6 +224,7 @@ window.PalabrasCruzadas=(()=>{
   }
   function tecla(valor){
     if(!raiz||raiz.querySelector("dialog[open]")||terminado())return false;
+    if(valor==="Backspace"||valor==="Delete"||normalizar(valor).length===1)vistaCompleta=false;
     if(valor==="Enter"){const siguientes=palabras.map((_,i)=>(seleccion+i+1)%palabras.length);elegir(siguientes.find(i=>!completa(palabras[i]))??seleccion);return true;}
     if(valor===" "){const opts=celdas.get(cursor).palabras;if(opts.length>1)elegir(opts.find(i=>i!==seleccion),cursor);return true;}
     if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(valor)){
@@ -224,6 +247,7 @@ window.PalabrasCruzadas=(()=>{
     const p=palabras[seleccion],escritas=p.casillas.filter(k=>datos.letras[k]),malas=escritas.filter(k=>datos.letras[k]!==celdas.get(k).letra),vacias=p.casillas.filter(k=>!datos.letras[k]);
     datos.revisadas=[...new Set(datos.revisadas.concat(escritas))];
     const buenas=escritas.length-malas.length;
+    if(esGrande()&&(malas.length||vacias.length)){cursor=malas[0]||vacias[0];vistaCompleta=false;}
     mensajeActual=malas.length?buenas+(buenas===1?" correcta · ":" correctas · ")+malas.length+(malas.length===1?" incorrecta. ":" incorrectas. ")+"Tocá una roja para cambiarla.":vacias.length?(escritas.length===0?"Tocá la casilla con borde azul y escribí la respuesta.":vacias.length===1?"Falta una letra para completar esta palabra.":"Faltan "+vacias.length+" letras para completar esta palabra."):"¡Palabra correcta! Elegí otra pista para seguir.";
     guardar();pintar();
   }
@@ -252,7 +276,7 @@ window.PalabrasCruzadas=(()=>{
     if(!preparar()){raiz.textContent="No se pudo cargar Palabras Cruzadas. Recargá el juego.";return;}
     estructura();pintar();
     window.addEventListener("resize",ajustarPantalla);window.visualViewport?.addEventListener("resize",ajustarPantalla);window.visualViewport?.addEventListener("scroll",ajustarPantalla);
-    if(typeof ResizeObserver!=="undefined"){observador=new ResizeObserver(ajustarCuadricula);observador.observe(raiz.querySelector(".pc-zona-grilla"));}
+    if(typeof ResizeObserver!=="undefined"){observador=new ResizeObserver(ajustarCuadricula);observador.observe(raiz.querySelector(".pc-grilla-marco"));}
     if(!datos.guiaVista)mostrarGuia();
   }
   function salir(){

@@ -37,5 +37,9 @@
 .pc-grilla .pc-activa:not(.pc-correcta):not(.pc-error):not(.pc-revelada){background:#7ddcff;border-color:#2894f2;box-shadow:inset 0 0 0 2px #fff}.pc-muestra-cursor,.pc-demo .pc-demo-activa{background:#7ddcff}
 
 /* Arte aportado por el usuario: marca completa en el catálogo y símbolo en la barra. */
-.ext-tarjeta img[src="assets/palabras-cruzadas/logo-v1.png"]{width:100%;height:auto;aspect-ratio:2/1;object-fit:cover;border-radius:10px}
 .pc-marca{position:relative}.pc-marca .pc-logo{position:absolute;left:-2px;top:-18px;width:112px;height:auto;object-fit:contain}
+
+/* Las grillas grandes se acercan a la casilla actual; la vista completa sirve de mapa. */
+.pc-zona-grilla{display:flex;flex-direction:column;gap:3px}.pc-grilla-marco{flex:1;min-height:0;min-width:0;width:100%;display:grid;place-items:center}.pc-vista-controles{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;flex:none;color:#d9c9e9;font-size:.61rem}.pc-vista-controles[hidden]{display:none!important}.pc-vista-controles button{border:1px solid #b7a0ca66;border-radius:7px;background:#493258;color:#fff4dc;padding:3px 8px;min-height:22px;font-size:.64rem;font-weight:800}.pc-mini-mapa .pc-celda>span,.pc-mini-mapa .pc-celda small,.pc-mini-mapa .pc-celda:after{display:none}.pc-grilla.pc-mini-mapa .pc-celda{border-width:0;border-radius:1px}.pc-grilla.pc-mini-mapa .pc-activa{outline-width:2px;outline-offset:0}
+.pc-ancho.pc-mini .pc-panel-tablero{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}.pc-mini .pc-flecha{min-width:26px}.pc-mini .pc-flecha small{display:none}.pc-mini .pc-teclas button{font-size:.75rem}.pc-ancho.pc-mini .pc-teclado{min-height:68px}
+@media(max-height:420px){.ext-shell.pc-abierta .ext-header{min-height:34px;margin-bottom:3px}}
