@@ -1,4 +1,4 @@
-/* Girá y encajá: laboratorio de clasificación. Prueba solo para Gonzalo.
+/* Girá y encajá: laboratorio de clasificación. Prueba para Gonzalo y Vale.
    Estado y récord propios; no consume fichas ni modifica vidas/monedas del juego. */
 window.GiraEncaja=(()=>{
   'use strict';
@@ -14,7 +14,7 @@ window.GiraEncaja=(()=>{
   let root=null,canvas,ctx,overlay,signal,events,observer,raf=0,last=0,state=null,feedbackUntil=0,drag=null;
   let W=480,H=700,mode='imagenes';
   const record=()=>{try{return Math.max(0,Number(localStorage.getItem(KEY))||0);}catch(e){return 0;}};
-  const allowed=()=>typeof window.esGonzalo==='function'&&window.esGonzalo();
+  const allowed=()=>{const ext=window.EXTENSIONES?.find(e=>e.id==='gira-encaja');return !!ext&&typeof window.extensionVisible==='function'&&window.extensionVisible(ext);};
   function abrir(contenedor){
     salir();if(!allowed())return;
     events=new AbortController();signal=events.signal;
@@ -42,7 +42,7 @@ window.GiraEncaja=(()=>{
   }
   function panel(html){overlay.innerHTML='<div class="ge-panel">'+html+'</div>';overlay.hidden=false;}
   function intro(){
-    panel('<div class="ge-mark">✧</div><h2>Girá y encajá</h2><p>Las fichas salen de a una, con un pequeño espacio entre ellas. Llevá cada una a su categoría y girala para que entre.</p><p><b>Arrastrá una ficha</b> para moverla · <b>Tocala</b> para girarla.<br>El botón ⇄ cambia la ficha seleccionada.</p><div class="ge-choice"><button data-mode="imagenes" aria-pressed="true">Imágenes</button><button data-mode="palabras" aria-pressed="false">Palabras</button></div><button class="ge-primary" data-start>¡A jugar!</button><p class="ge-note">Prueba de Gonzalo · Récord: '+record()+'<br>4 categorías · 5 niveles · 3 vidas</p>');
+    panel('<div class="ge-mark">✧</div><h2>Girá y encajá</h2><p>Las fichas salen de a una, con un pequeño espacio entre ellas. Llevá cada una a su categoría y girala para que entre.</p><p><b>Arrastrá una ficha</b> para moverla · <b>Tocala</b> para girarla.<br>El botón ⇄ cambia la ficha seleccionada.</p><div class="ge-choice"><button data-mode="imagenes" aria-pressed="true">Imágenes</button><button data-mode="palabras" aria-pressed="false">Palabras</button></div><button class="ge-primary" data-start>¡A jugar!</button><p class="ge-note">Versión de prueba · Récord: '+record()+'<br>4 categorías · 5 niveles · 3 vidas</p>');
     overlay.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;overlay.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});
     overlay.querySelector('[data-start]').onclick=start;
   }

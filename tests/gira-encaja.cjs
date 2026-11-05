@@ -111,7 +111,7 @@ const names=[['Gato','Perro','León','Rana','Tortuga','Mariposa','Delfín','Elef
       await page.clock.runFor(10000);assert.deepEqual(errors,[]);await context.close();
     }
     // Visibility and direct opening both respect the existing private-profile gate.
-    for(const name of ['Vale','Ana']){
+    for(const name of ['Ana','Vale.']){
       const ctx=await browser.newContext({serviceWorkers:'block'}),page=await ctx.newPage();
       await page.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.fulfill({body:''}));
       await page.addInitScript(n=>{localStorage.setItem('gya_nombre',n);localStorage.setItem('gya_pais','uruguay');localStorage.setItem('gya_bienvenida_vista','1');},name);
@@ -120,6 +120,6 @@ const names=[['Gato','Perro','León','Rana','Tortuga','Mariposa','Delfín','Elef
       await page.evaluate(()=>Extensiones.abrirJuego('gira-encaja'));assert.equal(await page.locator('.ge-game').count(),0);
       await page.evaluate(()=>GiraEncaja.abrir(document.body));assert.equal(await page.locator('.ge-game').count(),0);await ctx.close();
     }
-    console.log('PASS Girá y encajá: staggered releases, pending pause/early resolution, individual touch/drag, gentler fall, five levels, pause, loss, record, cleanup, four viewports, Gonzalo visibility');
+    console.log('PASS Girá y encajá: staggered releases, pending pause/early resolution, individual touch/drag, gentler fall, five levels, pause, loss, record, cleanup, four viewports, other profiles blocked');
   }finally{await browser.close();await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e);process.exitCode=1;});
