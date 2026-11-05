@@ -24,6 +24,9 @@ const server=http.createServer((req,res)=>{
       {name:'Pepe',initial:0,mode:'bot',expectBlocked:true,expectFichas:0},
       {name:'Pepe',initial:3,mode:'bot',expectBlocked:false,expectFichas:2},
       {name:'Andrés',initial:0,mode:'bot',expectBlocked:false,expectFichas:0},
+      {name:'Juan e.',initial:0,mode:'bot',expectBlocked:false,expectFichas:0},
+      {name:'Juan .e',initial:0,mode:'bot',expectBlocked:false,expectFichas:0},
+      {name:'Meg',initial:0,mode:'bot',expectBlocked:false,expectFichas:0},
       {name:'Pepe',initial:0,mode:'local',expectBlocked:false,expectFichas:0},
       {name:'Pepe',initial:0,mode:'online',expectBlocked:false,expectFichas:0},
     ]){
@@ -57,8 +60,8 @@ const server=http.createServer((req,res)=>{
       }));
       assert.equal(state.blocked,expectBlocked,`${name}/${mode}: cartel`);
       assert.equal(state.fichas,expectFichas,`${name}/${mode}: fichas`);
-      assert.equal(state.tester,name==='Andrés');
-      assert.equal(state.chip,name==='Andrés',`${name}/${mode}: indicador`);
+      assert.equal(state.tester,name!=='Pepe');
+      assert.equal(state.chip,name!=='Pepe',`${name}/${mode}: indicador`);
       assert.equal(await frame.locator('#setup-overlay').evaluate(el=>el.classList.contains('hidden')), !expectBlocked&&mode!=='online',`${name}/${mode}: inicio`);
       if(mode==='online')assert.equal(await frame.locator('#dc-room-lobby').isVisible(),true,'la sala online se crea sin gastar fichas');
       if(name==='Pepe'&&initial===3){
