@@ -68,15 +68,15 @@ const server=http.createServer((req,res)=>{
     assert(await g.evaluate(()=>window.__sent.some(x=>x.a==='nv_error')));assert.equal(await g.evaluate(()=>localStorage.getItem('gya_tele_mic')),null);
     await g.evaluate(()=>{window.__probe.salir();document.querySelector('#probe').remove();});
     assert.equal(errors.length,0,errors.join('\n'));await context.close();
-    // Ana sigue con el juego clásico de rangos: el piloto no modifica su modalidad.
+    // Un perfil común también abre las preguntas por voz, sin lista de testers.
     const classic=await browser.newContext({serviceWorkers:'block',locale:'es-UY'}),t2=await classic.newPage(),p2=await classic.newPage();
     for(const p of [t2,p2]){await p.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.fulfill({status:200,body:''}));await p.addInitScript(()=>{window.GiroRoscoPiloto={habilitado:()=>false,cerrar(){}};});}
-    await t2.goto(base+'/index.html?tele=1&telered=local');const c2=await t2.locator('.tl-codigo').textContent();await p2.goto(base+'/index.html?telecel='+c2+'&telered=local&n=Ana');await p2.locator('[data-j="numero"]').click();await p2.locator('#tlQnNuevo').waitFor();assert.equal(await p2.locator('[data-nv-config]').count(),0);
+    await t2.goto(base+'/index.html?tele=1&telered=local');const c2=await t2.locator('.tl-codigo').textContent();await p2.goto(base+'/index.html?telecel='+c2+'&telered=local&n=Ana');await p2.locator('[data-j="numero"]').click();await p2.locator('[data-nv-config]').waitFor();assert.equal(await p2.locator('#tlQnNuevo').count(),0);
     const entries=await p2.evaluate(()=>{
       const original=window.gyaPerfil,el=document.createElement('div');document.body.append(el);const found={};
       for(const nombre of ['Gonzalo','Vale','Ana']){el.replaceChildren();window.gyaPerfil=()=>({nombre});QueNumeroSoy.abrir(el);found[nombre]=Array.from(el.querySelectorAll('button')).some(b=>b.textContent.includes('Preguntas por voz'));QueNumeroSoy.salir();}
       el.remove();window.gyaPerfil=original;return found;
-    });assert.deepEqual(entries,{Gonzalo:true,Vale:true,Ana:false});
+    });assert.deepEqual(entries,{Gonzalo:true,Vale:true,Ana:true});
     await classic.close();
     console.log('PASS TV + two phones: big answer only on TV, question-only voice, spoken answer/pass, moderator correction, two-player score, 30-second turns and microphone cleanup');
   }finally{await browser.close();await new Promise(r=>server.close(r));}

@@ -331,7 +331,7 @@
       if(id==="rosco"&&!revancha&&T.jug.length>=2&&!T.roscoListo){T.roscoModo=null;T.fase="rosco_modo";T.juego="rosco";pintar();difundir();return;}
       T.roscoListo=false;
       if(id==="rosco"){if(!revancha){giroAperturaVista=false;if(T.jug.length<2)T.roscoModo=null;}arrancar(id);return;}
-      if(id==="numero"&&window.NumeroVoz?.habilitado(nombreMando())){arrancar(id);return;}
+      if(id==="numero"&&window.NumeroVoz){arrancar(id);return;}
       if(!revancha&&GIRO_INTROS[id]){introTele(id,j,()=>arrancar(id));return;}
       arrancar(id);
     }
@@ -515,7 +515,7 @@
 
   /* ---------- ¿Qué número soy?: la tele muestra el número; el que juega, de espaldas ---------- */
   function juegoNumero(T,actualizar){
-    if(window.NumeroVoz?.habilitado(nombreDe(T,T.mando)))return NumeroVoz.crearTele(T,actualizar,{SND,podioTele});
+    if(window.NumeroVoz)return NumeroVoz.crearTele(T,actualizar,{SND,podioTele});
     const RANGOS=[10,50,100];
     let max=100,numero=0,fase="config",cuenta=0,oculto=false;
     try{const d=JSON.parse(localStorage.getItem("gya_que_numero_soy"))||{};if(RANGOS.includes(d.max))max=d.max;}catch(e){}

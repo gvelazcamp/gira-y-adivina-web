@@ -1,9 +1,8 @@
-/* Prueba TV de ¿Qué número soy?: la respuesta solo se dibuja en la tele. */
+/* Modo TV de ¿Qué número soy?: la respuesta solo se dibuja en la tele. */
 window.NumeroVoz=(()=>{
   'use strict';
   const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' ');
-  const habilitado=n=>['gonzalo','vale'].includes(norm(n));
   const small=['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciseis','diecisiete','dieciocho','diecinueve'];
   const tens=['','','veinte','treinta','cuarenta','cincuenta','sesenta','setenta','ochenta','noventa'];
   const hundreds=['','ciento','doscientos','trescientos','cuatrocientos','quinientos','seiscientos','setecientos','ochocientos','novecientos'];
@@ -155,5 +154,5 @@ window.NumeroVoz=(()=>{
     const leave=()=>stop();window.addEventListener('pagehide',leave);
     return{pintar:paint,parar(){stop();view='';model=null;},salir(){stop();document.removeEventListener('visibilitychange',hide);window.removeEventListener('pagehide',leave);}};
   }
-  return{habilitado,numero,crearTele,crearCel};
+  return{numero,crearTele,crearCel};
 })();
