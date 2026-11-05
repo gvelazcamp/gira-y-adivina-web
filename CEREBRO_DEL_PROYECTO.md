@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Más juegos: nuevo orden
+- Qué: Gonzalo pidió el orden Tutti Frutti, Puzzle, Palabra Secreta, Palabras Cruzadas; después siguen las pruebas (Línea del tiempo, Girá y encajá, No te caigas, solo Gonzalo/Vale) y el resto como estaba. El orden sale del arreglo EXTENSIONES.
+- Dónde: extensiones.js (v140), sw gya-cache-v728.
+
 ### 05/11/2026 — Más juegos: logos nuevos más chicos, rayitos ⚡ y tarjetas alineadas
 - Qué: Gonzalo vio los logos de Línea del tiempo y Girá y encajá muy grandes y las tarjetas desfasadas (les faltaban los rayitos). Los logos anchos (Línea del tiempo, Girá y encajá, No te caigas) pasan a 100×64 máx.; la insignia "🧪 Prueba" queda como sticker sobre el borde de arriba (no empuja nada). Palabras Cruzadas, Girá y encajá, No te caigas y Línea del tiempo entran a las fichas ⚡ (Fichas.JUEGOS): 1 ficha por crucigrama siguiente, por partida de Girá y encajá, por partida nueva de No te caigas (primer sorteo con los 10 rivales) y por partida de Línea del tiempo. Gonzalo no gasta; Vale es tester libre.
 - Dónde: extensiones.js (v139), extensiones.css (v166), linea-tiempo.js (v3), gira-encaja.js (v10), palabras-cruzadas.js (v11), ahora-caigo.js (v13), duelo-extensiones.js (v22, sin cambios), sw gya-cache-v727.
