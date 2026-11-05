@@ -1325,3 +1325,7 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .ps-celda.ps-repetida::after,.ps-teclado button.ps-repetida::after,.ps-ejemplo .ps-repetida::after{content:"";position:absolute;top:12%;left:24%;right:24%;height:clamp(3px,.65vw,5px);border-radius:999px;background:#C24FFF;box-shadow:0 0 0 1px #4F0A78,0 0 4px #FFFFFF80;pointer-events:none}
 .ps-teclado button.ps-repetida::after{top:3px;height:3px}
 .ps-leyenda .ps-color-repetida{height:4px;background:#C24FFF;border-color:#E3BDFF}
+
+/* No te caigas: logo a todo el ancho de la tarjeta y Prueba fuera del dibujo. */
+.ext-tarjeta img[src="assets/no-te-caigas/logo-v1.webp"]{width:100%;height:auto;aspect-ratio:3/2;object-fit:contain;border-radius:10px}
+.ext-tarjeta img[src="assets/no-te-caigas/logo-v1.webp"]~.ext-insignia{position:static;align-self:flex-end}
