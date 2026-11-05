@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Más juegos: logos nuevos más chicos, rayitos ⚡ y tarjetas alineadas
+- Qué: Gonzalo vio los logos de Línea del tiempo y Girá y encajá muy grandes y las tarjetas desfasadas (les faltaban los rayitos). Los logos anchos (Línea del tiempo, Girá y encajá, No te caigas) pasan a 100×64 máx.; la insignia "🧪 Prueba" queda como sticker sobre el borde de arriba (no empuja nada). Palabras Cruzadas, Girá y encajá, No te caigas y Línea del tiempo entran a las fichas ⚡ (Fichas.JUEGOS): 1 ficha por crucigrama siguiente, por partida de Girá y encajá, por partida nueva de No te caigas (primer sorteo con los 10 rivales) y por partida de Línea del tiempo. Gonzalo no gasta; Vale es tester libre.
+- Dónde: extensiones.js (v139), extensiones.css (v166), linea-tiempo.js (v3), gira-encaja.js (v10), palabras-cruzadas.js (v11), ahora-caigo.js (v13), duelo-extensiones.js (v22, sin cambios), sw gya-cache-v727.
+
 ### 05/11/2026 — Palabra Secreta: la raya violeta avisa desde la primera copia
 - Qué: Gonzalo (BOLERO: puso una O y no había raya; recién apareció al poner las dos). Ahora la raya significa "hay otra más": en cada fila, una letra verde o amarilla lleva raya si la palabra tiene más copias de esa letra que las marcadas en esa fila; cuando ya están todas, desaparece. El teclado la muestra mientras falte encontrar alguna copia. Leyenda "Raya violeta: hay otra más", ayuda y foto para compartir actualizadas. (Antes solo aparecía cuando las pistas ya mostraban dos copias, para no dar pistas de la palabra oculta; Gonzalo prefiere el aviso.)
 - Pruebas: tests/palabra-secreta-repetidas.cjs reescrito con la regla nueva (pasa) y tests/palabra-secreta.cjs pasa.

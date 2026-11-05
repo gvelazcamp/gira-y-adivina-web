@@ -81,6 +81,7 @@ window.GiraEncaja=(()=>{
     overlay.querySelector('[data-como]').onclick=como;
   }
   function start(){
+    if(window.Fichas&&!Fichas.usar("gira-encaja",start))return;
     state={running:true,paused:false,score:0,lives:3,level:1,done:0,total:0,streak:0,pieces:[],pending:[],releaseIn:0,selected:0,nextId:0,wait:0,bag:[],phase:'sort',question:null,quizzedLevel:0,questionsAnswered:0,questionIds:new Set()};
     root.querySelector('.ge-question').hidden=true;
     slots();spawn();overlay.hidden=true;root.querySelector('.ge-pause').disabled=false;hud();canvas.focus({preventScroll:true});

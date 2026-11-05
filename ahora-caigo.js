@@ -316,6 +316,7 @@ window.AhoraCaigo=(()=>{
     boton.onclick=()=>{
       if(fase==="fin"){abrir(contenedor);return;}
       if(fase!=="listo")return;
+      if(vivos.size===10&&window.Fichas&&!Fichas.usar("ahora-caigo",()=>boton.click()))return;
       fase="sorteo";panel.hidden=true;vistaPregunta(false);ambiente(true);
       const opciones=[...vivos],destino=opciones[Math.floor(Math.random()*opciones.length)];
       const pasos=opciones.length*3+opciones.indexOf(destino);let paso=0;
