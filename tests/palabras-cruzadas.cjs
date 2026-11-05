@@ -37,6 +37,12 @@ const server=http.createServer((req,res)=>{
   const state=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('gya_palabras_cruzadas')));
   const value=k=>page.locator('.pc-celda[data-casilla="'+k+'"]>span').textContent();
   const clue=i=>page.locator('.pc-pista[data-palabra="'+i+'"]');
+  async function selectClue(i,puzzle=puzzles[0]){
+   await page.locator('#pcPistasBoton').click();
+   await page.locator(puzzle.palabras[i].direccion==='H'?'#pcTabHorizontal':'#pcTabVertical').click();
+   for(let n=0;n<6&&!await clue(i).count();n++)await page.locator('#pcPistasSiguiente').click();
+   await clue(i).click();assert(await page.locator('#pcPistas').isHidden());
+  }
   await page.goto(base);await loaded();await page.evaluate(()=>Extensiones.abrirLobby());
   assert.equal(await page.getByRole('button',{name:/Palabras Cruzadas/}).count(),1);
   await page.getByRole('button',{name:/Palabras Cruzadas/}).click();
@@ -46,29 +52,29 @@ const server=http.createServer((req,res)=>{
   assert(await page.locator('#pcAyuda').isVisible(),'first visit explains the game proactively');
   assert.equal(await page.locator('.pc-demo span').count(),6);
   await page.locator('#pcAyuda .pc-entendido').click();
-  assert.equal((await state()).guiaVista,true);
+  await page.waitForFunction(()=>JSON.parse(localStorage.getItem('gya_palabras_cruzadas')).guiaVista===true);
   assert.equal(await page.locator('.pc-leyenda>span').count(),6);
   assert(await page.locator('.pc-instruccion').isVisible());
   const first=puzzles[0],board=cells(first),w0=first.palabras[0],k0=keys(w0)[0];
   await page.keyboard.type('X');assert.equal(await value(k0),'X');
   await page.locator('#pcComprobar').click();assert.equal(await page.locator('.pc-error').count(),1);
   await page.keyboard.press('Backspace');assert.equal(await value(k0),'');
-  await clue(0).click();await page.keyboard.type(norm(w0.respuesta).toLowerCase());
+  await selectClue(0);await page.keyboard.type(norm(w0.respuesta).toLowerCase());
   assert(await clue(0).evaluate(el=>el.classList.contains('pc-lista')));
   const cross=[...board].find(([,c])=>c.palabras.length===2&&c.palabras.includes(0))[0];
   const crossButton=page.locator('.pc-celda[data-casilla="'+cross+'"]');
   await crossButton.click();const dir=await page.locator('#pcDireccion').textContent();assert(await page.locator('#pcCambiarDireccion').isVisible());await page.locator('#pcCambiarDireccion').click();assert.notEqual(await page.locator('#pcDireccion').textContent(),dir,'explicit button changes direction at a crossing');
   const i=first.palabras.findIndex((w,n)=>n!==0&&keys(w).some(k=>!(keys(w0).includes(k))));
-  await clue(i).click();const ki=keys(first.palabras[i])[0],letter=norm(first.palabras[i].respuesta)[0];
+  await selectClue(i);const ki=keys(first.palabras[i])[0],letter=norm(first.palabras[i].respuesta)[0];
   await page.getByRole('button',{name:'Letra '+letter,exact:true}).click();assert.equal(await value(ki),letter);
-  await page.keyboard.press('Backspace');await clue(i).click();await page.locator('#pcRevelar').click();
+  await page.keyboard.press('Backspace');await selectClue(i);await page.locator('#pcRevelar').click();
   assert.equal((await state()).ayudas.length,1);assert.match(await page.locator('#pcRevelar').textContent(),/2/);
   const hint=(await state()).ayudas[0],hintValue=await value(hint);
   assert.notEqual(await page.locator('.pc-activa').getAttribute('data-casilla'),hint,'help moves to the next editable cell');
   await page.locator('.pc-celda[data-casilla="'+hint+'"]').click();
-  assert.match(await page.locator('#pcPosicion').textContent(),/ayuda fija/);
+  assert.match(await page.locator('#pcPosicion').textContent(),/ayuda fija/i);
   await page.keyboard.type(hintValue==='X'?'Y':'X');assert.equal(await value(hint),hintValue,'hint is protected');
-  await clue(i).click();await page.keyboard.type(norm(first.palabras[i].respuesta));
+  await selectClue(i);await page.keyboard.type(norm(first.palabras[i].respuesta));
   assert(await clue(i).evaluate(el=>el.classList.contains('pc-lista')));
   const before=await state();await page.reload();await loaded();await page.evaluate(()=>Extensiones.abrirJuego('palabras-cruzadas'));
   assert.deepEqual((await state()).letras,before.letras);assert.deepEqual((await state()).ayudas,before.ayudas);assert(await page.locator('#pcAyuda').isHidden(),'guide is shown once, and remains available on demand');
@@ -84,12 +90,12 @@ const server=http.createServer((req,res)=>{
   if(process.env.SCREENSHOT_PATH)await page.screenshot({path:process.env.SCREENSHOT_PATH,fullPage:true});
   for(let help=0;help<2;help++){
    const s=await state(),pending=first.palabras.findIndex(w=>keys(w).some(k=>s.letras[k]!==board.get(k).letra));
-   await clue(pending).click();await page.locator('#pcRevelar').click();
+   await selectClue(pending);await page.locator('#pcRevelar').click();
   }
   assert.equal((await state()).ayudas.length,3);assert(await page.locator('#pcRevelar').isDisabled(),'three-letter help limit');
   for(let n=0;n<first.palabras.length;n++){
    const w=first.palabras[n],s=await state();if(keys(w).every(k=>s.letras[k]===board.get(k).letra))continue;
-   await clue(n).click();await page.keyboard.type(norm(w.respuesta));
+   await selectClue(n);await page.keyboard.type(norm(w.respuesta));
   }
   assert(await page.locator('#pcFinal').isVisible());assert.equal(await page.locator('dialog:modal').count(),1);
   assert.equal((await state()).total,1);
@@ -99,7 +105,7 @@ const server=http.createServer((req,res)=>{
   // Ñ y respuesta con acento: el tablero conserva Ñ y omite solamente las tildes.
   const withEnye=puzzles.find(p=>p.palabras.some(w=>w.respuesta==='MUÑECO')),enyeIndex=withEnye.palabras.findIndex(w=>w.respuesta==='MUÑECO');
   await page.evaluate(({id,index})=>{const d=JSON.parse(localStorage.getItem('gya_palabras_cruzadas'));d.actual=id;d.seleccion=index;d.letras={};d.ayudas=[];localStorage.setItem('gya_palabras_cruzadas',JSON.stringify(d));},{id:withEnye.id,index:enyeIndex});
-  await page.reload();await loaded();await page.evaluate(()=>Extensiones.abrirJuego('palabras-cruzadas'));await clue(enyeIndex).click();
+  await page.reload();await loaded();await page.evaluate(()=>Extensiones.abrirJuego('palabras-cruzadas'));await selectClue(enyeIndex,withEnye);
   for(const l of 'MUÑECO')await page.getByRole('button',{name:'Letra '+l,exact:true}).click();
   assert(await clue(enyeIndex).evaluate(el=>el.classList.contains('pc-lista')));
   assert(Object.values((await state()).letras).includes('Ñ'));
