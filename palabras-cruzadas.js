@@ -43,7 +43,7 @@ window.PalabrasCruzadas=(()=>{
     cursor=palabras[seleccion].casillas.find(k=>!datos.letras[k])||palabras[seleccion].casillas.find(k=>!bloqueada(k))||palabras[seleccion].casillas[0];
     errores=new Set();mensajeActual="";vistaCompleta=false;firmaVista="";guardar();return true;
   }
-  const esGrande=()=>crucigrama&&(crucigrama.filas>13||crucigrama.columnas>15);
+  const esGrande=()=>crucigrama&&(crucigrama.filas>10||crucigrama.columnas>15);
   function limitesVista(){
     if(!esGrande()||vistaCompleta)return{f:0,c:0,filas:crucigrama.filas,columnas:crucigrama.columnas};
     const marco=raiz.querySelector(".pc-grilla-marco"),foco=celdas.get(cursor);

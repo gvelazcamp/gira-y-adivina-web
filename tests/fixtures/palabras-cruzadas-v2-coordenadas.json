@@ -1,0 +1,50 @@
+{
+  "pc-1": {
+    "cantidad": 6,
+    "sha256": "93c327a5693845938f645ce26639d885fe94817c5eaae6d9f1c67680f5bdd8ec"
+  },
+  "pc-2": {
+    "cantidad": 50,
+    "sha256": "0de6fae330fdcbe02f07c4d1942de082002bb33b9b552b4d04f07e2c8084cd6e"
+  },
+  "pc-3": {
+    "cantidad": 50,
+    "sha256": "6427fea3dcc9eff420de1ff811225993afc647129174276dbb5c3efaebaf4795"
+  },
+  "pc-4": {
+    "cantidad": 50,
+    "sha256": "589431d321bab77d1b507f596f29ee14ce8d615615fb0a3bbc48a41dcf16805f"
+  },
+  "pc-5": {
+    "cantidad": 50,
+    "sha256": "1241979e5a64bc6c74d9fe3fc26fd8c9df91115461699f1f659c34995db589cc"
+  },
+  "pc-6": {
+    "cantidad": 50,
+    "sha256": "cd4cb1314aa102d99fcfb39993b137dff28d8601eea9b853dc880e74f9962798"
+  },
+  "pc-7": {
+    "cantidad": 50,
+    "sha256": "05245a181399bab6dd7286522af996888a673915c393b7f4e97f74358536130b"
+  },
+  "pc-8": {
+    "cantidad": 50,
+    "sha256": "2c0449209668603aaa50bd56b6dde8901fc1f1c3f06aaf6a43711becdfd9bd86"
+  },
+  "pc-9": {
+    "cantidad": 50,
+    "sha256": "f5c19c12de50014b18cf2926e8071446a551a85209ce9f176e9e5bb12cdc1e22"
+  },
+  "pc-10": {
+    "cantidad": 50,
+    "sha256": "fe65176ecf2e95a0d650de4f256c9bd1628373027560ed45ee6216649ca9b451"
+  },
+  "pc-11": {
+    "cantidad": 50,
+    "sha256": "2c32ef67277822316d18d61b695ddeec89993f6c0284f384db46d36e473940ad"
+  },
+  "pc-12": {
+    "cantidad": 50,
+    "sha256": "34c35c00444dca05e00830f027ee5b13979dcc269c13e39253281bce55fc2e85"
+  }
+}

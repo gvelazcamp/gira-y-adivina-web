@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compila grillas conectadas; conserva las seis palabras y coordenadas originales.
+"""Compila grillas conectadas y conserva las palabras publicadas y sus coordenadas.
 La app sirve únicamente el JS estático resultante, sin generar tableros al jugar.
 """
 import json, random, unicodedata
@@ -102,6 +102,34 @@ def validar(grilla):
                 assert tuple(secuencia) in palabras, ('Secuencia sin pista', grilla['id'], secuencia)
 
 
+def ampliar(base, numero, total, nuevas, semilla=271828):
+    for intento in range(8):
+        rng = random.Random(semilla + numero * 1000 + intento)
+        palabras = [dict(p) for p in base['palabras']]
+        disponibles = nuevas[:]
+        grilla = Grilla(palabras)
+        longitud = min(10, 5 + numero // 2)
+        while len(palabras) < total:
+            candidatas = disponibles[:]
+            rng.shuffle(candidatas)
+            candidatas.sort(key=lambda p: abs(len(normalizar(p['respuesta'])) - longitud) + rng.random() * 7)
+            mejor = None
+            for p in candidatas[:100]:
+                for (fila, columna, direccion), puntos in grilla.opciones(p['respuesta']):
+                    puntos += rng.random() * 9
+                    if mejor is None or puntos > mejor[0]:
+                        mejor = (puntos, p, fila, columna, direccion)
+            if mejor is None:
+                break
+            _, p, fila, columna, direccion = mejor
+            puesta = dict(p, fila=fila, columna=columna, direccion=direccion)
+            grilla.agregar(puesta); palabras.append(puesta); disponibles.remove(p)
+        if len(palabras) == total:
+            return dict(base, filas=grilla.filas, columnas=grilla.columnas, palabras=palabras), disponibles
+    else:
+        raise RuntimeError('No se pudo completar ' + base['id'])
+
+
 def main():
     bases = json.loads((ROOT / 'contenido/palabras-cruzadas-originales.json').read_text())
     nuevas = []
@@ -119,39 +147,22 @@ def main():
         if numero == 1:
             resultado = dict(base, nivel=1, dificultad='Inicial')
         else:
-            for intento in range(8):
-                rng = random.Random(271828 + numero * 1000 + intento)
-                palabras = [dict(p) for p in base['palabras']]
-                disponibles = nuevas[:]
-                grilla = Grilla(palabras)
-                longitud = min(10, 5 + numero // 2)
-                while len(palabras) < 50:
-                    candidatas = disponibles[:]
-                    rng.shuffle(candidatas)
-                    candidatas.sort(key=lambda p: abs(len(normalizar(p['respuesta'])) - longitud) + rng.random() * 7)
-                    mejor = None
-                    for p in candidatas[:100]:
-                        for (fila, columna, direccion), puntos in grilla.opciones(p['respuesta']):
-                            puntos += rng.random() * 9
-                            if mejor is None or puntos > mejor[0]:
-                                mejor = (puntos, p, fila, columna, direccion)
-                    if mejor is None:
-                        break
-                    _, p, fila, columna, direccion = mejor
-                    puesta = dict(p, fila=fila, columna=columna, direccion=direccion)
-                    grilla.agregar(puesta); palabras.append(puesta); disponibles.remove(p)
-                if len(palabras) == 50:
-                    nuevas = disponibles
-                    break
-            else:
-                raise RuntimeError('No se pudo completar ' + base['id'])
-            resultado = dict(base, filas=grilla.filas, columnas=grilla.columnas, palabras=palabras,
-                             nivel=numero, dificultad='Normal' if numero < 5 else 'Intermedia' if numero < 9 else 'Desafío')
+            resultado, nuevas = ampliar(base, numero, 50, nuevas)
+            resultado.update(nivel=numero, dificultad='Normal' if numero < 5 else 'Intermedia' if numero < 9 else 'Desafío')
         validar(resultado)
         # Los guardados anteriores conservan coordenadas, índices, ayudas y letras.
         assert resultado['palabras'][:len(base['palabras'])] == base['palabras']
         salida.append(resultado)
         print(f"{resultado['id']}: {len(resultado['palabras'])} palabras, {resultado['filas']}×{resultado['columnas']} · {resultado['dificultad']}", flush=True)
+    # Cincuenta respuestas adicionales en TOTAL: cuatro por tablero y cinco
+    # en los dos últimos. El prefijo publicado permanece intacto.
+    for numero, base in enumerate(salida[:], 1):
+        cantidad = 4 + (1 if numero >= 11 else 0)
+        resultado, nuevas = ampliar(base, numero, len(base['palabras']) + cantidad, nuevas, semilla=161803)
+        assert resultado['palabras'][:len(base['palabras'])] == base['palabras']
+        validar(resultado)
+        salida[numero - 1] = resultado
+        print(f"+{cantidad} en {resultado['id']}: {len(resultado['palabras'])} palabras, {resultado['filas']}×{resultado['columnas']}", flush=True)
     texto = '/* Cruces verificados. Generado con scripts/generar-palabras-cruzadas.py.\n' \
             '   Las palabras originales conservan sus posiciones para respetar el guardado. */\n' \
             + 'window.PALABRAS_CRUZADAS_DATOS=' + json.dumps(salida, ensure_ascii=False, indent=2) + ';\n'

@@ -18,6 +18,7 @@ const server=http.createServer((req,res)=>{const file=path.join(root,new URL(req
     const problems=[],height=visualViewport.height,width=visualViewport.width;
     const selectors=dialog?['dialog[open]',...Array.from(document.querySelectorAll('dialog[open] button,dialog[open] p,dialog[open] .pc-pista')).filter(e=>e.getClientRects().length).map((e,i)=>{e.dataset.fit=i;return '[data-fit="'+i+'"]';})]:['#extShell','.pc-juego','.pc-panel-tablero','#pcGrilla','#pcPista','#pcComprobar','#pcRevelar','#pcTeclado','.pc-teclas:first-child button:first-child','.pc-teclas:last-child button:last-child','#pcPistasBoton','.pc-leyenda'];
     for(const selector of selectors){const e=document.querySelector(selector);if(!e||!e.getClientRects().length)continue;const b=e.getBoundingClientRect();if(b.x<-.5||b.y<-.5||b.right>width+.5||b.bottom>height+.5)problems.push(selector+' outside viewport '+JSON.stringify(b.toJSON()));if(e.scrollHeight>e.clientHeight+2||e.scrollWidth>e.clientWidth+2)problems.push(selector+' overflows '+e.scrollWidth+'x'+e.scrollHeight+' / '+e.clientWidth+'x'+e.clientHeight);}
+    if(!dialog&&document.querySelector('#pcVistaBoton').getAttribute('aria-pressed')!=='true'&&document.querySelector('#pcGrilla').classList.contains('pc-mini-mapa'))problems.push('letters hidden outside the overview');
     document.querySelectorAll('[data-fit]').forEach(e=>delete e.dataset.fit);return problems;
    },{dialog});assert.deepEqual(issues,[],label);
   }
@@ -68,6 +69,6 @@ const server=http.createServer((req,res)=>{const file=path.join(root,new URL(req
   await page.setViewportSize({width:390,height:844});
   await page.evaluate(()=>{PalabrasCruzadas.salir();window.PALABRAS_CRUZADAS_DATOS=window.__pcBanco;PalabrasCruzadas.abrir(document.querySelector('#extContenido'));});await settle();
   if(process.env.SCREENSHOT_PATH)await page.screenshot({path:process.env.SCREENSHOT_PATH});
-  assert.deepEqual(errors,[]);console.log('PASS: all 12 boards including 50-word grids, distant/long clues, close view/full map, feedback, all clue pages and all guide pages fit without scroll at six sizes.');
+  assert.deepEqual(errors,[]);console.log('PASS: all 12 boards including 54/55-word grids, distant/long clues, close view/full map, feedback, all clue pages and all guide pages fit without scroll at six sizes.');
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});

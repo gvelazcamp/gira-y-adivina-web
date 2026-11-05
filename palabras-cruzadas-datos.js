@@ -4,7 +4,7 @@ window.PALABRAS_CRUZADAS_DATOS=[
   {
     "id": "pc-1",
     "titulo": "De este lado del río",
-    "filas": 8,
+    "filas": 11,
     "columnas": 10,
     "palabras": [
       {
@@ -48,6 +48,34 @@ window.PALABRAS_CRUZADAS_DATOS=[
         "fila": 7,
         "columna": 3,
         "direccion": "H"
+      },
+      {
+        "respuesta": "MALETIN",
+        "pista": "Bolso rígido o semirrígido usado para llevar papeles o herramientas.",
+        "fila": 1,
+        "columna": 9,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "CARICIA",
+        "pista": "Contacto suave y afectuoso que se hace pasando la mano sobre alguien.",
+        "fila": 1,
+        "columna": 1,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "JUGUERA",
+        "pista": "Aparato que extrae jugo de frutas o verduras.",
+        "fila": 0,
+        "columna": 2,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "BONO",
+        "pista": "Comprobante que se vende, por ejemplo, para colaborar con una institución.",
+        "fila": 7,
+        "columna": 3,
+        "direccion": "V"
       }
     ],
     "nivel": 1,
@@ -56,8 +84,8 @@ window.PALABRAS_CRUZADAS_DATOS=[
   {
     "id": "pc-2",
     "titulo": "Charlas de vereda",
-    "filas": 22,
-    "columnas": 22,
+    "filas": 25,
+    "columnas": 23,
     "palabras": [
       {
         "respuesta": "ZARPADO",
@@ -408,6 +436,34 @@ window.PALABRAS_CRUZADAS_DATOS=[
         "fila": 14,
         "columna": 19,
         "direccion": "V"
+      },
+      {
+        "respuesta": "FIBRON",
+        "pista": "Marcador de punta gruesa, útil para hacer carteles.",
+        "fila": 18,
+        "columna": 16,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "JARDINERA",
+        "pista": "Recipiente alargado donde se plantan flores o hierbas.",
+        "fila": 13,
+        "columna": 21,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "BARBA",
+        "pista": "Pelo que crece en el mentón y las mejillas.",
+        "fila": 2,
+        "columna": 18,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "BUJIA",
+        "pista": "Pieza del motor que produce la chispa que enciende la mezcla de combustible.",
+        "fila": 20,
+        "columna": 12,
+        "direccion": "V"
       }
     ],
     "nivel": 2,
@@ -416,8 +472,8 @@ window.PALABRAS_CRUZADAS_DATOS=[
   {
     "id": "pc-3",
     "titulo": "Entre mates y canciones",
-    "filas": 26,
-    "columnas": 21,
+    "filas": 27,
+    "columnas": 22,
     "palabras": [
       {
         "respuesta": "CROTO",
@@ -767,6 +823,34 @@ window.PALABRAS_CRUZADAS_DATOS=[
         "pista": "Viaje en el que se cruza un territorio o una extensión importante.",
         "fila": 24,
         "columna": 3,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "GAZEBO",
+        "pista": "Estructura liviana de techo y patas que da sombra en patios o campamentos.",
+        "fila": 6,
+        "columna": 20,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "RULOS",
+        "pista": "Curvas en forma de espiral que puede tener el pelo.",
+        "fila": 11,
+        "columna": 17,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "CAMBIO",
+        "pista": "Dinero que devuelve el vendedor cuando pagamos con un billete de mayor valor.",
+        "fila": 21,
+        "columna": 12,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "EXPULSION",
+        "pista": "Sanción por la que un jugador debe abandonar el partido.",
+        "fila": 26,
+        "columna": 5,
         "direccion": "H"
       }
     ],
@@ -1128,6 +1212,34 @@ window.PALABRAS_CRUZADAS_DATOS=[
         "fila": 10,
         "columna": 13,
         "direccion": "V"
+      },
+      {
+        "respuesta": "SUTURA",
+        "pista": "Unión de los bordes de una herida mediante puntos u otro procedimiento médico.",
+        "fila": 15,
+        "columna": 12,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "MARCHA",
+        "pista": "Composición musical de ritmo marcado que suele acompañar un desfile.",
+        "fila": 13,
+        "columna": 16,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "DOBLADILLO",
+        "pista": "Borde de una tela que se dobla hacia adentro y se cose.",
+        "fila": 26,
+        "columna": 10,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "PASEO",
+        "pista": "Salida que hacemos por entretenimiento o para conocer un lugar.",
+        "fila": 25,
+        "columna": 14,
+        "direccion": "V"
       }
     ],
     "nivel": 4,
@@ -1136,7 +1248,7 @@ window.PALABRAS_CRUZADAS_DATOS=[
   {
     "id": "pc-5",
     "titulo": "Sabores y recuerdos",
-    "filas": 29,
+    "filas": 36,
     "columnas": 20,
     "palabras": [
       {
@@ -1488,6 +1600,34 @@ window.PALABRAS_CRUZADAS_DATOS=[
         "fila": 21,
         "columna": 19,
         "direccion": "V"
+      },
+      {
+        "respuesta": "CARAVANA",
+        "pista": "Conjunto de vehículos que se desplazan uno detrás de otro.",
+        "fila": 28,
+        "columna": 12,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "SUSCRIPCION",
+        "pista": "Pago o registro que permite recibir periódicamente un producto o servicio.",
+        "fila": 25,
+        "columna": 12,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "PESTAÑA",
+        "pista": "Cada pelito que crece en el borde de un párpado.",
+        "fila": 27,
+        "columna": 9,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "UTILITARIO",
+        "pista": "Vehículo pensado principalmente para transportar cargas o herramientas de trabajo.",
+        "fila": 30,
+        "columna": 8,
+        "direccion": "H"
       }
     ],
     "nivel": 5,
@@ -1848,6 +1988,34 @@ window.PALABRAS_CRUZADAS_DATOS=[
         "fila": 12,
         "columna": 1,
         "direccion": "H"
+      },
+      {
+        "respuesta": "BOLILLA",
+        "pista": "Pequeña esfera numerada que se usa en un sorteo.",
+        "fila": 11,
+        "columna": 9,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "ANILLADO",
+        "pista": "Sistema de encuadernación que une hojas con un espiral o con aros.",
+        "fila": 10,
+        "columna": 5,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "BIZCOCHITO",
+        "pista": "Versión pequeña de un bizcocho, muy común a la hora del mate.",
+        "fila": 9,
+        "columna": 1,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "VELETA",
+        "pista": "Objeto que gira con el viento e indica de qué dirección viene.",
+        "fila": 14,
+        "columna": 19,
+        "direccion": "V"
       }
     ],
     "nivel": 6,
@@ -1856,7 +2024,7 @@ window.PALABRAS_CRUZADAS_DATOS=[
   {
     "id": "pc-7",
     "titulo": "Palabras de acá",
-    "filas": 33,
+    "filas": 35,
     "columnas": 27,
     "palabras": [
       {
@@ -2207,6 +2375,34 @@ window.PALABRAS_CRUZADAS_DATOS=[
         "pista": "Café pequeño al que se le agrega un poquito de leche.",
         "fila": 24,
         "columna": 18,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "LAVACOPAS",
+        "pista": "Trabajador encargado de lavar vasos y otros elementos de un bar.",
+        "fila": 28,
+        "columna": 11,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "ABONADO",
+        "pista": "Persona que paga periódicamente por un servicio o una entrada habitual.",
+        "fila": 28,
+        "columna": 14,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "PORCELANATO",
+        "pista": "Revestimiento para pisos y paredes, muy resistente y parecido a la cerámica.",
+        "fila": 32,
+        "columna": 8,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "ESGUINCE",
+        "pista": "Lesión de los ligamentos de una articulación, frecuente al torcerse un tobillo.",
+        "fila": 26,
+        "columna": 4,
         "direccion": "V"
       }
     ],
@@ -2568,6 +2764,34 @@ window.PALABRAS_CRUZADAS_DATOS=[
         "fila": 8,
         "columna": 22,
         "direccion": "V"
+      },
+      {
+        "respuesta": "COSTILLAR",
+        "pista": "Conjunto de costillas que puede cocinarse entero al asador.",
+        "fila": 14,
+        "columna": 25,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "PUNTADA",
+        "pista": "Cada pasada de la aguja con el hilo al coser.",
+        "fila": 2,
+        "columna": 9,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "CANUTILLO",
+        "pista": "Tubito pequeño que se cose en prendas de carnaval para decorarlas.",
+        "fila": 0,
+        "columna": 11,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "TRAMOYISTA",
+        "pista": "Trabajador que mueve y prepara decorados y elementos detrás del escenario.",
+        "fila": 30,
+        "columna": 13,
+        "direccion": "H"
       }
     ],
     "nivel": 8,
@@ -2576,7 +2800,7 @@ window.PALABRAS_CRUZADAS_DATOS=[
   {
     "id": "pc-9",
     "titulo": "La mesa está servida",
-    "filas": 20,
+    "filas": 28,
     "columnas": 33,
     "palabras": [
       {
@@ -2927,6 +3151,34 @@ window.PALABRAS_CRUZADAS_DATOS=[
         "pista": "Bloque de barro cocido más grande que el ladrillo común.",
         "fila": 15,
         "columna": 23,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "SILLA DE RUEDAS",
+        "pista": "Asiento con ruedas que permite desplazarse a quien no puede caminar.",
+        "fila": 10,
+        "columna": 25,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "GUARDABARROS",
+        "pista": "Parte de la carrocería que cubre el sector superior de una rueda.",
+        "fila": 22,
+        "columna": 14,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "CUADRICULA",
+        "pista": "Dibujo de pequeños cuadrados que aparece en algunas hojas de matemática.",
+        "fila": 18,
+        "columna": 17,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "ENJUAGUE",
+        "pista": "Paso de lavado en que se retira con agua el jabón de una prenda.",
+        "fila": 25,
+        "columna": 14,
         "direccion": "H"
       }
     ],
@@ -3288,6 +3540,34 @@ window.PALABRAS_CRUZADAS_DATOS=[
         "fila": 27,
         "columna": 10,
         "direccion": "H"
+      },
+      {
+        "respuesta": "SILENCIO",
+        "pista": "En una partitura, signo que indica una pausa sin tocar.",
+        "fila": 29,
+        "columna": 15,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "COMPOTERA",
+        "pista": "Recipiente pequeño y hondo donde se sirve compota o postre.",
+        "fila": 20,
+        "columna": 11,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "NUMERITO",
+        "pista": "Forma coloquial de llamar al número que nos dan para esperar un turno.",
+        "fila": 21,
+        "columna": 4,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "ENDUIDO",
+        "pista": "Pasta que se usa para tapar pequeñas imperfecciones antes de pintar.",
+        "fila": 20,
+        "columna": 4,
+        "direccion": "V"
       }
     ],
     "nivel": 10,
@@ -3297,7 +3577,7 @@ window.PALABRAS_CRUZADAS_DATOS=[
     "id": "pc-11",
     "titulo": "Entre amigos",
     "filas": 30,
-    "columnas": 27,
+    "columnas": 33,
     "palabras": [
       {
         "respuesta": "FULANO",
@@ -3648,6 +3928,41 @@ window.PALABRAS_CRUZADAS_DATOS=[
         "fila": 14,
         "columna": 19,
         "direccion": "H"
+      },
+      {
+        "respuesta": "CHICHON",
+        "pista": "Bulto que puede salir en la cabeza después de golpearse.",
+        "fila": 10,
+        "columna": 19,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "CLASIFICADOR",
+        "pista": "Trabajador que separa materiales recuperables de los residuos.",
+        "fila": 13,
+        "columna": 23,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "INDIVIDUAL",
+        "pista": "Mantel pequeño que se pone delante de cada comensal.",
+        "fila": 17,
+        "columna": 20,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "SERVILLETERO",
+        "pista": "Soporte de mesa donde se colocan las servilletas de papel.",
+        "fila": 24,
+        "columna": 21,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "QUITAESMALTE",
+        "pista": "Producto que elimina la pintura de las uñas.",
+        "fila": 13,
+        "columna": 28,
+        "direccion": "V"
       }
     ],
     "nivel": 11,
@@ -3657,7 +3972,7 @@ window.PALABRAS_CRUZADAS_DATOS=[
     "id": "pc-12",
     "titulo": "Nuestro crucigrama",
     "filas": 27,
-    "columnas": 26,
+    "columnas": 31,
     "palabras": [
       {
         "respuesta": "SABATINI",
@@ -4008,6 +4323,41 @@ window.PALABRAS_CRUZADAS_DATOS=[
         "fila": 16,
         "columna": 24,
         "direccion": "V"
+      },
+      {
+        "respuesta": "PLECTRO",
+        "pista": "Otro nombre de la pequeña pieza con la que se pulsan las cuerdas de una guitarra.",
+        "fila": 9,
+        "columna": 21,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "PARAGOLPES",
+        "pista": "Pieza que protege los extremos delantero y trasero de un vehículo.",
+        "fila": 4,
+        "columna": 27,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "FOLIO",
+        "pista": "Funda transparente y agujereada donde se guarda una hoja dentro de una carpeta.",
+        "fila": 26,
+        "columna": 23,
+        "direccion": "H"
+      },
+      {
+        "respuesta": "BOLILLERO",
+        "pista": "Recipiente o máquina de donde se extraen las bolillas de un sorteo.",
+        "fila": 18,
+        "columna": 27,
+        "direccion": "V"
+      },
+      {
+        "respuesta": "UNGÜENTO",
+        "pista": "Preparación espesa de uso medicinal que se aplica sobre la piel.",
+        "fila": 24,
+        "columna": 23,
+        "direccion": "H"
       }
     ],
     "nivel": 12,
