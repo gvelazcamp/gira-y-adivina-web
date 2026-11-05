@@ -74,7 +74,7 @@ window.GiraEncaja=(()=>{
   }
   function panel(html){overlay.innerHTML='<div class="ge-panel">'+html+'</div>';overlay.hidden=false;}
   function intro(){
-    panel('<div class="ge-mark">✧</div><h2>Girá y encajá</h2><p>Llevá cada ficha a su categoría y girala para que entre. Entre tandas aparece una pregunta con dos respuestas: elegí la abertura correcta.</p><p><b>Arrastrá una ficha</b> para moverla · <b>Tocala</b> para girarla.<br>El botón ⇄ cambia la ficha seleccionada.</p><div class="ge-choice"><button data-mode="imagenes" aria-pressed="true">Imágenes</button><button data-mode="palabras" aria-pressed="false">Palabras</button></div><button class="ge-primary" data-start>¡A jugar!</button><p class="ge-note">Versión de prueba · Récord: '+record()+'<br>4 categorías · 5 niveles · 3 vidas</p>');
+    panel('<h2 class="ge-titulo"><img class="ge-logo" src="assets/gira-encaja/logo-v3.webp" alt="Girá y encajá"></h2><p>Llevá cada ficha a su categoría y girala para que entre. Entre tandas aparece una pregunta con dos respuestas: elegí la abertura correcta.</p><p><b>Arrastrá una ficha</b> para moverla · <b>Tocala</b> para girarla.<br>El botón ⇄ cambia la ficha seleccionada.</p><div class="ge-choice"><button data-mode="imagenes" aria-pressed="true">Imágenes</button><button data-mode="palabras" aria-pressed="false">Palabras</button></div><button class="ge-primary" data-start>¡A jugar!</button><p class="ge-note">Versión de prueba · Récord: '+record()+'<br>4 categorías · 5 niveles · 3 vidas</p>');
     overlay.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;overlay.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});
     overlay.querySelector('[data-start]').onclick=start;
   }
