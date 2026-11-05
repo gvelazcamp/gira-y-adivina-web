@@ -7,7 +7,7 @@ window.AhoraCaigo=(()=>{
     .map(n=>"avatar-"+String(n).padStart(2,"0"));
   const POSICIONES=[[9,88,15],[16,75,14],[24,63,13],[32,54,12],[40,47,11],
     [60,47,11],[68,54,12],[76,63,13],[84,75,14],[91,88,15]];
-  let raiz=null,timer=null,reloj=null,voz=null,quitarAjuste=null;
+  let raiz=null,timer=null,reloj=null,voz=null,quitarAjuste=null,reabriendo=false;
   let musica=null,controlMusica=null,musicaDeseada=false,iniciandoMusica=false,musicaBloqueada=false,generacionMusica=0;
   function sonidoHabilitado(){return document.visibilityState!=="hidden"&&(typeof sonidoPermitido!=="function"||sonidoPermitido());}
   function sincronizarMusicaCaigo(){
@@ -64,10 +64,8 @@ window.AhoraCaigo=(()=>{
   }
   function abrir(contenedor){
     const anterior=raiz;salir();anterior?.remove();
-    let usuario="";try{usuario=(perfil?.nombre||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}catch(e){}
-    if(!["gonzalo","vale"].includes(usuario))return;
     raiz=document.createElement("section");raiz.className="ac-juego";
-    raiz.innerHTML=`<header class="ac-cabecera"><span>PRUEBA · CONTRA BOTS</span><h2><img class="ac-logo" src="assets/no-te-caigas/logo-v3.webp" alt="No te caigas"></h2><p>Una pregunta para vos. Otra para tu rival.</p></header>
+    raiz.innerHTML=`<header class="ac-cabecera"><span>DUELO CONTRA BOTS</span><h2><img class="ac-logo" src="assets/no-te-caigas/logo-v3.webp" alt="No te caigas"></h2><p>Una pregunta para vos. Otra para tu rival.</p></header>
       <div class="ac-escenario" role="group" aria-label="Escenario con once participantes"><div class="ac-ronda" aria-hidden="true"></div></div>
       <section class="ac-duelo" aria-label="Duelo de preguntas" hidden>
         <div class="ac-marcador"><div class="ac-identidad"><img class="ac-tu-avatar" alt=""><span><small>VOS · <span class="ac-vidas">3 pases</span></small><strong class="ac-tu-nombre"></strong></span></div><span>VS</span><div class="ac-identidad"><img class="ac-rival-avatar" alt=""><span><small>RIVAL · BOT</small><strong class="ac-rival-nombre"></strong></span></div></div>
@@ -87,7 +85,8 @@ window.AhoraCaigo=(()=>{
     const como=()=>PantallaFija.bienvenida(raiz.closest("#extContenido")||document.body,{logo:"assets/no-te-caigas/logo-v3.webp",alt:"No te caigas",dibujo:"assets/no-te-caigas/como.webp",sinFija:true,items:[["🎲","<b>Sorteá un rival</b> entre los 10 del estudio."],["❓","Una pregunta para vos, otra para él: <b>30 segundos</b> y letras de ayuda."],["🔁","¿No la sabés? <b>Pasásela</b>: tiene 20 segundos. Tenés 3 pases."],["🕳️","Quien falla <b>se cae por la trampilla</b>. ¡Eliminá a los 10!"]]});
     contenedor.appendChild(raiz);raiz.closest(".ext-shell")?.classList.add("ac-abierta");
     raiz.querySelector(".ac-como-btn").onclick=como;
-    setTimeout(()=>{if(raiz&&raiz.isConnected&&!final.open)como();},150);
+    if(!reabriendo)como();
+    reabriendo=false;
     const actual=raiz;
     let avatar="avatar-01",nombre="Gonzalo";
     try{avatar=localStorage.getItem("gya_avatar")||avatar;nombre=perfil.nombre||nombre;}catch(e){}
@@ -153,7 +152,7 @@ window.AhoraCaigo=(()=>{
     final.querySelector(".ac-final-primaria").onclick=()=>{
       if(!activo())return;
       final.close();restaurarEscenario();
-      if(fase==="fin"){abrir(contenedor);return;}
+      if(fase==="fin"){reabriendo=true;abrir(contenedor);return;}
       boton.click();
     };
     const volverLobby=()=>{final.close();window.Extensiones?.abrirLobby();};
@@ -314,7 +313,7 @@ window.AhoraCaigo=(()=>{
       }catch(e){pararEscucha();mensaje.className="ac-mensaje ac-mal";mensaje.textContent="No se pudo iniciar el micrófono. Podés responder escribiendo.";}
     };
     boton.onclick=()=>{
-      if(fase==="fin"){abrir(contenedor);return;}
+      if(fase==="fin"){reabriendo=true;abrir(contenedor);return;}
       if(fase!=="listo")return;
       if(vivos.size===10&&window.Fichas&&!Fichas.usar("ahora-caigo",()=>boton.click()))return;
       fase="sorteo";panel.hidden=true;vistaPregunta(false);ambiente(true);

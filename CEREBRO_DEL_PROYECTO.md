@@ -394,6 +394,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Línea del tiempo, Girá y encajá y No te caigas publicados para todos
+- Qué: Gonzalo: "todos los juegos publicados para todos". Se saca soloUsuarios:["gonzalo","vale"] y la insignia "🧪 Prueba" de los tres; No te caigas pierde su chequeo interno de usuario y su cabecera dice "DUELO CONTRA BOTS"; Girá y encajá ya no dice "Versión de prueba". Siguen gastando rayitos ⚡ como el resto (Gonzalo y testers libres no). No te caigas: el cartel de bienvenida sale al entrar (sin demora) y no vuelve a salir al tocar "Volver a jugar". Contra Reloj y El Trato Sucio siguen solo para Gonzalo (no se tocaron) y Juegos en la tele sigue fuera de la lista a propósito.
+- Pruebas: tests/gira-encaja-acceso.cjs y tests/ahora-caigo.cjs actualizados (abren para todos; cierran la bienvenida) y pasan; tests/linea-tiempo.cjs pasa.
+- Dónde: extensiones.js (v141), ahora-caigo.js (v14), gira-encaja.js (v11), sw gya-cache-v732.
+
 ### 05/11/2026 — Línea del tiempo: compartir la línea en redes
 - Qué: Gonzalo quiere compartir el resultado tan lindo como se ve. Al terminar aparece "📲 Compartir mi línea": popup con la foto 1080×1350 (logo, "¡LÍNEA PERFECTA!" o "N DE M BIEN UBICADAS", nivel · puntos · tiempo, la línea con cada acontecimiento en verde/rojo y su año, "¿Me ganás?") y botón Compartir (Web Share con la imagen; si no hay, se descarga). Entra sin scroll en 360×640 y 390×844.
 - Dónde: linea-tiempo.js (v6), linea-tiempo.css (v4), sw gya-cache-v731.
