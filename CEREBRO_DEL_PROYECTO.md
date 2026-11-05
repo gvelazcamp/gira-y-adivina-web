@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Más juegos: logos de Girá y encajá y No te caigas alineados
+- Qué: las dos tarjetas quedaban desfasadas (en una la insignia "Prueba" iba arriba y en la otra encima del logo). Ahora las dos usan la misma regla: insignia arriba a la derecha y logo de 64 px de alto alineado a la izquierda, así los títulos y textos empiezan y terminan a la misma altura.
+- Dónde: extensiones.css (v161), sw gya-cache-v721.
+
 ### 05/11/2026 — No te caigas: cartel "¿Cómo se juega?" con Giro y logo sin borde
 - Qué: al entrar aparece un popup con Giro_presentando y 4 pasos (sorteá rival, 30 s y letras de ayuda, 3 pases de 20 s, el que falla se cae; eliminá a los 10); botón "¡A jugar!" lo cierra y "❓ Cómo se juega" lo vuelve a abrir. Entra sin scroll en 360×640, 390×844 y horizontal 844×390. El logo tenía un borde claro del recorte: se limpió y pasó a logo-v3.webp (nombre nuevo por el caché de assets). Pendiente: Gonzalo puede mandar el logo suelto en alta resolución para que se vea más nítido.
 - Dónde: ahora-caigo.js (v11), ahora-caigo.css (v9), extensiones.js (v136), assets/no-te-caigas/logo-v3.webp, sw gya-cache-v720.
