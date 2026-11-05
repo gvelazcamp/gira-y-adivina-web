@@ -35,3 +35,7 @@
 
 /* La selección se marca con color y borde; el centro vacío no dibuja un cursor. */
 .pc-grilla .pc-activa:not(.pc-correcta):not(.pc-error):not(.pc-revelada){background:#7ddcff;border-color:#2894f2;box-shadow:inset 0 0 0 2px #fff}.pc-muestra-cursor,.pc-demo .pc-demo-activa{background:#7ddcff}
+
+/* Arte aportado por el usuario: marca completa en el catálogo y símbolo en la barra. */
+.ext-tarjeta img[src="assets/palabras-cruzadas/logo-v1.png"]{width:100%;height:auto;aspect-ratio:2/1;object-fit:cover;border-radius:10px}
+.pc-marca{position:relative}.pc-marca .pc-logo{position:absolute;left:-2px;top:-18px;width:112px;height:auto;object-fit:contain}
