@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Arte de piezas (collage 2) para Palabras Cruzadas, No te caigas y Girá y encajá
+- Qué: se recortó el segundo collage (fondo transparente, webp). Palabras Cruzadas: casilla-vacia, casilla-correcta (verde), casilla-bloqueada (violeta), casilla-seleccionada (borde dorado). No te caigas: plataforma-cerrada, plataforma-abierta (trampilla con espiral), atril, reflector. Girá y encajá: ficha-perro, ficha-girasol, ficha-cohete, ficha-empanada (Animales, Plantas, Espacio, Comidas). Quedan listas en la carpeta de cada juego; todavía no las usa el código.
+- Dónde: assets/palabras-cruzadas/, assets/no-te-caigas/, assets/gira-encaja/.
+
 ### 05/11/2026 — Arte nuevo para Palabras Cruzadas, No te caigas y Girá y encajá (collage 1)
 - Qué: Gonzalo generó en ChatGPT un collage con el estilo de todos los juegos; se recortó (fondo transparente, webp) en: logo-v2, icono-v2 y "completo/se-cayo" de cada juego, más 4 poses de Giro (giro.webp en palabras-cruzadas y gira-encaja, giro-festeja.webp en no-te-caigas, y Giro_presentando.webp en presentacion-y-locucion-extensiones/Giro/). En el menú de Extensiones los 3 juegos ya usan el icono-v2 nuevo. El resto de las imágenes quedan listas para usar dentro de cada juego (logo de la portada, final ganado/perdido, Giro). Pendiente: collage 2 (casillas del crucigrama, plataformas/trampilla, fichas).
 - Dónde: assets/palabras-cruzadas/, assets/no-te-caigas/, assets/gira-encaja/, presentacion-y-locucion-extensiones/Giro/, extensiones.js (v131).
