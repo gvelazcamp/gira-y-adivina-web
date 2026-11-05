@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — No te caigas: logo nuevo también en el menú
+- Qué: la tarjeta de Más juegos usa logo-v2.webp (trampilla + "NO TE CAIGAS") en lugar de icono-v2; dentro del juego ya estaba.
+- Dónde: extensiones.js (v134), sw gya-cache-v718.
+
 ### 05/11/2026 — Palabras Cruzadas: logo nuevo en el menú y en el juego
 - Qué: Gonzalo pidió usar el logo nuevo (cuadrícula + lápiz, logo-v2.webp) como logo de Palabras Cruzadas: reemplaza a icono-v2 en la tarjeta de Más juegos y a logo-v1.png en la barra del juego (la marca pasa a 44×40 sin recorte).
 - Dónde: extensiones.js (v133), palabras-cruzadas.js (v9), palabras-cruzadas.css (v8), sw gya-cache-v717.
