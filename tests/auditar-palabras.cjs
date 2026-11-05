@@ -20,7 +20,7 @@
 const fs=require("node:fs"),path=require("node:path"),vm=require("node:vm");
 const root=path.resolve(__dirname,"..");
 const ctx={};ctx.window=ctx;vm.createContext(ctx);
-for(const f of["palabras-cruzadas-datos.js","ahora-caigo-datos.js","ahorcado-rioplatense-datos.js","canta-la-cancion-datos.js","cien-rioplatenses-datos.js","contra-reloj-rioplatense-datos.js","frases-en-giro-datos.js","impostor-datos.js","mimica-datos.js","palabra-secreta-datos.js","quien-soy-datos.js","rosco-rioplatense-datos.js","rueda-de-letras-datos.js","silabario-rioplatense-datos.js","sopa-fugaz-datos.js"])
+for(const f of["gira-encaja-preguntas.js","palabras-cruzadas-datos.js","ahora-caigo-datos.js","ahorcado-rioplatense-datos.js","canta-la-cancion-datos.js","cien-rioplatenses-datos.js","contra-reloj-rioplatense-datos.js","frases-en-giro-datos.js","impostor-datos.js","mimica-datos.js","palabra-secreta-datos.js","quien-soy-datos.js","rosco-rioplatense-datos.js","rueda-de-letras-datos.js","silabario-rioplatense-datos.js","sopa-fugaz-datos.js"])
   vm.runInContext(fs.readFileSync(path.join(root,f),"utf8").replace(/^(const|let) /gm,"var "),ctx);
 
 const norm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().replace(/[^A-Z0-9Ñ]+/g," ").trim();
@@ -38,6 +38,7 @@ ctx.QUIEN_SOY_CATEGORIAS.forEach(c=>c.palabras.forEach(w=>add(unicas,"Quién soy
 ctx.ROSCO_DATOS.forEach(d=>{add(unicas,"Rosco",{r:d.palabra,nivel:d.nivel,donde:"letra "+d.letra+" nivel "+d.nivel});add(pistas,"Rosco",{p:d.definicion,donde:d.palabra});});
 ctx.SILABARIO_DATOS.forEach(d=>{add(unicas,"Silabario",{r:d.respuesta,nivel:d.nivel,donde:d.categoria+" nivel "+d.nivel});add(pistas,"Silabario",{p:d.pista,donde:d.respuesta});});
 [["inicial",ctx.SOPA_DATOS.inicial],...ctx.SOPA_DATOS.categorias.map(c=>[c.nombre,c])].forEach(([n,c])=>c.palabras.forEach(w=>add(unicas,"Sopa Fugaz",{r:w,nivel:1,donde:n})));
+ctx.GIRA_ENCAJA_PREGUNTAS.forEach(q=>add(pistas,"Girá y encajá (preguntas)",{p:q.pregunta,donde:q.id}));
 ctx.CIEN_PREGUNTAS.forEach(q=>{add(pistas,"100 Rioplatenses",{p:q.pregunta,donde:q.id});q.respuestas.forEach(a=>add(avisos,"100 Rioplatenses",{r:a.texto}));});
 ctx.FRASES_EN_GIRO_DATOS.forEach(d=>{add(pistas,"Frases en Giro",{p:d.texto,donde:"nivel "+d.nivel});add(pistas,"Frases en Giro (pista)",{p:d.pista,donde:"nivel "+d.nivel});});
 ctx.CANTA_PALABRAS.forEach(w=>add(avisos,"Canta la Canción",{r:w}));

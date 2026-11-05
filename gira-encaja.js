@@ -19,7 +19,7 @@ window.GiraEncaja=(()=>{
     salir();if(!allowed())return;
     events=new AbortController();signal=events.signal;
     root=document.createElement('section');root.className='ge-game';root.setAttribute('aria-label','Girá y encajá');
-    root.innerHTML='<header class="ge-hud"><div class="ge-status"><small>GIRÁ Y ENCAJÁ</small><span class="ge-level">Nivel 1 · 0/'+PER_LEVEL+'</span></div><b class="ge-score">0</b><span class="ge-lives" aria-label="3 vidas">♥♥♥</span><button class="ge-pause" aria-label="Pausar" disabled>Ⅱ</button></header><canvas class="ge-canvas" tabindex="0" aria-label="Mové con las flechas, girá con espacio, C cambia de ficha y abajo suelta la seleccionada"></canvas><div class="ge-controls"><button data-action="left" aria-label="Mover a la izquierda">←</button><button class="ge-rotate" data-action="rotate">↻ Girar</button><button data-action="right" aria-label="Mover a la derecha">→</button><button data-action="next" aria-label="Seleccionar otra ficha" title="Cambiar de ficha">⇄</button></div><div class="ge-feedback" role="status" aria-live="polite"></div><div class="ge-overlay"></div>';
+    root.innerHTML='<header class="ge-hud"><div class="ge-status"><small>GIRÁ Y ENCAJÁ</small><span class="ge-level">Nivel 1 · 0/'+PER_LEVEL+'</span></div><b class="ge-score">0</b><span class="ge-lives" aria-label="3 vidas">♥♥♥</span><button class="ge-pause" aria-label="Pausar" disabled>Ⅱ</button></header><div class="ge-question" hidden role="status" aria-live="polite"><small>Momento de pensar</small><p></p></div><canvas class="ge-canvas" tabindex="0" aria-label="Mové con las flechas, girá con espacio, C cambia de ficha y abajo suelta la seleccionada"></canvas><div class="ge-controls"><button data-action="left" aria-label="Mover a la izquierda">←</button><button class="ge-rotate" data-action="rotate">↻ Girar</button><button data-action="right" aria-label="Mover a la derecha">→</button><button data-action="next" aria-label="Seleccionar otra ficha" title="Cambiar de ficha">⇄</button></div><div class="ge-feedback" role="status" aria-live="polite"></div><div class="ge-overlay"></div>';
     contenedor.appendChild(root);canvas=root.querySelector('canvas');ctx=canvas.getContext('2d');overlay=root.querySelector('.ge-overlay');
     observer=new ResizeObserver(resize);observer.observe(canvas);resize();
     root.querySelector('.ge-pause').addEventListener('click',pause,{signal});
@@ -42,16 +42,37 @@ window.GiraEncaja=(()=>{
   }
   function panel(html){overlay.innerHTML='<div class="ge-panel">'+html+'</div>';overlay.hidden=false;}
   function intro(){
-    panel('<div class="ge-mark">✧</div><h2>Girá y encajá</h2><p>Las fichas salen de a una, con un pequeño espacio entre ellas. Llevá cada una a su categoría y girala para que entre.</p><p><b>Arrastrá una ficha</b> para moverla · <b>Tocala</b> para girarla.<br>El botón ⇄ cambia la ficha seleccionada.</p><div class="ge-choice"><button data-mode="imagenes" aria-pressed="true">Imágenes</button><button data-mode="palabras" aria-pressed="false">Palabras</button></div><button class="ge-primary" data-start>¡A jugar!</button><p class="ge-note">Versión de prueba · Récord: '+record()+'<br>4 categorías · 5 niveles · 3 vidas</p>');
+    panel('<div class="ge-mark">✧</div><h2>Girá y encajá</h2><p>Llevá cada ficha a su categoría y girala para que entre. Entre tandas aparece una pregunta con dos respuestas: elegí la abertura correcta.</p><p><b>Arrastrá una ficha</b> para moverla · <b>Tocala</b> para girarla.<br>El botón ⇄ cambia la ficha seleccionada.</p><div class="ge-choice"><button data-mode="imagenes" aria-pressed="true">Imágenes</button><button data-mode="palabras" aria-pressed="false">Palabras</button></div><button class="ge-primary" data-start>¡A jugar!</button><p class="ge-note">Versión de prueba · Récord: '+record()+'<br>4 categorías · 5 niveles · 3 vidas</p>');
     overlay.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;overlay.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});
     overlay.querySelector('[data-start]').onclick=start;
   }
   function start(){
-    state={running:true,paused:false,score:0,lives:3,level:1,done:0,total:0,streak:0,pieces:[],pending:[],releaseIn:0,selected:0,nextId:0,wait:0,bag:[]};
+    state={running:true,paused:false,score:0,lives:3,level:1,done:0,total:0,streak:0,pieces:[],pending:[],releaseIn:0,selected:0,nextId:0,wait:0,bag:[],phase:'sort',question:null,quizzedLevel:0,questionsAnswered:0,questionIds:new Set()};
+    root.querySelector('.ge-question').hidden=true;
     slots();spawn();overlay.hidden=true;root.querySelector('.ge-pause').disabled=false;hud();canvas.focus({preventScroll:true});
     feedback('De a una, con tiempo para acomodarlas',1800);
   }
   function slots(){state.slots=CATS.map((c,i)=>({cat:i,vertical:(i+state.level)%2===1}));}
+  function gates(){
+    if(state?.phase==='question')return state.question.choices.map((a,i)=>({...a,x:120+i*240,vertical:(i+state.level)%2===0,color:i?'#ef9bff':'#75e9f4'}));
+    return(state?.slots||CATS.map((c,i)=>({cat:i,vertical:i%2===0}))).map((s,i)=>({...s,...CATS[s.cat],x:75+i*110}));
+  }
+  function nextRound(){
+    if(state.done===3&&state.quizzedLevel!==state.level&&window.GIRA_ENCAJA_PREGUNTAS?.length)startQuestion();
+    else spawn();
+  }
+  function startQuestion(){
+    const all=window.GIRA_ENCAJA_PREGUNTAS;
+    let pool=window.Vistas?Vistas.filtrar('gira_encaja_preguntas',all,q=>q.id):all;
+    pool=pool.filter(q=>!state.questionIds.has(q.id));if(!pool.length)pool=all;
+    const q=(!state.questionsAnswered&&pool.find(q=>q.id==='segunda-guerra'))||pool[Math.floor(Math.random()*pool.length)];
+    const choices=[{text:q.correcta,correct:true},{text:q.otra,correct:false}];if(Math.random()<.5)choices.reverse();
+    state.phase='question';state.question={...q,choices};state.quizzedLevel=state.level;state.questionIds.add(q.id);
+    if(window.Vistas)Vistas.marcar('gira_encaja_preguntas',q.id);
+    const p={id:++state.nextId,kind:'question',x:W/2,y:spawnY(),vertical:false};state.pieces=[p];state.selected=p.id;
+    const box=root.querySelector('.ge-question');box.querySelector('p').textContent=q.pregunta;box.hidden=false;
+    feedbackUntil=0;root.querySelector('.ge-feedback').classList.remove('ge-show');describePiece();
+  }
   function spawn(){
     if(!state.bag.length){state.bag=CATS.flatMap((cat,c)=>cat.items.map((item,i)=>({cat:c,item:i})));for(let i=state.bag.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[state.bag[i],state.bag[j]]=[state.bag[j],state.bag[i]];}}
     const used=new Set();
@@ -70,7 +91,14 @@ window.GiraEncaja=(()=>{
     describePiece();
   }
   function selectedPiece(){return state?.pieces.find(p=>p.id===state.selected);}
-  function describePiece(){const p=selectedPiece();canvas.setAttribute('aria-label',p?'Ficha: '+CATS[p.cat].items[p.item][1]+'. '+(p.vertical?'Vertical':'Horizontal')+'. '+state.pieces.length+' en caída. Flechas para mover, espacio para girar, C para cambiar de ficha, abajo para soltar.':'Esperando la próxima ficha.');}
+  function describePiece(){
+    const p=selectedPiece();
+    if(state.phase==='question'){
+      const answers=gates().map((g,i)=>(i?'Derecha':'Izquierda')+': '+g.text+', '+(g.vertical?'vertical':'horizontal')).join('. ');
+      canvas.setAttribute('aria-label',state.question.pregunta+' '+answers+'. Ficha: '+(p?.vertical?'Vertical':'Horizontal')+'. Flechas para mover, espacio para girar, abajo para soltar.');return;
+    }
+    canvas.setAttribute('aria-label',p?'Ficha: '+CATS[p.cat].items[p.item][1]+'. '+(p.vertical?'Vertical':'Horizontal')+'. '+state.pieces.length+' en caída. Flechas para mover, espacio para girar, C para cambiar de ficha, abajo para soltar.':'Esperando la próxima ficha.');
+  }
   function hud(){
     root.querySelector('.ge-score').textContent=state.score;
     root.querySelector('.ge-level').textContent='Nivel '+state.level+' · '+state.done+'/'+PER_LEVEL;
@@ -81,7 +109,10 @@ window.GiraEncaja=(()=>{
     if(!state?.running||state.paused)return;const p=selectedPiece();if(!p)return;
     if(a==='next'){const index=state.pieces.indexOf(p);state.selected=state.pieces[(index+1)%state.pieces.length].id;describePiece();return;}
     if(a==='rotate'){p.vertical=!p.vertical;describePiece();}
-    if(a==='left'||a==='right'){const lane=Math.floor((p.x-20)/110);p.x=75+Math.max(0,Math.min(3,lane+(a==='left'?-1:1)))*110;}
+    if(a==='left'||a==='right'){
+      const entries=gates(),lane=entries.reduce((best,g,i)=>Math.abs(g.x-p.x)<Math.abs(entries[best].x-p.x)?i:best,0);
+      p.x=entries[Math.max(0,Math.min(entries.length-1,lane+(a==='left'?-1:1)))].x;
+    }
     if(a==='drop')p.y=gateY()+15;
   }
   function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height};}
@@ -106,14 +137,20 @@ window.GiraEncaja=(()=>{
   function gateY(){return H-100;}
   function resolve(p){
     if(!state.running||!state.pieces.includes(p))return;
-    const index=Math.max(0,Math.min(3,Math.floor((p.x-20)/110))),slot=state.slots[index];
-    const aligned=Math.abs(p.x-(75+index*110))<=(p.vertical?23:12);
-    const correct=slot.cat===p.cat&&slot.vertical===p.vertical&&aligned;
+    const entries=gates(),slot=entries.reduce((best,g)=>Math.abs(g.x-p.x)<Math.abs(best.x-p.x)?g:best,entries[0]),quiz=state.phase==='question';
+    const aligned=Math.abs(p.x-slot.x)<=(p.vertical?23:12),rightChoice=quiz?slot.correct:slot.cat===p.cat;
+    const correct=rightChoice&&slot.vertical===p.vertical&&aligned;
     if(correct){state.streak++;state.score+=100+Math.min(5,state.streak-1)*20;feedback(state.streak>=3?'¡Racha de '+state.streak+'!':'¡Bien encajado!');}
-    else{state.lives--;state.streak=0;feedback(slot.cat!==p.cat?'Era de '+CATS[p.cat].nombre:slot.vertical!==p.vertical?'¡Había que girarla!':'Centrala en el huequito',1800);}
+    else{state.lives--;state.streak=0;feedback(!rightChoice?(quiz?'La respuesta era '+state.question.correcta:'Era de '+CATS[p.cat].nombre):slot.vertical!==p.vertical?'¡Había que girarla!':'Centrala en el huequito',1800);}
     state.pieces=state.pieces.filter(other=>other!==p);if(drag?.pieceId===p.id)drag=null;
     if(state.selected===p.id)state.selected=state.pieces[0]?.id||0;
-    state.total++;state.done++;describePiece();
+    state.total++;
+    if(quiz){
+      state.questionsAnswered++;if(correct)feedback('¡Correcto! '+state.question.correcta,1400);
+      state.phase='sort';state.question=null;root.querySelector('.ge-question').hidden=true;state.wait=correct?1.4:1.8;
+      describePiece();if(!state.lives)finish(false);else hud();return;
+    }
+    state.done++;describePiece();
     if(!state.lives){finish(false);return;}
     if(!state.pieces.length&&!state.pending.length){
       state.wait=.55;
@@ -125,32 +162,33 @@ window.GiraEncaja=(()=>{
   function finish(won){
     state.running=false;root.querySelector('.ge-pause').disabled=true;hud();const previous=record();
     try{if(state.score>previous)localStorage.setItem(KEY,String(state.score));}catch(e){}
-    panel('<div class="ge-mark">'+(won?'✦':'↻')+'</div><h2>'+(won?'¡Laboratorio completo!':'Probemos otra vez')+'</h2><p><b>'+state.score+' puntos</b> · Nivel '+state.level+'<br>'+state.total+' fichas jugadas</p><p>'+((state.score>previous)?'¡Nuevo récord!':('Récord: '+record()))+'</p><button class="ge-primary" data-retry>Volver a jugar</button><button data-back style="margin-top:10px">Elegir modo</button>');
+    panel('<div class="ge-mark">'+(won?'✦':'↻')+'</div><h2>'+(won?'¡Laboratorio completo!':'Probemos otra vez')+'</h2><p><b>'+state.score+' puntos</b> · Nivel '+state.level+'<br>'+(state.total-state.questionsAnswered)+' fichas · '+state.questionsAnswered+' preguntas</p><p>'+((state.score>previous)?'¡Nuevo récord!':('Récord: '+record()))+'</p><button class="ge-primary" data-retry>Volver a jugar</button><button data-back style="margin-top:10px">Elegir modo</button>');
     overlay.querySelector('[data-retry]').onclick=start;overlay.querySelector('[data-back]').onclick=intro;
   }
   function round(x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();}}
   function draw(){
     ctx.clearRect(0,0,W,H);const shades=ctx.createLinearGradient(0,0,0,H);shades.addColorStop(0,'#09214314');shades.addColorStop(1,'#061b4055');ctx.fillStyle=shades;ctx.fillRect(0,0,W,H);
     const g=gateY();round(12,g-33,W-24,128,16,'#242147df','#9a8cd080');
-    const entries=state?.slots||CATS.map((c,i)=>({cat:i,vertical:i%2===0}));
+    const entries=gates(),quiz=state?.phase==='question';
     entries.forEach((slot,i)=>{
-      const cat=CATS[slot.cat],x=75+i*110;ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='25px system-ui';ctx.fillText(cat.icono,x,g-13);
+      const x=slot.x;ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=quiz?'800 21px system-ui':'25px system-ui';ctx.fillStyle=quiz?slot.color:'#fff';ctx.fillText(quiz?slot.text:slot.icono,x,g-13,quiz?200:45);
       const w=slot.vertical?43:99,h=slot.vertical?67:36,y=g+10+(67-h)/2;
-      ctx.shadowColor=cat.color;ctx.shadowBlur=10;round(x-w/2,y,w,h,8,'#020c23',cat.color);ctx.shadowBlur=0;
-      ctx.fillStyle='#edf6ff';ctx.font='600 11px system-ui';ctx.fillText(cat.nombre,x,H-6);
+      ctx.shadowColor=slot.color;ctx.shadowBlur=10;round(x-w/2,y,w,h,8,'#020c23',slot.color);ctx.shadowBlur=0;
+      ctx.fillStyle='#edf6ff';ctx.font='600 11px system-ui';ctx.fillText(quiz?'Opción '+(i?'B':'A'):slot.nombre,x,H-6);
     });
     if(!state?.pieces.length)return;
     const pieces=[...state.pieces].sort((a,b)=>(a.id===state.selected)-(b.id===state.selected));
     pieces.forEach(p=>drawPiece(p));
-    if(state.level===1){ctx.textAlign='center';ctx.font='12px system-ui';ctx.fillStyle='#d7f4ff';ctx.fillText('Tocá una ficha para girarla · Arrastrala para moverla',W/2,Math.max(18,g-68));}
+    if(state.level===1&&!quiz){ctx.textAlign='center';ctx.font='12px system-ui';ctx.fillStyle='#d7f4ff';ctx.fillText('Tocá una ficha para girarla · Arrastrala para moverla',W/2,Math.max(18,g-68));}
   }
   function drawPiece(p){
-    const cat=CATS[p.cat],item=cat.items[p.item],selected=p.id===state.selected;
+    const quiz=p.kind==='question',item=quiz?['❔','?']:CATS[p.cat].items[p.item],selected=p.id===state.selected;
     ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.vertical?Math.PI/2:0);ctx.shadowColor='#bd91ff';ctx.shadowBlur=20;
     round(-44,-17,88,34,7,'#fff0d8',selected?'#ffe094':'#e1b7ff');ctx.shadowBlur=0;
     if(selected){ctx.strokeStyle='#ffe094';ctx.lineWidth=2;ctx.strokeRect(-48,-21,96,42);}ctx.restore();
     ctx.save();ctx.translate(p.x,p.y);ctx.textAlign='center';ctx.textBaseline='middle';
-    if(mode==='imagenes'){ctx.font='29px system-ui';ctx.fillText(item[0],0,1);}
+    if(quiz){ctx.fillStyle='#59329c';ctx.font='900 29px system-ui';ctx.fillText('?',0,1);}
+    else if(mode==='imagenes'){ctx.font='29px system-ui';ctx.fillText(item[0],0,1);}
     else{if(p.vertical)ctx.rotate(Math.PI/2);ctx.fillStyle='#30234e';ctx.font='800 '+Math.min(14,74/(item[1].length*.6))+'px system-ui';ctx.fillText(item[1],0,1);}
     ctx.restore();
   }
@@ -159,7 +197,7 @@ window.GiraEncaja=(()=>{
     if(state?.running&&!state.paused){
       if(state.pending.length){state.releaseIn-=dt;if(state.releaseIn<=0)releasePiece();}
       if(state.pieces.length){const speed=(gateY()+15-spawnY())/(9-(state.level-1)*.9);for(const p of [...state.pieces]){if(!state.running)break;p.y+=speed*dt;if(p.y>=gateY()+15)resolve(p);}}
-      else if(!state.pending.length){state.wait-=dt;if(state.wait<=0)spawn();}
+      else if(!state.pending.length){state.wait-=dt;if(state.wait<=0)nextRound();}
     }
     if(feedbackUntil&&now>=feedbackUntil){root.querySelector('.ge-feedback').classList.remove('ge-show');feedbackUntil=0;}
     draw();raf=requestAnimationFrame(loop);

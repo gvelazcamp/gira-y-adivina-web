@@ -86,9 +86,24 @@ const names=[['Gato','Perro','León','Rana','Tortuga','Mariposa','Delfín','Elef
           assert.equal((await cards()).length,2-n,'only resolved card leaves its trio');
         }
         await page.clock.runFor(1300);
+        if(wave===0){
+          assert.equal(await page.locator('.ge-question').evaluate(e=>e.hidden),false,'one question between sorting waves');
+          const question=await page.locator('.ge-question p').textContent();
+          const data=await page.evaluate(text=>window.GIRA_ENCAJA_PREGUNTAS.find(q=>q.pregunta===text),question);
+          const label=await page.locator('.ge-canvas').getAttribute('aria-label');
+          const vertical=label.includes(data.correcta+', vertical'),left=label.includes('Izquierda: '+data.correcta+',');
+          if(vertical)await page.locator('.ge-canvas').press('Space');
+          await page.locator('.ge-canvas').press(left?'ArrowLeft':'ArrowRight');
+          await page.locator('.ge-canvas').press('ArrowDown');await page.clock.runFor(80);
+          assert.equal(await page.locator('.ge-lives').textContent(),'♥♥♥','correct quiz answer');
+          assert.equal(await page.locator('.ge-question').evaluate(e=>e.hidden),true);
+          assert.match(await page.locator('.ge-level').textContent(),/3\/9/,'quiz does not consume sorting cards');
+          await page.clock.runFor(1500);
+        }
       }
       assert.match(await page.locator('.ge-panel h2').textContent(),/completo/);
-      const record=await page.evaluate(()=>GiraEncaja.mejorPuntaje());assert(record>=4500);
+      assert.match(await page.locator('.ge-panel').textContent(),/45 fichas · 5 preguntas/);
+      const record=await page.evaluate(()=>GiraEncaja.mejorPuntaje());assert(record>=5000);
       await page.locator('[data-retry]').click();await page.clock.runFor(20);
       // One incorrectly oriented card and two wrong categories cost exactly three lives.
       for(let i=0;i<3;i++){
