@@ -394,6 +394,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Bienvenida con dibujo en No te caigas, Girá y encajá y Palabras Cruzadas; tarjetas parejas
+- Qué: los 3 juegos nuevos tienen el cartel de bienvenida de siempre (como Puzzle/Tutti Frutti): logo, dibujo de los chicos (assets/<juego>/como.webp, recortados del collage de Gonzalo), 4 pasos con emoji y "¡A jugar!". Sale al entrar y se reabre con "❓ Cómo se juega" (en Palabras Cruzadas, "Cómo jugar" sigue abriendo la guía paso a paso). Se usa PantallaFija.bienvenida, que ahora acepta `dibujo` y `sinFija` (no pide pantalla completa al cerrar); en horizontal el dibujo va a la izquierda y los pasos a la derecha. El cartel viejo de No te caigas (.ac-como) se sacó. En Girá y encajá el panel de inicio quedó solo con la elección Imágenes/Palabras. Entra sin scroll en 360×640, 390×844 y 844×390.
+- Tarjetas de Más juegos: "Mejor: …" queda pegado abajo en todas (alineado entre tarjetas vecinas) y los logos de Girá y encajá y No te caigas pasan a 78 px de alto (No te caigas se veía chico).
+- Dónde: pantalla-fija.js (v11), ahora-caigo.js (v12), ahora-caigo.css (v10), gira-encaja.js (v9), gira-encaja.css (v7), palabras-cruzadas.js (v10), extensiones.css (v162), sw gya-cache-v722.
+
 ### 05/11/2026 — Más juegos: logos de Girá y encajá y No te caigas alineados
 - Qué: las dos tarjetas quedaban desfasadas (en una la insignia "Prueba" iba arriba y en la otra encima del logo). Ahora las dos usan la misma regla: insignia arriba a la derecha y logo de 64 px de alto alineado a la izquierda, así los títulos y textos empiezan y terminan a la misma altura.
 - Dónde: extensiones.css (v161), sw gya-cache-v721.

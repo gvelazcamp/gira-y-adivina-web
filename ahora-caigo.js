@@ -35,6 +35,7 @@ window.AhoraCaigo=(()=>{
   const normalizar=s=>String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]/g,"");
   function despues(fn,ms){const t=setTimeout(()=>{pendientes.delete(t);fn();},ms);pendientes.add(t);return t;}
   function salir(){
+    document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());
     generacionMusica++;iniciandoMusica=false;musicaDeseada=false;clearInterval(controlMusica);controlMusica=null;
     document.removeEventListener("visibilitychange",sincronizarMusicaCaigo);
     try{if(musica){musica.pause();musica.currentTime=0;}}catch(e){}
@@ -83,13 +84,10 @@ window.AhoraCaigo=(()=>{
     final.setAttribute("aria-labelledby","acFinalTitulo");final.setAttribute("aria-describedby","acFinalResumen");
     final.innerHTML='<div class="ac-final-contenido"><header class="ac-final-cabecera"><span class="ac-final-etiqueta">DUELO TERMINADO</span><h3 id="acFinalTitulo"></h3><p id="acFinalResumen"></p></header><div class="ac-final-escena"></div><div class="ac-final-detalle"><div class="ac-final-respuesta"><small>LA RESPUESTA ERA</small><strong></strong></div><div class="ac-final-cifras"><span class="ac-final-eliminados"></span><span class="ac-final-pases"></span></div><div class="ac-final-acciones"><button type="button" class="ac-final-primaria" autofocus></button><button type="button" class="ac-final-salir">Volver a Más juegos</button></div></div></div>';
     raiz.appendChild(final);
-    const como=document.createElement("dialog");como.className="ac-como";como.setAttribute("aria-labelledby","acComoTitulo");
-    como.innerHTML='<div class="ac-como-contenido"><img class="ac-como-giro" src="presentacion-y-locucion-extensiones/Giro/Giro_presentando.webp" alt=""><div class="ac-como-texto"><h3 id="acComoTitulo">¿Cómo se juega?</h3><ol><li><b>Sorteá un rival</b> entre los 10 del estudio.</li><li>Una pregunta para vos, otra para él. Tenés <b>30 segundos</b> y algunas letras de ayuda.</li><li>¿No la sabés? <b>Pasásela</b>: tiene 20 segundos. Tenés 3 pases.</li><li>Quien falla <b>se cae por la trampilla</b>. ¡Eliminá a los 10!</li></ol><button type="button" class="ac-como-ok">¡A jugar!</button></div></div>';
-    como.querySelector(".ac-como-ok").onclick=()=>como.close();
-    raiz.appendChild(como);
+    const como=()=>PantallaFija.bienvenida(raiz.closest("#extContenido")||document.body,{logo:"assets/no-te-caigas/logo-v3.webp",alt:"No te caigas",dibujo:"assets/no-te-caigas/como.webp",sinFija:true,items:[["🎲","<b>Sorteá un rival</b> entre los 10 del estudio."],["❓","Una pregunta para vos, otra para él: <b>30 segundos</b> y letras de ayuda."],["🔁","¿No la sabés? <b>Pasásela</b>: tiene 20 segundos. Tenés 3 pases."],["🕳️","Quien falla <b>se cae por la trampilla</b>. ¡Eliminá a los 10!"]]});
     contenedor.appendChild(raiz);raiz.closest(".ext-shell")?.classList.add("ac-abierta");
-    raiz.querySelector(".ac-como-btn").onclick=()=>{if(!como.open)como.showModal();};
-    setTimeout(()=>{if(raiz&&raiz.isConnected&&!como.open&&!final.open)como.showModal();},250);
+    raiz.querySelector(".ac-como-btn").onclick=como;
+    setTimeout(()=>{if(raiz&&raiz.isConnected&&!final.open)como();},150);
     const actual=raiz;
     let avatar="avatar-01",nombre="Gonzalo";
     try{avatar=localStorage.getItem("gya_avatar")||avatar;nombre=perfil.nombre||nombre;}catch(e){}

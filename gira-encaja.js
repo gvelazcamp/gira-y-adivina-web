@@ -65,7 +65,7 @@ window.GiraEncaja=(()=>{
     document.addEventListener('visibilitychange',()=>{if(document.hidden&&state?.running&&!state.paused)pause();syncMusic();},{signal});
     window.addEventListener('pagehide',()=>{music?.pause();},{signal});
     window.addEventListener('pageshow',syncMusic,{signal});
-    intro();syncMusic();last=0;raf=requestAnimationFrame(loop);
+    intro();como();syncMusic();last=0;raf=requestAnimationFrame(loop);
   }
   function resize(){
     if(!canvas)return;const r=canvas.getBoundingClientRect();if(!r.width||!r.height)return;
@@ -73,10 +73,12 @@ window.GiraEncaja=(()=>{
     canvas.width=Math.round(r.width*d);canvas.height=Math.round(r.height*d);ctx.setTransform(canvas.width/W,0,0,canvas.height/H,0,0);
   }
   function panel(html){overlay.innerHTML='<div class="ge-panel">'+html+'</div>';overlay.hidden=false;}
+  function como(){PantallaFija.bienvenida(root.closest("#extContenido")||document.body,{logo:"assets/gira-encaja/logo-v3.webp",alt:"Girá y encajá",dibujo:"assets/gira-encaja/como.webp",sinFija:true,items:[["🧩","Caen <b>fichas</b> con dibujos o palabras."],["👆","<b>Arrastrala</b> hasta la ranura de su categoría y <b>tocala</b> para girarla."],["⇄","El botón ⇄ cambia la ficha que movés."],["❓","Entre tandas sale una <b>pregunta</b>: metela por la respuesta correcta."]]});}
   function intro(){
-    panel('<h2 class="ge-titulo"><img class="ge-logo" src="assets/gira-encaja/logo-v3.webp" alt="Girá y encajá"></h2><p>Llevá cada ficha a su categoría y girala para que entre. Entre tandas aparece una pregunta con dos respuestas: elegí la abertura correcta.</p><p><b>Arrastrá una ficha</b> para moverla · <b>Tocala</b> para girarla.<br>El botón ⇄ cambia la ficha seleccionada.</p><div class="ge-choice"><button data-mode="imagenes" aria-pressed="true">Imágenes</button><button data-mode="palabras" aria-pressed="false">Palabras</button></div><button class="ge-primary" data-start>¡A jugar!</button><p class="ge-note">Versión de prueba · Récord: '+record()+'<br>4 categorías · 5 niveles · 3 vidas</p>');
+    panel('<h2 class="ge-titulo"><img class="ge-logo" src="assets/gira-encaja/logo-v3.webp" alt="Girá y encajá"></h2><p>Elegí cómo querés ver las fichas:</p><div class="ge-choice"><button data-mode="imagenes" aria-pressed="true">Imágenes</button><button data-mode="palabras" aria-pressed="false">Palabras</button></div><button class="ge-primary" data-start>¡A jugar!</button><button type="button" class="ge-como" data-como>❓ Cómo se juega</button><p class="ge-note">Versión de prueba · Récord: '+record()+'<br>4 categorías · 5 niveles · 3 vidas</p>');
     overlay.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;overlay.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});
     overlay.querySelector('[data-start]').onclick=start;
+    overlay.querySelector('[data-como]').onclick=como;
   }
   function start(){
     state={running:true,paused:false,score:0,lives:3,level:1,done:0,total:0,streak:0,pieces:[],pending:[],releaseIn:0,selected:0,nextId:0,wait:0,bag:[],phase:'sort',question:null,quizzedLevel:0,questionsAnswered:0,questionIds:new Set()};
@@ -237,6 +239,7 @@ window.GiraEncaja=(()=>{
     draw();raf=requestAnimationFrame(loop);
   }
   function salir(){
+    document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());
     musicGeneration++;musicPending=false;musicBlocked=false;
     try{if(music){music.pause();music.currentTime=0;music.removeAttribute('src');music.load();}}catch(e){}music=null;
     cancelAnimationFrame(raf);events?.abort();observer?.disconnect();root?.remove();root=null;state=null;canvas=null;drag=null;last=0;feedbackUntil=0;mode='imagenes';

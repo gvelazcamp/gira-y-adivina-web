@@ -59,15 +59,16 @@ const PantallaFija=(()=>{
   }
   /* Popup de bienvenida al entrar a un juego de previa: logo grande + cómo
      se juega + "¡A jugar!". La pantalla completa se pide al cerrarlo, así el
-     aviso de Chrome no tapa nada importante. o={logo,alt,items:[[emoji,html]]} */
+     aviso de Chrome no tapa nada importante. o={logo,alt,items:[[emoji,html]],dibujo?,sinFija?,alCerrar?}: dibujo = escena "como.webp"; sinFija = no pide pantalla completa al cerrar (juegos que no la usan). */
   function bienvenida(contenedor,o){
     document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());
     const c=document.createElement("div");c.className="pf-bienv";
     c.innerHTML='<div class="pf-bienv-caja"><button type="button" class="pf-bienv-x" aria-label="Cerrar">✕</button>'+
       '<img class="pf-bienv-logo" src="'+o.logo+'" alt="'+(o.alt||"")+'" draggable="false">'+
+      (o.dibujo?'<img class="pf-bienv-dibujo" src="'+o.dibujo+'" alt="" draggable="false">':'')+
       '<ul>'+o.items.map(([e,t])=>'<li><span>'+e+'</span><em>'+t+'</em></li>').join("")+'</ul>'+
       '<button type="button" class="pf-bienv-ok">¡A jugar!</button></div>';
-    const cerrar=()=>{c.remove();entrar();};
+    const cerrar=()=>{c.remove();if(o.sinFija){if(o.alCerrar)o.alCerrar();}else entrar();};
     c.querySelector(".pf-bienv-ok").onclick=cerrar;c.querySelector(".pf-bienv-x").onclick=cerrar;
     c.addEventListener("click",e=>{if(e.target===c)cerrar();});
     (contenedor||document.body).appendChild(c);
