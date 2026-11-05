@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Línea del tiempo: compartir la línea en redes
+- Qué: Gonzalo quiere compartir el resultado tan lindo como se ve. Al terminar aparece "📲 Compartir mi línea": popup con la foto 1080×1350 (logo, "¡LÍNEA PERFECTA!" o "N DE M BIEN UBICADAS", nivel · puntos · tiempo, la línea con cada acontecimiento en verde/rojo y su año, "¿Me ganás?") y botón Compartir (Web Share con la imagen; si no hay, se descarga). Entra sin scroll en 360×640 y 390×844.
+- Dónde: linea-tiempo.js (v6), linea-tiempo.css (v4), sw gya-cache-v731.
+
 ### 05/11/2026 — Línea del tiempo: niveles con la línea vacía (reemplaza el modo carta por carta)
 - Qué: Gonzalo: "los niveles tienen que ser toda la pantalla de ¿va acá?… arrancás a arrastrar cada acontecimiento; el que más acontecimientos acierte y rápido gana". Cada nivel muestra todos los lugares vacíos (⬆ más antiguo / ⬇ más nuevo) y una pila de acontecimientos: se arrastra cada uno a un lugar (o se toca el lugar); una carta puesta se puede arrastrar a otro lugar (intercambian) o tocar para devolverla a la pila. Con todas puestas, "¡Listo!" comprueba: verdes/rojas con el año y "Acá iba: …". Puntos = 100 por acierto + bonus por rapidez ((cartas×15 − segundos)×2). Niveles 1–5 = 5 a 9 cartas (años distintos); pasa de nivel con la línea perfecta (gya_linea_tiempo_nivel). Reloj en pantalla. Duelo: 7 cartas iguales para los dos, badge "N bien · tiempo" del rival, gana más puntos (acierta más y más rápido). Ficha ⚡ al empezar desde la pantalla de temas.
 - Prueba: tests/linea-tiempo.cjs reescrito (pasa). Las vidas y la racha del modo anterior se sacaron.

@@ -1,4 +1,4 @@
-const CACHE_NAME = "gya-cache-v730";
+const CACHE_NAME = "gya-cache-v731";
 // Máximo que se espera a la red (HTML/JS) antes de abrir con la copia guardada.
 const ESPERA_RED_MS = 2000;
 // Imágenes, audios y videos van en una caché APARTE que NO se borra cuando se
@@ -24,7 +24,7 @@ const EXTENSION_ENTRY_ASSETS = [
 ];
 APP_SHELL.push(...EXTENSION_ENTRY_ASSETS);
 APP_SHELL.push("./numero-voz.css?v=3","./numero-voz-datos.js?v=1","./numero-voz.js?v=4");
-APP_SHELL.push('./assets/gira-encaja/observatory-in-the-clouds-v1.mp3','./gira-encaja-preguntas.js?v=1','./linea-tiempo.css?v=3','./linea-tiempo-datos.js?v=1','./linea-tiempo.js?v=5','./assets/linea-tiempo/logo.webp','./gira-encaja.css?v=7','./gira-encaja.js?v=10','./assets/gira-encaja/icono.svg','./assets/gira-encaja/laboratorio-v1.webp');
+APP_SHELL.push('./assets/gira-encaja/observatory-in-the-clouds-v1.mp3','./gira-encaja-preguntas.js?v=1','./linea-tiempo.css?v=4','./linea-tiempo-datos.js?v=1','./linea-tiempo.js?v=6','./assets/linea-tiempo/logo.webp','./gira-encaja.css?v=7','./gira-encaja.js?v=10','./assets/gira-encaja/icono.svg','./assets/gira-encaja/laboratorio-v1.webp');
 
 self.addEventListener("install", (e) => {
   e.waitUntil(
