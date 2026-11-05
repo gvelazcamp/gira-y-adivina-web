@@ -1,4 +1,4 @@
-const CACHE_NAME = "gya-cache-v703";
+const CACHE_NAME = "gya-cache-v704";
 // Máximo que se espera a la red (HTML/JS) antes de abrir con la copia guardada.
 const ESPERA_RED_MS = 2000;
 // Imágenes, audios y videos van en una caché APARTE que NO se borra cuando se
@@ -23,7 +23,7 @@ const EXTENSION_ENTRY_ASSETS = [
   "./assets/canta/icono.webp", "./assets/bomba/icono.webp", "./assets/quien-soy/icono.webp", "./assets/que-numero-soy/icono.webp"
 ];
 APP_SHELL.push(...EXTENSION_ENTRY_ASSETS);
-APP_SHELL.push('./gira-encaja.css?v=1','./gira-encaja.js?v=1','./assets/gira-encaja/icono.svg','./assets/gira-encaja/laboratorio-v1.webp');
+APP_SHELL.push('./gira-encaja.css?v=2','./gira-encaja.js?v=2','./assets/gira-encaja/icono.svg','./assets/gira-encaja/laboratorio-v1.webp');
 
 self.addEventListener("install", (e) => {
   e.waitUntil(

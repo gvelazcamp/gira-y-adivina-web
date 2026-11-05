@@ -7,8 +7,8 @@
 .ge-game button:focus-visible{outline:3px solid #ffe295;outline-offset:3px}
 .ge-game button:hover{background:#28547c}.ge-game button:disabled{opacity:.4;cursor:default}
 .ge-canvas{display:block;width:100%;flex:1;min-height:0;touch-action:none;border-radius:0 0 16px 16px}
-.ge-controls{display:flex;justify-content:center;gap:10px;padding:4px 12px 10px;background:#061930aa}
-.ge-controls button{min-width:60px}.ge-controls .ge-rotate{min-width:130px;border-color:#c18cff;background:linear-gradient(#7953c6,#493494)}
+.ge-controls{display:flex;justify-content:center;gap:8px;padding:4px 12px 10px;background:#061930aa}
+.ge-controls button{min-width:44px}.ge-controls .ge-rotate{min-width:0;flex:1;max-width:150px;border-color:#c18cff;background:linear-gradient(#7953c6,#493494)}
 .ge-overlay{position:absolute;inset:0;z-index:2;display:grid;place-items:center;background:#0613299c;border-radius:20px;padding:20px;backdrop-filter:blur(6px)}
 .ge-overlay[hidden]{display:none}
 .ge-panel{width:min(100%,370px);max-height:100%;overflow:auto;padding:26px 24px;border:1px solid #98ceff70;border-radius:24px;background:linear-gradient(145deg,#17395af5,#211942f5);box-shadow:0 20px 70px #0008;text-align:center}
