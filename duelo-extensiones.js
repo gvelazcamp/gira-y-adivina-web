@@ -128,7 +128,7 @@ const Duelo=(()=>{
   let cliente=null,juego=null,sala=null,soyHost=false,rival=null,activo=false;
   /* Invitación por link: ?duelo=<juego>&sala=XXXX&de=<nombre> abre ese juego
      con el código cargado. En Palabra Secreta entra directamente a la sala. */
-  const DUELO_EXT={ahorcado:"ahorcado-rioplatense",cien:"cien-rioplatenses",frases:"frases-en-giro",memoria:"memoria-en-giro",rosco:"rosco-rioplatense",rueda:"rueda-de-letras",silabario:"silabario-rioplatense",sopa:"sopa-fugaz",palabra:"palabra-secreta","palabra-colaborativa":"palabra-secreta",moon:"moon-tap",puzzle:"puzzle"};
+  const DUELO_EXT={ahorcado:"ahorcado-rioplatense",cien:"cien-rioplatenses",frases:"frases-en-giro",memoria:"memoria-en-giro",rosco:"rosco-rioplatense",rueda:"rueda-de-letras",silabario:"silabario-rioplatense",sopa:"sopa-fugaz",palabra:"palabra-secreta","palabra-colaborativa":"palabra-secreta",moon:"moon-tap",puzzle:"puzzle",linea:"linea-tiempo"};
   let invitacion=null;
   try{
     const q=new URLSearchParams(location.search),j=q.get("duelo"),s=(q.get("sala")||"").toUpperCase();
@@ -212,7 +212,7 @@ const Duelo=(()=>{
   function mostrarLobby(nombreJuego,idJuego,{onListo,onCancelar,detalle,sub,frase,titulo="Jugar con un amigo"}){
     nombreActual=nombreJuego;onListoJuego=onListo||null;revancha={yo:false,rival:false};rivalSeFue=false;rondaPendiente=null;
     juego=idJuego;activo=false;rival=null;finalRival=null;
-    const entradaDirecta=idJuego==="palabra"||idJuego==="palabra-colaborativa";
+    const entradaDirecta=idJuego==="palabra"||idJuego==="palabra-colaborativa"||idJuego==="linea";
     let uniendose=false,yaDecidido=false;
     const c=activaCapa();
     c.innerHTML='<div class="dl-tarjeta"><h3>'+titulo+'</h3><p class="dl-sub">'+(sub||nombreJuego+' · 1 vs 1')+'</p>'+(detalle?'<p class="dl-detalle">'+detalle+'</p>':'')+
