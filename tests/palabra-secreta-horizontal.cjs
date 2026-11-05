@@ -47,7 +47,7 @@ const server=http.createServer((req,res)=>{
     assert(nivel.y+nivel.height<=keyboard.y&&stats.y+stats.height<=keyboard.y,'Nivel y estadísticas deben estar arriba del teclado');
     assert(Math.abs(nivel.x+nivel.width/2-(keyboard.x+keyboard.width/2))<5,'El nivel debe estar centrado respecto del teclado');
     assert.equal(await page.locator('#psTablero .ps-fila').count(),6);
-    assert.equal(await page.locator('.ps-leyenda>span').count(),3);
+    assert.equal(await page.locator('.ps-leyenda>span').count(),4);
     assert.match(await page.locator('.ps-leyenda').textContent(),/Gris: no está.*Amarillo: otro lugar.*Verde: lugar correcto/);
     const legend=await page.locator('.ps-leyenda').boundingBox();
     assert(legend.y>=0&&legend.y+legend.height<=board.y+1,'La leyenda debe quedar visible arriba del tablero');
