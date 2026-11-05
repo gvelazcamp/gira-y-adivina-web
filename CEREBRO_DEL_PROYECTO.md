@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Girá y encajá: logo nuevo (ficha PERRO entrando en ANIMALES)
+- Qué: Gonzalo hizo en ChatGPT un logo que muestra el juego de verdad (fichas con palabras que se giran y entran en la ranura de su categoría, no piezas tipo Tetris). Se recortó a assets/gira-encaja/logo-v3.webp (700×366, fondo transparente) y se usa en la tarjeta de Más juegos (la insignia "Prueba" va arriba, sin taparlo) y en el panel de inicio del juego en lugar del título de texto. El panel sigue entrando sin scroll en 360×640.
+- Dónde: extensiones.js (v135), extensiones.css (v160), gira-encaja.js (v8), gira-encaja.css (v6), sw gya-cache-v719.
+
 ### 05/11/2026 — No te caigas: logo nuevo también en el menú
 - Qué: la tarjeta de Más juegos usa logo-v2.webp (trampilla + "NO TE CAIGAS") en lugar de icono-v2; dentro del juego ya estaba.
 - Dónde: extensiones.js (v134), sw gya-cache-v718.
