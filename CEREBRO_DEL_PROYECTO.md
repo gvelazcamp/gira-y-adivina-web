@@ -394,6 +394,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Palabra Secreta colaborativa: salas fijas, como el Puzzle
+- Qué: Juan quería que Gonzalo lo ayudara con otra palabra y tuvo que crear otra sala. Ahora el código de la sala sirve siempre: en "Jugar colaborativo" aparece "Tus salas" (código · con quién, últimas 4, gya_palabra_salas). Al tocar una sala, el link viejo o el código: si el compañero está adentro ahora, entrás a ayudarlo; si no, la abrís vos con tu partida actual y esperás que entre (cualquiera de los dos puede pedir ayuda en la misma sala). La fila del anfitrión "late" cada 8 s y se considera activa 45 s; si los dos la abren a la vez, uno recibe "Tocala de nuevo para entrar". Si no se puede leer el servidor, se intenta como invitado (con Reintentar).
+- Pruebas: tests/palabra-secreta-sala.cjs (reabrir cerrada/abandonada, hostActivo) y tests/palabra-secreta-colaborativo.cjs (el ex invitado reabre la sala desde Tus salas y el otro entra) pasan. Sin probar con dos celulares reales.
+- Dónde: palabra-secreta-sala.js (v2), duelo-extensiones.js (v21), extensiones.css (v165), sw gya-cache-v725.
+
 ### 05/11/2026 — Línea del tiempo: logo, icono y dibujo de bienvenida
 - Qué: Gonzalo pasó el collage de ChatGPT (logo con reloj de arena, icono con cartas, escena de los chicos con la línea). Recortado a assets/linea-tiempo/logo.webp (700×351), icono.webp (320×336, guardado para usos futuros) y como.webp (640×532). La tarjeta de Más juegos usa el logo (misma regla que Girá y encajá y No te caigas) y la bienvenida muestra logo + dibujo. Se borró el icono SVG provisorio.
 - Dónde: linea-tiempo.js (v2), extensiones.js (v138), extensiones.css (v164), sw gya-cache-v724.

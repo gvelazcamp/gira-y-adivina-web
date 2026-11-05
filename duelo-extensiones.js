@@ -166,6 +166,19 @@ const Duelo=(()=>{
     if(juego==="palabra-colaborativa"&&window.SalaPalabra)return SalaPalabra.conectar(sala,soyHost,listo,fallo,asignar);
     return MultiBroker.conectar(listo,fallo,asignar);
   }
+  /* Salas fijas del colaborativo de Palabra Secreta (como el Puzzle): el código queda guardado y sirve siempre. */
+  const SALAS_PS="gya_palabra_salas";
+  function salasFijas(){try{const l=JSON.parse(localStorage.getItem(SALAS_PS)||"[]");return Array.isArray(l)?l.filter(x=>x&&/^[A-HJ-NP-Z2-9]{4}$/.test(x.codigo)):[];}catch(e){return[];}}
+  function recordarSala(cod,r){
+    if(juego!=="palabra-colaborativa")return;
+    const l=salasFijas().filter(x=>x.codigo!==cod);l.unshift({codigo:cod,con:String(r&&r.nombre||"").slice(0,30),t:Date.now()});
+    try{localStorage.setItem(SALAS_PS,JSON.stringify(l.slice(0,6)));}catch(e){}
+  }
+  function salasFijasHtml(){
+    const l=salasFijas().slice(0,4);if(!l.length)return "";
+    const esc=t=>String(t).replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+    return '<div id="dlFijas" class="dl-fijas"><p>Tus salas</p>'+l.map(x=>'<button type="button" data-sala-fija="'+x.codigo+'">🔁 <b>'+x.codigo+'</b>'+(x.con?' · con '+esc(x.con):'')+'</button>').join("")+'</div>';
+  }
   function avatarHtml(av,frame){
     return '<span class="dl-avatar"><img src="assets/avatars/'+(av||"avatar-01")+'.webp" alt="">'+
       (frame?'<img class="dl-marco" src="assets/frames/frame-'+frame+'.png" alt="">':"")+'</span>';
@@ -200,10 +213,10 @@ const Duelo=(()=>{
     nombreActual=nombreJuego;onListoJuego=onListo||null;revancha={yo:false,rival:false};rivalSeFue=false;rondaPendiente=null;
     juego=idJuego;activo=false;rival=null;finalRival=null;
     const entradaDirecta=idJuego==="palabra"||idJuego==="palabra-colaborativa";
-    let uniendose=false;
+    let uniendose=false,yaDecidido=false;
     const c=activaCapa();
     c.innerHTML='<div class="dl-tarjeta"><h3>'+titulo+'</h3><p class="dl-sub">'+(sub||nombreJuego+' · 1 vs 1')+'</p>'+(detalle?'<p class="dl-detalle">'+detalle+'</p>':'')+
-      '<div id="dlElegir" class="dl-fila"><button type="button" id="dlCrear" class="dl-principal">Crear sala</button><button type="button" id="dlUnirse">Unirme con código</button></div>'+
+      (idJuego==="palabra-colaborativa"?salasFijasHtml():'')+'<div id="dlElegir" class="dl-fila"><button type="button" id="dlCrear" class="dl-principal">Crear sala</button><button type="button" id="dlUnirse">Unirme con código</button></div>'+
       '<div id="dlCodigoZona" hidden><button type="button" id="dlWpp" class="dl-wpp">📲 Invitar por WhatsApp</button><p>o pasale este código:</p><div class="dl-codigo" id="dlCodigo"></div>'+
       '<div class="dl-fila"><button type="button" id="dlCopiar">Copiar invitación</button></div></div>'+
       '<div id="dlEntrarZona" hidden><label class="dl-sr" for="dlInput">Código</label><input id="dlInput" maxlength="4" placeholder="CÓDIGO" autocomplete="off" autocapitalize="characters"><button type="button" id="dlEntrar" class="dl-principal">Unirme</button></div>'+
@@ -212,14 +225,14 @@ const Duelo=(()=>{
     const estado=t=>{c.querySelector("#dlEstado").textContent=t;};
     const salirLobby=()=>{cerrarCliente();cerrarCapa();if(onCancelar)onCancelar();};
     c.querySelector("#dlCancelar").onclick=salirLobby;
-    c.querySelector("#dlCrear").onclick=()=>{
-      soyHost=true;sala=codigoNuevo();c.querySelector("#dlElegir").hidden=true;c.querySelector("#dlCodigoZona").hidden=false;
+    const crearSala=cod=>{
+      soyHost=true;sala=cod;c.querySelector("#dlFijas")?.remove();c.querySelector("#dlElegir").hidden=true;c.querySelector("#dlCodigoZona").hidden=false;
       c.querySelector("#dlCodigo").textContent=sala;estado("Conectando…");
       c.querySelector("#dlWpp").disabled=true;c.querySelector("#dlCopiar").disabled=true;
       conectarSala(()=>{
         cliente.subscribe(temaIn());cliente.on("message",recibir);estado("Sala lista. Esperando al otro jugador…");
         c.querySelector("#dlWpp").disabled=false;c.querySelector("#dlCopiar").disabled=false;
-        cbRivalListo=r=>{estado("");cerrarCapa();if(onListo)onListo(true,r);};
+        cbRivalListo=r=>{estado("");cerrarCapa();recordarSala(sala,r);if(onListo)onListo(true,r);};
       },()=>estado("No se pudo conectar ("+(window.gyaFalloConexion||"sin respuesta")+"). Probá con otra red (datos del celular)."),cl=>{cliente=cl;});
       const quien=(perfil&&perfil.nombre)||"Un amigo";
       const texto="¡"+quien+" "+(frase||"te desafía a")+" "+nombreJuego+" en Girá y Adiviná! 👥 "+(entradaDirecta?"Tocá el link para entrar directamente a la sala: ":"Tocá el link y apretá UNIRME: ")+linkInvitacion()+" (código "+sala+")";
@@ -229,6 +242,7 @@ const Duelo=(()=>{
         const b=c.querySelector("#dlCopiar");b.textContent="¡Copiada!";setTimeout(()=>b.textContent="Copiar invitación",1500);
       };
     };
+    c.querySelector("#dlCrear").onclick=()=>crearSala(codigoNuevo());
     c.querySelector("#dlUnirse").onclick=()=>{
       c.querySelector("#dlElegir").hidden=true;c.querySelector("#dlEntrarZona").hidden=false;c.querySelector("#dlInput").focus();
     };
@@ -237,10 +251,20 @@ const Duelo=(()=>{
       const cod=c.querySelector("#dlInput").value.trim().toUpperCase();
       if(!/^[A-HJ-NP-Z2-9]{4}$/.test(cod)){estado("El código tiene 4 letras o números. Revisalo y probá otra vez.");return;}
       uniendose=true;c.querySelector("#dlEntrar").disabled=true;
+      if(idJuego==="palabra-colaborativa"&&window.SalaPalabra&&!yaDecidido){
+        estado("Buscando la sala "+cod+"…");c.querySelector("#dlFijas")?.remove();
+        SalaPalabra.hostActivo(cod).then(hay=>{
+          if(!capa)return;
+          if(hay!==false){yaDecidido=true;uniendose=false;entrar();}
+          else{uniendose=false;c.querySelector("#dlElegir").hidden=true;c.querySelector("#dlEntrarZona").hidden=true;crearSala(cod);estado("Abriste la sala "+cod+" con tu partida actual. Esperando a tu compañero…");}
+        });
+        return;
+      }
+      yaDecidido=false;
       soyHost=false;sala=cod;estado("Conectando…");
       conectarSala(()=>{
         cliente.subscribe(temaIn());cliente.on("message",recibir);estado("Buscando la sala "+sala+"…");
-        cbRivalListo=r=>{estado("");cerrarCapa();if(onListo)onListo(false,r);};
+        cbRivalListo=r=>{estado("");cerrarCapa();recordarSala(sala,r);if(onListo)onListo(false,r);};
         const hola=()=>mandar({tipo:"hola",nombre:(perfil&&perfil.nombre)||"Jugador",avatar:(perfil&&perfil.avatar)||null,frame:(typeof frameEquipado!=="undefined"?frameEquipado:null)});
         hola();holaTimer=setInterval(hola,2000);
       },()=>{
@@ -250,6 +274,7 @@ const Duelo=(()=>{
       },cl=>{cliente=cl;});
     };
     c.querySelector("#dlEntrar").onclick=entrar;
+    c.querySelectorAll("[data-sala-fija]").forEach(b=>b.onclick=()=>{c.querySelector("#dlInput").value=b.dataset.salaFija;c.querySelector("#dlElegir").hidden=true;entrar();});
     c.querySelector("#dlInput").onkeydown=e=>{if(e.key==="Enter")entrar();};
     if(invitacion&&invitacion.juego===idJuego){
       const inv=invitacion;invitacion=null;limpiarUrl();

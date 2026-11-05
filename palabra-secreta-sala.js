@@ -3,13 +3,19 @@
    aunque no compartan un servidor de conexión en vivo. Cada lado escribe su
    propia fila, sin sobrescribir el estado ni las acciones del otro. */
 window.SalaPalabra=(()=>{
-  const GRUPO="palabra_sala",VIGENCIA=24*60*60*1000;
+  const GRUPO="palabra_sala",VIGENCIA=24*60*60*1000,ACTIVO=45000,LATIDO=8000;
+  /* La sala es fija: el código sirve siempre. Hay anfitrión activo si su fila se guardó hace menos de ACTIVO (late cada LATIDO). null = no se pudo leer. */
+  async function hostActivo(codigo){
+    try{const sb=typeof obtenerSupa==="function"?obtenerSupa():null;if(!sb)return null;
+      const r=await sb.from("gya_ranking").select("estado_juego").eq("grupo",GRUPO).eq("apodo",codigo+"-host").limit(1);
+      if(r.error)return null;const d=r.data?.[0]?.estado_juego;return !!(d&&d.v===1&&!d.cerrada&&Number.isFinite(d.actualizado)&&Date.now()-d.actualizado<ACTIVO);}catch(e){return null;}
+  }
   function conectar(codigo,host,alListo,alFallar,asignar){
     const lado=host?"host":"guest",otro=host?"guest":"host";
     const id=crypto.randomUUID(),tema=l=>"gyaduelo/palabra-colaborativa/"+codigo+"/"+l;
     const subs=new Set(),oyentes=[],vistos=new Map(),mensajes={};
     let sb=null,red=null,sesion=null,preparado=false,cerrado=false,fallado=false;
-    let secuencia=0,tGuardar=null,tLeer=null,guardando=false,leyendo=false,sucio=false,cierreEnviado=false;
+    let tLatido=null,secuencia=0,tGuardar=null,tLeer=null,guardando=false,leyendo=false,sucio=false,cierreEnviado=false;
     try{sb=typeof obtenerSupa==="function"?obtenerSupa():null;}catch(e){}
     const emitir=(t,m)=>{if(!cerrado&&subs.has(t))for(const f of oyentes)try{f(t,m);}catch(e){}};
     const apodo=l=>codigo+"-"+l;
@@ -62,7 +68,7 @@ window.SalaPalabra=(()=>{
         agendarGuardado(m.tipo==="hola"||m.tipo==="chau"||m.datos?.accion==="enviar"?0:180);
       },
       end(){
-        if(cerrado)return;cerrado=true;clearTimeout(tGuardar);clearTimeout(tLeer);
+        if(cerrado)return;cerrado=true;clearTimeout(tGuardar);clearTimeout(tLeer);clearInterval(tLatido);
         if(red)try{red.end(true);}catch(e){}
         if(preparado){sucio=true;void guardar();}
       }
@@ -78,15 +84,19 @@ window.SalaPalabra=(()=>{
       if(!/^[A-HJ-NP-Z2-9]{4}$/.test(codigo))throw new Error("El código de sala no es válido.");
       const anfitrion=await leer("host");if(cerrado)return;
       const vigente=anfitrion?.v===1&&!anfitrion.cerrada&&Number.isFinite(anfitrion.actualizado)&&Date.now()-anfitrion.actualizado<VIGENCIA;
+      const activo=vigente&&Date.now()-anfitrion.actualizado<ACTIVO;
       if(host){
-        if(vigente)throw new Error("Ese código ya está en uso. Volvé a crear la sala.");
+        if(activo)throw new Error("Tu compañero ya abrió esta sala. Tocala de nuevo para entrar.");
         sesion=id;
       }else{
-        if(!vigente||typeof anfitrion.sesion!=="string")throw new Error("La sala no está disponible. Pedile a tu compañero una invitación nueva.");
+        if(!activo||typeof anfitrion.sesion!=="string")throw new Error("Tu compañero no está en la sala ahora. Tocá la sala de nuevo para abrirla con tu partida.");
         sesion=anfitrion.sesion;
       }
-      await escribir(estado());preparado=true;
+      await escribir(estado());
+      if(host&&!cerrado){await new Promise(r=>setTimeout(r,700));const yo=await leer("host");if(!cerrado&&yo?.sesion!==sesion)throw new Error("Tu compañero abrió la sala al mismo tiempo. Tocala de nuevo para entrar.");}
+      preparado=true;
       if(cerrado){sucio=true;void guardar();return;}
+      tLatido=setInterval(()=>{if(!cerrado){sucio=true;void guardar();}},LATIDO);
       if(alListo)alListo();
       void recibirGuardado();
       // El respaldo guardado funciona solo; MultiBroker mantiene la edición en vivo.
@@ -97,5 +107,5 @@ window.SalaPalabra=(()=>{
     })().catch(fallar);
     return w;
   }
-  return{conectar};
+  return{conectar,hostActivo};
 })();
