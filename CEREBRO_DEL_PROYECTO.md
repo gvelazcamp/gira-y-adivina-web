@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 05/11/2026 — Palabras Cruzadas: logo nuevo en el menú y en el juego
+- Qué: Gonzalo pidió usar el logo nuevo (cuadrícula + lápiz, logo-v2.webp) como logo de Palabras Cruzadas: reemplaza a icono-v2 en la tarjeta de Más juegos y a logo-v1.png en la barra del juego (la marca pasa a 44×40 sin recorte).
+- Dónde: extensiones.js (v133), palabras-cruzadas.js (v9), palabras-cruzadas.css (v8), sw gya-cache-v717.
+
 ### 05/11/2026 — Juegos nuevos con la paleta oscura y popups sin scroll
 - Qué: Girá y encajá vuelve a su icono anterior (icono.svg; a Gonzalo no le gustó el v2). Su pantalla y paneles pasan del azul marino/celeste a la paleta violeta oscura del resto (#160B24/#2A1A3C, dorado #F5B301, turquesa #37D6C0, Archivo Black en títulos). Palabras Cruzadas: la palabra elegida y el cursor pasan de celeste/azul a violeta (textos de ayuda y leyenda dicen "violeta"). Regla de Gonzalo: todo popup tiene que entrar sin scroll; se comprobó en 360×640 y 390×844 (Girá y encajá, No te caigas, Palabras Cruzadas).
 - Dónde: extensiones.js (v132), gira-encaja.css (v5), gira-encaja.js (v7), palabras-cruzadas.css (v7), palabras-cruzadas.js (v8), sw gya-cache-v716, ahora-caigo.js (v10: logo-v2 de No te caigas en el juego).
