@@ -13,7 +13,58 @@ window.PalabrasCruzadas=(()=>{
     }catch(e){}
     return{version:1,actual:"pc-1",letras:{},ayudas:[],revisadas:[],guiaVista:false,resueltos:[],total:0,seleccion:0};
   }
-  function guardar(){datos.seleccion=seleccion;try{localStorage.setItem(CLAVE,JSON.stringify(datos));}catch(e){}}
+  function guardar(){datos.seleccion=seleccion;if(equipo){enviarCambios();if(!equipo.host)return;}try{localStorage.setItem(CLAVE,JSON.stringify(datos));}catch(e){}}
+  /* En equipo: el mismo crucigrama en los dos celulares; cada letra que pone uno aparece en el otro.
+     El anfitrión guarda el progreso (es su crucigrama); el invitado no toca su partida guardada. */
+  let equipo=null;
+  const foto=()=>({letras:{...datos.letras},ayudas:[...datos.ayudas],revisadas:[...datos.revisadas]});
+  function enviarCambios(){
+    if(!equipo||equipo.aplicando)return;const ant=equipo.visto,cambios={};
+    for(const k of new Set([...Object.keys(ant.letras),...Object.keys(datos.letras)]))if((ant.letras[k]||"")!==(datos.letras[k]||""))cambios[k]=datos.letras[k]||"";
+    const ay=datos.ayudas.filter(k=>!ant.ayudas.includes(k)),rv=datos.revisadas.filter(k=>!ant.revisadas.includes(k));
+    equipo.visto=foto();
+    if(Object.keys(cambios).length||ay.length||rv.length)Duelo.enviarProgreso({tipo:"pc-cambios",n:++equipo.n,id:datos.actual,cambios,ayudas:ay,revisadas:rv});
+  }
+  function recibirCambios(p){
+    if(!equipo||!raiz||!p||p.tipo!=="pc-cambios"||p.id!==datos.actual)return;
+    equipo.aplicando=true;
+    for(const [k,l] of Object.entries(p.cambios||{})){if(!celdas.has(k)||datos.ayudas.includes(k))continue;if(l&&/^[A-ZÑ]$/.test(l))datos.letras[k]=l;else delete datos.letras[k];}
+    for(const k of p.ayudas||[])if(celdas.has(k)&&!datos.ayudas.includes(k)){datos.ayudas.push(k);datos.letras[k]=celdas.get(k).letra;}
+    for(const k of p.revisadas||[])if(celdas.has(k)&&!datos.revisadas.includes(k))datos.revisadas.push(k);
+    equipo.visto=foto();equipo.aplicando=false;
+    if(equipo.host)try{localStorage.setItem(CLAVE,JSON.stringify(datos));}catch(e){}
+    pintar();if(terminado())verificarFinal();
+  }
+  function enviarInicio(){Duelo.enviarRonda({tipo:"pc-inicio",id:datos.actual,...foto()});equipo.visto=foto();}
+  function recibirInicio(d){
+    if(!equipo||!raiz||!d||d.tipo!=="pc-inicio"||!banco().some(c=>c.id===d.id))return;
+    raiz.querySelector("#pcFinal")?.close();
+    datos.actual=d.id;datos.letras=d.letras||{};datos.ayudas=d.ayudas||[];datos.revisadas=d.revisadas||[];datos.seleccion=0;
+    equipo.aplicando=true;preparar();equipo.visto=foto();equipo.aplicando=false;pintar();pintarEquipo();
+  }
+  function pintarEquipo(){
+    const b=raiz?.querySelector("#pcEquipoBoton");if(b){b.textContent=equipo?"🤝 Salir":"🤝";b.setAttribute("aria-label",equipo?"Salir del equipo":"Jugar en equipo");}
+    if(equipo){Duelo.actualizarBadge("🤝 en equipo");const sig=raiz?.querySelectorAll("#pcSiguiente,#pcSiguienteFinal");sig?.forEach(x=>{x.disabled=!equipo.host;if(!equipo.host)x.textContent="Esperá a "+(((Duelo.rivalActual()||{}).nombre)||"tu compañero");});}
+  }
+  function iniciarEquipo(){
+    if(equipo){salirEquipo();return;}
+    if(typeof Duelo==="undefined")return;
+    const respaldo=localStorage.getItem(CLAVE);
+    Duelo.mostrarLobby("Palabras Cruzadas","cruzadas-colab",{titulo:"Jugar en equipo",sub:"Un crucigrama · Entre los dos",frase:"te invita a completar un crucigrama juntos en",
+      detalle:"Creá una sala para completar <b>tu crucigrama</b> entre dos, o unite al de otra persona. Cada letra que pone uno <b>aparece en el otro celular</b>.",
+      onListo:soyHost=>{
+        if(!raiz)return;document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());raiz.querySelector("#pcAyuda")?.close?.();equipo={host:soyHost,respaldo,visto:foto(),aplicando:false,n:0};
+        Duelo.mostrarBadge();Duelo.onProgresoRival(recibirCambios);
+        Duelo.onRivalSeFue(()=>{mensajeActual=(((Duelo.rivalActual()||{}).nombre)||"Tu compañero")+" salió del equipo.";pintar();});
+        if(soyHost)enviarInicio();else Duelo.onRondaRecibida(recibirInicio);
+        pintarEquipo();
+      }});
+  }
+  function salirEquipo(){
+    const e=equipo;equipo=null;try{Duelo.salir();}catch(err){}
+    if(e&&!e.host){datos=cargar();if(e.respaldo!=null)try{localStorage.setItem(CLAVE,e.respaldo);}catch(err){}datos=cargar();preparar();}
+    if(raiz){raiz.querySelectorAll("#pcSiguiente,#pcSiguienteFinal").forEach(x=>{x.disabled=false;x.textContent="Siguiente crucigrama";});pintar();pintarEquipo();}
+  }
   const completa=p=>p.casillas.every(k=>datos.letras[k]===celdas.get(k).letra);
   const terminado=()=>palabras.length>0&&palabras.every(completa);
   const fija=k=>datos.ayudas.includes(k);
@@ -110,7 +161,7 @@ window.PalabrasCruzadas=(()=>{
 
   function estructura(){
     raiz.innerHTML=`<div class="pc-juego">
-      <header class="pc-barra"><span class="pc-marca"><img src="assets/palabras-cruzadas/logo-v2.webp" alt="" class="pc-logo"></span><div class="pc-avance"><span id="pcNivel"></span><span id="pcProgreso" role="status"></span></div><button type="button" id="pcPistasBoton" class="pc-menu-boton">Pistas</button><button type="button" id="pcAyudaBoton" class="pc-menu-boton" aria-label="Cómo jugar">Cómo jugar</button></header>
+      <header class="pc-barra"><span class="pc-marca"><img src="assets/palabras-cruzadas/logo-v2.webp" alt="" class="pc-logo"></span><div class="pc-avance"><span id="pcNivel"></span><span id="pcProgreso" role="status"></span></div><button type="button" id="pcPistasBoton" class="pc-menu-boton">Pistas</button><button type="button" id="pcAyudaBoton" class="pc-menu-boton" aria-label="Cómo jugar">Cómo jugar</button><button type="button" id="pcEquipoBoton" class="pc-menu-boton" data-equipo="cruzadas-colab" aria-label="Jugar en equipo">🤝</button></header>
       <div class="pc-contenido"><section class="pc-panel-tablero" aria-label="Crucigrama">
         <p class="pc-instruccion">Tocá una casilla clara y escribí la respuesta.</p>
         <div class="pc-pista-actual"><button type="button" class="pc-flecha" id="pcAnterior" aria-label="Pista anterior">‹<small>Anterior</small></button><div><b id="pcDireccion"></b><p id="pcPista"></p><small id="pcLargo"></small></div><button type="button" class="pc-flecha" id="pcProxima" aria-label="Pista siguiente">›<small>Otra pista</small></button></div>
@@ -138,7 +189,7 @@ window.PalabrasCruzadas=(()=>{
     raiz.querySelectorAll("#pcAyuda .pc-cerrar,#pcAyuda .pc-entendido").forEach(b=>b.onclick=()=>raiz.querySelector("#pcAyuda").close());
     raiz.querySelector("#pcGuiaAnterior").onclick=()=>{paginaGuia=Math.max(0,paginaGuia-1);pintarGuia();};
     raiz.querySelector("#pcGuiaSiguiente").onclick=()=>{paginaGuia=Math.min(2,paginaGuia+1);pintarGuia();};
-    raiz.querySelector("#pcPistasBoton").onclick=mostrarPistas;
+    raiz.querySelector("#pcPistasBoton").onclick=mostrarPistas;raiz.querySelector("#pcEquipoBoton").onclick=iniciarEquipo;
     raiz.querySelector("#pcPistas .pc-cerrar").onclick=()=>raiz.querySelector("#pcPistas").close();
     raiz.querySelector("#pcTabHorizontal").onclick=()=>{direccionPistas="H";paginaPistas=0;pintarPistas();};
     raiz.querySelector("#pcTabVertical").onclick=()=>{direccionPistas="V";paginaPistas=0;pintarPistas();};
@@ -214,7 +265,7 @@ window.PalabrasCruzadas=(()=>{
   function verificarFinal(){
     const fin=terminado();
     if(fin){
-      if(!datos.resueltos.includes(crucigrama.id)){datos.resueltos.push(crucigrama.id);datos.total++;guardar();}
+      if((!equipo||equipo.host)&&!datos.resueltos.includes(crucigrama.id)){datos.resueltos.push(crucigrama.id);datos.total++;guardar();}
       pintar();mostrarResultado();if(typeof bip==="function")bip(900,.1);
     }
   }
@@ -283,10 +334,12 @@ window.PalabrasCruzadas=(()=>{
   }
   function siguiente(){
     if(!terminado())return;
-    if(window.Fichas&&!Fichas.usar("palabras-cruzadas",siguiente))return;
+    if(equipo&&!equipo.host)return;
+    if(!equipo&&window.Fichas&&!Fichas.usar("palabras-cruzadas",siguiente))return;
     raiz.querySelector("#pcFinal").close();const indice=banco().indexOf(crucigrama),nuevo=(indice+1)%banco().length;
     if(nuevo===0)datos.resueltos=[];
     datos.actual=banco()[nuevo].id;datos.letras={};datos.ayudas=[];datos.revisadas=[];datos.seleccion=0;preparar();pintar();
+    if(equipo){enviarInicio();guardar();pintarEquipo();}
   }
   function abrir(contenedor){
     salir();raiz=contenedor;raiz.closest(".ext-shell")?.classList.add("pc-abierta");
@@ -297,6 +350,7 @@ window.PalabrasCruzadas=(()=>{
     PantallaFija.bienvenida(raiz.closest("#extContenido")||document.body,{logo:"assets/palabras-cruzadas/logo-v2.webp",alt:"Palabras Cruzadas",dibujo:"assets/palabras-cruzadas/como.webp",sinFija:true,items:[["📝","Leé la <b>pista</b> y tocá sus casillas."],["⌨️","Escribí la respuesta: el <b>borde violeta</b> marca dónde va la letra."],["✅","<b>Comprobar</b> revisa tus letras; tenés 3 ayudas para revelar."],["🏆","Completá todas las palabras para ganar el crucigrama."]]});
   }
   function salir(){
+    if(equipo)salirEquipo();
     document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());
     window.removeEventListener("resize",ajustarPantalla);window.visualViewport?.removeEventListener("resize",ajustarPantalla);window.visualViewport?.removeEventListener("scroll",ajustarPantalla);observador?.disconnect();observador=null;
     if(raiz){const shell=raiz.closest(".ext-shell");shell?.classList.remove("pc-abierta");shell?.style.removeProperty("--pc-vh");shell?.style.removeProperty("--pc-vy");guardar();raiz.querySelectorAll("dialog[open]").forEach(d=>d.close());}
