@@ -13,12 +13,21 @@ const norm=s=>s.toUpperCase().replace(/Ñ/g,'!').normalize('NFD').replace(/[̀-�
  const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_EXECUTABLE||undefined});
  let peers=[];const errors=[];
  async function player(name){
-  const ctx=await browser.newContext({locale:'es-UY',viewport:{width:390,height:844},serviceWorkers:'block',reducedMotion:'reduce'}),page=await ctx.newPage();
+  const ctx=await browser.newContext({locale:'es-UY',viewport:{width:390,height:844},serviceWorkers:'block',reducedMotion:'reduce'});return pagina(ctx,name);
+ }
+ async function pagina(ctx,name){
+  const page=await ctx.newPage();
   peers.push(page);page.on('pageerror',e=>errors.push(name+': '+e.message));
   await page.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.fulfill({status:200,body:''}));
   await page.exposeFunction('__publish',async(t,m)=>{for(const o of peers)if(o!==page&&!o.isClosed())await o.evaluate(([t,m])=>window.__deliver?.(t,m),[t,m]);});
   await page.addInitScript(n=>{localStorage.setItem('gya_nombre',n);localStorage.setItem('gya_pais','uruguay');localStorage.setItem('gya_avatar','avatar-02');localStorage.setItem('gya_bienvenida_vista','1');},name);
   return page;
+ }
+ /* "Cerrar la app" y volver a abrirla: misma memoria (localStorage), página nueva. */
+ async function reabrir(viejo,name,abrirJuego){
+  const ctx=viejo.context();peers=peers.filter(x=>x!==viejo);await viejo.close();
+  const p=await pagina(ctx,name);await p.goto(base);await p.waitForFunction(()=>window.Duelo&&window.Extensiones);await p.evaluate(falso);
+  await abrirJuego(p);await p.waitForSelector('[data-sala-dl]');return p;
  }
  async function sala(juego,abrir){
   for(const p of peers)await p.context().close();peers=[];
@@ -44,6 +53,15 @@ const norm=s=>s.toUpperCase().replace(/Ñ/g,'!').normalize('NFD').replace(/[̀-�
    if(k===3){await a.waitForTimeout(1600);assert.equal(await llenos(a),3,'sin red no llega');await b.evaluate(()=>window.__sinRed=false);}
    await o.waitForFunction(n=>document.querySelectorAll('.lt-lleno').length===n,k+1,{timeout:6000});
    assert.equal(await llenos(p),k+1);
+   if(k===4){
+    const abrirLinea=async p=>{await p.evaluate(()=>Extensiones.abrirJuego('linea-tiempo'));await p.locator('.pf-bienv-ok').click();await p.locator('.lt-equipo-btn').click();};
+    a=await reabrir(a,'Gonzalo',abrirLinea);await a.locator('[data-sala-dl]').click();
+    await a.waitForFunction(()=>document.querySelectorAll('.lt-lleno').length===5,null,{timeout:12000});
+    assert.equal(await cartas(a),await cartas(b),'el anfitrión retoma la misma línea');
+    b=await reabrir(b,'Vale',abrirLinea);await b.locator('[data-sala-dl]').click();
+    await b.waitForFunction(()=>document.querySelectorAll('.lt-lleno').length===5,null,{timeout:12000});
+    console.log('PASS línea: cerrar la app y volver a la misma partida');
+   }
   }
   assert.equal(await a.evaluate(()=>LineaTiempo._estado().lugares.map(c=>c.titulo).join('|')),await b.evaluate(()=>LineaTiempo._estado().lugares.map(c=>c.titulo).join('|')),'la misma línea en los dos');
   // el compañero devuelve una y la vuelve a poner
@@ -76,6 +94,21 @@ const norm=s=>s.toUpperCase().replace(/Ñ/g,'!').normalize('NFD').replace(/[̀-�
    if(i===2){await b.waitForTimeout(800);assert(!(await b.evaluate(w=>SopaFugaz._ronda().halladas.includes(w),w)),'sin red no llega');await b.evaluate(()=>window.__sinRed=false);}
    await o.waitForFunction(w=>SopaFugaz._ronda().halladas.includes(w),w,{timeout:6000});
    if(i===0)await b.screenshot({path:process.env.S?process.env.S+'/sopa-equipo-b.png':'/dev/null'}).catch(()=>{});
+   if(i===4){
+    const abrirSopa=async p=>{await p.evaluate(()=>Extensiones.abrirJuego('sopa-fugaz'));await p.locator('.sf-modo-equipo').click();};
+    const antes=(await a.evaluate(()=>SopaFugaz._ronda())).halladas.sort();
+    // El invitado cierra la app y vuelve: "▶ Seguir partida con Gonzalo"
+    b=await reabrir(b,'Vale',abrirSopa);assert.match(await b.locator('[data-sala-dl]').textContent(),/Seguir partida/);
+    await b.locator('[data-sala-dl]').click();
+    await b.waitForFunction(n=>SopaFugaz._ronda().halladas.length===n,antes.length,{timeout:12000});
+    assert.deepEqual((await b.evaluate(()=>SopaFugaz._ronda())).halladas.sort(),antes,'el invitado sigue la misma sopa');
+    // El anfitrión cierra la app y vuelve: sigue la misma sopa y el invitado no se entera de más
+    a=await reabrir(a,'Gonzalo',abrirSopa);assert.match(await a.locator('[data-sala-dl]').textContent(),/Seguir partida/);
+    await a.locator('[data-sala-dl]').click();
+    await a.waitForFunction(n=>SopaFugaz._ronda().halladas.length===n,antes.length,{timeout:12000});
+    assert.deepEqual((await a.evaluate(()=>SopaFugaz._ronda())).objetivos,ra.objetivos,'el anfitrión retoma la misma sopa');
+    console.log('PASS sopa: cerrar la app y volver a la misma partida (invitado y anfitrión)');
+   }
   }
   await a.waitForFunction(()=>/juntos/.test(document.querySelector('.sf-panel h3')?.textContent||''));
   await b.waitForFunction(()=>/juntos/.test(document.querySelector('.sf-panel h3')?.textContent||''));

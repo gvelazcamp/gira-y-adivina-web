@@ -65,11 +65,12 @@ window.PalabrasCruzadas=(()=>{
     if(equipo.host)try{localStorage.setItem(CLAVE,JSON.stringify(datos));}catch(e){}
     pintar();if(terminado())verificarFinal();
   }
-  function enviarInicio(){equipo.ts={};Duelo.enviarRonda({tipo:"pc-inicio",id:datos.actual,...foto()});equipo.visto=foto();}
+  function enviarInicio(){equipo.ts={};try{Duelo.guardarPartida({id:datos.actual});}catch(e){}Duelo.enviarRonda({tipo:"pc-inicio",id:datos.actual,...foto()});equipo.visto=foto();}
   function recibirInicio(d){
     if(!equipo||!raiz||!d||d.tipo!=="pc-inicio"||!banco().some(c=>c.id===d.id))return;
     raiz.querySelector("#pcFinal")?.close();
     datos.actual=d.id;datos.letras=d.letras||{};datos.ayudas=d.ayudas||[];datos.revisadas=d.revisadas||[];datos.seleccion=0;equipo.ts={};
+    try{Duelo.guardarPartida({id:d.id,invitado:1});}catch(e){}
     equipo.aplicando=true;preparar();equipo.visto=foto();equipo.aplicando=false;pintar();pintarEquipo();
   }
   function pintarEquipo(){

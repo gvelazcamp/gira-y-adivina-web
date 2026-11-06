@@ -237,8 +237,8 @@
   function avisarEquipo(m){
     if(!estado?.equipo||!equipo||typeof Duelo==="undefined")return;
     try{
-      if(!equipo.host){if(m){const msg={tipo:"lt-acc",n:++equipo.n,r:equipo.r,...m};equipo.cola.push(msg);Duelo.enviarProgreso(msg);}return;}
-      Duelo.enviarProgreso(fotoEquipo(m?.a==="poner"?m.d:null));
+      if(!equipo.host){if(m){const msg={tipo:"lt-acc",n:++equipo.n,r:equipo.r,ses:equipo.ses,...m};equipo.cola.push(msg);Duelo.enviarProgreso(msg);}return;}
+      const f=fotoEquipo(m?.a==="poner"?m.d:null);Duelo.enviarProgreso(f);guardarLinea(f);
     }catch(e){}
   }
   function fotoEquipo(eco=null){
@@ -250,7 +250,7 @@
     const lista=todos().map((h,i)=>({...h,i}));
     equipo.r++;equipo.n=0;
     arrancar(elegir(lista,CARTAS_DUELO),{enEquipo:true});
-    try{Duelo.enviarRonda(fotoEquipo());}catch(e){}
+    try{const f=fotoEquipo();Duelo.enviarRonda(f);guardarLinea(f);}catch(e){}
   }
   function recibirEquipo(m){
     if(!equipo||!raiz||!m)return;
@@ -258,7 +258,9 @@
     const linea=raiz.querySelector(".lt-linea"),scroll=linea?linea.scrollTop:0;
     if(equipo.host){
       /* Las jugadas del compañero se aplican en orden y una sola vez; las que se perdieron llegan reenviadas. */
-      if(m.tipo!=="lt-acc"||m.n!==equipo.vistoN+1)return;
+      if(m.tipo!=="lt-acc")return;
+      if(m.ses&&m.ses!==equipo.sesG){equipo.sesG=m.ses;equipo.vistoN=m.n-1;}
+      if(m.n!==equipo.vistoN+1)return;
       equipo.vistoN=m.n;
       if(m.r!==equipo.r||!estado?.equipo||estado.resultado){avisarEquipo();return;}
       const c=estado.cartas.find(x=>x.i===m.c);
@@ -281,6 +283,7 @@
       estado.inicio=Date.now()-(Number(m.s)||0)*1000;
       if(Number.isInteger(m.eco))estado.eco=m.eco;
       if(m.listo&&!estado.resultado&&!estado.pila.length&&estado.lugares.every(Boolean)){estado.fin=Date.now();calcular();}
+      try{Duelo.guardarPartida(m.listo?null:{r:m.r,invitado:1});}catch(e){}
       pintar();
     }
     const l2=raiz?.querySelector(".lt-linea");if(l2)l2.scrollTop=scroll;
@@ -292,6 +295,20 @@
     if(equipo.host){if(equipo.tic%2===0)avisarEquipo();}
     else for(const x of equipo.cola)try{Duelo.enviarProgreso(x);}catch(e){}
   }
+  /* La línea en curso queda guardada en la sala (anfitrión): si alguien cierra la app, al volver sigue la misma. */
+  function guardarLinea(f){try{Duelo.guardarPartida(f.listo?null:{...f,n:equipo.n});}catch(e){}}
+  function retomarLinea(g){
+    const lista=todos();if(!g.ids.every(i=>Number.isInteger(i)&&i>=0&&i<lista.length))return false;
+    equipo.r=g.r||1;equipo.n=(g.n||0)+1;arrancar(g.ids.map(i=>({...lista[i],i})),{enEquipo:true});
+    const porId=i=>i==null?null:estado.cartas.find(x=>x.i===i)||null;
+    estado.lugares=(g.lugares||[]).map(porId);while(estado.lugares.length<estado.cartas.length)estado.lugares.push(null);
+    estado.pila=(g.pila||[]).map(porId).filter(Boolean);
+    estado.cartas.forEach(c=>{if(!estado.lugares.includes(c)&&!estado.pila.includes(c))estado.pila.push(c);});
+    estado.inicio=Date.now()-(Number(g.s)||0)*1000;pintar();
+    try{const f=fotoEquipo();Duelo.enviarRonda(f);guardarLinea(f);}catch(e){}
+    typeof mostrarToast==="function"&&mostrarToast("▶","Siguen con la misma línea");
+    return true;
+  }
   function salirEquipo(){if(equipo)clearInterval(equipo.sync);equipo=null;estado=null;try{Duelo.salir();}catch(e){}if(raiz)elegirTema();}
   function iniciarEquipo(){
     if(typeof Duelo==="undefined")return;
@@ -301,11 +318,12 @@
         if(!raiz)return;
         document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());
         if(equipo)clearInterval(equipo.sync);
-        equipo={host:soyHost,r:0,n:0,vistoN:0,pendientes:[],cola:[]};equipo.sync=setInterval(latirEquipo,1500);
+        equipo={host:soyHost,r:0,n:0,vistoN:0,pendientes:[],cola:[],ses:Math.random().toString(36).slice(2,9)};equipo.sync=setInterval(latirEquipo,1500);
         Duelo.mostrarBadge();Duelo.actualizarBadge("🤝 juntos");
         Duelo.onProgresoRival(recibirEquipo);
         Duelo.onRivalSeFue(()=>{if(equipo&&typeof mostrarToast==="function")mostrarToast("👋",((Duelo.rivalActual()||{}).nombre||"Tu compañero")+" salió del equipo");});
-        if(soyHost)rondaEquipo();else Duelo.onRondaRecibida(recibirEquipo);
+        const g=soyHost?Duelo.leerPartida():null;
+        if(soyHost){if(!(g&&Array.isArray(g.ids)&&retomarLinea(g)))rondaEquipo();}else Duelo.onRondaRecibida(recibirEquipo);
       }});
   }
   window.LineaTiempo={abrir,salir,record,_estado:()=>estado};

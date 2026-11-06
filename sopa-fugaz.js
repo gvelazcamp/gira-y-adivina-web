@@ -247,7 +247,8 @@ const SopaFugaz=(()=>{
     }
     ultimoGano=gano;
     if(equipo){
-      const e=equipo,otro=(Duelo.rivalActual()||{}).nombre||"tu compañero";
+      try{Duelo.guardarPartida(null);}catch(err){}
+      const e=equipo,otro=(Duelo.rivalActual()||{}).nombre||"tu compañero";e.mias=misHalladas();
       mostrarPanel(gano?"¡La completaron juntos! 🤝":"Se acabó el tiempo",
         (gano?"Encontraron las "+objetivos.length+" palabras.":"Les faltaron: "+faltantes.join(", ")+".")+" Vos: "+e.mias+" · "+otro+": "+(halladas.size-e.mias)+" · "+puntaje+" puntos en equipo.",
         e.host?"Otra sopa juntos":"Esperando que "+otro+" arranque otra…",e.host?()=>{if(gano)nivel++;rondaEquipo();}:()=>{},true,{texto:"Salir del equipo",accion:salirEquipo},gano?"gano":"tiempo");
@@ -418,16 +419,19 @@ const SopaFugaz=(()=>{
     logroDesbloquear("sopaPrimera");
     if(datos.palabrasTotal>=10)logroDesbloquear("sopaDiez");
     if(duelo)Duelo.enviarProgreso({halladas:halladas.size,total:objetivos.length});
-    if(equipo){equipo.mias++;Duelo.enviarProgreso({tipo:"sf-hallada",n:Date.now(),w:acierto,ind:seleccion});actualizarEquipo();}
+    if(equipo){halladas.get(acierto).rol=miRol();equipo.mias=misHalladas();Duelo.enviarProgreso({tipo:"sf-hallada",n:Date.now(),w:acierto,ind:seleccion,rol:miRol()});actualizarEquipo();}
     if(halladas.size===objetivos.length)terminar(true);
   }
   /* En equipo: la misma sopa para los dos; lo que encuentra uno se marca en los dos tableros. */
+  /* Quién encontró cada palabra va por rol (anfitrión "h" / invitado "g"), así se mantiene aunque alguien cierre la app y vuelva. */
+  const miRol=()=>equipo&&equipo.host?"h":"g";
+  function misHalladas(){const r=miRol();let n=0;halladas.forEach(v=>{if(v.rol===r)n++;});return n;}
   function actualizarEquipo(){if(equipo)Duelo.actualizarBadge("🤝 "+halladas.size+"/"+objetivos.length);}
   function rondaEquipo(){
     const c=prepararRonda();armar(c);equipo.r=(equipo.r||0)+1;
     equipo.ultimaRonda={tipo:"sf-ronda",r:equipo.r,objetivos,categoria,nivel,tablero,ubicadas,forma:forma&&forma.id,escaleras:[...escaleras],dibujos:[...conDibujo],todoDibujos,puntaje};
     Duelo.enviarRonda(equipo.ultimaRonda);
-    equipo.mias=0;arrancarRonda(c);actualizarEquipo();
+    equipo.mias=0;arrancarRonda(c);actualizarEquipo();guardarPartidaEquipo();
   }
   function recibirRondaEquipo(d){
     if(!equipo||!d||d.tipo!=="sf-ronda"||(d.r&&d.r===equipo.r))return;
@@ -439,17 +443,32 @@ const SopaFugaz=(()=>{
   }
   function recibirHallada(p){
     if(!equipo||!p||p.tipo!=="sf-hallada"||!jugando||halladas.has(p.w)||!objetivos.includes(p.w)||!Array.isArray(p.ind))return;
-    halladas.set(p.w,{ind:p.ind,otro:true});puntaje+=SOPA_CONFIG.puntosPalabra+(escaleras.has(p.w)?50:0);
+    const rol=p.rol==="h"||p.rol==="g"?p.rol:(equipo.host?"g":"h");halladas.set(p.w,{ind:p.ind,otro:rol!==miRol(),rol});equipo.mias=misHalladas();puntaje+=SOPA_CONFIG.puntosPalabra+(escaleras.has(p.w)?50:0);
     dibujarLista();actualizarHUD();pintarCapsulas();estallido(p.ind);tac();actualizarEquipo();
-    typeof mostrarToast==="function"&&mostrarToast("🤝",((Duelo.rivalActual()||{}).nombre||"Tu compañero")+" encontró "+p.w);
+    !p.silencioso&&typeof mostrarToast==="function"&&mostrarToast("🤝",((Duelo.rivalActual()||{}).nombre||"Tu compañero")+" encontró "+p.w);
     if(halladas.size===objetivos.length)terminar(true);
   }
   /* Cada 3 s cada uno manda todo lo que encontró: si un mensaje se perdió (mala señal), se recupera solo.
      Si el invitado quedó en otra ronda, se la vuelve a pedir al anfitrión. */
   function sincronizarEquipo(){
     if(!equipo)return;
-    const h={};halladas.forEach((v,w)=>{h[w]=v.ind;});
+    const h={};halladas.forEach((v,w)=>{h[w]={ind:v.ind,rol:v.rol};});
     try{Duelo.enviarProgreso({tipo:"sf-sync",r:equipo.r||0,h});}catch(e){}
+    guardarPartidaEquipo();
+  }
+  /* La partida en curso queda guardada en la sala: si alguien cierra la app, al volver sigue la misma. */
+  function guardarPartidaEquipo(){
+    if(!equipo||!jugando)return;
+    const h={};halladas.forEach((v,w)=>{h[w]={ind:v.ind,rol:v.rol};});
+    try{Duelo.guardarPartida(equipo.host&&equipo.ultimaRonda?{r:equipo.r,ronda:equipo.ultimaRonda,h,mias:equipo.mias,puntaje,tiempoMs,nivel}:{r:equipo.r,invitado:1});}catch(e){}
+  }
+  function retomarEquipo(g){
+    equipo.r=0;recibirRondaEquipo(g.ronda);equipo.ultimaRonda=g.ronda;nivel=g.nivel||nivel;
+    for(const [w,v] of Object.entries(g.h||{}))if(objetivos.includes(w)&&!halladas.has(w)&&Array.isArray(v.ind))halladas.set(w,{ind:v.ind,rol:v.rol,otro:v.rol!==miRol()});
+    puntaje=Number(g.puntaje)||puntaje;equipo.mias=misHalladas();if(g.tiempoMs>0)tiempoMs=Math.min(duracionMs,g.tiempoMs);
+    dibujarLista();actualizarHUD();pintarCapsulas();actualizarEquipo();
+    Duelo.enviarRonda(equipo.ultimaRonda);sincronizarEquipo();
+    typeof mostrarToast==="function"&&mostrarToast("▶","Siguen con la misma sopa");
   }
   function recibirEquipo(p){
     if(!equipo||!p)return;
@@ -461,7 +480,7 @@ const SopaFugaz=(()=>{
       else if(!equipo.host&&(p.r||0)>(equipo.r||0))Duelo.enviarProgreso({tipo:"sf-pedir"});
       return;
     }
-    for(const [w,ind] of Object.entries(p.h||{}))if(!halladas.has(w))recibirHallada({tipo:"sf-hallada",w,ind});
+    for(const [w,v] of Object.entries(p.h||{}))if(!halladas.has(w))recibirHallada({tipo:"sf-hallada",w,ind:Array.isArray(v)?v:v&&v.ind,rol:v&&v.rol,silencioso:1});
   }
   function salirEquipo(){if(equipo)clearInterval(equipo.sync);equipo=null;Duelo.salir();elegirModo();}
   function iniciarEquipo(){
@@ -475,7 +494,8 @@ const SopaFugaz=(()=>{
         Duelo.mostrarBadge();
         Duelo.onProgresoRival(recibirEquipo);
         Duelo.onRivalSeFue(()=>{if(equipo){typeof mostrarToast==="function"&&mostrarToast("👋",((Duelo.rivalActual()||{}).nombre||"Tu compañero")+" salió del equipo");}});
-        if(soyHost)rondaEquipo();else Duelo.onRondaRecibida(recibirRondaEquipo);
+        const g=soyHost?Duelo.leerPartida():null;
+        if(soyHost&&g&&g.ronda&&Array.isArray(g.ronda.objetivos))retomarEquipo(g);else if(soyHost)rondaEquipo();else Duelo.onRondaRecibida(recibirRondaEquipo);
       }});
   }
   /* Pista: titila la primera letra de una palabra que falta. */

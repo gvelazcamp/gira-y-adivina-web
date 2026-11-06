@@ -178,13 +178,18 @@ const Duelo=(()=>{
   function guardarSalaDuelo(cod,r){
     const nueva={juego,codigo:cod,rol:soyHost?"host":"guest",con:String(r&&r.nombre||"").slice(0,30),t:Date.now()};
     const otras=salasTodas().filter(x=>!(x.juego===juego&&x.codigo===cod)&&!(x.juego===juego&&nueva.con&&x.con===nueva.con));
-    const mias=[nueva].concat(otras.filter(x=>x.juego===juego)).slice(0,4);
+    const deJuego=[nueva].concat(otras.filter(x=>x.juego===juego)),mias=deJuego.slice(0,4);
+    deJuego.slice(4).forEach(x=>{try{localStorage.removeItem(claveEstado(x.juego,x.codigo));}catch(e){}});
     try{localStorage.setItem(SALAS_DL,JSON.stringify(mias.concat(otras.filter(x=>x.juego!==juego)).slice(0,40)));}catch(e){}
   }
+  /* Cada juego en equipo guarda su partida en curso con esta clave: así, si alguien cierra la app,
+     al volver a la sala sigue la misma partida (como el Puzzle). */
+  const claveEstado=(j,cod)=>"gya_equipo_"+j+"_"+cod;
+  const hayEstado=(j,cod)=>{try{return !!localStorage.getItem(claveEstado(j,cod));}catch(e){return false;}};
   function salasDueloHtml(j){
     const l=salasDe(j);if(!l.length)return "";
     const esc=t=>String(t).replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
-    return '<div id="dlFijas" class="dl-fijas"><p>Tus salas</p>'+l.map(x=>'<button type="button" data-sala-dl="'+x.codigo+'" data-rol="'+x.rol+'" data-con="'+esc(x.con)+'">🔁 '+(x.con?'Con <b>'+esc(x.con)+'</b>':'Sala <b>'+x.codigo+'</b>')+' <small>'+x.codigo+'</small></button>').join("")+'</div>';
+    return '<div id="dlFijas" class="dl-fijas"><p>Tus salas</p>'+l.map(x=>'<button type="button" data-sala-dl="'+x.codigo+'" data-rol="'+x.rol+'" data-con="'+esc(x.con)+'">'+(hayEstado(j,x.codigo)?'▶ Seguir partida':'🔁')+' '+(x.con?'con <b>'+esc(x.con)+'</b>':'Sala <b>'+x.codigo+'</b>')+' <small>'+x.codigo+'</small></button>').join("")+'</div>';
   }
   /* Latido: cada 3 s se avisa "sigo acá"; si el compañero no da señales en 10 s el globito lo muestra desconectado. */
   let latidoTimer=null,ultimoRival=0;
@@ -210,6 +215,9 @@ const Duelo=(()=>{
     if(t!==temaIn())return;
     let m;try{m=JSON.parse(pl.toString());}catch(e){return;}
     ultimoRival=Date.now();if(badgeEl&&badgeEl.classList.contains("dl-off"))pintarConexion();
+    /* El anfitrión volvió a abrir la sala y el compañero sigue en la partida: le pide que se presente. */
+    if(m.tipo!=="hola"&&soyHost&&cbRivalListo&&Date.now()-(recibir.pidio||0)>1500){recibir.pidio=Date.now();mandar({tipo:"hola",pedir:1,nombre:(perfil&&perfil.nombre)||"Jugador",avatar:(perfil&&perfil.avatar)||null,frame:(typeof frameEquipado!=="undefined"?frameEquipado:null)});}
+    if(m.tipo==="hola"&&m.pedir&&!soyHost&&!cbRivalListo)mandar({tipo:"hola",nombre:(perfil&&perfil.nombre)||"Jugador",avatar:(perfil&&perfil.avatar)||null,frame:(typeof frameEquipado!=="undefined"?frameEquipado:null)});
     if(m.tipo==="hola"){
       rival={nombre:m.nombre,avatar:m.avatar,frame:m.frame};
       if(soyHost)mandar({tipo:"hola",nombre:(perfil&&perfil.nombre)||"Jugador",avatar:(perfil&&perfil.avatar)||null,frame:(typeof frameEquipado!=="undefined"?frameEquipado:null)});
@@ -375,8 +383,11 @@ const Duelo=(()=>{
   }
   function estaActivo(){return activo;}
   function soyAnfitrion(){return soyHost;}
+  function salaActual(){return sala;}
+  function leerPartida(){try{return JSON.parse(localStorage.getItem(claveEstado(juego,sala))||"null");}catch(e){return null;}}
+  function guardarPartida(d){if(!juego||!sala)return;try{if(d==null)localStorage.removeItem(claveEstado(juego,sala));else localStorage.setItem(claveEstado(juego,sala),JSON.stringify(d));}catch(e){}}
   function rivalActual(){return rival;}
   function salir(){cbChau=null;if(cliente&&cliente.connected)mandar({tipo:"chau"});repintar=null;onListoJuego=null;rondaPendiente=null;cerrarCliente();cerrarCapa();quitarBadge();activo=false;rival=null;finalRival=null;cbRivalListo=null;cbRonda=null;cbProgreso=null;cbFinal=null;}
-  return{abrirInvitacion,hayInvitacion:()=>!!invitacion,invitacionPara:j=>!!(invitacion&&invitacion.juego===j),onRivalSeFue:cb=>{cbChau=cb;},mostrarLobby,enviarRonda,onRondaRecibida,enviarProgreso,onProgresoRival,rivalConectado,soyAnfitrion,mostrarBadge,actualizarBadge,enviarFinal,mostrarResultado,estaActivo,rivalActual,salir};
+  return{abrirInvitacion,hayInvitacion:()=>!!invitacion,invitacionPara:j=>!!(invitacion&&invitacion.juego===j),onRivalSeFue:cb=>{cbChau=cb;},mostrarLobby,enviarRonda,onRondaRecibida,enviarProgreso,onProgresoRival,rivalConectado,soyAnfitrion,salaActual,leerPartida,guardarPartida,mostrarBadge,actualizarBadge,enviarFinal,mostrarResultado,estaActivo,rivalActual,salir};
 })();
 window.Duelo=Duelo;
