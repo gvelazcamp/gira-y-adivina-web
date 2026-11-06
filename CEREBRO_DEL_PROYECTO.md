@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — Silabario: foto de compartir con el tablero del juego y colores por palabra
+- Qué: Gonzalo prefirió el tablero como en el juego (fichas de sílabas en grilla) en vez de filas. La foto rearma la grilla con todas las sílabas de la ronda mezcladas (orden fijo por semilla), con las fichas reales del juego; las sílabas de cada palabra encontrada se resaltan con un color distinto, y al costado "Las respuestas" con el mismo color (no encontradas en crema, erradas en bordó). compartir-resultado: lado acepta color/colorTexto y preparar corre antes de convertir border-image.
+- Dónde: silabario-rioplatense.js, compartir-resultado.js, sw gya-cache-v738.
+
 ### 06/11/2026 — Silabario: palabras pintadas en la foto de compartir
 - Qué: Gonzalo pidió resaltar las encontradas. En la foto el tablero se rearma con cada palabra de la ronda formada por sus sílabas, una fila por palabra: las encontradas pintadas cada una con un color (dorado, turquesa, violeta…) y las que no, en bordó. Se sacó la lista lateral (ya se lee en las filas).
 - Dónde: silabario-rioplatense.js (v21), sw gya-cache-v737.

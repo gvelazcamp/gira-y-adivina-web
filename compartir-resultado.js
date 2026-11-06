@@ -30,8 +30,8 @@ window.CompartirResultado=(()=>{
         ignoreElements:x=>!!(ignorar&&x.matches&&x.matches(ignorar)),
         onclone:(doc,clon)=>{
           /* html2canvas no dibuja border-image (fichas de Silabario, Frases, Rosco, 100…): se pasa a fondo estirado. */
-          try{const v=doc.defaultView;[clon,...clon.querySelectorAll("*")].forEach(e=>{const cs=v.getComputedStyle(e),src=cs.borderImageSource;if(src&&src!=="none"){e.style.borderImage="none";e.style.borderColor="transparent";e.style.backgroundImage=src;e.style.backgroundSize="100% 100%";e.style.backgroundRepeat="no-repeat";e.style.backgroundOrigin="border-box";e.style.backgroundClip="border-box";}});}catch(err){}
           if(preparar)try{preparar(doc,clon);}catch(err){}
+          try{const v=doc.defaultView;[clon,...clon.querySelectorAll("*")].forEach(e=>{const cs=v.getComputedStyle(e),src=cs.borderImageSource;if(src&&src!=="none"){e.style.borderImage="none";e.style.borderColor="transparent";e.style.backgroundImage=src;e.style.backgroundSize="100% 100%";e.style.backgroundRepeat="no-repeat";e.style.backgroundOrigin="border-box";e.style.backgroundClip="border-box";}});}catch(err){}
           if(ancho){clon.style.width=ancho+"px";clon.style.maxWidth="none";}if(estilo){const st=doc.createElement("style");st.textContent=estilo;doc.head.appendChild(st);}}}).then(recortarVacio);}catch(e){return null;}
   }
   /* Saca los bordes transparentes que deja la captura (lugar de lo que no se dibuja). */
@@ -69,7 +69,7 @@ window.CompartirResultado=(()=>{
       const t0=top+(o.ladoTitulo?42:0),cols=lado.length>14?2:1,porCol=Math.max(1,Math.floor((bottom-t0)/34)),lista=lado.slice(0,porCol*cols),filasN=Math.ceil(lista.length/cols),paso=Math.min(84,(bottom-t0)/filasN),alto=paso*.86,cw=(lw-(cols-1)*10)/cols;
       const yIni=t0+Math.max(0,(bottom-t0-paso*filasN)/2*(o.ladoTitulo?0:1)),lx0=lx,lw0=lw;
       lista.forEach((f,i)=>{
-        const nCol=Math.floor(i/filasN),lx=lx0+nCol*(cw+10),lw=cw,fy=yIni+(i%filasN)*paso,col=f.estado==="ok"?"#16816b":f.estado==="mal"?"#842541":f.estado==="oro"?"#F5B301":"#f4eedf",txt=f.estado==="oro"?"#1E1033":f.estado?"#fff":"#2A1A3C";
+        const nCol=Math.floor(i/filasN),lx=lx0+nCol*(cw+10),lw=cw,fy=yIni+(i%filasN)*paso,col=f.color||(f.estado==="ok"?"#16816b":f.estado==="mal"?"#842541":f.estado==="oro"?"#F5B301":"#f4eedf"),txt=f.colorTexto||(f.estado==="oro"?"#1E1033":f.estado?"#fff":"#2A1A3C");
         g.fillStyle=col;caja(g,lx,fy,lw,alto,14);g.fill();
         const mid=fy+alto/2;let x=lx+12;g.textAlign="left";
         if(f.emoji){g.font=Math.round(alto*.46)+"px sans-serif";g.fillStyle="#fff";g.fillText(f.emoji,x,mid+2);x+=alto*.62;}
