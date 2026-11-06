@@ -1367,3 +1367,35 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .dl-badge.dl-off{opacity:.8;border-color:#ff5c7a}
 .dl-badge.dl-off::after{content:"🔴 Sin conexión";position:absolute;top:100%;right:8px;margin-top:4px;font:800 .7rem Outfit,system-ui,sans-serif;background:#842541;color:#fff;padding:2px 8px;border-radius:99px;white-space:nowrap}
 #dlAvisar{margin-top:10px}
+/* Chat de los juegos en equipo y propuestas (06/11/2026) */
+.dl-badge.dl-con-chat{cursor:pointer;padding-left:4px}
+.dl-chat-btn{position:relative;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:0;background:#37D6C0;font-size:1.05rem;cursor:pointer;flex:0 0 auto}
+.dl-chat-btn i{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 4px;border-radius:99px;background:#E5197C;color:#fff;font:900 .65rem/18px Outfit,system-ui,sans-serif;font-style:normal;border:2px solid #2B1A3F}
+.dl-chat-btn i[hidden]{display:none}
+.dl-chat{position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);max-width:480px;margin:0 auto;max-height:72vh;display:flex;flex-direction:column;z-index:8200;background:#2B1A3F;border:1px solid #37D6C077;border-radius:20px;box-shadow:0 20px 60px #000c;color:#F6EFE2;font-family:Outfit,system-ui,sans-serif}
+.dl-chat-cab{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px 8px}
+.dl-chat-x{width:34px;height:34px;border-radius:50%;border:0;background:#ffffff1a;color:#fff;font-size:1rem;cursor:pointer}
+.dl-chat-lista{flex:1;min-height:120px;overflow-y:auto;padding:4px 12px;display:flex;flex-direction:column;gap:6px}
+.dl-chat-vacio{color:#BCAACC;text-align:center;font-size:.85rem;margin:auto}
+.dl-msg{align-self:flex-start;max-width:82%;background:#3d2756;border-radius:14px 14px 14px 4px;padding:6px 10px}
+.dl-msg.yo{align-self:flex-end;background:#145C55;border-radius:14px 14px 4px 14px}
+.dl-msg small{display:block;color:#37D6C0;font-weight:800;font-size:.7rem}
+.dl-msg span{font-size:.92rem;word-wrap:break-word}
+.dl-msg .dl-fila{margin-top:6px;gap:6px}
+.dl-msg .dl-fila button{padding:5px 10px;font-size:.8rem}
+.dl-chat-frases{display:flex;flex-wrap:wrap;gap:5px;padding:8px 12px 4px}
+.dl-chat-frases button{border:1px solid #FFFFFF2e;background:#1d0f2e;color:#E4D8EB;border-radius:99px;padding:5px 10px;font:700 .78rem Outfit,system-ui,sans-serif;cursor:pointer}
+.dl-chat-form{display:flex;gap:6px;padding:8px 12px 12px}
+.dl-chat-form input{flex:1;min-width:0;border-radius:12px;border:1px solid #FFFFFF33;background:#1d0f2e;color:#fff;padding:10px 12px;font:600 16px Outfit,system-ui,sans-serif}
+.dl-chat-form button{padding:0 16px}
+.dl-chat-previa{position:fixed;top:calc(env(safe-area-inset-top,0px) + 62px);right:10px;max-width:min(78vw,320px);z-index:8100;text-align:left;background:#145C55;color:#fff;border:1px solid #37D6C0;border-radius:14px;padding:8px 12px;font:600 .85rem Outfit,system-ui,sans-serif;box-shadow:0 8px 24px #0009;cursor:pointer}
+.dl-propuesta{position:fixed;top:calc(env(safe-area-inset-top,0px) + 66px);left:50%;transform:translateX(-50%);width:min(92vw,360px);z-index:8150;background:#2B1A3F;border:2px solid #F5B301;border-radius:20px;padding:14px 16px;text-align:center;color:#F6EFE2;box-shadow:0 20px 60px #000c;font-family:Outfit,system-ui,sans-serif}
+.dl-propuesta p{margin:0}
+.dl-prop-palabra{margin:6px 0;font:900 2rem "Archivo Black",Outfit,sans-serif;letter-spacing:6px;color:#F5B301}
+.dl-prop-preg{margin:0 0 10px!important;color:#E4D8EB}
+.dl-propuesta .dl-fila{gap:8px}
+.dl-prop-chat{margin-top:8px;border:0;background:none;color:#37D6C0;font:800 .85rem Outfit,system-ui,sans-serif;text-decoration:underline;cursor:pointer}
+#psProponer{background:#F5B301;color:#2A1A3C}
+#psProponer[hidden]{display:none}
+.dl-propuesta .dl-fila button,.dl-msg .dl-fila button,.dl-chat-form button{flex:1;border:0;border-radius:12px;padding:10px 12px;background:#352146;color:#fff;font:900 .95rem Outfit,system-ui,sans-serif;cursor:pointer}
+.dl-chat-form button{flex:0 0 auto}

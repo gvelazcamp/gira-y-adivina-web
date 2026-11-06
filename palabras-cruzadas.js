@@ -85,7 +85,7 @@ window.PalabrasCruzadas=(()=>{
       detalle:"Creá una sala para completar <b>tu crucigrama</b> entre dos, o unite al de otra persona. Cada letra que pone uno <b>aparece en el otro celular</b>.",
       onListo:soyHost=>{
         if(!raiz)return;document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());raiz.querySelector("#pcAyuda")?.close?.();if(equipo)clearInterval(equipo.sync);equipo={host:soyHost,respaldo,visto:foto(),aplicando:false,n:0,ts:{},reloj:0};equipo.sync=setInterval(sincronizar,4000);
-        Duelo.mostrarBadge();Duelo.onProgresoRival(recibirCambios);
+        Duelo.mostrarBadge();Duelo.activarChat();Duelo.onProgresoRival(recibirCambios);
         Duelo.onRivalSeFue(()=>{mensajeActual=(((Duelo.rivalActual()||{}).nombre)||"Tu compañero")+" salió del equipo.";pintar();});
         if(soyHost)enviarInicio();else Duelo.onRondaRecibida(recibirInicio);
         pintarEquipo();

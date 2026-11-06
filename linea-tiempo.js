@@ -319,7 +319,7 @@
         document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());
         if(equipo)clearInterval(equipo.sync);
         equipo={host:soyHost,r:0,n:0,vistoN:0,pendientes:[],cola:[],ses:Math.random().toString(36).slice(2,9)};equipo.sync=setInterval(latirEquipo,1500);
-        Duelo.mostrarBadge();Duelo.actualizarBadge("🤝 juntos");
+        Duelo.mostrarBadge();Duelo.activarChat();Duelo.actualizarBadge("🤝 juntos");
         Duelo.onProgresoRival(recibirEquipo);
         Duelo.onRivalSeFue(()=>{if(equipo&&typeof mostrarToast==="function")mostrarToast("👋",((Duelo.rivalActual()||{}).nombre||"Tu compañero")+" salió del equipo");});
         const g=soyHost?Duelo.leerPartida():null;

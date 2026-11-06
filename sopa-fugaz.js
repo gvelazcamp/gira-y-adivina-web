@@ -491,7 +491,7 @@ const SopaFugaz=(()=>{
       onListo:soyHost=>{
         if(equipo)clearInterval(equipo.sync);
         duelo=false;modo="clasica";equipo={host:soyHost,mias:0,r:0};equipo.sync=setInterval(sincronizarEquipo,3000);
-        Duelo.mostrarBadge();
+        Duelo.mostrarBadge();Duelo.activarChat();
         Duelo.onProgresoRival(recibirEquipo);
         Duelo.onRivalSeFue(()=>{if(equipo){typeof mostrarToast==="function"&&mostrarToast("👋",((Duelo.rivalActual()||{}).nombre||"Tu compañero")+" salió del equipo");}});
         const g=soyHost?Duelo.leerPartida():null;
