@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — Palabra Secreta: niveles contrarreloj con la primera letra de regalo
+- Qué: Gonzalo pasó un video de un programa de TV de palabras y pidió niveles así desde el 16. Desde el nivel 16, los niveles pares que no son de repetir (16, 20, 22, 26, 28, 32…) son "⏱ Contrarreloj": cada fila trae la primera letra puesta (verde, no se borra), hay barra de tiempo por intento (20 s con 5 letras, 25 s con 6, 30 s con 7; en rosa los últimos 5 s) y si se acaba, ese intento se pierde (fila gris con ⏱). 5 intentos (6 con palabra larga). El reloj se frena con la ayuda abierta, la app en segundo plano y mientras se da vuelta la jugada. Solo jugando solo: en duelo y en equipo el nivel se juega normal. Partidas empezadas antes siguen como estaban.
+- Dónde: palabra-secreta.js (relojDelNivel, relojTic, tiempoAgotado; v34), extensiones.css (v173), sw gya-cache-v753.
+
 ### 06/11/2026 — El globito del compañero ya no tapa nada
 - Qué: Gonzalo: "no puede tapar algo de jugabilidad". En las extensiones el globito del compañero (avatar, 💬, valor) va dentro de la barra de arriba, en lugar del título y antes de la ✕ (clase .dl-con-globito en .ext-header). Fuera de las extensiones sigue flotando. El cartel "X propone…" de Palabra Secreta va abajo, sobre el teclado (el otro no lo está usando), sin tapar el tablero. Regla: nada de lo nuevo puede tapar el juego.
 - Dónde: duelo-extensiones.js (v28), extensiones.css (v172), sw gya-cache-v752.
