@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — Más juegos: secciones y favoritos con ❤️
+- Qué: Gonzalo pidió ordenar los juegos por tipo. El lobby ahora tiene secciones: ❤️ Mis favoritos (solo aparece si hay alguno), 🔥 Más populares (Tutti Frutti, Palabra Secreta, El Rosco, Puzzle), ⚔️ Desafiá a un amigo (Ahorcado, 100 Rioplatenses, Frases, Memoria, Silabario, Rueda de Letras, Duelo de conocimiento), 🤝 Colaborativos (Sopa Fugaz, Palabras Cruzadas, Línea del tiempo), 🏆 Desafíos (Girá y encajá, No te caigas y cualquier juego nuevo sin sección) y 🎉 Juegos de previa. Cada tarjeta tiene un corazón: al tocarlo el juego aparece también arriba en Favoritos; al sacarlo, si no queda ninguno, Favoritos desaparece. Se guarda en gya_ext_favoritos (va en el respaldo).
+- Dónde: extensiones.js (SECCIONES_LOBBY, v142), extensiones.css (v167), sw gya-cache-v744.
+
 ### 06/11/2026 — Jugar en equipo: Sopa Fugaz, Palabras Cruzadas y Línea del tiempo
 - Qué: Gonzalo pidió salas colaborativas (como el Puzzle). Botón "🤝 Jugar en equipo" (sala con código e invitación por WhatsApp, `?duelo=sopa-colab|cruzadas-colab|linea-colab`). Sopa: la misma sopa para los dos, lo que encuentra uno se marca en los dos tableros (aviso "X encontró…"), al final cuántas encontró cada uno; el anfitrión arranca "Otra sopa juntos". Crucigrama: el anfitrión comparte su crucigrama, cada letra que pone uno aparece en el otro; el invitado no guarda nada propio y al salir recupera el suyo; solo el anfitrión pasa al siguiente. Línea del tiempo: una línea de 7 entre los dos, lo que mueve uno se ve al instante (la carta movida brilla), cualquiera toca ¡Listo!; "Otra línea juntos" la arranca el anfitrión. En equipo no se gastan rayitas.
 - Dónde: duelo-extensiones.js (v24), sopa-fugaz.js (v19), palabras-cruzadas.js (v15), linea-tiempo.js (v7) y .css (v5), tests/colaborativos.cjs, sw gya-cache-v743.
