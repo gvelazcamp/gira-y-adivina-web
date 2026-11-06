@@ -21,8 +21,8 @@ window.CompartirResultado=(()=>{
     partes.forEach(x=>{g.drawImage(x.cv,(W-x.w*K)/2,y,x.w*K,x.h);y+=x.h+x.gap*K;});return recortarVacio(c);
   }
   async function capturar(sel){
-    let el=typeof sel==="function"?sel():sel,ignorar=null,ancho=0,estilo=null;
-    if(el&&!(el instanceof Element)&&typeof el==="object"){ignorar=el.ignorar||null;ancho=el.ancho||0;estilo=el.estilo||null;el=el.el;}
+    let el=typeof sel==="function"?sel():sel,ignorar=null,ancho=0,estilo=null,preparar=null;
+    if(el&&!(el instanceof Element)&&typeof el==="object"){ignorar=el.ignorar||null;ancho=el.ancho||0;estilo=el.estilo||null;preparar=el.preparar||null;el=el.el;}
     if(typeof el==="string")el=document.querySelector(el);
     if(!el||!el.getBoundingClientRect().width)return null;
     try{const h=await cargarH2C();const r=el.getBoundingClientRect();
@@ -31,6 +31,7 @@ window.CompartirResultado=(()=>{
         onclone:(doc,clon)=>{
           /* html2canvas no dibuja border-image (fichas de Silabario, Frases, Rosco, 100…): se pasa a fondo estirado. */
           try{const v=doc.defaultView;[clon,...clon.querySelectorAll("*")].forEach(e=>{const cs=v.getComputedStyle(e),src=cs.borderImageSource;if(src&&src!=="none"){e.style.borderImage="none";e.style.borderColor="transparent";e.style.backgroundImage=src;e.style.backgroundSize="100% 100%";e.style.backgroundRepeat="no-repeat";e.style.backgroundOrigin="border-box";e.style.backgroundClip="border-box";}});}catch(err){}
+          if(preparar)try{preparar(doc,clon);}catch(err){}
           if(ancho){clon.style.width=ancho+"px";clon.style.maxWidth="none";}if(estilo){const st=doc.createElement("style");st.textContent=estilo;doc.head.appendChild(st);}}}).then(recortarVacio);}catch(e){return null;}
   }
   /* Saca los bordes transparentes que deja la captura (lugar de lo que no se dibuja). */

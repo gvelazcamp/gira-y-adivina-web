@@ -431,7 +431,14 @@ const SopaFugaz=(()=>{
     CompartirResultado.abrir({juego:"Sopa Fugaz",logo:ARTE("logo"),archivo:"sopa-fugaz",
       titulo:ultimoGano?"¡SOPA COMPLETA!":"SE ACABÓ EL TIEMPO",sub:(modo==="giratoria"?"Sopa giratoria":"Sopa clásica")+" · Nivel "+nivel,
       cifras:[["🔎",halladas.size+"/"+objetivos.length,"palabras"],["⭐",puntaje,"puntos"],["⏱",reloj(Math.max(0,tiempoMs)),ultimoGano?"me sobró":"tiempo"]],
-      captura:{el:"#sfTablero"},anchoTablero:640,ladoTitulo:"Las palabras",lado:objetivos.map(w=>({texto:w,estado:halladas.has(w)?"ok":"mal"})),
+      captura:{el:"#sfTablero",preparar:(doc,clon)=>{
+        /* Palabras pintadas en la foto: cada encontrada con su color; las que faltaron, en rojo para ver dónde estaban. */
+        clon.querySelectorAll(".sf-caps").forEach(x=>x.style.display="none");
+        const celda=k=>clon.querySelector('.sf-celda[data-k="'+k+'"]');
+        const pintar=(ind,fondo)=>ind.forEach(k=>{const c=celda(k);if(c){c.style.background=fondo;c.style.color="#fff";c.style.textShadow="0 1px 2px #0008";c.style.borderRadius="30%";}});
+        objetivos.filter(w=>!halladas.has(w)&&ubicadas[w]).forEach(w=>pintar(ubicadas[w],"#842541"));
+        [...halladas.values()].forEach((h,i)=>pintar(h.ind,COLORES[i%COLORES.length].slice(0,7)));
+      }},anchoTablero:640,ladoTitulo:"Las palabras",lado:objetivos.map(w=>({texto:w,estado:halladas.has(w)?"ok":"mal"})),
       filas:objetivos.map(w=>({emoji:halladas.has(w)?"✅":"❌",texto:w,estado:halladas.has(w)?"ok":"mal"})),
       texto:"🔎 Sopa Fugaz · nivel "+nivel+" · "+halladas.size+"/"+objetivos.length+" palabras · "+puntaje+" puntos."});
   }

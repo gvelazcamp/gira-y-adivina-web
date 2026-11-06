@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — Sopa Fugaz: palabras pintadas en la foto de compartir
+- Qué: Gonzalo pidió que en la foto las palabras salgan pintadas. En la copia que se fotografía se esconden los trazos SVG y se pintan las casillas: cada palabra encontrada con su color del juego y las que faltaron en bordó (#842541, igual que en la lista), así se ve dónde estaban. Nueva opción captura.preparar(doc,clon) en compartir-resultado.js.
+- Dónde: sopa-fugaz.js, compartir-resultado.js, sw gya-cache-v735.
+
 ### 06/11/2026 — Compartir resultado: la foto ahora es la partida real del juego
 - Qué: Gonzalo: la foto de compartir tiene que ser la imagen de la partida con el formato del juego (como Línea del tiempo, Palabra Secreta o Puzzle), no un resumen; p. ej. el Ahorcado con el último ahorcado y al costado las palabras, el Rosco con el rosco y al costado sus palabras. compartir-resultado.js saca una foto del tablero real con html2canvas (lib/html2canvas.min.js 1.4.1, MIT, se carga recién al tocar Compartir), recorta los bordes vacíos y pasa los border-image (fichas) a fondo porque html2canvas no los dibuja. Foto 1080×1350: logo, resultado y abajo el tablero real a la izquierda + lista al costado (2 columnas si son muchas). Captura por juego: Ahorcado (dibujo agrandado + categoría + palabra; al costado las que tocaron), Rosco (.rr-rueda; si no se puede, se dibuja el rosco; al costado letra·palabra), Sopa (#sfTablero + palabras), Silabario (#sbTablero + respuestas), Memoria (#mgTablero), Frases (#fgEspacios + #fgBanco), Rueda (#rlGrilla + #rlRueda + palabras), 100 Rioplatenses (#crTablero + rondas), Palabras Cruzadas (.pc-grilla + palabras), Tutti Frutti (trofeo + podio), Girá y encajá (canvas del juego + datos), No te caigas (escenario del final).
 - Pruebas: finales reales de Sopa, Memoria, Silabario, Frases y Ahorcado generan la foto del tablero; Rosco, Rueda y Palabras Cruzadas probados capturando su tablero en pantalla.
