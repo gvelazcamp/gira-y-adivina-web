@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — Más juegos: etiquetas "🤝 Equipo" / "⚔️ Vs amigo" y filtros
+- Qué: para no repetir juegos en varias secciones (Gonzalo: "entreveraría más"), cada tarjeta lleva debajo del logo cómo se juega (🤝 Equipo: Palabra Secreta, Puzzle, Sopa, Cruzadas, Línea; ⚔️ Vs amigo: los de duelo + Tutti Frutti y Duelo de conocimiento) y arriba hay filtros Todos · 🤝 En equipo · ⚔️ Vs amigo · 🎉 Previa que muestran solo esos juegos. Al abrir el lobby vuelve a "Todos". Lista en MODOS_JUEGO (extensiones.js): al sumar un modo a un juego, agregarlo ahí.
+- Dónde: extensiones.js (v143), extensiones.css (v168), sw gya-cache-v745.
+
 ### 06/11/2026 — Más juegos: secciones y favoritos con ❤️
 - Qué: Gonzalo pidió ordenar los juegos por tipo. El lobby ahora tiene secciones: ❤️ Mis favoritos (solo aparece si hay alguno), 🔥 Más populares (Tutti Frutti, Palabra Secreta, El Rosco, Puzzle), ⚔️ Desafiá a un amigo (Ahorcado, 100 Rioplatenses, Frases, Memoria, Silabario, Rueda de Letras, Duelo de conocimiento), 🤝 Colaborativos (Sopa Fugaz, Palabras Cruzadas, Línea del tiempo), 🏆 Desafíos (Girá y encajá, No te caigas y cualquier juego nuevo sin sección) y 🎉 Juegos de previa. Cada tarjeta tiene un corazón: al tocarlo el juego aparece también arriba en Favoritos; al sacarlo, si no queda ninguno, Favoritos desaparece. Se guarda en gya_ext_favoritos (va en el respaldo).
 - Dónde: extensiones.js (SECCIONES_LOBBY, v142), extensiones.css (v167), sw gya-cache-v744.

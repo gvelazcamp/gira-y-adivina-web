@@ -398,6 +398,13 @@ const Extensiones=(()=>{
     {id:"desafios",titulo:"🏆 Desafíos",sub:"Superá tus récords",ids:[]},
     {id:"previa",titulo:"🎉 Juegos de previa",sub:"Para jugar en grupo con un solo celular",ids:[]}
   ];
+  /* Cómo se puede jugar cada juego: etiquetas debajo del logo y filtros de arriba del lobby. */
+  const MODOS_JUEGO={
+    equipo:["palabra-secreta","puzzle","sopa-fugaz","palabras-cruzadas","linea-tiempo"],
+    amigo:["tutti-frutti","palabra-secreta","rosco-rioplatense","puzzle","sopa-fugaz","linea-tiempo","ahorcado-rioplatense","cien-rioplatenses","frases-en-giro","memoria-en-giro","silabario-rioplatense","rueda-de-letras","duelo-conocimiento"]
+  };
+  const FILTROS_LOBBY=[{id:"todos",texto:"Todos"},{id:"equipo",texto:"🤝 En equipo",sub:"Jueguen juntos en el mismo tablero"},{id:"amigo",texto:"⚔️ Vs amigo",sub:"Desafiá a un amigo, cada uno en su celular"},{id:"previa",texto:"🎉 Previa",sub:"Para jugar en grupo con un solo celular"}];
+  let filtroLobby="todos";
   const KEY_FAVORITOS="gya_ext_favoritos";
   function favoritos(){try{const l=JSON.parse(localStorage.getItem(KEY_FAVORITOS)||"[]");return Array.isArray(l)?l.filter(x=>typeof x==="string"):[];}catch(e){return [];}}
   function alternarFavorito(id,tarjeta){
@@ -418,7 +425,10 @@ const Extensiones=(()=>{
     const nombre=document.createElement("b");nombre.textContent=ext.nombre;
     const desc=document.createElement("small");desc.textContent=ext.descripcion;
     const record=document.createElement("em");record.textContent=ext.id==="duelo-conocimiento"?"BOT · Online · Voz":ext.estado==="disponible"?"Mejor: "+ext.record():"Próximamente";
-    txt.append(nombre,desc,record);b.append(img,txt);
+    txt.append(nombre,desc,record);b.append(img);
+    const modos=[["equipo","🤝 Equipo"],["amigo","⚔️ Vs amigo"]].filter(([m])=>MODOS_JUEGO[m].includes(ext.id));
+    if(modos.length){const et=document.createElement("span");et.className="ext-modos";modos.forEach(([m,t])=>{const i=document.createElement("i");i.className="ext-modo-"+m;i.textContent=t;et.appendChild(i);});b.appendChild(et);}
+    b.appendChild(txt);
     if(Fichas.cobra(ext.id)){const f=document.createElement("span");f.className="ext-fichas-tarjeta";f.textContent=Fichas.etiqueta(ext.id);b.appendChild(f);}
     if(!b.disabled){
       const es=favs.includes(ext.id),cor=document.createElement("span");
@@ -436,7 +446,13 @@ const Extensiones=(()=>{
   function pintarSecciones(){
     const zona=contenido.querySelector("#extSecciones");if(!zona)return;const selector=selectorLobby;
     const visibles=EXTENSIONES.filter(extensionVisible),favs=favoritos();
-    const grupos=[{id:"fav",titulo:"❤️ Mis favoritos",sub:"Tocá el corazón de un juego para tenerlo acá",lista:favs.map(id=>visibles.find(x=>x.id===id&&x.estado==="disponible")).filter(Boolean)}]
+    let filtros=contenido.querySelector(".ext-filtros");
+    if(!filtros){filtros=document.createElement("div");filtros.className="ext-filtros";filtros.setAttribute("role","group");filtros.setAttribute("aria-label","Filtrar juegos");zona.before(filtros);}
+    filtros.innerHTML=FILTROS_LOBBY.map(f=>'<button type="button" data-filtro="'+f.id+'" aria-pressed="'+(f.id===filtroLobby)+'">'+f.texto+'</button>').join("");
+    filtros.onclick=ev=>{const bt=ev.target.closest("button[data-filtro]");if(!bt||bt.dataset.filtro===filtroLobby)return;filtroLobby=bt.dataset.filtro;pintarSecciones();};
+    const filtro=FILTROS_LOBBY.find(f=>f.id===filtroLobby);
+    const orden=SECCIONES_LOBBY.flatMap(x=>x.ids),pos=id=>{const i=orden.indexOf(id);return i<0?99:i;};
+    const grupos=filtroLobby!=="todos"?[{id:"filtro-"+filtroLobby,titulo:filtro.texto,sub:filtro.sub,lista:visibles.filter(x=>filtroLobby==="previa"?x.grupo==="previa":MODOS_JUEGO[filtroLobby].includes(x.id)).sort((a,b)=>pos(a.id)-pos(b.id))}]:[{id:"fav",titulo:"❤️ Mis favoritos",sub:"Tocá el corazón de un juego para tenerlo acá",lista:favs.map(id=>visibles.find(x=>x.id===id&&x.estado==="disponible")).filter(Boolean)}]
       .concat(SECCIONES_LOBBY.map(s=>({...s,lista:visibles.filter(x=>seccionDe(x)===s.id).sort((a,b)=>{const ia=s.ids.indexOf(a.id),ib=s.ids.indexOf(b.id);return(ia<0?99:ia)-(ib<0?99:ib);})})));
     zona.replaceChildren();let primero=true;
     for(const g of grupos){
@@ -463,7 +479,7 @@ const Extensiones=(()=>{
     shell.querySelector("#extTitulo").textContent="Jugá más juegos de Girá y Adiviná";
     const selector=modoTVDisponible()?'<div class="ext-selector-modo" role="group" aria-label="Modo de pantalla"><span>Pantallas</span><button type="button" data-modo="celular" aria-pressed="true">📱 Celular</button><button type="button" data-modo="tv" aria-pressed="false">📺 TV</button></div>':"";
     contenido.innerHTML='<div class="ext-hero"><span>✦ MÁS JUEGOS, MÁS DESAFÍOS</span><h2>Extensiones</h2><p>Elegí un juego del universo Girá y Adiviná. Jugá gratis, sin gastar vidas ni monedas.</p></div><div id="extSecciones"></div>';
-    selectorLobby=selector;pintarSecciones();
+    selectorLobby=selector;filtroLobby="todos";pintarSecciones();
     shell.scrollTop=0;
   }
   function prepararDueloTV(){

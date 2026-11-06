@@ -1347,3 +1347,13 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .ext-fav~.ext-insignia{top:50px}
 @keyframes extLatido{0%{transform:scale(.6)}60%{transform:scale(1.25)}100%{transform:none}}
 @media (orientation:landscape) and (max-height:600px){.ext-fav{width:26px;height:26px;font-size:.8rem;top:4px;right:4px}.ext-fav~.ext-insignia{top:34px}}
+
+/* Etiquetas de modo debajo del logo y filtros del lobby (06/11/2026) */
+.ext-modos{display:flex;flex-wrap:wrap;gap:4px;margin-top:-3px}
+.ext-modos i{font-style:normal;font:800 .66rem Outfit,system-ui,sans-serif;padding:2px 7px;border-radius:99px;white-space:nowrap}
+.ext-modo-equipo{color:#7FF0DF;background:#37D6C01f;border:1px solid #37D6C066}
+.ext-modo-amigo{color:#FF9CCB;background:#E5197C1f;border:1px solid #E5197C66}
+.ext-filtros{display:flex;flex-wrap:wrap;gap:6px;margin:14px 2px 16px}
+.ext-filtros button{flex:1 1 auto;min-height:36px;padding:6px 10px;border-radius:99px;border:1px solid #FFFFFF2e;background:#2A1A3C;color:#E4D8EB;font:800 .8rem Outfit,system-ui,sans-serif;white-space:nowrap;cursor:pointer}
+.ext-filtros button[aria-pressed="true"]{background:#F5B301;border-color:#F5B301;color:#2A1A3C}
+@media (orientation:landscape) and (max-height:600px){.ext-modos i{font-size:.58rem;padding:1px 5px}.ext-filtros{margin-top:8px}.ext-filtros button{min-height:30px;font-size:.72rem;flex:0 1 auto}}
