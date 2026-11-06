@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — Botón del inicio: "Jugá en equipo"
+- Qué: Gonzalo cambió el texto: "Jugá en equipo" / "De forma colaborativa, cada uno con su celular" (antes "Jugar con alguien"). Sigue solo para Gonzalo.
+- Dónde: index.html (#bJugarEquipo), sw gya-cache-v748.
+
 ### 06/11/2026 — Inicio: barra de racha/monedas/configuración más arriba
 - Qué: Gonzalo pidió menos margen arriba. #setup pasa de margin 5vh a 4px arriba y .setup-topbar de 14px a 2px: todo el inicio sube ~50 px.
 - Dónde: index.html, sw gya-cache-v747.
