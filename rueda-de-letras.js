@@ -189,10 +189,20 @@ const RuedaDeLetras=(()=>{
     if(window.CompartirResultado){const nv=gano?nivel:nivel;raiz.querySelector("#rlPanel .sf-acciones")?.appendChild(CompartirResultado.boton(()=>({juego:"Rueda de Letras",logo:ARTE("logo"),archivo:"rueda-de-letras",
       titulo:gano?"¡RUEDA COMPLETADA!":"SE ACABÓ EL TIEMPO",sub:"Nivel "+nv+" · "+puntos+" puntos",
       cifras:[["🔤",hechas.size+"/"+ronda.palabras.length,"ocultas"],["✨",extrasEncontradas.size,"extra"],["⭐",puntos,"puntos"]],
-      captura:[{el:"#rlGrilla",factor:1.4},{el:"#rlRueda"}],anchoTablero:620,ladoTitulo:"Las palabras",lado:ronda.palabras.map(w=>({texto:w,estado:hechas.has(w)?"ok":"mal"})),
+      captura:[{el:"#rlGrilla",factor:1.5,preparar:(doc,g)=>{
+        /* Crucigrama armado: todas las letras puestas; cada palabra encontrada con su color, las que faltaron en bordó. */
+        const col=coloresRl();g.replaceChildren();const hechasK=new Map();
+        for(const p of ronda.cruz.puestas)for(const x of celdasDe(p)){if(col[p.w]&&!hechasK.has(x.k))hechasK.set(x.k,col[p.w]);}
+        const vistas=new Set();
+        for(const p of ronda.cruz.puestas)for(const x of celdasDe(p)){if(vistas.has(x.k))continue;vistas.add(x.k);const [r,c]=x.k.split(",").map(Number);
+          const d=doc.createElement("div"),cc=hechasK.get(x.k);d.className="rl-celda ver";d.style.gridRow=r+1;d.style.gridColumn=c+1;d.textContent=x.l;
+          d.style.background=cc?cc.fondo:"#842541";d.style.color=cc?cc.texto:"#fff";d.style.borderRadius="8px";d.style.border="2px solid #fff8";d.style.boxShadow="0 3px 0 #0005";g.appendChild(d);}
+      }},{el:"#rlRueda"}],anchoTablero:620,ladoTitulo:"Las palabras",lado:ronda.palabras.map(w=>{const c=coloresRl()[w];return{texto:w,color:c?c.fondo:"#842541",colorTexto:c?c.texto:"#fff"};}),
       filas:ronda.palabras.map(w=>({emoji:hechas.has(w)?"✅":"❌",texto:w,estado:hechas.has(w)?"ok":"mal"})),
       texto:"🔤 Rueda de Letras · nivel "+nv+" · "+hechas.size+"/"+ronda.palabras.length+" palabras · "+puntos+" puntos."})));}
   }
+  /* Un color distinto por palabra encontrada (foto de compartir). */
+  function coloresRl(){const P=[["#F5B301","#1E1033"],["#37D6C0","#1E1033"],["#7B3FE4","#fff"],["#E5197C","#fff"],["#2ED18A","#1E1033"],["#FF8A3D","#1E1033"],["#3DA5FF","#1E1033"],["#B66DFF","#fff"]];const o={};let n=0;ronda.palabras.forEach(w=>{if(hechas.has(w)){const c=P[n++%P.length];o[w]={fondo:c[0],texto:c[1]};}});return o;}
   function abrir(contenedor){salir();datos=cargar();usadasSesion=new Set();raiz=contenedor;pantalla();panel("Rueda de Letras","Arrastrá entre letras para formar palabras y completar el crucigrama. Sin apuro: no hay reloj. ¿Trabado? Usá 💡 Pista. Las palabras extra caen en tu cajón y cada 3 te ganan una pista.","Empezar",()=>{nivel=1;puntos=0;comenzar();},["Jugar con un amigo 👥",iniciarDuelo],"personaje");document.addEventListener("visibilitychange",visibilidad);iniciarMusicaJuego();}
   function salir(){jugando=false;clearInterval(intervalo);clearTimeout(giroTimer);intervalo=null;giroTimer=null;token++;document.removeEventListener("visibilitychange",visibilidad);detenerMusicaJuego();if(typeof Duelo!=="undefined")Duelo.salir();duelo=false;raiz=null;}
   return{abrir,salir,mejorPuntaje,configNivel,tiempoRonda,elegir};

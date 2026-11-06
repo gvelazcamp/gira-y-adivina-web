@@ -14,7 +14,7 @@ window.CompartirResultado=(()=>{
   function cargarH2C(){if(window.html2canvas)return Promise.resolve(window.html2canvas);if(!h2c)h2c=new Promise((ok,mal)=>{const sc=document.createElement("script");sc.src="lib/html2canvas.min.js?v=1.4.1";sc.onload=()=>ok(window.html2canvas);sc.onerror=mal;document.head.appendChild(sc);});return h2c;}
   /* Varias piezas: [{el,factor}] se capturan por separado y se apilan centradas (factor agranda una pieza, p. ej. el dibujo). */
   async function capturarPiezas(lista){
-    const partes=[];for(const it of lista){const el=typeof it.el==="string"?document.querySelector(it.el):it.el;if(!el||!el.getBoundingClientRect().width)continue;const r=el.getBoundingClientRect();const cv=await capturar({el,ignorar:it.ignorar,estilo:it.estilo});if(cv)partes.push({cv,w:r.width*(it.factor||1),gap:it.gap??14});}
+    const partes=[];for(const it of lista){const el=typeof it.el==="string"?document.querySelector(it.el):it.el;if(!el||!el.getBoundingClientRect().width)continue;const r=el.getBoundingClientRect();const cv=await capturar({el,ignorar:it.ignorar,estilo:it.estilo,preparar:it.preparar});if(cv)partes.push({cv,w:r.width*(it.factor||1),gap:it.gap??14});}
     if(!partes.length)return null;
     const K=3,W=Math.ceil(Math.max(...partes.map(x=>x.w))*K);let H=0;partes.forEach(x=>{x.h=x.cv.height*(x.w*K/x.cv.width);H+=x.h+x.gap*K;});
     const c=document.createElement("canvas");c.width=W;c.height=Math.ceil(H);const g=c.getContext("2d");let y=0;
