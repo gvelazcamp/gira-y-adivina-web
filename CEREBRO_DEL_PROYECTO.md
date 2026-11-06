@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — Inicio: barra de racha/monedas/configuración más arriba
+- Qué: Gonzalo pidió menos margen arriba. #setup pasa de margin 5vh a 4px arriba y .setup-topbar de 14px a 2px: todo el inicio sube ~50 px.
+- Dónde: index.html, sw gya-cache-v747.
+
 ### 06/11/2026 — Inicio: botón "🤝 Jugar con alguien" (prueba solo Gonzalo)
 - Qué: debajo de "Jugá más juegos" un botón verde agua que abre Más juegos directo en el filtro "🤝 En equipo" (Extensiones.abrirLobby("equipo")). Solo lo ve Gonzalo (esGonzalo) para probarlo; si le gusta, se abre a todos sacando esa condición. Nombre a decidir ("con alguien" vs "con un amigo").
 - Dónde: index.html (#bJugarEquipo), extensiones.js (v144), extensiones.css (v169), sw gya-cache-v746.
