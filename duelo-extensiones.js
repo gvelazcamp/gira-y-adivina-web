@@ -226,6 +226,7 @@ const Duelo=(()=>{
     }else if(m.tipo==="ronda"){if(cbRonda)cbRonda(m.datos);else rondaPendiente=m.datos;}
     else if(m.tipo==="revancha"){revancha.rival=true;rivalSeFue=false;if(repintar)repintar();chequearRevancha();}
     else if(m.tipo==="chau"){rivalSeFue=true;revancha.rival=false;if(repintar)repintar();if(cbChau)cbChau();}
+    else if(m.tipo==="progreso"&&(m.datos?.tipo==="dl-chat"||m.datos?.tipo==="dl-chat-ok")){recibirChat(m.datos);}
     else if(m.tipo==="progreso"&&cbProgreso){cbProgreso(m.datos);}
     else if(m.tipo==="final"){finalRival=m.datos;if(cbFinal)cbFinal(m.datos);}
   }
@@ -381,13 +382,98 @@ const Duelo=(()=>{
     pintar();
     if(!finalRival)cbFinal=()=>pintar();
   }
+  /* --- Chat de los juegos en equipo (6/11/2026, Gonzalo: "así no hay discusiones o pueden hablar") ---
+     Va por el mismo canal ("progreso" con tipo dl-chat), cada mensaje se reenvía hasta que el otro confirma,
+     y la conversación queda guardada por sala. Propuestas: un mensaje con prop muestra al otro una tarjeta
+     "Juan propone CARTA · ✅ / ❌" y la respuesta llega al juego por onVoto. */
+  let chat=null;
+  const FRASES_CHAT=["¡Dale! 👍","Esa no 😅","Esperá ⏳","¡Bien ahí! 🙌","¿Probamos otra? 🤔","Me voy, seguimos después 👋"];
+  const escChat=t=>String(t).replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+  const miNombreChat=()=>String((perfil&&perfil.nombre)||"Yo").slice(0,20);
+  const claveChat=()=>"gya_chat_"+juego+"_"+sala;
+  function activarChat(){
+    if(!juego||!sala)return;
+    if(!chat){let msgs=[];try{msgs=JSON.parse(localStorage.getItem(claveChat())||"[]");if(!Array.isArray(msgs))msgs=[];}catch(e){msgs=[];}
+      chat={msgs:msgs.slice(-40),pend:new Map(),vistos:new Set(msgs.map(x=>x.id)),votadas:new Set(msgs.filter(x=>x.voto).map(x=>x.voto.id)),sinLeer:0,cbVoto:null};
+      chat.timer=setInterval(()=>{chat&&chat.pend.forEach((v,id)=>{if(++v.n>15)chat.pend.delete(id);else mandar({tipo:"progreso",datos:v.m});});},2000);}
+    const b=mostrarBadge();
+    if(!b.querySelector(".dl-chat-btn")){const x=document.createElement("button");x.type="button";x.className="dl-chat-btn";x.setAttribute("aria-label","Abrir el chat");x.innerHTML='💬<i hidden></i>';b.prepend(x);b.classList.add("dl-con-chat");b.onclick=abrirChat;}
+    pintarSinLeer();
+  }
+  function guardarChat(){try{localStorage.setItem(claveChat(),JSON.stringify(chat.msgs.slice(-40)));}catch(e){}}
+  function pintarSinLeer(){const i=badgeEl&&badgeEl.querySelector(".dl-chat-btn i");if(!i||!chat)return;i.hidden=!chat.sinLeer;i.textContent=chat.sinLeer>9?"9+":String(chat.sinLeer);}
+  function enviarChat(texto,extra){
+    if(!chat)return;texto=String(texto||"").trim().slice(0,200);if(!texto&&!extra)return;
+    const m={tipo:"dl-chat",id:Math.random().toString(36).slice(2,10),de:miNombreChat(),t:texto,ts:Date.now(),...(extra||{})};
+    chat.vistos.add(m.id);chat.msgs.push({...m,yo:true});chat.msgs=chat.msgs.slice(-40);guardarChat();
+    chat.pend.set(m.id,{m,n:0});mandar({tipo:"progreso",datos:m});pintarChat();
+  }
+  function recibirChat(d){
+    if(!chat||!d)return;
+    if(d.tipo==="dl-chat-ok"){chat.pend.delete(d.id);return;}
+    if(typeof d.id!=="string")return;
+    mandar({tipo:"progreso",datos:{tipo:"dl-chat-ok",id:d.id}});
+    if(chat.vistos.has(d.id))return;chat.vistos.add(d.id);
+    const m={id:d.id,de:String(d.de||"Compañero").slice(0,20),t:String(d.t||"").slice(0,200),ts:Number(d.ts)||Date.now()};
+    if(d.prop&&typeof d.prop.palabra==="string")m.prop={palabra:d.prop.palabra.slice(0,12),id:d.id};
+    if(d.voto&&typeof d.voto.palabra==="string")m.voto={palabra:d.voto.palabra.slice(0,12),si:!!d.voto.si,id:String(d.voto.id||"")};
+    chat.msgs.push(m);chat.msgs=chat.msgs.slice(-40);guardarChat();
+    if(m.voto&&chat.cbVoto)try{chat.cbVoto(m.voto.palabra,m.voto.si,m.de);}catch(e){}
+    if(m.prop)mostrarPropuesta(m);
+    if(document.querySelector(".dl-chat"))pintarChat();
+    else if(!m.prop){chat.sinLeer++;pintarSinLeer();vistaPrevia(m);}
+  }
+  function vistaPrevia(m){
+    document.querySelector(".dl-chat-previa")?.remove();
+    const v=document.createElement("button");v.type="button";v.className="dl-chat-previa";
+    v.innerHTML='<b>'+escChat(m.de)+':</b> '+escChat(m.voto?(m.voto.si?"✅ ":"❌ ")+m.t:m.t);v.onclick=()=>{v.remove();abrirChat();};
+    document.body.appendChild(v);setTimeout(()=>v.remove(),4000);
+  }
+  function votar(m,si){
+    if(!chat||chat.votadas.has(m.prop.id))return;chat.votadas.add(m.prop.id);
+    document.querySelector(".dl-propuesta")?.remove();
+    enviarChat(si?"✅ ¡Dale con "+m.prop.palabra+"!":"❌ "+m.prop.palabra+" no, probemos otra",{voto:{palabra:m.prop.palabra,si,id:m.prop.id}});
+  }
+  function mostrarPropuesta(m){
+    document.querySelector(".dl-propuesta")?.remove();
+    const c=document.createElement("div");c.className="dl-propuesta";c.setAttribute("role","alertdialog");
+    c.innerHTML='<p>💡 <b>'+escChat(m.de)+'</b> propone</p><div class="dl-prop-palabra">'+escChat(m.prop.palabra)+'</div><p class="dl-prop-preg">¿Le damos?</p><div class="dl-fila"><button type="button" class="dl-principal" data-v="1">✅ Sí</button><button type="button" data-v="0">❌ No</button></div><button type="button" class="dl-prop-chat">💬 Hablarlo en el chat</button>';
+    c.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>votar(m,b.dataset.v==="1"));
+    c.querySelector(".dl-prop-chat").onclick=()=>{c.remove();abrirChat();};
+    document.body.appendChild(c);
+  }
+  function proponer(palabra){enviarChat("💡 Propongo "+palabra,{prop:{palabra:String(palabra).slice(0,12)}});}
+  function abrirChat(){
+    if(!chat)return;document.querySelector(".dl-chat-previa")?.remove();
+    let p=document.querySelector(".dl-chat");
+    if(!p){p=document.createElement("div");p.className="dl-chat";p.setAttribute("role","dialog");p.setAttribute("aria-label","Chat");
+      p.innerHTML='<div class="dl-chat-cab"><b>💬 Chat con '+escChat((rival&&rival.nombre)||"tu compañero")+'</b><button type="button" class="dl-chat-x" aria-label="Cerrar el chat">✕</button></div><div class="dl-chat-lista"></div>'+
+        '<div class="dl-chat-frases">'+FRASES_CHAT.map(f=>'<button type="button">'+escChat(f)+'</button>').join("")+'</div>'+
+        '<form class="dl-chat-form"><input type="text" maxlength="200" placeholder="Escribí un mensaje…" aria-label="Mensaje" autocomplete="off"><button type="submit" class="dl-principal">Enviar</button></form>';
+      document.body.appendChild(p);
+      p.querySelector(".dl-chat-x").onclick=()=>p.remove();
+      p.querySelectorAll(".dl-chat-frases button").forEach(b=>b.onclick=()=>enviarChat(b.textContent));
+      const inp=p.querySelector("input");inp.addEventListener("keydown",e=>e.stopPropagation());
+      p.querySelector("form").onsubmit=e=>{e.preventDefault();enviarChat(inp.value);inp.value="";};
+    }
+    chat.sinLeer=0;pintarSinLeer();pintarChat();
+  }
+  function pintarChat(){
+    const p=document.querySelector(".dl-chat");if(!p||!chat)return;
+    const l=p.querySelector(".dl-chat-lista");
+    l.innerHTML=chat.msgs.length?chat.msgs.map(m=>'<div class="dl-msg'+(m.yo?" yo":"")+'">'+(m.yo?"":'<small>'+escChat(m.de)+'</small>')+'<span>'+escChat(m.t)+'</span>'+
+      (m.prop&&!m.yo&&!chat.votadas.has(m.prop.id)?'<div class="dl-fila"><button type="button" class="dl-principal" data-si="'+escChat(m.id)+'">✅ Sí</button><button type="button" data-no="'+escChat(m.id)+'">❌ No</button></div>':'')+'</div>').join(""):'<p class="dl-chat-vacio">Todavía no hay mensajes. ¡Saludá! 👋</p>';
+    l.querySelectorAll("[data-si],[data-no]").forEach(b=>b.onclick=()=>{const id=b.dataset.si||b.dataset.no,m=chat.msgs.find(x=>x.id===id);if(m)votar(m,!!b.dataset.si);pintarChat();});
+    l.scrollTop=l.scrollHeight;
+  }
+  function cerrarChat(){if(chat){clearInterval(chat.timer);chat=null;}document.querySelectorAll(".dl-chat,.dl-propuesta,.dl-chat-previa").forEach(x=>x.remove());}
   function estaActivo(){return activo;}
   function soyAnfitrion(){return soyHost;}
   function salaActual(){return sala;}
   function leerPartida(){try{return JSON.parse(localStorage.getItem(claveEstado(juego,sala))||"null");}catch(e){return null;}}
   function guardarPartida(d){if(!juego||!sala)return;try{if(d==null)localStorage.removeItem(claveEstado(juego,sala));else localStorage.setItem(claveEstado(juego,sala),JSON.stringify(d));}catch(e){}}
   function rivalActual(){return rival;}
-  function salir(){cbChau=null;if(cliente&&cliente.connected)mandar({tipo:"chau"});repintar=null;onListoJuego=null;rondaPendiente=null;cerrarCliente();cerrarCapa();quitarBadge();activo=false;rival=null;finalRival=null;cbRivalListo=null;cbRonda=null;cbProgreso=null;cbFinal=null;}
-  return{abrirInvitacion,hayInvitacion:()=>!!invitacion,invitacionPara:j=>!!(invitacion&&invitacion.juego===j),onRivalSeFue:cb=>{cbChau=cb;},mostrarLobby,enviarRonda,onRondaRecibida,enviarProgreso,onProgresoRival,rivalConectado,soyAnfitrion,salaActual,leerPartida,guardarPartida,mostrarBadge,actualizarBadge,enviarFinal,mostrarResultado,estaActivo,rivalActual,salir};
+  function salir(){cerrarChat();cbChau=null;if(cliente&&cliente.connected)mandar({tipo:"chau"});repintar=null;onListoJuego=null;rondaPendiente=null;cerrarCliente();cerrarCapa();quitarBadge();activo=false;rival=null;finalRival=null;cbRivalListo=null;cbRonda=null;cbProgreso=null;cbFinal=null;}
+  return{abrirInvitacion,hayInvitacion:()=>!!invitacion,invitacionPara:j=>!!(invitacion&&invitacion.juego===j),onRivalSeFue:cb=>{cbChau=cb;},mostrarLobby,enviarRonda,onRondaRecibida,enviarProgreso,onProgresoRival,rivalConectado,soyAnfitrion,salaActual,activarChat,enviarChat,proponer,onVoto:cb=>{if(chat)chat.cbVoto=cb;},abrirChat,leerPartida,guardarPartida,mostrarBadge,actualizarBadge,enviarFinal,mostrarResultado,estaActivo,rivalActual,salir};
 })();
 window.Duelo=Duelo;

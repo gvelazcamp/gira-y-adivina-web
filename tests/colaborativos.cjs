@@ -11,12 +11,15 @@ const norm=s=>s.toUpperCase().replace(/Ñ/g,'!').normalize('NFD').replace(/[̀-�
 (async()=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const base='http://127.0.0.1:'+server.address().port;
  const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_EXECUTABLE||undefined});
- let peers=[];const errors=[];
+ let peers=[];const errors=[];const salasPS=new Map();
+ const fakeSupa=()=>{window.obtenerSupa=()=>({from:()=>{const q={_f:{},select(){return q;},eq(c,v){q._f[c]=v;return q;},limit(){return window.__salaGet(q._f.apodo).then(v=>({data:v?[{estado_juego:v}]:[],error:null}));},
+   upsert(row){return window.__salaSet(row.apodo,row.estado_juego).then(()=>({error:null}));}};return q;}});};
  async function player(name){
   const ctx=await browser.newContext({locale:'es-UY',viewport:{width:390,height:844},serviceWorkers:'block',reducedMotion:'reduce'});return pagina(ctx,name);
  }
  async function pagina(ctx,name){
   const page=await ctx.newPage();
+  await page.exposeFunction('__salaSet',(k,v)=>{salasPS.set(k,v);});await page.exposeFunction('__salaGet',k=>salasPS.get(k)||null);
   peers.push(page);page.on('pageerror',e=>errors.push(name+': '+e.message));
   await page.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.fulfill({status:200,body:''}));
   await page.exposeFunction('__publish',async(t,m)=>{for(const o of peers)if(o!==page&&!o.isClosed())await o.evaluate(([t,m])=>window.__deliver?.(t,m),[t,m]);});
@@ -71,6 +74,17 @@ const norm=s=>s.toUpperCase().replace(/Ñ/g,'!').normalize('NFD').replace(/[̀-�
   await a.waitForSelector('.lt-cartel');await b.waitForSelector('.lt-cartel');
   assert.match(await a.locator('.lt-cartel').textContent(),/PERFECTA/);assert.match(await b.locator('.lt-cartel').textContent(),/PERFECTA/);
   assert(await b.locator('.lt-siguiente[disabled]').count(),'el invitado espera');
+  // Chat: tocar el globito abre el chat; lo que escribe uno le llega al otro (aunque se corte la señal un rato)
+  await a.locator('.dl-badge').click();await a.locator('.dl-chat input').fill('¡Hola equipo!');await a.locator('.dl-chat-form button').click();
+  await b.waitForFunction(()=>document.querySelector('.dl-chat-btn i')?.textContent==='1');
+  assert.match(await b.locator('.dl-chat-previa').textContent(),/Gonzalo: ¡Hola equipo!/);
+  await b.evaluate(()=>window.__sinRed=true);await b.locator('.dl-badge').click();await b.locator('.dl-chat-frases button').first().click();
+  await a.waitForTimeout(1000);assert.equal(await a.locator('.dl-msg:not(.yo)').count(),0,'sin red no llega');
+  await b.evaluate(()=>window.__sinRed=false);await a.waitForFunction(()=>/¡Dale!/.test(document.querySelector('.dl-msg:not(.yo)')?.textContent||''),null,{timeout:6000});
+  assert.equal(await b.locator('.dl-msg').count(),2);assert.equal(await a.locator('.dl-msg').count(),2,'sin repetidos');
+  if(process.env.S)await b.screenshot({path:process.env.S+'/chat.png'});
+  await a.locator('.dl-chat-x').click();await b.locator('.dl-chat-x').click();
+  console.log('PASS chat en equipo (con corte de señal)');
   await a.screenshot({path:process.env.S?process.env.S+'/linea-equipo-a.png':'/dev/null'}).catch(()=>{});
   const antes=await cartas(b);await a.locator('[data-acc="eq-otra"]').click();
   await b.waitForFunction(t=>!document.querySelector('.lt-cartel')&&LineaTiempo._estado().cartas.map(c=>c.titulo).sort().join('|')!==t,antes);
@@ -153,6 +167,33 @@ const norm=s=>s.toUpperCase().replace(/Ñ/g,'!').normalize('NFD').replace(/[̀-�
   await b.locator('#pcEquipoBoton').click();
   assert.match(await b.locator('#pcEquipoBoton').textContent(),/^🤝$/);
   console.log('PASS Palabras Cruzadas en equipo');
+  /* ---------- Palabra Secreta: proponer y votar ---------- */
+  {
+   const seed=w=>JSON.stringify({nivel:3,partidaNivel:{objetivo:w,nivel:3,max:5,repeticiones:0,dia:1,intentos:[],terminada:false,gano:false,cobrada:true},ganadas:5,jugadas:7,ayudaVista:true});
+   for(const p of peers)await p.context().close();peers=[];
+   const a=await player('Gonzalo'),b=await player('Vale');
+   const abrirPS=async(p,w)=>{await p.goto(base);await p.waitForFunction(()=>window.Duelo&&window.Extensiones&&window.PalabraSecreta);await p.evaluate(falso);await p.evaluate(fakeSupa);
+    await p.evaluate(w=>localStorage.setItem('gya_palabra_secreta',w),seed(w));await p.evaluate(()=>Extensiones.abrirJuego('palabra-secreta'));
+    const ok=p.locator('#psAyudaPanel .sf-principal');if(await ok.isVisible().catch(()=>false))await ok.click();await p.locator('#psColaborativo').click();};
+   await abrirPS(a,'ASADO');await a.locator('#dlCrear').click();await a.waitForFunction(()=>document.querySelector('#dlEstado').textContent.includes('Sala lista'));
+   const code=await a.locator('#dlCodigo').textContent();
+   await abrirPS(b,'YERBA');await b.locator('#dlUnirse').click();await b.locator('#dlInput').fill(code);await b.locator('#dlInput').press('Enter');
+   await b.waitForFunction(()=>document.querySelector('#psEquipoEstado')?.textContent.includes('teclado'),null,{timeout:15000});
+   const filas=p=>p.locator('#psTablero .ps-fila:has(.exacta,.presente,.ausente)').count();
+   assert(await b.locator('#psProponer').isHidden(),'solo propone el que tiene el teclado');
+   await a.evaluate(()=>{for(const l of 'CART')PalabraSecreta.tecla(l);});assert(await a.locator('#psProponer').isDisabled(),'palabra incompleta');
+   await a.evaluate(()=>PalabraSecreta.tecla('A'));await a.locator('#psProponer').click();
+   await b.waitForSelector('.dl-propuesta');assert.match(await b.locator('.dl-prop-palabra').textContent(),/CARTA/);
+   if(process.env.S)await b.screenshot({path:process.env.S+'/propuesta.png'});
+   await b.locator('.dl-propuesta [data-v="1"]').click();
+   await a.waitForFunction(()=>document.querySelectorAll('#psTablero .ps-fila:has(.exacta,.presente,.ausente)').length===1,null,{timeout:8000});
+   await b.waitForFunction(()=>document.querySelectorAll('#psTablero .ps-fila:has(.exacta,.presente,.ausente)').length===1,null,{timeout:8000});
+   await a.evaluate(()=>{for(const l of 'PASTO')PalabraSecreta.tecla(l);});await a.locator('#psProponer').click();
+   await b.waitForSelector('.dl-propuesta');await b.locator('.dl-propuesta [data-v="0"]').click();
+   await a.waitForFunction(()=>/prefiere otra/.test(document.querySelector('#psMensaje').textContent),null,{timeout:8000});
+   assert.equal(await filas(a),1,'con un no, no se manda');
+   console.log('PASS Palabra Secreta: proponer, sí manda la palabra, no la frena');
+  }
   assert.deepEqual(errors,[]);
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});

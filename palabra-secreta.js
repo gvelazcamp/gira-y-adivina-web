@@ -63,11 +63,12 @@ const PalabraSecreta=(()=>{
   function iniciarNivel(){if(!datos.partidaNivel||datos.partidaNivel.terminada||!esSecreta(datos.partidaNivel.objetivo)){if(datos.diaria?.objetivo)Vistas.marcar("palabra",datos.diaria.objetivo);datos.partidaNivel=nueva(elegirPalabra(largoDelNivel(datos.nivel)),datos.nivel);guardar();}else if(datos.partidaNivel.repeticiones===undefined){/* Una ronda empezada antes de esta regla conserva sus intentos. */datos.partidaNivel.repeticiones=datos.partidaNivel.intentos.length<=1?repeticionesDelNivel(datos.partidaNivel.nivel):0;if(datos.partidaNivel.repeticiones)datos.partidaNivel.max=MAX;guardar();}partida=datos.partidaNivel;borrador="";cursor=null;}
   function siguienteNivel(){iniciarNivel();tablero();mensaje("");}
   function pantalla(){
-    raiz.innerHTML='<div class="ps-game"><button type="button" class="ext-volver" id="psVolver">⟵ Extensiones</button><div class="ps-top"><div><h2 class="ps-logo-h"><img class="ps-logo" src="'+ARTE("logo")+'" alt="Palabra Secreta" draggable="false"></h2><p class="ps-aviso">💡 Tocá "?" para ver cómo se juega</p></div><button type="button" id="psEstadisticas" class="ps-btn-img" aria-label="Estadísticas">'+ico("stats")+'</button><button type="button" id="psAyuda" aria-label="Cómo se juega">?</button></div><div class="ps-reto" id="psReto"></div><div class="ps-stats" id="psStats"></div><div class="ps-play"><div class="ps-tablero-zona"><div class="ps-leyenda" role="group" aria-label="Significado de los colores"><span><i class="ps-color-ausente" aria-hidden="true"></i><span>Gris: no está o sobra</span></span><span><i class="ps-color-presente" aria-hidden="true"></i><span>Amarillo: otro lugar</span></span><span><i class="ps-color-exacta" aria-hidden="true"></i><span>Verde: lugar correcto</span></span><span><i class="ps-color-repetida" aria-hidden="true"></i><span>Raya violeta: hay otra más</span></span></div><div class="ps-tablero" id="psTablero"></div></div><div class="ps-entrada"><div class="ps-mensaje" id="psMensaje" aria-live="polite"></div><button type="button" class="ps-mic-btn" id="psMic" aria-pressed="false">🎙️ Activar micrófono</button><div class="ps-teclado" id="psTeclado"></div><div class="ps-acciones"><button type="button" id="psEnviar">Enviar</button><button type="button" id="psBorrar">Borrar</button></div><div class="ps-online"><button type="button" class="ps-duelo" id="psDuelo">👥 Jugar con un amigo</button><button type="button" class="ps-duelo ps-colaborativo" id="psColaborativo">🤝 Jugar colaborativo</button></div><section id="psEquipo" class="ps-equipo" aria-label="Equipo colaborativo" hidden><p id="psEquipoEstado" role="status" aria-live="polite"></p><button type="button" id="psTomarTeclado">Tomar el teclado</button><button type="button" id="psSalirEquipo">Salir del colaborativo</button></section></div></div><div class="ps-final" id="psFinal" hidden></div><div class="sf-panel-capa" id="psAyudaPanel" hidden></div><div class="ps-mic-aviso" id="psMicAviso" role="dialog" aria-modal="true" aria-labelledby="psMicTitulo" hidden><div class="ps-mic-aviso-caja"><button type="button" class="ps-mic-aviso-cerrar" id="psVozCerrar" aria-label="Cerrar y jugar sin micrófono">✕</button><h3 id="psMicTitulo">🎙️ Micrófono para jugar</h3><p>En horizontal podés decir una palabra de cinco letras. Si está en el diccionario, se envía sola.</p><p>El micrófono seguirá activo durante la partida. Podés apagarlo o prenderlo con el botón del juego.</p><div class="ps-mic-aviso-botones"><button type="button" id="psVozNo">No, usar teclado</button><button type="button" id="psVozSi">Sí, usar micrófono</button></div><small id="psVozPermiso" role="status"></small></div></div></div>';
+    raiz.innerHTML='<div class="ps-game"><button type="button" class="ext-volver" id="psVolver">⟵ Extensiones</button><div class="ps-top"><div><h2 class="ps-logo-h"><img class="ps-logo" src="'+ARTE("logo")+'" alt="Palabra Secreta" draggable="false"></h2><p class="ps-aviso">💡 Tocá "?" para ver cómo se juega</p></div><button type="button" id="psEstadisticas" class="ps-btn-img" aria-label="Estadísticas">'+ico("stats")+'</button><button type="button" id="psAyuda" aria-label="Cómo se juega">?</button></div><div class="ps-reto" id="psReto"></div><div class="ps-stats" id="psStats"></div><div class="ps-play"><div class="ps-tablero-zona"><div class="ps-leyenda" role="group" aria-label="Significado de los colores"><span><i class="ps-color-ausente" aria-hidden="true"></i><span>Gris: no está o sobra</span></span><span><i class="ps-color-presente" aria-hidden="true"></i><span>Amarillo: otro lugar</span></span><span><i class="ps-color-exacta" aria-hidden="true"></i><span>Verde: lugar correcto</span></span><span><i class="ps-color-repetida" aria-hidden="true"></i><span>Raya violeta: hay otra más</span></span></div><div class="ps-tablero" id="psTablero"></div></div><div class="ps-entrada"><div class="ps-mensaje" id="psMensaje" aria-live="polite"></div><button type="button" class="ps-mic-btn" id="psMic" aria-pressed="false">🎙️ Activar micrófono</button><div class="ps-teclado" id="psTeclado"></div><div class="ps-acciones"><button type="button" id="psProponer" hidden>💡 Proponer</button><button type="button" id="psEnviar">Enviar</button><button type="button" id="psBorrar">Borrar</button></div><div class="ps-online"><button type="button" class="ps-duelo" id="psDuelo">👥 Jugar con un amigo</button><button type="button" class="ps-duelo ps-colaborativo" id="psColaborativo">🤝 Jugar colaborativo</button></div><section id="psEquipo" class="ps-equipo" aria-label="Equipo colaborativo" hidden><p id="psEquipoEstado" role="status" aria-live="polite"></p><button type="button" id="psTomarTeclado">Tomar el teclado</button><button type="button" id="psSalirEquipo">Salir del colaborativo</button></section></div></div><div class="ps-final" id="psFinal" hidden></div><div class="sf-panel-capa" id="psAyudaPanel" hidden></div><div class="ps-mic-aviso" id="psMicAviso" role="dialog" aria-modal="true" aria-labelledby="psMicTitulo" hidden><div class="ps-mic-aviso-caja"><button type="button" class="ps-mic-aviso-cerrar" id="psVozCerrar" aria-label="Cerrar y jugar sin micrófono">✕</button><h3 id="psMicTitulo">🎙️ Micrófono para jugar</h3><p>En horizontal podés decir una palabra de cinco letras. Si está en el diccionario, se envía sola.</p><p>El micrófono seguirá activo durante la partida. Podés apagarlo o prenderlo con el botón del juego.</p><div class="ps-mic-aviso-botones"><button type="button" id="psVozNo">No, usar teclado</button><button type="button" id="psVozSi">Sí, usar micrófono</button></div><small id="psVozPermiso" role="status"></small></div></div></div>';
     raiz.querySelector("#psVolver").onclick=()=>Extensiones.abrirLobby();
     raiz.querySelector("#psAyuda").onclick=ayuda;
     raiz.querySelector("#psEstadisticas").onclick=mostrarEstadisticas;
     raiz.querySelector("#psEnviar").onclick=enviar;
+    raiz.querySelector("#psProponer").onclick=proponerPalabra;
     raiz.querySelector("#psBorrar").onclick=()=>tecla("Backspace");
     raiz.querySelector("#psDuelo").onclick=iniciarDuelo;
     raiz.querySelector("#psColaborativo").onclick=iniciarColaborativo;
@@ -323,8 +324,28 @@ const PalabraSecreta=(()=>{
     tomar.disabled=!c.listo||!conectado||c.esperando||validando;
     raiz.querySelector("#psEnviar").disabled=!puedoEscribir()||partida.terminada;
     raiz.querySelector("#psBorrar").disabled=!puedoEscribir()||partida.terminada;
+    pintarProponer();
     raiz.querySelectorAll("#psTeclado button").forEach(b=>b.disabled=!puedoEscribir()||partida.terminada);
     if(c.editor!==ladoEquipo())raiz.querySelectorAll(".ps-cursor").forEach(el=>el.classList.remove("ps-cursor"));
+  }
+  /* Proponer: el que tiene el teclado le pregunta al otro antes de mandar; si dice que sí, se manda sola. */
+  function pintarProponer(){
+    const b=raiz?.querySelector("#psProponer");if(!b)return;
+    const c=colaborativo;b.hidden=!c||!puedoEscribir()||partida.terminada;
+    b.disabled=!c||borrador.length!==L()||borrador.includes(" ")||!!(c&&c.propuesta===borrador);
+    b.textContent=c&&c.propuesta&&c.propuesta===borrador?"⏳ Esperando…":"💡 Proponer";
+  }
+  function proponerPalabra(){
+    const c=colaborativo;if(!c||!puedoEscribir()||borrador.length!==L()||borrador.includes(" "))return;
+    c.propuesta=borrador;Duelo.proponer(borrador);pintarProponer();
+    mensaje("💡 Le preguntaste a "+String(Duelo.rivalActual()?.nombre||"tu compañero")+" si manda "+borrador+".");
+  }
+  function votoRecibido(palabra,si,quien){
+    const c=colaborativo;if(!c||!raiz)return;
+    if(c.propuesta===palabra)c.propuesta=null;
+    if(si&&puedoEscribir()&&borrador===palabra&&!partida.terminada){mensaje("✅ "+quien+" dijo que sí: ¡va "+palabra+"!");enviar();}
+    else mensaje(si?"✅ "+quien+" dijo que sí a "+palabra+".":"❌ "+quien+" prefiere otra palabra que "+palabra+". Hablenlo en el chat 💬");
+    pintarEquipo();
   }
   function publicarEquipo(aviso=null){
     const c=colaborativo;if(!c?.host||!raiz)return;
@@ -432,6 +453,7 @@ const PalabraSecreta=(()=>{
         });
         Duelo.onRivalSeFue(()=>{if(colaborativo){colaborativo.salio=true;pararMicrofono();pintarEquipo();mensaje("Tu compañero salió de la sala.");}});
         colaborativo.timer=setInterval(pulsoEquipo,2000);
+        Duelo.activarChat();Duelo.actualizarBadge("🤝 en equipo");Duelo.onVoto(votoRecibido);
         tablero();pulsoEquipo();
       }
     });
