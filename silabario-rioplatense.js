@@ -223,6 +223,8 @@ const SilabarioRioplatense=(()=>{
     acciones.forEach(([texto,accion],i)=>{const b=document.createElement("button");b.type="button";b.textContent=texto;if(i===0)b.className="sf-principal";b.onclick=()=>accion(b);cont.appendChild(b);});
     p.hidden=false;
   }
+  /* Un color distinto por palabra encontrada (para la foto de compartir). */
+  function coloresSb(){const P=[["#F5B301","#1E1033"],["#37D6C0","#1E1033"],["#7B3FE4","#fff"],["#E5197C","#fff"],["#2ED18A","#1E1033"],["#FF8A3D","#1E1033"],["#3DA5FF","#1E1033"],["#B66DFF","#fff"]];let n=0;return items.map((d,k)=>estados[k]==="acierto"?(c=>({fondo:c[0],texto:c[1]}))(P[n++%P.length]):null);}
   function terminar(){
     if(fase==="fin")return;fase="fin";
     const aciertos=conteo("acierto"),errores=conteo("error"),faltan=pendientes().length;
@@ -246,13 +248,15 @@ const SilabarioRioplatense=(()=>{
       titulo:faltan?"¡SE TERMINÓ EL TIEMPO!":errores?"¡TABLERO TERMINADO!":"¡TABLERO PERFECTO!",sub:"Nivel "+nivel+" · "+puntos+" puntos",
       cifras:[["✅",aciertos,"aciertos"],["❌",errores,"errores"],["⭐",puntos,"puntos"]],
       captura:{el:"#sbTablero",estilo:"#sbTablero,#sbTablero *{opacity:1!important;filter:none!important}",preparar:(doc,t)=>{
-        /* Las palabras armadas con sus sílabas: cada encontrada pintada con su color; las que no, en bordó. */
-        const COL=["#F5B301","#37D6C0","#7B3FE4","#2ED18A","#FF8A3D","#3DA5FF","#E5197C"];let n=0;
-        t.style.display="flex";t.style.flexDirection="column";t.style.gap="10px";t.style.gridTemplateColumns="none";t.replaceChildren();
-        items.forEach((d,k)=>{const ok=estados[k]==="acierto",fila=doc.createElement("div");fila.style.cssText="display:flex;gap:6px;justify-content:center";const color=ok?COL[n++%COL.length]:"#842541";
-          (d.silabas||[d.respuesta]).forEach(sl=>{const b=doc.createElement("span");b.textContent=sl;b.style.cssText="display:grid;place-items:center;min-width:58px;height:42px;padding:0 8px;border-radius:10px;font:900 18px Outfit,sans-serif;border:2px solid #fff6;box-shadow:0 3px 0 #0005;background:"+color+";color:"+(ok&&(color==="#F5B301"||color==="#37D6C0"||color==="#2ED18A")?"#1E1033":"#fff");fila.appendChild(b);});
-          t.appendChild(fila);});
-      }},
+        /* Tablero como en el juego (sílabas mezcladas en la grilla) con cada palabra encontrada resaltada de un color distinto. */
+        const cols=coloresSb();let semilla=items.length*7+1;const azar=()=>(semilla=(semilla*9301+49297)%233280)/233280;
+        const fichasF=[];items.forEach((d,k)=>(d.silabas||[]).forEach(sl=>fichasF.push({sl,k})));
+        for(let a=fichasF.length-1;a>0;a--){const b=Math.floor(azar()*(a+1));[fichasF[a],fichasF[b]]=[fichasF[b],fichasF[a]];}
+        t.replaceChildren();t.style.gridTemplateColumns="repeat("+Math.min(config.columnas,Math.max(3,Math.ceil(Math.sqrt(fichasF.length))))+",1fr)";
+        fichasF.forEach(({sl,k})=>{const b=doc.createElement("button");b.className="sb-ficha";b.textContent=sl;const c=cols[k];
+          if(c){b.style.borderImage="none";b.style.background=c.fondo;b.style.color=c.texto;b.style.borderRadius="12px";b.style.border="3px solid #fff";b.style.boxShadow="0 4px 0 #0005";}
+          t.appendChild(b);});
+      }},anchoTablero:600,ladoTitulo:"Las respuestas",lado:items.map((d,k)=>{const c=coloresSb()[k];return{texto:d.respuesta,color:c?c.fondo:estados[k]==="error"?"#842541":null,colorTexto:c?c.texto:estados[k]==="error"?"#fff":null};}),
       filas:items.map((d,k)=>({emoji:estados[k]==="acierto"?"✅":estados[k]==="error"?"❌":"⏳",texto:d.respuesta,estado:estados[k]==="acierto"?"ok":estados[k]==="error"?"mal":""})),
       texto:"🧩 Silabario Rioplatense · nivel "+nivel+" · "+aciertos+" aciertos · "+puntos+" puntos."})));
   }
