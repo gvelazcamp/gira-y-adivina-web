@@ -388,6 +388,72 @@ const Extensiones=(()=>{
     .concat(["assets/tutti/ficha.webp","assets/sopa/mascota.webp","assets/avatars/avatar-01.webp","assets/avatars/avatar-02.webp"]);
   if(document.readyState==="complete")precargarIconos();
   else addEventListener("load",precargarIconos,{once:true});
+  /* Secciones del lobby (06/11/2026, Gonzalo): Favoritos (solo si hay alguno, con el ❤️ de cada tarjeta),
+     Más populares, Desafiá a un amigo, Colaborativos, Desafíos y Juegos de previa. Un juego nuevo sin
+     sección va a Desafíos (o a previa si tiene grupo:"previa"). */
+  const SECCIONES_LOBBY=[
+    {id:"populares",titulo:"🔥 Más populares",sub:"Los que más se juegan",ids:["tutti-frutti","palabra-secreta","rosco-rioplatense","puzzle"]},
+    {id:"amigo",titulo:"⚔️ Desafiá a un amigo",sub:"1 vs 1, cada uno en su celular",ids:["ahorcado-rioplatense","cien-rioplatenses","frases-en-giro","memoria-en-giro","silabario-rioplatense","rueda-de-letras","duelo-conocimiento"]},
+    {id:"equipo",titulo:"🤝 Colaborativos",sub:"Jueguen juntos en el mismo tablero",ids:["sopa-fugaz","palabras-cruzadas","linea-tiempo"]},
+    {id:"desafios",titulo:"🏆 Desafíos",sub:"Superá tus récords",ids:[]},
+    {id:"previa",titulo:"🎉 Juegos de previa",sub:"Para jugar en grupo con un solo celular",ids:[]}
+  ];
+  const KEY_FAVORITOS="gya_ext_favoritos";
+  function favoritos(){try{const l=JSON.parse(localStorage.getItem(KEY_FAVORITOS)||"[]");return Array.isArray(l)?l.filter(x=>typeof x==="string"):[];}catch(e){return [];}}
+  function alternarFavorito(id,tarjeta){
+    const l=favoritos(),i=l.indexOf(id);if(i>=0)l.splice(i,1);else l.push(id);
+    try{localStorage.setItem(KEY_FAVORITOS,JSON.stringify(l));}catch(e){}
+    /* Repintar sin que la tarjeta tocada salte de lugar en la pantalla. */
+    const antes=tarjeta?.getBoundingClientRect().top,seccion=tarjeta?.closest("[data-seccion]")?.dataset.seccion;
+    pintarSecciones();
+    const misma=contenido.querySelector('[data-seccion="'+(seccion==="fav"&&i>=0?seccionDe(EXTENSIONES.find(x=>x.id===id)):seccion)+'"] .ext-tarjeta[data-ext="'+id+'"]');
+    if(misma&&antes!=null)shell.scrollTop+=misma.getBoundingClientRect().top-antes;
+  }
+  function seccionDe(ext){if(!ext)return"desafios";if(ext.grupo==="previa")return"previa";return(SECCIONES_LOBBY.find(s=>s.ids.includes(ext.id))||{id:"desafios"}).id;}
+  function crearTarjeta(ext,favs){
+    const b=document.createElement("button");b.type="button";b.className="ext-tarjeta";b.dataset.ext=ext.id;
+    b.disabled=ext.estado!=="disponible";
+    const img=document.createElement("img");img.src=ext.icono;img.alt="";img.decoding="sync";
+    const txt=document.createElement("span");txt.className="ext-tarjeta-texto";
+    const nombre=document.createElement("b");nombre.textContent=ext.nombre;
+    const desc=document.createElement("small");desc.textContent=ext.descripcion;
+    const record=document.createElement("em");record.textContent=ext.id==="duelo-conocimiento"?"BOT · Online · Voz":ext.estado==="disponible"?"Mejor: "+ext.record():"Próximamente";
+    txt.append(nombre,desc,record);b.append(img,txt);
+    if(Fichas.cobra(ext.id)){const f=document.createElement("span");f.className="ext-fichas-tarjeta";f.textContent=Fichas.etiqueta(ext.id);b.appendChild(f);}
+    if(!b.disabled){
+      const es=favs.includes(ext.id),cor=document.createElement("span");
+      cor.className="ext-fav"+(es?" on":"");cor.setAttribute("role","button");cor.tabIndex=0;cor.textContent=es?"❤️":"🤍";
+      cor.setAttribute("aria-label",(es?"Sacar de favoritos: ":"Agregar a favoritos: ")+ext.nombre);cor.setAttribute("aria-pressed",String(es));
+      const tocar=ev=>{ev.preventDefault();ev.stopPropagation();alternarFavorito(ext.id,b);};
+      cor.addEventListener("click",tocar);cor.addEventListener("keydown",ev=>{if(ev.key==="Enter"||ev.key===" ")tocar(ev);});
+      b.appendChild(cor);
+      b.onclick=()=>abrirJuego(ext.id);
+    }
+    if(ext.insignia){const ins=document.createElement("span");ins.className="ext-insignia";ins.textContent=ext.insignia;b.appendChild(ins);}
+    return b;
+  }
+  let selectorLobby="";
+  function pintarSecciones(){
+    const zona=contenido.querySelector("#extSecciones");if(!zona)return;const selector=selectorLobby;
+    const visibles=EXTENSIONES.filter(extensionVisible),favs=favoritos();
+    const grupos=[{id:"fav",titulo:"❤️ Mis favoritos",sub:"Tocá el corazón de un juego para tenerlo acá",lista:favs.map(id=>visibles.find(x=>x.id===id&&x.estado==="disponible")).filter(Boolean)}]
+      .concat(SECCIONES_LOBBY.map(s=>({...s,lista:visibles.filter(x=>seccionDe(x)===s.id).sort((a,b)=>{const ia=s.ids.indexOf(a.id),ib=s.ids.indexOf(b.id);return(ia<0?99:ia)-(ib<0?99:ib);})})));
+    zona.replaceChildren();let primero=true;
+    for(const g of grupos){
+      if(!g.lista.length)continue;
+      const cab=document.createElement("div");
+      cab.innerHTML=(primero&&selector?'<div class="ext-seccion-barra"><h3 class="ext-seccion">'+g.titulo+'</h3>'+selector+'</div>':'<h3 class="ext-seccion">'+g.titulo+'</h3>')+'<p class="ext-seccion-sub">'+g.sub+'</p>';
+      const lista=document.createElement("div");lista.className="ext-lista";lista.dataset.seccion=g.id;
+      if(g.id==="previa")lista.id="extListaPrevia";else if(g.id==="populares")lista.id="extListaResto";
+      g.lista.forEach(ext=>lista.appendChild(crearTarjeta(ext,favs)));
+      zona.append(...cab.childNodes,lista);primero=false;
+    }
+    const barra=zona.querySelector(".ext-selector-modo");
+    if(barra){
+      barra.onclick=ev=>{const boton=ev.target.closest("button[data-modo]");if(!boton)return;if(boton.dataset.modo==="tv")mostrarAvisoTV();else void seleccionarModo("celular");};
+      pintarSelectorModo();
+    }
+  }
   function abrirLobby(){
     precargarIconos();
     if(!EXTENSIONES_HABILITADAS)return;
@@ -396,32 +462,8 @@ const Extensiones=(()=>{
     vista="lobby";salirTV();mostrar();pintarTV();Fichas.enJuego("");
     shell.querySelector("#extTitulo").textContent="Jugá más juegos de Girá y Adiviná";
     const selector=modoTVDisponible()?'<div class="ext-selector-modo" role="group" aria-label="Modo de pantalla"><span>Pantallas</span><button type="button" data-modo="celular" aria-pressed="true">📱 Celular</button><button type="button" data-modo="tv" aria-pressed="false">📺 TV</button></div>':"";
-    /* Mantener la portada pegada al título. El selector de todos los perfiles comparte
-       fila con «Más juegos» y no genera una fila adicional sobre la portada. */
-    const tituloJuegos=selector?'<div class="ext-seccion-barra"><h3 class="ext-seccion">🎮 Más juegos</h3>'+selector+'</div>':'<h3 class="ext-seccion">🎮 Más juegos</h3>';
-    contenido.innerHTML='<div class="ext-hero"><span>✦ MÁS JUEGOS, MÁS DESAFÍOS</span><h2>Extensiones</h2><p>Elegí un juego del universo Girá y Adiviná. Jugá gratis, sin gastar vidas ni monedas.</p></div>'+tituloJuegos+'<div class="ext-lista" id="extListaResto"></div><h3 class="ext-seccion">🎉 Juegos de previa</h3><div class="ext-lista" id="extListaPrevia"></div>';
-    if(selector){
-      const barra=contenido.querySelector(".ext-selector-modo");
-      barra.onclick=ev=>{const boton=ev.target.closest("button[data-modo]");if(!boton)return;if(boton.dataset.modo==="tv")mostrarAvisoTV();else void seleccionarModo("celular");};
-      pintarSelectorModo();
-    }
-    /* "Juegos de previa": los de juntarse en grupo (grupo:"previa") van en su propia sección. */
-    const previa=contenido.querySelector("#extListaPrevia"),resto=contenido.querySelector("#extListaResto");
-    EXTENSIONES.filter(extensionVisible).forEach(ext=>{
-      const lista=ext.grupo==="previa"?previa:resto;
-      const b=document.createElement("button");b.type="button";b.className="ext-tarjeta";
-      b.disabled=ext.estado!=="disponible";
-      const img=document.createElement("img");img.src=ext.icono;img.alt="";img.decoding="sync";
-      const txt=document.createElement("span");txt.className="ext-tarjeta-texto";
-      const nombre=document.createElement("b");nombre.textContent=ext.nombre;
-      const desc=document.createElement("small");desc.textContent=ext.descripcion;
-      const record=document.createElement("em");record.textContent=ext.id==="duelo-conocimiento"?"BOT · Online · Voz":ext.estado==="disponible"?"Mejor: "+ext.record():"Próximamente";
-      txt.append(nombre,desc,record);b.append(img,txt);
-      if(Fichas.cobra(ext.id)){const f=document.createElement("span");f.className="ext-fichas-tarjeta";f.textContent=Fichas.etiqueta(ext.id);b.appendChild(f);}
-      if(ext.insignia){const ins=document.createElement("span");ins.className="ext-insignia";ins.textContent=ext.insignia;b.appendChild(ins);}
-      if(!b.disabled)b.onclick=()=>abrirJuego(ext.id);
-      lista.appendChild(b);
-    });
+    contenido.innerHTML='<div class="ext-hero"><span>✦ MÁS JUEGOS, MÁS DESAFÍOS</span><h2>Extensiones</h2><p>Elegí un juego del universo Girá y Adiviná. Jugá gratis, sin gastar vidas ni monedas.</p></div><div id="extSecciones"></div>';
+    selectorLobby=selector;pintarSecciones();
     shell.scrollTop=0;
   }
   function prepararDueloTV(){
