@@ -667,21 +667,18 @@ const RoscoRioplatense=(()=>{
     const leyenda=document.createElement("small");leyenda.className="rr-resultado-leyenda";
     leyenda.textContent="Letra · Respuesta correcta · Tu respuesta";revision.prepend(leyenda);
     $(".rr-panel").insertBefore(revision,$(".rr-panel button"));$(".rr-principal").focus({preventScroll:true});
+    if(window.CompartirResultado){const bc=CompartirResultado.boton(()=>null);bc.onclick=ev=>{ev.stopPropagation();compartir(bc,puntos,aciertos,errores,faltan);};const pb=$(".rr-panel button");pb.after(bc);}
     if(pruebaG&&typeof window.GiroRoscoPiloto?.mostrarFinal==="function"){
       window.GiroRoscoPiloto.mostrarFinal({aciertos,errores,total:items.length,puntos,estudio:raiz.classList.contains("rr-estudio")});
     }
   }
   function compartir(b,puntos,aciertos,errores,faltan){
-    const texto="🎡 El Rosco · nivel "+nivel+" · "+puntos+" puntos\n✓ "+aciertos+" · ✕ "+errores+" · pendientes "+faltan+"\nGirá y Adiviná: "+location.origin+location.pathname;
-    const imagen=()=>{
-      const cv=document.createElement("canvas");cv.width=720;cv.height=900;const c=cv.getContext("2d");
-      c.fillStyle="#160B24";c.fillRect(0,0,720,900);c.textAlign="center";c.fillStyle="#F5B301";c.font="bold 44px sans-serif";c.fillText("EL ROSCO",360,85);
-      c.fillStyle="#F6EFE2";c.font="24px sans-serif";c.fillText("Girá y Adiviná · Nivel "+nivel,360,130);
-      items.forEach((d,i)=>{const a=i*2*Math.PI/items.length,x=360+225*Math.sin(a),y=405-225*Math.cos(a);c.beginPath();c.arc(x,y,24,0,2*Math.PI);c.fillStyle=estados[i]==="acierto"?"#37D6C0":estados[i]==="error"?"#FF7E8B":"#D7C8E5";c.fill();c.fillStyle="#160B24";c.font="bold 23px sans-serif";c.fillText(d.letra,x,y+8);});
-      c.fillStyle="#F5B301";c.font="bold 60px sans-serif";c.fillText(puntos,360,414);c.font="22px sans-serif";c.fillText("PUNTOS",360,455);
-      c.fillStyle="#F6EFE2";c.font="26px sans-serif";c.fillText(aciertos+" aciertos · "+errores+" errores",360,735);c.fillText(faltan+" sin responder",360,780);c.font="20px sans-serif";c.fillText("¿Te animás a completar la vuelta?",360,850);return cv;
-    };
-    if(typeof csCompartirImagen==="function")csCompartirImagen(imagen,"el-rosco.png",texto,texto,b);
+    if(!window.CompartirResultado)return;
+    CompartirResultado.abrir({juego:"El Rosco",logo:ARTE("logo"),archivo:"el-rosco",
+      titulo:faltan?"¡VUELTA AL ROSCO!":errores?"¡ROSCO COMPLETO!":"¡ROSCO PERFECTO!",sub:"Nivel "+nivel+" · "+items.length+" letras",
+      cifras:[["✅",aciertos,"aciertos"],["❌",errores,"errores"],["⏳",faltan,"sin responder"]],
+      circulo:items.map((d,i)=>({t:d.letra,estado:estados[i]==="acierto"?"ok":estados[i]==="error"?"mal":""})),centro:[puntos,"PUNTOS"],
+      reto:"¿Te animás a completar la vuelta?",texto:"🎡 El Rosco · nivel "+nivel+" · "+puntos+" puntos · ✓ "+aciertos+" ✕ "+errores+"."});
   }
   function tic(){
     const ahora=performance.now(),dt=Math.max(0,ahora-ultimo);ultimo=ahora;

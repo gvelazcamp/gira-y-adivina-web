@@ -31,7 +31,7 @@ const AhorcadoRioplatense=(()=>{
       box.querySelector("small").textContent=(rol===yo?"Vos":nombreRival())+" · 🏆"+ganadas[rol];
     }
   }
-  let palabra=null,usadas=[],adivinadas=new Set(),errores=0,puntos=0,n=0,W=0,etiquetas=[],intervalo=null;
+  let resultadosAh=[],palabra=null,usadas=[],adivinadas=new Set(),errores=0,puntos=0,n=0,W=0,etiquetas=[],intervalo=null;
   let audioMusica=null;
   /* Dibujos en assets/ahorcado/ (hoja de ChatGPT recortada); los íconos de los temas son los de 100 Rioplatenses (assets/cien/). */
   const ARTE=n=>"assets/ahorcado/"+n+".webp",ico=n=>'<img class="ah-ico" src="'+ARTE(n)+'" alt="" draggable="false">';
@@ -186,6 +186,7 @@ const AhorcadoRioplatense=(()=>{
       setTimeout(()=>{if(!raiz||!duelo)return;if(n<AHORCADO_CONFIG.palabras)siguientePalabra();else terminar();},AHORCADO_CONFIG.pausaMs+1300);
       return;
     }
+    resultadosAh.push({p:palabra.palabra,gano:!!gano});
     if(gano){
       const p=AHORCADO_CONFIG.ptsPalabra+AHORCADO_CONFIG.ptsVida*(AHORCADO_CONFIG.vidas-errores);
       puntos+=p;f.textContent="¡Bien! +"+p+" 🧉";f.style.color="#37D6C0";
@@ -198,7 +199,7 @@ const AhorcadoRioplatense=(()=>{
     if(n<AHORCADO_CONFIG.palabras)setTimeout(()=>{$("#ahSiguiente").hidden=false;},AHORCADO_CONFIG.pausaMs);
     else setTimeout(terminar,1200);
   }
-  function iniciar(){if(window.Fichas&&!Fichas.usar("ahorcado-rioplatense",iniciar))return;duelo=false;turnos=false;palabrasDuelo=null;n=0;puntos=0;usadas=[];fase="girando";$("#ahPanel").hidden=true;siguientePalabra();}
+  function iniciar(){if(window.Fichas&&!Fichas.usar("ahorcado-rioplatense",iniciar))return;resultadosAh=[];duelo=false;turnos=false;palabrasDuelo=null;n=0;puntos=0;usadas=[];fase="girando";$("#ahPanel").hidden=true;siguientePalabra();}
   // modo: "turnos" (misma palabra, de a una letra cada uno) o "carrera"
   // (mismas palabras, cada uno en su tablero). Lo decide quien crea la sala.
   function iniciarDuelo(modo){
@@ -233,6 +234,11 @@ const AhorcadoRioplatense=(()=>{
     const record=puntos>0&&puntos>datos.mejor;
     fase="fin";datos.mejor=Math.max(datos.mejor,puntos);guardar();hud();
     panel("¡Se terminó!","Puntos: "+puntos+". Mejor: "+datos.mejor+".",[["Jugar de nuevo",iniciar],...OPCIONES_AMIGO],record?"record":puntos>0?"gano":"perdio");
+    if(window.CompartirResultado){const ok=resultadosAh.filter(r=>r.gano).length;$("#ahPanel .sf-acciones").appendChild(CompartirResultado.boton(()=>({juego:"El Ahorcado",logo:ARTE("logo"),archivo:"el-ahorcado",
+      titulo:record?"¡NUEVO RÉCORD!":ok+" DE "+resultadosAh.length+" PALABRAS",sub:puntos+" puntos · Mejor: "+datos.mejor,
+      cifras:[["✅",ok,"adivinadas"],["💀",resultadosAh.length-ok,"ahorcado"],["⭐",puntos,"puntos"]],
+      filas:resultadosAh.map(r=>({emoji:r.gano?"✅":"💀",texto:r.p,estado:r.gano?"ok":"mal"})),
+      texto:"🪢 El Ahorcado · "+ok+" palabras · "+puntos+" puntos."})));}
   }
   function quitarTildes(s){return s.normalize("NFD").split("").filter(ch=>{const n=ch.charCodeAt(0);return n<0x300||n>0x36f;}).join("");}
   function tecla(key,evento){

@@ -215,7 +215,7 @@ const SopaFugaz=(()=>{
     const p=document.createElement("p");p.textContent=detalle;
     const acciones=document.createElement("div");acciones.className="sf-acciones";
     const principal=document.createElement("button");principal.className="sf-principal";principal.type="button";principal.textContent=boton;principal.onclick=accion;acciones.appendChild(principal);
-    if(compartir){const b=document.createElement("button");b.type="button";b.textContent="📤 Compartir";b.onclick=()=>compartirResultado(b);acciones.appendChild(b);}
+    if(compartir){const b=document.createElement("button");b.type="button";b.textContent="📲 Compartir resultado";b.className="cr-boton";b.onclick=()=>compartirResultado(b);acciones.appendChild(b);}
     [].concat(extras||[]).forEach(extra=>{const b=document.createElement("button");b.type="button";b.textContent=extra.texto;b.onclick=extra.accion;
       if(extra.clase)b.classList.add(extra.clase);
       if(extra.dibujo){b.classList.add("sf-con-dibujo");const im=document.createElement("img");im.src=ARTE(extra.dibujo);im.alt="";b.prepend(im);}
@@ -245,6 +245,7 @@ const SopaFugaz=(()=>{
       Duelo.mostrarResultado({valor:puntaje},{etiqueta:"puntos de la ronda",onVolver:()=>{duelo=false;abrir(raiz.parentElement);}});
       return;
     }
+    ultimoGano=gano;
     mostrarPanel(gano?"¡Sopa completa!":"Se acabó el tiempo",
       gano?"Llevás "+puntaje+" puntos. Te sobraron "+reloj(tiempoMs)+".":"Te faltaron: "+faltantes.join(", ")+". Hiciste "+puntaje+" puntos.",
       gano?"Siguiente nivel":"Jugar de nuevo",()=>{
@@ -424,9 +425,14 @@ const SopaFugaz=(()=>{
     pausado=true;cancelarArrastre();raiz.querySelector("#sfTablero").classList.add("pausa");actualizarHUD();const desde=performance.now();
     mostrarPanel("Pausa","El reloj está parado y el tablero tapado.","Seguir",()=>{pausado=false;const ahora=performance.now();proximaMudanza+=ahora-desde;ultimoTic=ahora;raiz.querySelector("#sfTablero").classList.remove("pausa");raiz.querySelector("#sfPanel").hidden=true;actualizarHUD();},false,null,"reloj");
   }
-  function compartirResultado(boton){
-    const texto="🔎 Sopa Fugaz"+(modo==="giratoria"?" giratoria":"")+" · nivel "+nivel+" · "+puntaje+" puntos. ¡Jugá en Girá y Adiviná! "+location.origin+location.pathname;
-    csCompartirImagen(generarCanvasCompartirJuego,"sopa-fugaz.png",texto,texto,boton);
+  let ultimoGano=false;
+  function compartirResultado(){
+    if(!window.CompartirResultado)return;
+    CompartirResultado.abrir({juego:"Sopa Fugaz",logo:ARTE("logo"),archivo:"sopa-fugaz",
+      titulo:ultimoGano?"¡SOPA COMPLETA!":"SE ACABÓ EL TIEMPO",sub:(modo==="giratoria"?"Sopa giratoria":"Sopa clásica")+" · Nivel "+nivel,
+      cifras:[["🔎",halladas.size+"/"+objetivos.length,"palabras"],["⭐",puntaje,"puntos"],["⏱",reloj(Math.max(0,tiempoMs)),ultimoGano?"me sobró":"tiempo"]],
+      filas:objetivos.map(w=>({emoji:halladas.has(w)?"✅":"❌",texto:w,estado:halladas.has(w)?"ok":"mal"})),
+      texto:"🔎 Sopa Fugaz · nivel "+nivel+" · "+halladas.size+"/"+objetivos.length+" palabras · "+puntaje+" puntos."});
   }
   const AYUDA={
     clasica:"Encontrá todas las palabras antes de que se acabe el reloj. Arrastrá el dedo: pueden estar horizontales, verticales, en diagonal, al revés y, desde el nivel 4, en escalerita (seguí el camino). Algunas se muestran con un dibujo: adiviná cuál es y buscala. Cada pocos niveles el tablero cambia de forma. Las palabras no se repiten nunca.",

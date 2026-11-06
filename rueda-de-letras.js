@@ -185,7 +185,13 @@ const RuedaDeLetras=(()=>{
       Duelo.mostrarResultado({valor:puntos},{etiqueta:"puntos de la ronda",onVolver:()=>{duelo=false;abrir(raiz);}});
       return;
     }
-    panel(gano?"¡Rueda completada!":"Se acabó el tiempo",`${hechas.size}/${ronda.palabras.length} ocultas · ${extrasEncontradas.size} extra · ${puntos} puntos${gano?"":" · Faltaban: "+ronda.palabras.filter(w=>!hechas.has(w)).join(", ")}`,gano?"Siguiente rueda":"Volver a intentar",()=>{if(gano)nivel++;else{nivel=1;puntos=0;}comenzar();},null,gano?"completada":"tiempo");}
+    panel(gano?"¡Rueda completada!":"Se acabó el tiempo",`${hechas.size}/${ronda.palabras.length} ocultas · ${extrasEncontradas.size} extra · ${puntos} puntos${gano?"":" · Faltaban: "+ronda.palabras.filter(w=>!hechas.has(w)).join(", ")}`,gano?"Siguiente rueda":"Volver a intentar",()=>{if(gano)nivel++;else{nivel=1;puntos=0;}comenzar();},null,gano?"completada":"tiempo");
+    if(window.CompartirResultado){const nv=gano?nivel:nivel;raiz.querySelector("#rlPanel .sf-acciones")?.appendChild(CompartirResultado.boton(()=>({juego:"Rueda de Letras",logo:ARTE("logo"),archivo:"rueda-de-letras",
+      titulo:gano?"¡RUEDA COMPLETADA!":"SE ACABÓ EL TIEMPO",sub:"Nivel "+nv+" · "+puntos+" puntos",
+      cifras:[["🔤",hechas.size+"/"+ronda.palabras.length,"ocultas"],["✨",extrasEncontradas.size,"extra"],["⭐",puntos,"puntos"]],
+      filas:ronda.palabras.map(w=>({emoji:hechas.has(w)?"✅":"❌",texto:w,estado:hechas.has(w)?"ok":"mal"})),
+      texto:"🔤 Rueda de Letras · nivel "+nv+" · "+hechas.size+"/"+ronda.palabras.length+" palabras · "+puntos+" puntos."})));}
+  }
   function abrir(contenedor){salir();datos=cargar();usadasSesion=new Set();raiz=contenedor;pantalla();panel("Rueda de Letras","Arrastrá entre letras para formar palabras y completar el crucigrama. Sin apuro: no hay reloj. ¿Trabado? Usá 💡 Pista. Las palabras extra caen en tu cajón y cada 3 te ganan una pista.","Empezar",()=>{nivel=1;puntos=0;comenzar();},["Jugar con un amigo 👥",iniciarDuelo],"personaje");document.addEventListener("visibilitychange",visibilidad);iniciarMusicaJuego();}
   function salir(){jugando=false;clearInterval(intervalo);clearTimeout(giroTimer);intervalo=null;giroTimer=null;token++;document.removeEventListener("visibilitychange",visibilidad);detenerMusicaJuego();if(typeof Duelo!=="undefined")Duelo.salir();duelo=false;raiz=null;}
   return{abrir,salir,mejorPuntaje,configNivel,tiempoRonda,elegir};

@@ -1173,6 +1173,11 @@ const TuttiFrutti=(()=>{
       <ol class="kar-podio">${orden.map(([j,rg,p],k)=>`<li style="--c:#E5197C"><span>${k+1}</span><i>${esc((j.nombre||"?")[0].toUpperCase())}</i><b>${esc(j.nombre)}${j.pid===on.pid?" (vos)":""}</b><em>${rg} ${rg===1?"ronda":"rondas"} · ${p} pts</em></li>`).join("")}</ol>
       ${salieronHtml()}
       ${on.host?`<button type="button" class="mg-principal" id="tfRevancha">🔄 Revancha</button>`:`<p class="imp-ayuda">Esperando que el anfitrión arranque la revancha…</p>`}</div>`);
+    if(window.CompartirResultado){const yoRow=orden.find(o=>o[0].pid===on.pid),pos=orden.indexOf(yoRow)+1,gane=ganan.includes((yoRow&&yoRow[0].nombre)||"");raiz.querySelector(".imp-fin")?.appendChild(CompartirResultado.boton(()=>({juego:"Tutti Frutti",logo:ARTE("logo"),archivo:"tutti-frutti",
+      titulo:gane?"¡GANÉ EL TUTTI FRUTTI!":ganan.length>1?"¡EMPATE!":"GANÓ "+String(ganan[0]||"").toUpperCase(),sub:(on.tot||RONDAS)+" rondas · "+orden.length+" jugadores",
+      cifras:[["🏅",pos+"°","mi puesto"],["🏆",yoRow?yoRow[1]:0,"rondas ganadas"],["⭐",yoRow?yoRow[2]:0,"puntos"]],
+      filas:orden.map(([j,rg,pt],k)=>({emoji:["🥇","🥈","🥉"][k]||"🎖️",texto:(j.nombre||"?")+(j.pid===on.pid?" (yo)":""),valor:pt+" pts",estado:k===0?"ok":""})),
+      texto:"🍓 Tutti Frutti · "+(gane?"¡gané!":"salí "+pos+"°")+" · "+(yoRow?yoRow[2]:0)+" puntos."})));}
     if(on.host)q("tfRevancha").onclick=e=>{const b=e&&e.currentTarget;if(b){if(b.disabled)return;b.disabled=true;}
       const revancha=()=>{if(!on)return;on.ganadas={};on.rg={};on.rj=0;on.tot=RONDAS;difundirSala();nuevaRonda();};
       /* contra la máquina, cada revancha es una partida nueva: gasta 1 ficha */

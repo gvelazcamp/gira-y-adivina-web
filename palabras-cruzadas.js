@@ -263,7 +263,13 @@ window.PalabrasCruzadas=(()=>{
   function mostrarResultado(){
     if(!raiz||!terminado())return;
     raiz.querySelector("#pcResumen").textContent="Resolviste las "+palabras.length+" palabras de «"+crucigrama.titulo+"»"+(datos.ayudas.length?" con "+datos.ayudas.length+(datos.ayudas.length===1?" letra de ayuda.":" letras de ayuda."):" sin revelar letras. ¡Bien ahí!");
-    const d=raiz.querySelector("#pcFinal");if(!d.open)d.showModal();
+    const d=raiz.querySelector("#pcFinal");
+    if(window.CompartirResultado&&!d.querySelector(".cr-boton")){const ref=d.querySelector("#pcRevisar");ref.before(CompartirResultado.boton(()=>({juego:"Palabras Cruzadas",logo:"assets/palabras-cruzadas/logo-v2.webp",archivo:"palabras-cruzadas",
+      titulo:"¡CRUCIGRAMA COMPLETO!",sub:"«"+crucigrama.titulo+"»",
+      cifras:[["📝",palabras.length,"palabras"],["💡",datos.ayudas.length,datos.ayudas.length===1?"ayuda":"ayudas"],["🏆",(datos.resueltos||[]).length||1,"resueltos"]],
+      grilla:{celdas:[...celdas.entries()].map(([k,c])=>({f:c.fila,c:c.columna,letra:c.letra,estado:datos.ayudas.includes(k)?"ayuda":"ok"}))},
+      texto:"✏️ Palabras Cruzadas · resolví «"+crucigrama.titulo+"» ("+palabras.length+" palabras"+(datos.ayudas.length?", "+datos.ayudas.length+" ayudas":", sin ayudas")+")."}),"pc-compartir"));}
+    if(!d.open)d.showModal();
   }
   function siguiente(){
     if(!terminado())return;

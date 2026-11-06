@@ -394,6 +394,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — Compartir resultado en redes para todas las extensiones (menos las de previa)
+- Qué: Gonzalo pidió que todos los juegos tengan un popup para compartir el resultado con cosas de la partida. Nuevo módulo compartir-resultado.js/.css (CompartirResultado.abrir/boton/foto): <dialog> modal (queda arriba también de finales que son diálogos) con foto 1080×1350 en el estilo de la casa (logo del juego, título del resultado, 3 cifras grandes y, según el juego, lista verde/roja, rosco de letras o grilla del crucigrama; "¿Me ganás?") y botón Compartir (Web Share con la imagen o descarga). Botón "📲 Compartir resultado" agregado al final de: Sopa Fugaz, El Rosco, 100 Rioplatenses, Silabario, El Ahorcado, Frases en Giro, Memoria en Giro, Rueda de Letras, Tutti Frutti, Palabras Cruzadas, Girá y encajá y No te caigas. Ya tenían foto propia: Palabra Secreta, Puzzle, Línea del tiempo y Duelo de Conocimiento. Juegos de previa: NO (pedido de Gonzalo).
+- Pruebas: finales reales de Sopa, Frases, Memoria y Silabario muestran el botón y la foto. Los tests de rueda, frases, memoria, palabras-cruzadas, gira-encaja y cien ya fallaban igual en main antes de este cambio (pendiente revisarlos); ahora-caigo pasa.
+- Dónde: compartir-resultado.js/css (v1) y los JS de cada juego (versiones subidas), sw gya-cache-v733.
+
 ### 05/11/2026 — Línea del tiempo, Girá y encajá y No te caigas publicados para todos
 - Qué: Gonzalo: "todos los juegos publicados para todos". Se saca soloUsuarios:["gonzalo","vale"] y la insignia "🧪 Prueba" de los tres; No te caigas pierde su chequeo interno de usuario y su cabecera dice "DUELO CONTRA BOTS"; Girá y encajá ya no dice "Versión de prueba". Siguen gastando rayitos ⚡ como el resto (Gonzalo y testers libres no). No te caigas: el cartel de bienvenida sale al entrar (sin demora) y no vuelve a salir al tocar "Volver a jugar". Contra Reloj y El Trato Sucio siguen solo para Gonzalo (no se tocaron) y Juegos en la tele sigue fuera de la lista a propósito.
 - Pruebas: tests/gira-encaja-acceso.cjs y tests/ahora-caigo.cjs actualizados (abren para todos; cierran la bienvenida) y pasan; tests/linea-tiempo.cjs pasa.

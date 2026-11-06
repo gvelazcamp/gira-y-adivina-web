@@ -242,6 +242,11 @@ const SilabarioRioplatense=(()=>{
     acciones.push(["Otra ronda · nivel "+nivel,iniciar]);
     panel(faltan?"¡Se terminó el tiempo!":errores?"Tablero terminado":"¡Tablero perfecto!",
       aciertos+" aciertos · "+errores+" errores · "+faltan+" sin responder. "+puntos+" puntos"+(bonus?" ("+bonus+" por tiempo)":"")+". Récord: "+datos.mejor+"."+(avanzar?" ¡Desbloqueaste el nivel "+(nivel+1)+"!":" Acertá al menos "+Math.ceil(items.length*SILABARIO_CONFIG.proporcionAvance)+" y respondé todas para avanzar."),acciones,faltan?"tiempo":errores?"terminado":"perfecto");
+    if(window.CompartirResultado)$("#sbPanel .sf-acciones").appendChild(CompartirResultado.boton(()=>({juego:"Silabario Rioplatense",logo:ARTE("logo"),archivo:"silabario",
+      titulo:faltan?"¡SE TERMINÓ EL TIEMPO!":errores?"¡TABLERO TERMINADO!":"¡TABLERO PERFECTO!",sub:"Nivel "+nivel+" · "+puntos+" puntos",
+      cifras:[["✅",aciertos,"aciertos"],["❌",errores,"errores"],["⭐",puntos,"puntos"]],
+      filas:items.map((d,k)=>({emoji:estados[k]==="acierto"?"✅":estados[k]==="error"?"❌":"⏳",texto:d.respuesta,estado:estados[k]==="acierto"?"ok":estados[k]==="error"?"mal":""})),
+      texto:"🧩 Silabario Rioplatense · nivel "+nivel+" · "+aciertos+" aciertos · "+puntos+" puntos."})));
   }
   function tic(){
     const ahora=performance.now(),dt=Math.max(0,ahora-ultimo);ultimo=ahora;

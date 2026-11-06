@@ -178,6 +178,11 @@ const FrasesEnGiro=(()=>{
     }
     if(gano){nivel++;panel("¡Frase armada!","“"+frase.texto+"” · "+puntos+" puntos · mejor: "+datos.mejor,"Siguiente nivel",comenzar,null,"armada");}
     else panel("Perdiste esta frase",(motivo==="intentos"?"Agotaste los 3 intentos.":"Se terminó el tiempo.")+" La frase era: “"+frase.texto+"”. Se cortó tu racha"+(puntosPerdidos?" y perdiste "+puntosPerdidos+" puntos de esta partida":"")+". Mejor marca: "+datos.mejor+".","Otra frase del nivel "+nivel,comenzar,null,"perdio");
+    if(window.CompartirResultado){const nv=gano?nivel-1:nivel,palabras=frase.texto.split(" ");raiz.querySelector("#fgPanel .fg-panel-acciones")?.appendChild(CompartirResultado.boton(()=>({juego:"Frases en Giro",logo:ARTE("logo"),archivo:"frases-en-giro",
+      titulo:gano?"¡FRASE ARMADA!":"ESTA SE ME ESCAPÓ",sub:"Nivel "+nv+" · "+puntos+" puntos"+(racha>1?" · racha x"+racha:""),
+      cifras:[["⭐",puntos,"puntos"],["🔥",racha,"racha"],["🏆",datos.mejor,"mejor"]],
+      filas:[{emoji:gano?"✅":"❌",texto:"“"+frase.texto+"”",estado:gano?"ok":"mal"}].concat(gano?[]:[{emoji:"💬",texto:palabras.length+" palabras para ordenar",estado:""}]),
+      texto:"🌀 Frases en Giro · nivel "+nv+" · "+puntos+" puntos."})));}
   }
   function comprobar(){
     if(!jugando||girando||espacios.includes(null))return;
