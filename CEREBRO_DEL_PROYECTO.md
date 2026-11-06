@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — iPhone: sin compras con dinero real
+- Qué: Gonzalo pidió que a los de iPhone no les aparezca comprar monedas con tarjeta (no pueden pagar: no hay Google Play Billing). En iOS se agrega html.sin-pago-real y se ocultan todas las tarjetas .tn-real (monedas, vidas, sin publicidad, pases) y el título "💳 Ofertas diarias", en la Tienda y en "¡Te quedaste sin vidas!". Lo que se compra con monedas del juego (packs, etc.) sigue igual. El Pase de extensiones ya solo se ofrecía dentro de la app de Play. Android no cambia. Para iPhone ya existía el cartel "Agregar a pantalla de inicio" (mostrarPromptIOS).
+- Dónde: index.html, sw gya-cache-v742.
+
 ### 06/11/2026 — 100 Rioplatenses: foto de compartir con el tablero de la mejor ronda
 - Qué: al terminar la partida el tablero ya no está a la vista y la foto salía vacía. Ahora cada ronda guarda cómo quedó su panel (categoría, pregunta y las 6 respuestas, encontradas en dorado y las demás en azul) y la foto muestra el de la mejor ronda, con "Mis rondas" al costado. compartir-resultado: opciones antes/despues alrededor de la captura.
 - Dónde: cien-rioplatenses.js, compartir-resultado.js, sw gya-cache-v741.
