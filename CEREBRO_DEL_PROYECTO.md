@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — 100 Rioplatenses: foto de compartir con el tablero de la mejor ronda
+- Qué: al terminar la partida el tablero ya no está a la vista y la foto salía vacía. Ahora cada ronda guarda cómo quedó su panel (categoría, pregunta y las 6 respuestas, encontradas en dorado y las demás en azul) y la foto muestra el de la mejor ronda, con "Mis rondas" al costado. compartir-resultado: opciones antes/despues alrededor de la captura.
+- Dónde: cien-rioplatenses.js, compartir-resultado.js, sw gya-cache-v741.
+
 ### 06/11/2026 — Frases en Giro: frase completa y resaltada en la foto de compartir
 - Qué: Gonzalo pidió la frase completa resaltada. La foto muestra la frase correcta entera en sus lugares: si la armaste, cada palabra de un color distinto; si no, las que habías puesto bien en color y el resto en bordó. Se sacó el banco de fichas de la foto.
 - Dónde: frases-en-giro.js (v14), sw gya-cache-v740.

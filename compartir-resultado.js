@@ -83,7 +83,7 @@ window.CompartirResultado=(()=>{
     return new Promise(ok=>c.toBlob(ok,"image/png"));
   }
   async function foto(o){
-    if(o.captura){const t=Array.isArray(o.captura)?await capturarPiezas(o.captura):await capturar(o.captura);if(t||o.lado)return fotoPartida(o,t);}
+    if(o.captura){let t=null;try{if(o.antes)o.antes();t=Array.isArray(o.captura)?await capturarPiezas(o.captura):await capturar(o.captura);}finally{try{o.despues&&o.despues();}catch(e){}}if(t||o.lado)return fotoPartida(o,t);}
     try{await Promise.all(['800 40px "Archivo Black"','700 30px Outfit','600 24px Outfit'].map(f=>document.fonts?.load(f)));}catch(e){}
     const W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
     const fondo=g.createLinearGradient(0,0,0,H);fondo.addColorStop(0,"#4a2a7a");fondo.addColorStop(.45,"#2A1A3C");fondo.addColorStop(1,"#160B24");g.fillStyle=fondo;g.fillRect(0,0,W,H);
