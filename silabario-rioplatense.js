@@ -245,7 +245,14 @@ const SilabarioRioplatense=(()=>{
     if(window.CompartirResultado)$("#sbPanel .sf-acciones").appendChild(CompartirResultado.boton(()=>({juego:"Silabario Rioplatense",logo:ARTE("logo"),archivo:"silabario",
       titulo:faltan?"¡SE TERMINÓ EL TIEMPO!":errores?"¡TABLERO TERMINADO!":"¡TABLERO PERFECTO!",sub:"Nivel "+nivel+" · "+puntos+" puntos",
       cifras:[["✅",aciertos,"aciertos"],["❌",errores,"errores"],["⭐",puntos,"puntos"]],
-      captura:{el:"#sbTablero",estilo:"#sbTablero,#sbTablero *{opacity:1!important;filter:none!important}"},anchoTablero:600,ladoTitulo:"Las respuestas",lado:items.map((d,k)=>({texto:d.respuesta,estado:estados[k]==="acierto"?"ok":estados[k]==="error"?"mal":""})),
+      captura:{el:"#sbTablero",estilo:"#sbTablero,#sbTablero *{opacity:1!important;filter:none!important}",preparar:(doc,t)=>{
+        /* Las palabras armadas con sus sílabas: cada encontrada pintada con su color; las que no, en bordó. */
+        const COL=["#F5B301","#37D6C0","#7B3FE4","#2ED18A","#FF8A3D","#3DA5FF","#E5197C"];let n=0;
+        t.style.display="flex";t.style.flexDirection="column";t.style.gap="10px";t.style.gridTemplateColumns="none";t.replaceChildren();
+        items.forEach((d,k)=>{const ok=estados[k]==="acierto",fila=doc.createElement("div");fila.style.cssText="display:flex;gap:6px;justify-content:center";const color=ok?COL[n++%COL.length]:"#842541";
+          (d.silabas||[d.respuesta]).forEach(sl=>{const b=doc.createElement("span");b.textContent=sl;b.style.cssText="display:grid;place-items:center;min-width:58px;height:42px;padding:0 8px;border-radius:10px;font:900 18px Outfit,sans-serif;border:2px solid #fff6;box-shadow:0 3px 0 #0005;background:"+color+";color:"+(ok&&(color==="#F5B301"||color==="#37D6C0"||color==="#2ED18A")?"#1E1033":"#fff");fila.appendChild(b);});
+          t.appendChild(fila);});
+      }},
       filas:items.map((d,k)=>({emoji:estados[k]==="acierto"?"✅":estados[k]==="error"?"❌":"⏳",texto:d.respuesta,estado:estados[k]==="acierto"?"ok":estados[k]==="error"?"mal":""})),
       texto:"🧩 Silabario Rioplatense · nivel "+nivel+" · "+aciertos+" aciertos · "+puntos+" puntos."})));
   }

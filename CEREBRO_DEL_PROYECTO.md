@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — Silabario: palabras pintadas en la foto de compartir
+- Qué: Gonzalo pidió resaltar las encontradas. En la foto el tablero se rearma con cada palabra de la ronda formada por sus sílabas, una fila por palabra: las encontradas pintadas cada una con un color (dorado, turquesa, violeta…) y las que no, en bordó. Se sacó la lista lateral (ya se lee en las filas).
+- Dónde: silabario-rioplatense.js (v21), sw gya-cache-v737.
+
 ### 06/11/2026 — Palabras Cruzadas: el crucigrama sale armado en la foto de compartir
 - Qué: Gonzalo pidió que el crucigrama salga armado. En la copia que se fotografía se rearma la grilla completa (aunque en el juego se esté viendo de cerca) con todas las letras en verde, las ayudas en dorado y los números. Al costado, las palabras ordenadas por número con → / ↓; si el crucigrama tiene más de 16 palabras se saca la lista y la grilla ocupa todo el ancho. Probado resolviendo pc-1 (chico) y pc-10 (grande).
 - Dónde: palabras-cruzadas.js (v14), sw gya-cache-v736.
