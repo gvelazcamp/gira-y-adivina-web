@@ -167,7 +167,7 @@ const CienRioplatenses=(()=>{
     if(fase!=="responder")return;fase="rondaTerminada";$("#crEntrada").blur();$("#crForm").hidden=true;$("#crRendirse").hidden=true;
     pregunta.respuestas.forEach((r,i)=>{if(!encontradas[i])revelar(i,true);});
     const completas=encontradas.filter(Boolean).length;
-    resumen.push({categoria:categoriaActual.nombre,aciertos:completas,errores,puntos:pregunta.respuestas.reduce((s,r,i)=>s+(encontradas[i]?r.puntos*CIEN_CONFIG.multiplicadores[ronda-1]:0),0)});
+    resumen.push({panel:$("#crEscenaPanel")?.innerHTML||"",categoria:categoriaActual.nombre,aciertos:completas,errores,puntos:pregunta.respuestas.reduce((s,r,i)=>s+(encontradas[i]?r.puntos*CIEN_CONFIG.multiplicadores[ronda-1]:0),0)});
     if(typeof objSumar==="function")objSumar("cienRonda",1);
     if(completas===pregunta.respuestas.length&&errores===0&&typeof logroDesbloquear==="function")logroDesbloquear("cienPanel");
     mostrarMensaje(completas===pregunta.respuestas.length?"¡Panel completo! Las encontraste todas.":"Encontraste "+completas+" de "+pregunta.respuestas.length+". Las restantes quedan a la vista.");
@@ -199,7 +199,9 @@ const CienRioplatenses=(()=>{
     CompartirResultado.abrir({juego:"100 Rioplatenses Dicen",logo:ARTE("logo"),archivo:"100-rioplatenses",
       titulo:puntos+" PUNTOS",sub:resumen.length+" rondas · "+aciertos+" respuestas encontradas",
       cifras:[["⭐",puntos,"puntos"],["✅",aciertos+"/"+(resumen.length*6),"respuestas"],["🎯",resumen.length?Math.max(...resumen.map(r=>r.puntos||0)):0,"mejor ronda"]],
-      captura:{el:"#crTablero"},anchoTablero:640,ladoTitulo:"Mis rondas",lado:resumen.map((r,i)=>({texto:"Ronda "+(i+1)+" · "+r.aciertos+"/6",valor:r.puntos,estado:r.aciertos>=3?"ok":""})),
+      /* Foto: el panel del juego (categoría, pregunta y tablero de 6 respuestas) de la mejor ronda, tal como quedó. */
+      ...(()=>{const mejor=resumen.reduce((m,r)=>r.panel&&(!m||r.puntos>m.puntos)?r:m,null);if(!mejor)return{};const el=$("#crEscenaPanel");let previo=null,oculto=false;
+        return{captura:{el,ignorar:".voz-btn"},antes:()=>{previo=el.innerHTML;oculto=el.hidden;el.innerHTML=mejor.panel;el.hidden=false;},despues:()=>{if(previo!==null){el.innerHTML=previo;el.hidden=oculto;}}};})(),anchoTablero:640,ladoTitulo:"Mis rondas",lado:resumen.map((r,i)=>({texto:"Ronda "+(i+1)+" · "+r.aciertos+"/6",valor:r.puntos,estado:r.aciertos>=3?"ok":""})),
       filas:resumen.map((r,i)=>({emoji:r.aciertos>=4?"🔥":r.aciertos>=2?"👍":"😅",texto:"Ronda "+(i+1)+" · "+r.aciertos+"/6 respuestas",valor:r.puntos+" pts",estado:r.aciertos>=3?"ok":""})),
       texto:"🎡 100 Rioplatenses Dicen · "+puntos+" puntos."});
   }
