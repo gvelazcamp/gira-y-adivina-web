@@ -16,6 +16,11 @@ const CienRioplatenses=(()=>{
   let datos=cargar(),raiz=null,shell=null,fase="inicio",ronda=0,puntos=0,errores=0,pregunta=null,encontradas=[];
   let usadasPartida=[],resumen=[],angulo=0,espera=0,ultimo=0,tacMs=0,intervalo=null,categoriaActual=null;
   let duelo=false,preguntasDuelo=null;
+  /* Ronda final (06/11/2026, Gonzalo): después de la ronda 3, Giro contesta 5 preguntas rápidas y después entrás
+     vos con 25 s para las mismas 5 sin repetir lo que dijo Giro. Si entre los dos llegan a la meta, premio. */
+  const FINAL={preguntas:5,segundos:25,meta:150,premio:200,pesosGiro:[.15,.2,.2,.17,.13,.08]};
+  let fin=null,finalRes=null;
+  const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   let audioMusica=null;
   /* Dibujos en assets/cien/ (hoja de ChatGPT recortada): logo, panel, cruz, íconos de los 12 temas y la conductora. */
   const ARTE=n=>"assets/cien/"+n+".webp",icoTema=c=>'<img class="cr-ico-tema" src="'+ARTE("c_"+c.id)+'" alt="" draggable="false">';
@@ -80,7 +85,7 @@ const CienRioplatenses=(()=>{
     if(!raiz||!shell)return;
     if(document.activeElement===$("#crEntrada"))$("#crForm").scrollIntoView({block:"nearest"});
   }
-  function iniciar(){if(!duelo&&window.Fichas&&!Fichas.usar("cien-rioplatenses",iniciar))return;ronda=0;puntos=0;usadasPartida=[];resumen=[];$("#crFinal").hidden=true;girar();}
+  function iniciar(){if(!duelo&&window.Fichas&&!Fichas.usar("cien-rioplatenses",iniciar))return;ronda=0;puntos=0;usadasPartida=[];resumen=[];fin=null;finalRes=null;{const z=$("#crEscenaFinal");if(z){z.hidden=true;z.innerHTML="";}}$("#crFinal").hidden=true;girar();}
   function elegirPreguntaParaDuelo(yaElegidas){
     const pool=CIEN_PREGUNTAS.filter(p=>!yaElegidas.includes(p.id));
     const categorias=CIEN_CATEGORIAS.filter(c=>pool.some(p=>p.categoria===c.id));
@@ -144,7 +149,9 @@ const CienRioplatenses=(()=>{
     fila.querySelector("span").textContent=r.texto;fila.querySelector("em").textContent=r.puntos*CIEN_CONFIG.multiplicadores[ronda-1];
     fila.setAttribute("aria-label",r.texto+", "+(pendiente?"sin encontrar":"encontrada")+", "+r.puntos+" puntos base");
   }
+  const buscar=(preg,valor)=>preg.respuestas.findIndex(r=>[r.texto,...r.alias].some(a=>{const an=norm(a);return an===valor||mismaPalabra(an,valor);}));
   function enviar(){
+    if(fase==="final-vos"){enviarFinal();return;}
     if(!raiz||fase!=="responder"||document.hidden)return;
     const valor=norm($("#crEntrada").value);if(!valor){mostrarMensaje("Escribí una respuesta para probar.");enfocar();return;}
     $("#crEntrada").value="";
@@ -172,11 +179,78 @@ const CienRioplatenses=(()=>{
     if(completas===pregunta.respuestas.length&&errores===0&&typeof logroDesbloquear==="function")logroDesbloquear("cienPanel");
     mostrarMensaje(completas===pregunta.respuestas.length?"¡Panel completo! Las encontraste todas.":"Encontraste "+completas+" de "+pregunta.respuestas.length+". Las restantes quedan a la vista.");
     const siguiente=$("#crSiguiente");siguiente.hidden=false;
-    siguiente.textContent=ronda<CIEN_CONFIG.rondas?"Girar la ruleta · puntos ×"+CIEN_CONFIG.multiplicadores[ronda]:"Ver mi resultado";
-    siguiente.onclick=ronda<CIEN_CONFIG.rondas?girar:terminar;
+    const conFinal=ronda>=CIEN_CONFIG.rondas&&!duelo;
+    siguiente.textContent=ronda<CIEN_CONFIG.rondas?"Girar la ruleta · puntos ×"+CIEN_CONFIG.multiplicadores[ronda]:conFinal?"🔥 Ronda final con Giro":"Ver mi resultado";
+    siguiente.onclick=ronda<CIEN_CONFIG.rondas?girar:conFinal?rondaFinal:terminar;
     if(ronda===CIEN_CONFIG.rondas){datos.mejor=Math.max(datos.mejor,puntos);guardar();}
     if(duelo)Duelo.enviarProgreso({puntos});
     hud();siguiente.focus({preventScroll:true});ajustarPantalla();
+  }
+  /* --- Ronda final --- */
+  function rondaFinal(){
+    if(!raiz||fase!=="rondaTerminada")return;
+    const banco=disponibles().filter(p=>!usadasPartida.includes(p.id));
+    const elegidas=[];while(elegidas.length<FINAL.preguntas&&banco.length)elegidas.push(banco.splice(Math.floor(Math.random()*banco.length),1)[0]);
+    if(elegidas.length<FINAL.preguntas){terminar();return;}
+    elegidas.forEach(p=>{usadasPartida.push(p.id);if(!datos.usadas.includes(p.id))datos.usadas.push(p.id);});guardar();
+    const giro=elegidas.map(p=>{let r=Math.random(),i=-1;for(let k=0;k<FINAL.pesosGiro.length;k++){r-=FINAL.pesosGiro[k];if(r<0){i=k;break;}}
+      if(i>=p.respuestas.length)i=-1;return i<0?{texto:"…",i:-1,puntos:0}:{texto:p.respuestas[i].texto,i,puntos:p.respuestas[i].puntos};});
+    fin={preguntas:elegidas,giro,vos:[],actual:0,resto:FINAL.segundos*1000};
+    fase="final-giro";$("#crEscenaPanel").hidden=true;$("#crEscenaRuleta").hidden=true;$("#crSiguiente").hidden=true;$("#crForm").hidden=true;$("#crRendirse").hidden=true;
+    const z=$("#crEscenaFinal");z.hidden=false;
+    z.innerHTML='<div class="cr-fin-cab"><b>🔥 RONDA FINAL</b><span>Meta entre los dos: <b>'+FINAL.meta+'</b> puntos</span></div>'+
+      '<div class="cr-fin-tabla"><div class="cr-fin-th"><span>Pregunta</span><span>🤖 Giro</span><span>🙋 Vos</span></div>'+
+      elegidas.map((p,i)=>'<div class="cr-fin-fila" id="crFin'+i+'"><span class="cr-fin-preg">'+esc(p.pregunta)+'</span><span class="cr-fin-giro"><i>…</i><em></em></span><span class="cr-fin-vos"><i></i><em></em></span></div>').join("")+'</div>'+
+      '<div class="cr-fin-tot"><span>Giro <b id="crFinGiro">0</b></span><span>Vos <b id="crFinVos">?</b></span><span>Total <b id="crFinTotal">0</b>/'+FINAL.meta+'</span></div>'+
+      '<div class="cr-fin-reloj" id="crFinReloj" hidden><span><i></i></span><b></b></div><div class="cr-fin-acciones" id="crFinAcciones"></div>';
+    hud();$("#crRonda").textContent="Final";$("#crMultiplicador").textContent="🔥";
+    mostrarMensaje("Primero contesta Giro…");
+    let k=0,suma=0;
+    const paso=()=>{if(!raiz||!fin||fase!=="final-giro")return;
+      if(k<FINAL.preguntas){const g=giro[k],f=$("#crFin"+k);f.querySelector(".cr-fin-giro i").textContent="🔒 tapada";f.classList.add("giro-listo");
+        suma+=g.puntos;$("#crFinGiro").textContent=suma;$("#crFinTotal").textContent=suma;if(typeof tac==="function")tac();k++;setTimeout(paso,850);return;}
+      fin.giroTotal=suma;
+      mostrarMensaje("Giro sumó "+suma+" (sus respuestas quedan tapadas, como en la tele). Te faltan "+Math.max(0,FINAL.meta-suma)+". Tenés "+FINAL.segundos+" s para las 5. Si repetís lo de Giro, decí otra.");
+      const a=$("#crFinAcciones");a.innerHTML='<button type="button" class="cr-principal" id="crFinEmpezar">¡Empezar! ⏱</button>';$("#crFinEmpezar").onclick=turnoVos;$("#crFinEmpezar").focus({preventScroll:true});
+    };
+    setTimeout(paso,700);
+  }
+  function turnoVos(){
+    if(!fin||fase!=="final-giro")return;fase="final-vos";fin.resto=FINAL.segundos*1000;
+    const a=$("#crFinAcciones");a.innerHTML='<button type="button" class="cr-rendirse" id="crFinPaso">Paso ⏭</button>';$("#crFinPaso").onclick=()=>responderFinal({texto:"—",i:-1,puntos:0});
+    $("#crFinReloj").hidden=false;$("#crForm").hidden=false;$("#crEntrada").value="";marcarActual();enfocar();
+  }
+  function marcarActual(){document.querySelectorAll(".cr-fin-fila").forEach((f,i)=>f.classList.toggle("actual",fase==="final-vos"&&i===fin.actual));
+    if(fase==="final-vos")mostrarMensaje((fin.actual+1)+"/"+FINAL.preguntas+" · "+fin.preguntas[fin.actual].pregunta);}
+  function enviarFinal(){
+    if(!fin||fase!=="final-vos")return;const crudo=$("#crEntrada").value.trim(),valor=norm(crudo);if(!valor){enfocar();return;}
+    const p=fin.preguntas[fin.actual],i=buscar(p,valor),g=fin.giro[fin.actual];
+    if(i>=0&&i===g.i){$("#crEntrada").value="";mostrarMensaje("✕ ¡Repetida! Giro ya dijo eso. Decí otra.","error");sonidoErrorExt();if(typeof vibrar==="function")vibrar([40,30,40]);enfocar();return;}
+    $("#crEntrada").value="";responderFinal({texto:crudo.slice(0,24),i,puntos:i>=0?p.respuestas[i].puntos:0});
+  }
+  function responderFinal(r){
+    if(!fin||fase!=="final-vos")return;const f=$("#crFin"+fin.actual);f.querySelector(".cr-fin-vos i").textContent=r.texto;f.classList.add("vos-listo");
+    fin.vos.push(r);fin.actual++;if(typeof tac==="function")tac();
+    if(fin.actual>=FINAL.preguntas)cerrarFinal();else{marcarActual();enfocar();}
+  }
+  function cerrarFinal(){
+    if(!fin||fase!=="final-vos")return;fase="final-revela";$("#crForm").hidden=true;$("#crEntrada").blur();$("#crFinReloj").hidden=true;$("#crFinAcciones").innerHTML="";
+    while(fin.vos.length<FINAL.preguntas)fin.vos.push({texto:"⏱",i:-1,puntos:0});
+    marcarActual();mostrarMensaje("Veamos qué dijo la gente…");
+    let k=0,suma=0;
+    const paso=()=>{if(!raiz||!fin)return;
+      if(k<FINAL.preguntas){const r=fin.vos[k],g=fin.giro[k],f=$("#crFin"+k);f.querySelector(".cr-fin-giro i").textContent=g.texto;f.querySelector(".cr-fin-giro em").textContent=g.puntos;f.querySelector(".cr-fin-vos i").textContent=r.texto;f.querySelector(".cr-fin-vos em").textContent=r.puntos;f.classList.add(r.puntos?"vos-ok":"vos-cero");
+        suma+=r.puntos;$("#crFinVos").textContent=suma;$("#crFinTotal").textContent=fin.giroTotal+suma;
+        if(r.puntos){if(typeof bip==="function")bip(740,.12,"sine",.05);}else if(typeof bip==="function")bip(220,.12);k++;setTimeout(paso,800);return;}
+      const total=fin.giroTotal+suma,gano=total>=FINAL.meta,premio=gano?FINAL.premio:0;
+      puntos+=suma+premio;finalRes={giro:fin.giroTotal,vos:suma,total,gano,premio};
+      datos.mejor=Math.max(datos.mejor,puntos);guardar();
+      if(gano&&typeof sonarSFX==="function")sonarSFX("aplausos");
+      mostrarMensaje(gano?"🔥 ¡GANARON LA FINAL! "+total+" puntos entre los dos · +"+premio+" de premio":"Sumaron "+total+". Les faltaron "+(FINAL.meta-total)+" para la meta. Sumás tus "+suma+" puntos.",gano?"acierto":"");
+      fase="rondaTerminada";hud();$("#crRonda").textContent="Final";$("#crMultiplicador").textContent="🔥";
+      const sig=$("#crSiguiente");sig.hidden=false;sig.textContent="Ver mi resultado";sig.onclick=()=>{$("#crEscenaFinal").hidden=true;terminar();};sig.focus({preventScroll:true});
+    };
+    setTimeout(paso,700);
   }
   function terminar(){
     if(fase!=="rondaTerminada")return;fase="fin";
@@ -191,6 +265,7 @@ const CienRioplatenses=(()=>{
     $("#crResultadoPuntos").textContent=puntos;$("#crResultadoMarca").textContent="Tu mejor marca: "+datos.mejor+" puntos";
     const lista=$("#crResumen");lista.replaceChildren();
     resumen.forEach((r,i)=>{const p=document.createElement("p"),b=document.createElement("b"),span=document.createElement("span");b.textContent="Ronda "+(i+1)+" · "+r.categoria;span.textContent=r.aciertos+"/6 · "+r.puntos+" puntos";p.append(b,span);lista.appendChild(p);});
+    if(finalRes){const p=document.createElement("p"),b=document.createElement("b"),span=document.createElement("span");b.textContent="🔥 Ronda final · "+(finalRes.gano?"¡ganada!":"no llegaron");span.textContent=finalRes.total+"/"+FINAL.meta+" · +"+(finalRes.vos+finalRes.premio)+" puntos";p.append(b,span);lista.appendChild(p);}
     hud();$("#crOtra").focus({preventScroll:true});shell?.scrollTo(0,0);
   }
   function compartir(b){
@@ -202,7 +277,7 @@ const CienRioplatenses=(()=>{
       /* Foto: el panel del juego (categoría, pregunta y tablero de 6 respuestas) de la mejor ronda, tal como quedó. */
       ...(()=>{const mejor=resumen.reduce((m,r)=>r.panel&&(!m||r.puntos>m.puntos)?r:m,null);if(!mejor)return{};const el=$("#crEscenaPanel");let previo=null,oculto=false;
         return{captura:{el,ignorar:".voz-btn"},antes:()=>{previo=el.innerHTML;oculto=el.hidden;el.innerHTML=mejor.panel;el.hidden=false;},despues:()=>{if(previo!==null){el.innerHTML=previo;el.hidden=oculto;}}};})(),anchoTablero:640,ladoTitulo:"Mis rondas",lado:resumen.map((r,i)=>({texto:"Ronda "+(i+1)+" · "+r.aciertos+"/6",valor:r.puntos,estado:r.aciertos>=3?"ok":""})),
-      filas:resumen.map((r,i)=>({emoji:r.aciertos>=4?"🔥":r.aciertos>=2?"👍":"😅",texto:"Ronda "+(i+1)+" · "+r.aciertos+"/6 respuestas",valor:r.puntos+" pts",estado:r.aciertos>=3?"ok":""})),
+      filas:resumen.map((r,i)=>({emoji:r.aciertos>=4?"🔥":r.aciertos>=2?"👍":"😅",texto:"Ronda "+(i+1)+" · "+r.aciertos+"/6 respuestas",valor:r.puntos+" pts",estado:r.aciertos>=3?"ok":""})).concat(finalRes?[{emoji:finalRes.gano?"🏆":"⏱",texto:"Ronda final con Giro · "+finalRes.total+"/"+FINAL.meta,valor:"+"+(finalRes.vos+finalRes.premio)+" pts",estado:finalRes.gano?"ok":""}]:[]),
       texto:"🎡 100 Rioplatenses Dicen · "+puntos+" puntos."});
   }
   function tic(){
@@ -213,12 +288,14 @@ const CienRioplatenses=(()=>{
       if(tacMs>90+(1-Math.max(0,espera)/CIEN_CONFIG.giroMs)*240){if(typeof tac==="function")tac();tacMs=0;}
       if(espera<=0)seleccionar();
     }else if(fase==="seleccion"){espera-=dt;if(espera<=0)mostrarPanel();}
+    else if(fase==="final-vos"&&fin){fin.resto-=dt;const r=Math.max(0,fin.resto),z=$("#crFinReloj");if(z){z.querySelector("i").style.width=(r/(FINAL.segundos*1000)*100)+"%";z.querySelector("b").textContent="⏱ "+Math.ceil(r/1000)+" s";z.classList.toggle("apurado",r<=5000);}
+      if(fin.resto<=0){mostrarMensaje("⏱ ¡Tiempo!","error");cerrarFinal();}}
   }
   function visibilidad(){ultimo=performance.now();if(document.hidden)detenerMusicaJuego();else iniciarMusicaJuego();}
   function abrir(contenedor){
     salir();datos=cargar();ronda=0;puntos=0;errores=0;angulo=0;fase="inicio";usadasPartida=[];prepararBanco();
     raiz=document.createElement("div");raiz.className="cr-game";
-    raiz.innerHTML='<button type="button" class="ext-volver" id="crVolver">⟵ Extensiones</button><header class="cr-titulo cr-titulo-arte"><h2 class="cr-logo-h"><img class="cr-logo" src="'+ARTE("logo")+'" alt="100 Rioplatenses Dicen" draggable="false"></h2></header><div class="cr-hud"><div><small>Ronda</small><b id="crRonda"></b></div><div><small>Puntos</small><b id="crPuntos"></b></div><div><small>Mejor</small><b id="crMejor"></b></div><div class="cr-multi"><small>Multiplicador</small><b id="crMultiplicador"></b></div></div><section id="crEscenaRuleta"><h3 id="crRuletaTitulo">¿Qué tema te toca?</h3><div id="crRuleta" class="cr-ruleta"><div class="cr-aro"><div id="crDisco"></div></div><div id="crLuces" aria-hidden="true"></div><div class="cr-puntero" aria-hidden="true"></div><div class="cr-centro"><strong>100</strong><span>DICEN</span></div></div><p id="crSeleccion" class="cr-seleccion" aria-live="polite">12 temas · una nueva sorpresa en cada giro</p><div id="crIntro"><button id="crJugar" class="cr-principal" type="button">Girar y jugar <span>↻</span></button><button id="crDuelo" class="cr-rendirse" type="button">Jugar con un amigo 👥</button><p class="cr-reglas">Descubrí las 6 respuestas del panel.<br>3 rondas · 3 errores por ronda · puntos ×1, ×2 y ×3</p><button type="button" class="cr-ayuda-btn" id="crAyudaBtn">❓ Cómo se juega</button></div></section><section id="crEscenaPanel" hidden><div class="cr-panel-cabecera"><span id="crCategoria"></span><div id="crFallos" role="img"><i><img src="'+ARTE("error")+'" alt=""></i><i><img src="'+ARTE("error")+'" alt=""></i><i><img src="'+ARTE("error")+'" alt=""></i></div></div><div class="voz-fila"><h3 id="crPregunta"></h3><button type="button" class="voz-btn" id="crEscuchar" aria-label="Escuchar la pregunta">🔊</button></div><div id="crTablero" class="cr-tablero"></div></section><div id="crControles"><p id="crMensaje" class="cr-mensaje" role="status"></p><form id="crForm" autocomplete="off" hidden><label class="cr-sr" for="crEntrada">Tu respuesta para el panel</label><div class="cr-fila"><input id="crEntrada" maxlength="80" placeholder="Tu respuesta…" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="send"><button id="crEnviar" type="submit">Enviar</button></div></form><button id="crRendirse" class="cr-rendirse" type="button" hidden>Me rindo · mostrar respuestas</button><button id="crSiguiente" class="cr-principal" type="button" hidden></button></div><section id="crFinal" class="cr-final" hidden><img class="cr-final-dibujo" id="crFinalDibujo" src="'+ARTE("gano")+'" alt="" draggable="false"><small>¡LAS TRES RONDAS COMPLETAS!</small><h3>Así quedó tu partida</h3><strong id="crResultadoPuntos"></strong><span>puntos</span><p id="crResultadoMarca"></p><div id="crResumen"></div><button id="crOtra" class="cr-principal" type="button">Volver a girar ↻</button><button id="crCompartir" class="cr-boton" type="button">📲 Compartir resultado</button></section><p class="cr-nota">Edición de práctica · respuestas y puntajes de juego, sin encuesta real.</p><div id="crBienvenida" class="cr-bienv"><div class="cr-bienv-caja"><button type="button" class="cr-bienv-x" id="crBienvX" aria-label="Cerrar">✕</button><img class="cr-conductora" src="'+ARTE("personaje")+'" alt="" draggable="false"><h3>¡Bienvenidos a 100&nbsp;Rioplatenses Dicen!</h3><p class="cr-bienv-intro">La ruleta elige el tema y te hago una pregunta. Tenés que adivinar las <b>6 respuestas</b> que dio la gente.</p><ul><li><span>✍️</span><em>Escribí una respuesta y mandala: si está en el panel, sumás sus puntos.</em></li><li><span>❌</span><em>Tenés <b>3 errores</b> por ronda. Al tercero se revelan las que faltan.</em></li><li><span>🔥</span><em>Son <b>3 rondas</b> y los puntos valen ×1, ×2 y ×3.</em></li><li><span>👥</span><em>También podés jugar con un amigo.</em></li></ul><button type="button" class="cr-principal" id="crBienvOk">¡A jugar!</button></div></div>';
+    raiz.innerHTML='<button type="button" class="ext-volver" id="crVolver">⟵ Extensiones</button><header class="cr-titulo cr-titulo-arte"><h2 class="cr-logo-h"><img class="cr-logo" src="'+ARTE("logo")+'" alt="100 Rioplatenses Dicen" draggable="false"></h2></header><div class="cr-hud"><div><small>Ronda</small><b id="crRonda"></b></div><div><small>Puntos</small><b id="crPuntos"></b></div><div><small>Mejor</small><b id="crMejor"></b></div><div class="cr-multi"><small>Multiplicador</small><b id="crMultiplicador"></b></div></div><section id="crEscenaRuleta"><h3 id="crRuletaTitulo">¿Qué tema te toca?</h3><div id="crRuleta" class="cr-ruleta"><div class="cr-aro"><div id="crDisco"></div></div><div id="crLuces" aria-hidden="true"></div><div class="cr-puntero" aria-hidden="true"></div><div class="cr-centro"><strong>100</strong><span>DICEN</span></div></div><p id="crSeleccion" class="cr-seleccion" aria-live="polite">12 temas · una nueva sorpresa en cada giro</p><div id="crIntro"><button id="crJugar" class="cr-principal" type="button">Girar y jugar <span>↻</span></button><button id="crDuelo" class="cr-rendirse" type="button">Jugar con un amigo 👥</button><p class="cr-reglas">Descubrí las 6 respuestas del panel.<br>3 rondas · 3 errores por ronda · puntos ×1, ×2 y ×3<br>🔥 y al final, la ronda final con Giro</p><button type="button" class="cr-ayuda-btn" id="crAyudaBtn">❓ Cómo se juega</button></div></section><section id="crEscenaPanel" hidden><div class="cr-panel-cabecera"><span id="crCategoria"></span><div id="crFallos" role="img"><i><img src="'+ARTE("error")+'" alt=""></i><i><img src="'+ARTE("error")+'" alt=""></i><i><img src="'+ARTE("error")+'" alt=""></i></div></div><div class="voz-fila"><h3 id="crPregunta"></h3><button type="button" class="voz-btn" id="crEscuchar" aria-label="Escuchar la pregunta">🔊</button></div><div id="crTablero" class="cr-tablero"></div></section><section id="crEscenaFinal" class="cr-final-rapida" hidden></section><div id="crControles"><p id="crMensaje" class="cr-mensaje" role="status"></p><form id="crForm" autocomplete="off" hidden><label class="cr-sr" for="crEntrada">Tu respuesta para el panel</label><div class="cr-fila"><input id="crEntrada" maxlength="80" placeholder="Tu respuesta…" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="send"><button id="crEnviar" type="submit">Enviar</button></div></form><button id="crRendirse" class="cr-rendirse" type="button" hidden>Me rindo · mostrar respuestas</button><button id="crSiguiente" class="cr-principal" type="button" hidden></button></div><section id="crFinal" class="cr-final" hidden><img class="cr-final-dibujo" id="crFinalDibujo" src="'+ARTE("gano")+'" alt="" draggable="false"><small>¡LAS TRES RONDAS COMPLETAS!</small><h3>Así quedó tu partida</h3><strong id="crResultadoPuntos"></strong><span>puntos</span><p id="crResultadoMarca"></p><div id="crResumen"></div><button id="crOtra" class="cr-principal" type="button">Volver a girar ↻</button><button id="crCompartir" class="cr-boton" type="button">📲 Compartir resultado</button></section><p class="cr-nota">Edición de práctica · respuestas y puntajes de juego, sin encuesta real.</p><div id="crBienvenida" class="cr-bienv"><div class="cr-bienv-caja"><button type="button" class="cr-bienv-x" id="crBienvX" aria-label="Cerrar">✕</button><img class="cr-conductora" src="'+ARTE("personaje")+'" alt="" draggable="false"><h3>¡Bienvenidos a 100&nbsp;Rioplatenses Dicen!</h3><p class="cr-bienv-intro">La ruleta elige el tema y te hago una pregunta. Tenés que adivinar las <b>6 respuestas</b> que dio la gente.</p><ul><li><span>✍️</span><em>Escribí una respuesta y mandala: si está en el panel, sumás sus puntos.</em></li><li><span>❌</span><em>Tenés <b>3 errores</b> por ronda. Al tercero se revelan las que faltan.</em></li><li><span>🔥</span><em>Son <b>3 rondas</b> y los puntos valen ×1, ×2 y ×3.</em></li><li><span>👥</span><em>También podés jugar con un amigo.</em></li></ul><button type="button" class="cr-principal" id="crBienvOk">¡A jugar!</button></div></div>';
     contenedor.appendChild(raiz);shell=raiz.closest(".ext-shell");shell?.classList.add("cr-abierta");dibujarRuleta();hud();
     $("#crVolver").onclick=()=>Extensiones.abrirLobby();
     $("#crJugar").onclick=iniciar;$("#crOtra").onclick=iniciar;$("#crCompartir").onclick=e=>compartir(e.currentTarget);
@@ -228,7 +305,7 @@ const CienRioplatenses=(()=>{
     $("#crAyudaBtn").onclick=()=>{bienv.hidden=false;};
     $("#crEscuchar").onclick=()=>{if(pregunta&&typeof hablar==="function")hablar(pregunta.pregunta,audioMusica);};
     $("#crForm").onsubmit=e=>{e.preventDefault();enviar();};$("#crRendirse").onclick=cerrarRonda;
-    $("#crEnviar").onpointerdown=e=>e.preventDefault();$("#crEntrada").onbeforeinput=e=>{if(fase!=="responder")e.preventDefault();};
+    $("#crEnviar").onpointerdown=e=>e.preventDefault();$("#crEntrada").onbeforeinput=e=>{if(fase!=="responder"&&fase!=="final-vos")e.preventDefault();};
     document.addEventListener("visibilitychange",visibilidad);window.visualViewport?.addEventListener("resize",ajustarPantalla);window.visualViewport?.addEventListener("scroll",ajustarPantalla);window.addEventListener("resize",ajustarPantalla);
     ultimo=performance.now();intervalo=setInterval(tic,CIEN_CONFIG.ticMs);ajustarPantalla();iniciarMusicaJuego();
   }
@@ -236,13 +313,13 @@ const CienRioplatenses=(()=>{
     clearInterval(intervalo);intervalo=null;document.removeEventListener("visibilitychange",visibilidad);
     window.visualViewport?.removeEventListener("resize",ajustarPantalla);window.visualViewport?.removeEventListener("scroll",ajustarPantalla);window.removeEventListener("resize",ajustarPantalla);
     shell?.classList.remove("cr-abierta");
-    raiz=null;shell=null;fase="inicio";pregunta=null;encontradas=[];
+    raiz=null;shell=null;fase="inicio";pregunta=null;encontradas=[];fin=null;finalRes=null;
     if("speechSynthesis" in window)speechSynthesis.cancel();
     detenerMusicaJuego();
     if(typeof sincronizarMusica==="function")sincronizarMusica();
     if(typeof Duelo!=="undefined")Duelo.salir();
     duelo=false;preguntasDuelo=null;
   }
-  return{abrir,salir,enviar,mejorPuntaje:()=>cargar().mejor};
+  return{abrir,salir,enviar,mejorPuntaje:()=>cargar().mejor,_final:()=>fin};
 })();
 window.CienRioplatenses=CienRioplatenses;

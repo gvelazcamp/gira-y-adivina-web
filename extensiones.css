@@ -1415,3 +1415,31 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .ps-reloj b{font:900 .85rem Outfit,system-ui,sans-serif;color:#F6EFE2;min-width:56px;text-align:right}
 .ps-reloj-apurado b{color:#ff6fb5}
 .ps-celda.ps-regalada{background:#248467!important;color:#fff!important;border-color:#37D6C0!important}
+/* 100 Rioplatenses: ronda final con Giro (06/11/2026) */
+.cr-final-rapida{width:min(100%,520px);margin:4px auto 0;background:#160B24cc;border:2px solid #F5B301;border-radius:18px;padding:10px;color:#F6EFE2}
+.cr-final-rapida[hidden]{display:none}
+.cr-fin-cab{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:8px}
+.cr-fin-cab>b{font:900 1.25rem "Archivo Black",Outfit,sans-serif;color:#F5B301;letter-spacing:1px}
+.cr-fin-cab span{font-size:.8rem;color:#E4D8EB}
+.cr-fin-tabla{display:flex;flex-direction:column;gap:5px}
+.cr-fin-th,.cr-fin-fila{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:5px;align-items:stretch}
+.cr-fin-th span{font:800 .68rem Outfit,system-ui,sans-serif;color:#BCAACC;text-transform:uppercase;text-align:center}
+.cr-fin-preg{font:700 .72rem/1.15 Outfit,system-ui,sans-serif;color:#E4D8EB;display:flex;align-items:center}
+.cr-fin-giro,.cr-fin-vos{display:flex;align-items:center;justify-content:space-between;gap:4px;min-height:38px;padding:4px 7px;border-radius:10px;background:#2B1A3F;border:1px solid #FFFFFF1f;font:800 .78rem Outfit,system-ui,sans-serif}
+.cr-fin-giro i,.cr-fin-vos i{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.cr-fin-giro em,.cr-fin-vos em{font-style:normal;font-weight:900;color:#F5B301;flex:0 0 auto}
+.cr-fin-fila.giro-listo .cr-fin-giro{background:#2d2a6e;border-color:#7d7cff66}
+.cr-fin-fila.actual .cr-fin-vos{border:2px solid #37D6C0;background:#145C55}
+.cr-fin-fila.actual .cr-fin-preg{color:#fff}
+.cr-fin-fila.vos-ok .cr-fin-vos{background:#16816b}
+.cr-fin-fila.vos-cero .cr-fin-vos{background:#842541}
+.cr-fin-tot{display:flex;justify-content:space-between;gap:6px;margin-top:8px;font:800 .82rem Outfit,system-ui,sans-serif;color:#E4D8EB}
+.cr-fin-tot b{color:#F5B301;font-size:1.05rem}
+.cr-fin-reloj{display:flex;align-items:center;gap:8px;margin-top:8px}
+.cr-fin-reloj[hidden]{display:none}
+.cr-fin-reloj span{flex:1;height:10px;border-radius:99px;background:#352146;overflow:hidden}
+.cr-fin-reloj i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#1fa891,#4fe3cf)}
+.cr-fin-reloj.apurado i{background:linear-gradient(90deg,#E5197C,#ff4fa3)}
+.cr-fin-reloj b{font:900 .85rem Outfit,system-ui,sans-serif;min-width:52px;text-align:right}
+.cr-fin-acciones{display:flex;justify-content:center;margin-top:8px}
+.cr-fin-acciones:empty{display:none}
