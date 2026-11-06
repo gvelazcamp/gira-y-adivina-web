@@ -343,10 +343,15 @@ const Duelo=(()=>{
     if(badgeEl)return badgeEl;
     badgeEl=document.createElement("div");badgeEl.className="dl-badge";
     badgeEl.innerHTML=avatarHtml(rival&&rival.avatar,rival&&rival.frame)+'<span><small>'+((rival&&rival.nombre)||"Rival")+'</small><b id="dlBadgeValor">0</b></span>';
-    document.body.appendChild(badgeEl);activo=true;return badgeEl;
+    /* En las extensiones el globito va DENTRO de la barra de arriba (en lugar del título), así no tapa
+       nada del juego ni la ✕. Fuera de las extensiones queda flotando como antes. */
+    const cab=document.querySelector("#extShell:not([hidden]) .ext-header");
+    if(cab){const x=cab.querySelector("#extCerrar");cab.insertBefore(badgeEl,x);badgeEl.classList.add("dl-badge-fila");cab.classList.add("dl-con-globito");}
+    else document.body.appendChild(badgeEl);
+    activo=true;return badgeEl;
   }
   function actualizarBadge(texto){if(badgeEl)badgeEl.querySelector("#dlBadgeValor").textContent=texto;}
-  function quitarBadge(){if(badgeEl){badgeEl.remove();badgeEl=null;}}
+  function quitarBadge(){if(badgeEl){badgeEl.remove();badgeEl=null;}document.querySelectorAll(".dl-con-globito").forEach(x=>x.classList.remove("dl-con-globito"));}
   /* --- Final: mandar mi resultado y mostrar la comparación --- */
   function enviarFinal(datos){mandar({tipo:"final",datos});}
   function mostrarResultado(miResultado,{etiqueta="aciertos",onVolver,extra}={}){

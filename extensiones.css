@@ -1399,3 +1399,10 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 #psProponer[hidden]{display:none}
 .dl-propuesta .dl-fila button,.dl-msg .dl-fila button,.dl-chat-form button{flex:1;border:0;border-radius:12px;padding:10px 12px;background:#352146;color:#fff;font:900 .95rem Outfit,system-ui,sans-serif;cursor:pointer}
 .dl-chat-form button{flex:0 0 auto}
+/* Globito del compañero dentro de la barra de arriba: no tapa el juego ni la ✕ (06/11/2026) */
+.ext-header.dl-con-globito #extTitulo{display:none}
+.dl-badge.dl-badge-fila{position:relative;top:auto;right:auto;margin-left:auto;flex:0 1 auto;min-width:0;max-width:calc(100% - 110px);padding:4px 12px 4px 4px;box-shadow:none}
+.dl-badge.dl-badge-fila span{min-width:0}
+.dl-badge.dl-badge-fila small,.dl-badge.dl-badge-fila b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.dl-badge.dl-badge-fila.dl-off::after{top:auto;bottom:-6px;right:6px;font-size:.6rem;padding:1px 6px}
+.dl-propuesta{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 10px)}
