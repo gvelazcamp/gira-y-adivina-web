@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — Rueda de Letras: crucigrama armado en la foto de compartir
+- Qué: Gonzalo pidió la rueda "armada". La foto rearma el crucigrama con todas las letras: cada palabra encontrada con un color distinto (igual en la lista del costado) y las que faltaron en bordó; abajo la rueda. Las piezas de captura (lista) ahora también aceptan preparar.
+- Dónde: rueda-de-letras.js, compartir-resultado.js, sw gya-cache-v739.
+
 ### 06/11/2026 — Silabario: foto de compartir con el tablero del juego y colores por palabra
 - Qué: Gonzalo prefirió el tablero como en el juego (fichas de sílabas en grilla) en vez de filas. La foto rearma la grilla con todas las sílabas de la ronda mezcladas (orden fijo por semilla), con las fichas reales del juego; las sílabas de cada palabra encontrada se resaltan con un color distinto, y al costado "Las respuestas" con el mismo color (no encontradas en crema, erradas en bordó). compartir-resultado: lado acepta color/colorTexto y preparar corre antes de convertir border-image.
 - Dónde: silabario-rioplatense.js, compartir-resultado.js, sw gya-cache-v738.
