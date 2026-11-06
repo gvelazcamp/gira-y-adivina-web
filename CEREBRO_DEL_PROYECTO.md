@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — 100 Rioplatenses: ronda final con Giro
+- Qué: Gonzalo pidió la ronda final de los programas de encuesta (la que se juega de a dos y no se puede repetir). Busqué las reglas: 5 preguntas, el primero 20 s, el segundo 25 s sin escuchar al primero, si repite le piden otra, suman las respuestas que coinciden con la encuesta, meta 200. En el juego, después de la ronda 3 (no en duelo) aparece "🔥 Ronda final con Giro": Giro contesta las 5 (respuestas tapadas, solo se ve cuánto sumó), después vos tenés 25 s para las mismas 5 (Enter = siguiente, "Paso"), si repetís lo de Giro suena el error y tenés que decir otra, lo que no está en la encuesta vale 0. Al final se destapan las dos columnas. Meta 150 entre los dos (en nuestros paneles la más votada vale 30, 200 sería casi imposible). Ganar suma +200 de premio a la partida; siempre se suman tus puntos de la final. Giro elige con pesos [.15,.2,.2,.17,.13,.08] y a veces no contesta.
+- Dónde: cien-rioplatenses.js (FINAL, rondaFinal, turnoVos, enviarFinal, cerrarFinal; v15), extensiones.css (v174), sw gya-cache-v754.
+
 ### 06/11/2026 — Palabra Secreta: niveles contrarreloj con la primera letra de regalo
 - Qué: Gonzalo pasó un video de un programa de TV de palabras y pidió niveles así desde el 16. Desde el nivel 16, los niveles pares que no son de repetir (16, 20, 22, 26, 28, 32…) son "⏱ Contrarreloj": cada fila trae la primera letra puesta (verde, no se borra), hay barra de tiempo por intento (20 s con 5 letras, 25 s con 6, 30 s con 7; en rosa los últimos 5 s) y si se acaba, ese intento se pierde (fila gris con ⏱). 5 intentos (6 con palabra larga). El reloj se frena con la ayuda abierta, la app en segundo plano y mientras se da vuelta la jugada. Solo jugando solo: en duelo y en equipo el nivel se juega normal. Partidas empezadas antes siguen como estaban.
 - Dónde: palabra-secreta.js (relojDelNivel, relojTic, tiempoAgotado; v34), extensiones.css (v173), sw gya-cache-v753.
