@@ -33,7 +33,7 @@ const SopaFugaz=(()=>{
   let escaleras=new Set(),conDibujo=new Set(),todoDibujos=false,modo="clasica";
   let nivel=1,puntaje=0,tiempoMs=0,duracionMs=0,ultimaMarca=0,pistas=0,pistaTimer=null,pausado=false;
   let mudanzaMs=0,proximaMudanza=0,mudando=false,trasladoTimer=null;
-  let jugando=false,arrastre=null,camino=[],rastro=[],intervalo=null,token=0,ultimoTic=0,ocultoDesde=0,categoria="",duelo=false;
+  let jugando=false,arrastre=null,camino=[],rastro=[],intervalo=null,token=0,ultimoTic=0,ocultoDesde=0,categoria="",duelo=false,equipo=null;
   let audioMusica=null;
   function iniciarMusicaJuego(){
     try{
@@ -246,6 +246,14 @@ const SopaFugaz=(()=>{
       return;
     }
     ultimoGano=gano;
+    if(equipo){
+      const e=equipo,otro=(Duelo.rivalActual()||{}).nombre||"tu compañero";
+      mostrarPanel(gano?"¡La completaron juntos! 🤝":"Se acabó el tiempo",
+        (gano?"Encontraron las "+objetivos.length+" palabras.":"Les faltaron: "+faltantes.join(", ")+".")+" Vos: "+e.mias+" · "+otro+": "+(halladas.size-e.mias)+" · "+puntaje+" puntos en equipo.",
+        e.host?"Otra sopa juntos":"Esperando que "+otro+" arranque otra…",e.host?()=>{if(gano)nivel++;rondaEquipo();}:()=>{},true,{texto:"Salir del equipo",accion:salirEquipo},gano?"gano":"tiempo");
+      if(!e.host){const b=raiz.querySelector("#sfPanel .sf-principal");if(b)b.disabled=true;}
+      return;
+    }
     mostrarPanel(gano?"¡Sopa completa!":"Se acabó el tiempo",
       gano?"Llevás "+puntaje+" puntos. Te sobraron "+reloj(tiempoMs)+".":"Te faltaron: "+faltantes.join(", ")+". Hiciste "+puntaje+" puntos.",
       gano?"Siguiente nivel":"Jugar de nuevo",()=>{
@@ -265,7 +273,7 @@ const SopaFugaz=(()=>{
   function armar(c){objetivos=elegirPalabras(c,mascara);construir(c);objetivos=objetivos.filter(w=>ubicadas[w]);elegirDibujos(c);Vistas.marcar(VISTAS,objetivos);}
   function iniciarRonda(){
     if(window.Fichas&&!Fichas.usar("sopa-fugaz",iniciarRonda))return;
-    duelo=false;
+    duelo=false;equipo=null;
     const c=prepararRonda();armar(c);arrancarRonda(c);
   }
   function arrancarRonda(c){
@@ -410,7 +418,43 @@ const SopaFugaz=(()=>{
     logroDesbloquear("sopaPrimera");
     if(datos.palabrasTotal>=10)logroDesbloquear("sopaDiez");
     if(duelo)Duelo.enviarProgreso({halladas:halladas.size,total:objetivos.length});
+    if(equipo){equipo.mias++;Duelo.enviarProgreso({tipo:"sf-hallada",n:Date.now(),w:acierto,ind:seleccion});actualizarEquipo();}
     if(halladas.size===objetivos.length)terminar(true);
+  }
+  /* En equipo: la misma sopa para los dos; lo que encuentra uno se marca en los dos tableros. */
+  function actualizarEquipo(){if(equipo)Duelo.actualizarBadge("🤝 "+halladas.size+"/"+objetivos.length);}
+  function rondaEquipo(){
+    const c=prepararRonda();armar(c);
+    Duelo.enviarRonda({tipo:"sf-ronda",objetivos,categoria,nivel,tablero,ubicadas,forma:forma&&forma.id,escaleras:[...escaleras],dibujos:[...conDibujo],todoDibujos,puntaje});
+    equipo.mias=0;arrancarRonda(c);actualizarEquipo();
+  }
+  function recibirRondaEquipo(d){
+    if(!equipo||!d||d.tipo!=="sf-ronda")return;
+    nivel=d.nivel;puntaje=d.puntaje||0;const c=prepararRonda();objetivos=d.objetivos;categoria=d.categoria;
+    forma=SOPA_FORMAS.find(f=>f.id===d.forma)||null;mascara=forma?forma.mascara:mascaraCuadrada(c.n);tablero=d.tablero;ubicadas=d.ubicadas;
+    escaleras=new Set(d.escaleras||[]);conDibujo=new Set(d.dibujos||[]);todoDibujos=!!d.todoDibujos;
+    equipo.mias=0;arrancarRonda(c);actualizarEquipo();
+  }
+  function recibirHallada(p){
+    if(!equipo||!p||p.tipo!=="sf-hallada"||!jugando||halladas.has(p.w)||!objetivos.includes(p.w)||!Array.isArray(p.ind))return;
+    halladas.set(p.w,{ind:p.ind,otro:true});puntaje+=SOPA_CONFIG.puntosPalabra+(escaleras.has(p.w)?50:0);
+    dibujarLista();actualizarHUD();pintarCapsulas();estallido(p.ind);tac();actualizarEquipo();
+    typeof mostrarToast==="function"&&mostrarToast("🤝",((Duelo.rivalActual()||{}).nombre||"Tu compañero")+" encontró "+p.w);
+    if(halladas.size===objetivos.length)terminar(true);
+  }
+  function salirEquipo(){equipo=null;Duelo.salir();elegirModo();}
+  function iniciarEquipo(){
+    if(typeof Duelo==="undefined")return;
+    modo="clasica";
+    Duelo.mostrarLobby("Sopa Fugaz","sopa-colab",{titulo:"Jugar en equipo",sub:"Una sopa · Entre los dos",frase:"te invita a buscar palabras juntos en",
+      detalle:"Los dos buscan en <b>la misma sopa</b>, cada uno en su celular. Lo que encuentra uno <b>se marca en los dos tableros</b>. ¡Completenla antes de que se acabe el tiempo!",
+      onListo:soyHost=>{
+        duelo=false;modo="clasica";equipo={host:soyHost,mias:0};
+        Duelo.mostrarBadge();
+        Duelo.onProgresoRival(recibirHallada);
+        Duelo.onRivalSeFue(()=>{if(equipo){typeof mostrarToast==="function"&&mostrarToast("👋",((Duelo.rivalActual()||{}).nombre||"Tu compañero")+" salió del equipo");}});
+        if(soyHost)rondaEquipo();else Duelo.onRondaRecibida(recibirRondaEquipo);
+      }});
   }
   /* Pista: titila la primera letra de una palabra que falta. */
   function usarPista(){
@@ -421,6 +465,7 @@ const SopaFugaz=(()=>{
     clearTimeout(pistaTimer);pistaTimer=setTimeout(()=>{if(celdas[k])celdas[k].classList.remove("pista");},SOPA_CONFIG.pistaMs);
   }
   function pausar(){
+    if(equipo)return;
     if(!jugando||pausado)return;
     pausado=true;cancelarArrastre();raiz.querySelector("#sfTablero").classList.add("pausa");actualizarHUD();const desde=performance.now();
     mostrarPanel("Pausa","El reloj está parado y el tablero tapado.","Seguir",()=>{pausado=false;const ahora=performance.now();proximaMudanza+=ahora-desde;ultimoTic=ahora;raiz.querySelector("#sfTablero").classList.remove("pausa");raiz.querySelector("#sfPanel").hidden=true;actualizarHUD();},false,null,"reloj");
@@ -451,7 +496,8 @@ const SopaFugaz=(()=>{
   function elegirModo(){
     jugando=false;token++;clearTimeout(trasladoTimer);mudando=false;
     mostrarPanel("¿Cómo querés jugar?","🔎 Clásica: tablero gigante, formas, escaleritas y dibujos.\n🌀 Giratoria: las letras se mudan cada pocos segundos.","🔎 Sopa clásica",()=>jugarModo("clasica"),false,
-      [{texto:"🌀 Sopa giratoria",accion:()=>jugarModo("giratoria"),clase:"sf-modo-giro"},{texto:"Jugar con un amigo",accion:iniciarDuelo,dibujo:"duelo",clase:"sf-modo-amigo"}],"mascota");
+      [{texto:"🌀 Sopa giratoria",accion:()=>jugarModo("giratoria"),clase:"sf-modo-giro"},{texto:"🤝 Jugar en equipo",accion:iniciarEquipo,clase:"sf-modo-equipo"},{texto:"Jugar con un amigo",accion:iniciarDuelo,dibujo:"duelo",clase:"sf-modo-amigo"}],"mascota");
+    raiz.querySelector(".sf-modo-equipo")?.setAttribute("data-equipo","sopa-colab");
   }
   function abrir(contenedor){
     salir();datos=cargar();nivel=SOPA_CONFIG.primerNivel;puntaje=0;modo="clasica";raiz=document.createElement("div");raiz.className="sf-game";
@@ -488,8 +534,8 @@ const SopaFugaz=(()=>{
     document.removeEventListener("visibilitychange",alVolver);
     detenerMusicaJuego();
     if(typeof Duelo!=="undefined")Duelo.salir();
-    duelo=false;raiz=null;gridEl=null;listaEl=null;capsEl=null;celdas=[];intervalo=null;ocultoDesde=0;
+    duelo=false;equipo=null;raiz=null;gridEl=null;listaEl=null;capsEl=null;celdas=[];intervalo=null;ocultoDesde=0;
   }
-  return{abrir,salir,mejorPuntaje,configNivel};
+  return{abrir,salir,mejorPuntaje,configNivel,_ronda:()=>({objetivos,ubicadas,halladas:[...halladas.keys()],equipo})};
 })();
 window.SopaFugaz=SopaFugaz;

@@ -3,7 +3,7 @@
    Puntos = 100 por acierto + bonus por rapidez. Duelo 1 vs 1: mismas cartas, gana el que más acierta y más rápido. */
 (function(){
   const KEY="gya_linea_tiempo_record",KEY_NIVEL="gya_linea_tiempo_nivel",MAX_NIVEL=5,CARTAS_DUELO=7;
-  let raiz=null,estado=null,tema="mezcla",arrastre=null,reloj=null;
+  let raiz=null,estado=null,tema="mezcla",arrastre=null,reloj=null,equipo=null;
   const D=()=>window.LINEA_TIEMPO_DATOS.temas;
   const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const mezclar=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
@@ -33,18 +33,19 @@
   }
   function salir(){
     terminarArrastre();clearInterval(reloj);reloj=null;document.querySelectorAll(".pf-bienv,.lt-compartir-capa").forEach(x=>x.remove());
-    if(estado?.duelo&&typeof Duelo!=="undefined")Duelo.salir();
-    if(raiz){raiz.remove();raiz=null;}estado=null;
+    if((estado?.duelo||equipo)&&typeof Duelo!=="undefined")Duelo.salir();
+    if(raiz){raiz.remove();raiz=null;}estado=null;equipo=null;
   }
 
   function elegirTema(){
     clearInterval(reloj);reloj=null;estado=null;
     const opciones=[{id:"mezcla",nombre:"Mezcla",emoji:"🎲",n:D().reduce((a,t)=>a+t.hechos.length,0)}].concat(D().map(t=>({id:t.id,nombre:t.nombre,emoji:t.emoji,n:t.hechos.length})));
     raiz.innerHTML='<div class="lt-hud"><span>Nivel <b>'+nivelGuardado()+'</b></span><span>Récord <b>'+record()+'</b></span><button type="button" class="lt-ayuda" aria-label="Cómo se juega">❓</button></div>'+
-      '<button type="button" class="lt-duelo-btn">👥 Jugar con un amigo</button>'+
+      '<button type="button" class="lt-equipo-btn" data-equipo="linea-colab">🤝 Jugar en equipo</button><button type="button" class="lt-duelo-btn">👥 Jugar con un amigo</button>'+
       '<p class="lt-tema-titulo">Elegí un tema</p><div class="lt-temas">'+opciones.map(o=>'<button type="button" data-tema="'+o.id+'"><span>'+o.emoji+'</span><b>'+esc(o.nombre)+'</b><small>'+o.n+' hechos</small></button>').join("")+'</div>';
     raiz.querySelector(".lt-ayuda").onclick=como;
     raiz.querySelector(".lt-duelo-btn").onclick=iniciarDuelo;
+    raiz.querySelector(".lt-equipo-btn").onclick=iniciarEquipo;
     raiz.querySelectorAll("[data-tema]").forEach(b=>b.onclick=()=>{tema=b.dataset.tema;empezar();});
   }
 
@@ -53,41 +54,50 @@
     jugarNivel(nivelGuardado());
   }
   function jugarNivel(n){arrancar(elegir(hechos(),cartasNivel(n)),{nivel:n});}
-  function arrancar(cartas,{nivel=1,duelo=false}={}){
+  function arrancar(cartas,{nivel=1,duelo=false,enEquipo=false}={}){
     raiz?.querySelector(".lt-final")?.remove();
     const orden=cartas.slice().sort((a,b)=>a.anio-b.anio);
-    estado={nivel,duelo,cartas,orden,lugares:Array(cartas.length).fill(null),pila:mezclar(cartas),inicio:Date.now(),fin:0,resultado:null};
+    estado={nivel,duelo,equipo:enEquipo,cartas,orden,lugares:Array(cartas.length).fill(null),pila:mezclar(cartas),inicio:Date.now(),fin:0,resultado:null};
     clearInterval(reloj);reloj=setInterval(()=>{const t=raiz?.querySelector(".lt-reloj");if(t&&estado&&!estado.resultado)t.textContent=tiempo(segundos());},500);
     pintar();
   }
   const segundos=()=>Math.floor(((estado.fin||Date.now())-estado.inicio)/1000);
 
   /* --- Mover cartas: de la pila a un lugar, o de un lugar a otro (intercambian). --- */
-  function poner(origen,destino){
-    if(!estado||estado.resultado)return;
-    const L=estado.lugares;
-    if(origen==="pila"){const c=estado.pila.shift();if(!c)return;if(L[destino])estado.pila.unshift(L[destino]);L[destino]=c;}
-    else if(origen!==destino){[L[origen],L[destino]]=[L[destino],L[origen]];}
-    pintar();
+  function moverCarta(c,destino){
+    const L=estado.lugares,k=L.indexOf(c);
+    if(k===-1){const p=estado.pila.indexOf(c);if(p===-1)return;estado.pila.splice(p,1);if(L[destino])estado.pila.unshift(L[destino]);L[destino]=c;}
+    else if(k!==destino){[L[k],L[destino]]=[L[destino],L[k]];}
   }
-  function devolver(i){if(!estado||estado.resultado||!estado.lugares[i])return;estado.pila.unshift(estado.lugares[i]);estado.lugares[i]=null;pintar();}
+  function devolverCarta(c){const k=estado.lugares.indexOf(c);if(k===-1)return;estado.lugares[k]=null;estado.pila.unshift(c);}
+  function poner(origen,destino){
+    if(!estado||estado.resultado||!(destino>=0&&destino<estado.lugares.length))return;
+    const c=origen==="pila"?estado.pila[0]:estado.lugares[origen];if(!c)return;
+    moverCarta(c,destino);avisarEquipo({a:"poner",c:c.i,d:destino});pintar();
+  }
+  function devolver(i){const c=estado?.lugares[i];if(!c||estado.resultado)return;devolverCarta(c);avisarEquipo({a:"devolver",c:c.i});pintar();}
 
   function comprobar(){
     if(!estado||estado.resultado||estado.pila.length)return;
-    estado.fin=Date.now();clearInterval(reloj);reloj=null;
+    if(estado.equipo&&!equipo?.host){avisarEquipo({a:"listo"});const b=raiz?.querySelector(".lt-listo");if(b){b.disabled=true;b.textContent="Comprobando…";}return;}
+    estado.fin=Date.now();calcular();
+    if(estado.duelo){try{Duelo.enviarProgreso({puntos:estado.resultado.puntos,aciertos:estado.resultado.aciertos,s:estado.resultado.s});}catch(e){}}
+    else if(estado.equipo)avisarEquipo();
+    else{const r=estado.resultado;if(r.puntos>record())guardarNum(KEY,r.puntos);if(r.todo&&estado.nivel<MAX_NIVEL&&estado.nivel>=nivelGuardado())guardarNum(KEY_NIVEL,estado.nivel+1);}
+    pintar();
+  }
+  function calcular(){
+    clearInterval(reloj);reloj=null;
     const bien=estado.lugares.map((c,i)=>c.anio===estado.orden[i].anio);
     const aciertos=bien.filter(Boolean).length,s=segundos(),n=estado.lugares.length;
     const bonus=Math.max(0,Math.round((n*15-s)*2));
     const puntos=aciertos*100+(aciertos?bonus:0);
     estado.resultado={bien,aciertos,s,puntos,bonus,todo:aciertos===n};
-    if(estado.duelo){try{Duelo.enviarProgreso({puntos,aciertos,s});}catch(e){}}
-    else{if(puntos>record())guardarNum(KEY,puntos);if(estado.resultado.todo&&estado.nivel<MAX_NIVEL&&estado.nivel>=nivelGuardado())guardarNum(KEY_NIVEL,estado.nivel+1);}
-    pintar();
   }
 
   function cartaHtml(h,{anio=false,clase=""}={}){return '<div class="lt-carta '+clase+'"><span class="lt-e">'+h.emoji+'</span><span class="lt-t">'+esc(h.titulo)+'<small>'+esc(h.detalle)+'</small></span>'+(anio?'<span class="lt-a">'+h.anio+'</span>':'')+'</div>';}
   function pintar(){
-    const e=estado,r=e.resultado,t=e.duelo?{nombre:"Duelo",emoji:"👥"}:temaInfo(),n=e.lugares.length;
+    const e=estado,r=e.resultado,t=e.duelo?{nombre:"Duelo",emoji:"👥"}:e.equipo?{nombre:"En equipo",emoji:"🤝"}:temaInfo(),n=e.lugares.length;
     const puestas=e.lugares.filter(Boolean).length;
     let slots='<div class="lt-borde">⬆ MÁS ANTIGUO</div>';
     e.lugares.forEach((c,i)=>{
@@ -95,12 +105,13 @@
         :'<button type="button" class="lt-slot lt-hueco" data-i="'+i+'">¿va acá?</button>';
     });
     slots+='<div class="lt-borde">⬇ MÁS NUEVO</div>';
-    const cab='<div class="lt-hud"><span>'+(e.duelo?"Duelo":"Nivel <b>"+e.nivel+"</b>")+'</span><span>⏱ <b class="lt-reloj">'+tiempo(segundos())+'</b></span><span>'+(r?"Bien <b>"+r.aciertos+"/"+n+"</b>":"Puestas <b>"+puestas+"/"+n+"</b>")+'</span><button type="button" class="lt-ayuda" aria-label="Cómo se juega">❓</button></div>'+
+    const cab='<div class="lt-hud"><span>'+(e.duelo?"Duelo":e.equipo?"🤝 <b>Equipo</b>":"Nivel <b>"+e.nivel+"</b>")+'</span><span>⏱ <b class="lt-reloj">'+tiempo(segundos())+'</b></span><span>'+(r?"Bien <b>"+r.aciertos+"/"+n+"</b>":"Puestas <b>"+puestas+"/"+n+"</b>")+'</span><button type="button" class="lt-ayuda" aria-label="Cómo se juega">❓</button></div>'+
       '<div class="lt-tema">'+t.emoji+" "+esc(t.nombre).toUpperCase()+" · "+n+" ACONTECIMIENTOS</div>";
     let pie;
     if(r){
-      const sig=e.duelo?"":r.todo&&e.nivel<MAX_NIVEL?'<button type="button" class="lt-siguiente" data-acc="sig">Nivel '+(e.nivel+1)+' ➜</button>':'<button type="button" class="lt-siguiente" data-acc="otra">'+(r.todo?"Jugar otra":"Probar de nuevo")+' ➜</button>';
-      pie='<div class="lt-cartel '+(r.todo?"":"lt-cartel-mal")+'" role="status"><b>'+(r.todo?"¡PERFECTA!":r.aciertos+" de "+n)+'</b><span>'+r.puntos+' pts · '+tiempo(r.s)+'</span></div>'+sig+'<button type="button" class="lt-compartir" data-acc="compartir">📲 Compartir mi línea</button>'+(e.duelo?"":'<button type="button" class="lt-temas-btn" data-acc="temas">Elegir tema</button>');
+      const otro=esc((typeof Duelo!=="undefined"&&Duelo.rivalActual()||{}).nombre||"tu compañero");
+      const sig=e.equipo?(equipo?.host?'<button type="button" class="lt-siguiente" data-acc="eq-otra">Otra línea juntos ➜</button>':'<button type="button" class="lt-siguiente" disabled>Esperá a que '+otro+' arranque otra…</button>'):e.duelo?"":r.todo&&e.nivel<MAX_NIVEL?'<button type="button" class="lt-siguiente" data-acc="sig">Nivel '+(e.nivel+1)+' ➜</button>':'<button type="button" class="lt-siguiente" data-acc="otra">'+(r.todo?"Jugar otra":"Probar de nuevo")+' ➜</button>';
+      pie='<div class="lt-cartel '+(r.todo?"":"lt-cartel-mal")+'" role="status"><b>'+(r.todo?"¡PERFECTA!":r.aciertos+" de "+n)+'</b><span>'+r.puntos+' pts · '+tiempo(r.s)+'</span></div>'+sig+'<button type="button" class="lt-compartir" data-acc="compartir">📲 Compartir mi línea</button>'+(e.equipo?'<button type="button" class="lt-temas-btn" data-acc="eq-salir">Salir del equipo</button>':e.duelo?"":'<button type="button" class="lt-temas-btn" data-acc="temas">Elegir tema</button>');
     }else if(e.pila.length){
       pie='<div class="lt-pila"><div class="lt-nueva" aria-label="Acontecimiento para ubicar: arrastralo a un ¿va acá?">'+cartaHtml(e.pila[0])+'</div><span class="lt-quedan">'+(e.pila.length>1?"+"+(e.pila.length-1):"última")+'</span></div><p class="lt-ayuda-txt">Arrastrá cada acontecimiento a su lugar</p>';
     }else pie='<button type="button" class="lt-siguiente lt-listo" data-acc="listo">¡Listo! Ver cómo me fue</button><p class="lt-ayuda-txt">Podés mover las cartas antes de confirmar</p>';
@@ -110,7 +121,9 @@
     raiz.querySelectorAll(".lt-lleno").forEach(s=>{if(!r)s.querySelector(".lt-carta").addEventListener("pointerdown",ev=>empezarArrastre(ev,Number(s.dataset.i)));});
     const nueva=raiz.querySelector(".lt-nueva");if(nueva)nueva.addEventListener("pointerdown",ev=>empezarArrastre(ev,"pila"));
     raiz.querySelectorAll("[data-acc]").forEach(b=>b.onclick=()=>{const a=b.dataset.acc;
-      if(a==="compartir")popupCompartir();else if(a==="listo")comprobar();else if(a==="sig")jugarNivel(e.nivel+1);else if(a==="otra")jugarNivel(e.nivel);else if(a==="temas")elegirTema();});
+      if(a==="compartir")popupCompartir();else if(a==="listo")comprobar();else if(a==="sig")jugarNivel(e.nivel+1);else if(a==="otra")jugarNivel(e.nivel);else if(a==="temas")elegirTema();else if(a==="eq-otra")rondaEquipo();else if(a==="eq-salir")salirEquipo();});
+    if(e.eco!=null){raiz.querySelector('.lt-slot[data-i="'+e.eco+'"]')?.classList.add("lt-eco");e.eco=null;}
+    if(e.equipo&&typeof Duelo!=="undefined")Duelo.actualizarBadge(r?"🤝 "+r.aciertos+"/"+n+" bien":"🤝 "+puestas+"/"+n+" puestas");
     if(r&&e.duelo&&!e.finEnviado){e.finEnviado=true;setTimeout(()=>{if(estado===e&&raiz)finDuelo();},1400);}
   }
 
@@ -128,7 +141,7 @@
     g.fillStyle="#37D6C0";g.font='800 40px "Archivo Black",sans-serif';
     g.fillText(r.todo?"¡LÍNEA PERFECTA!":r.aciertos+" DE "+n+" BIEN UBICADAS",W/2,350);
     g.fillStyle="#F6EFE2";g.font="600 30px Outfit,sans-serif";
-    g.fillText((e.duelo?"Duelo":"Nivel "+e.nivel)+" · "+r.puntos+" puntos · ⏱ "+tiempo(r.s),W/2,402);
+    g.fillText((e.duelo?"Duelo":e.equipo?"En equipo":"Nivel "+e.nivel)+" · "+r.puntos+" puntos · ⏱ "+tiempo(r.s),W/2,402);
     const top=450,bottom=H-180,y0b=top+28,paso=Math.min(100,(bottom-y0b-40)/n),alto=paso,gap=Math.round(paso*.16),xL=150,x0=190,x1=W-90;
     g.fillStyle="#F5B301";g.font='800 22px "Archivo Black",sans-serif';g.textAlign="left";g.fillText("⬆ MÁS ANTIGUO",x0,top);
     const y0=top+28;g.fillStyle="#F5B301";g.fillRect(xL-4,y0-6,8,n*paso+6);
@@ -200,6 +213,7 @@
     const a=arrastre;if(!a)return;arrastre=null;clearInterval(a.timer);
     a.fantasma.remove();a.el.classList.remove("lt-levantada");a.lugar?.classList.remove("lt-hueco-on");
     a.el.removeEventListener("pointermove",moverArrastre);a.el.removeEventListener("pointerup",soltarArrastre);a.el.removeEventListener("pointercancel",terminarArrastre);
+    if(equipo?.pendientes?.length){const l=equipo.pendientes;equipo.pendientes=[];setTimeout(()=>l.forEach(recibirEquipo),0);}
   }
 
   /* --- Duelo 1 vs 1: el anfitrión elige las cartas y las manda; los dos arman la misma línea. --- */
@@ -217,6 +231,69 @@
   function finDuelo(){
     const r=estado.resultado;Duelo.enviarFinal({valor:r.puntos});
     Duelo.mostrarResultado({valor:r.puntos},{etiqueta:"puntos: 100 por acierto + bonus por rapidez",onVolver:()=>{if(raiz)elegirTema();}});
+  }
+  /* --- En equipo: una sola línea para los dos. El anfitrión manda; cada movimiento del compañero
+     le llega (por id de carta) y él reparte la línea completa, así los dos ven siempre lo mismo. --- */
+  function avisarEquipo(m){
+    if(!estado?.equipo||!equipo||typeof Duelo==="undefined")return;
+    try{
+      if(!equipo.host){if(m)Duelo.enviarProgreso({tipo:"lt-acc",n:++equipo.n,r:equipo.r,...m});return;}
+      Duelo.enviarProgreso(fotoEquipo(m?.a==="poner"?m.d:null));
+    }catch(e){}
+  }
+  function fotoEquipo(eco=null){
+    const e=estado,id=c=>c?c.i:null;
+    return{tipo:"lt-estado",r:equipo.r,n:++equipo.n,ids:e.cartas.map(id),lugares:e.lugares.map(id),pila:e.pila.map(id),s:Math.max(0,((e.fin||Date.now())-e.inicio)/1000),listo:!!e.resultado,eco};
+  }
+  function rondaEquipo(){
+    if(!equipo?.host||!raiz)return;
+    const lista=todos().map((h,i)=>({...h,i}));
+    equipo.r++;equipo.n=0;
+    arrancar(elegir(lista,CARTAS_DUELO),{enEquipo:true});
+    try{Duelo.enviarRonda(fotoEquipo());}catch(e){}
+  }
+  function recibirEquipo(m){
+    if(!equipo||!raiz||!m)return;
+    if(arrastre){(equipo.pendientes||(equipo.pendientes=[])).push(m);return;}
+    const linea=raiz.querySelector(".lt-linea"),scroll=linea?linea.scrollTop:0;
+    if(equipo.host){
+      if(m.tipo!=="lt-acc"||m.r!==equipo.r||!estado?.equipo||estado.resultado||!(m.n>equipo.vistoN))return;
+      equipo.vistoN=m.n;
+      const c=estado.cartas.find(x=>x.i===m.c);
+      if(m.a==="poner"&&c&&Number.isInteger(m.d)&&m.d>=0&&m.d<estado.lugares.length){moverCarta(c,m.d);estado.eco=m.d;}
+      else if(m.a==="devolver"&&c)devolverCarta(c);
+      else if(m.a==="listo"){comprobar();if(!estado.resultado){avisarEquipo();pintar();}return;}
+      else return;
+      avisarEquipo();pintar();
+    }else{
+      if(m.tipo!=="lt-estado"||!Array.isArray(m.ids)||!Array.isArray(m.lugares)||!Array.isArray(m.pila))return;
+      if(m.r<equipo.r||(m.r===equipo.r&&!(m.n>equipo.vistoN)))return;
+      const lista=todos();if(!m.ids.every(i=>Number.isInteger(i)&&i>=0&&i<lista.length))return;
+      if(m.r!==equipo.r||!estado?.equipo){document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());equipo.r=m.r;arrancar(m.ids.map(i=>({...lista[i],i})),{enEquipo:true});}
+      equipo.vistoN=m.n;
+      const porId=i=>i==null?null:estado.cartas.find(x=>x.i===i)||null;
+      estado.lugares=m.lugares.map(porId);estado.pila=m.pila.map(porId).filter(Boolean);
+      estado.inicio=Date.now()-(Number(m.s)||0)*1000;
+      if(Number.isInteger(m.eco))estado.eco=m.eco;
+      if(m.listo&&!estado.resultado&&!estado.pila.length&&estado.lugares.every(Boolean)){estado.fin=Date.now();calcular();}
+      pintar();
+    }
+    const l2=raiz?.querySelector(".lt-linea");if(l2)l2.scrollTop=scroll;
+  }
+  function salirEquipo(){equipo=null;estado=null;try{Duelo.salir();}catch(e){}if(raiz)elegirTema();}
+  function iniciarEquipo(){
+    if(typeof Duelo==="undefined")return;
+    Duelo.mostrarLobby("Línea del tiempo","linea-colab",{titulo:"Jugar en equipo",sub:"Una línea · Entre los dos",frase:"te invita a armar juntos",
+      detalle:"Arman <b>la misma línea entre los dos</b>, cada uno en su celular. Lo que mueve uno <b>se ve al instante en el otro</b>. ¡Pónganse de acuerdo!",
+      onListo:soyHost=>{
+        if(!raiz)return;
+        document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());
+        equipo={host:soyHost,r:0,n:0,vistoN:0,pendientes:[]};
+        Duelo.mostrarBadge();Duelo.actualizarBadge("🤝 juntos");
+        Duelo.onProgresoRival(recibirEquipo);
+        Duelo.onRivalSeFue(()=>{if(equipo&&typeof mostrarToast==="function")mostrarToast("👋",((Duelo.rivalActual()||{}).nombre||"Tu compañero")+" salió del equipo");});
+        if(soyHost)rondaEquipo();else Duelo.onRondaRecibida(recibirEquipo);
+      }});
   }
   window.LineaTiempo={abrir,salir,record,_estado:()=>estado};
 })();
