@@ -267,7 +267,16 @@ window.PalabrasCruzadas=(()=>{
     if(window.CompartirResultado&&!d.querySelector(".cr-boton")){const ref=d.querySelector("#pcRevisar");ref.before(CompartirResultado.boton(()=>({juego:"Palabras Cruzadas",logo:"assets/palabras-cruzadas/logo-v2.webp",archivo:"palabras-cruzadas",
       titulo:"¡CRUCIGRAMA COMPLETO!",sub:"«"+crucigrama.titulo+"»",
       cifras:[["📝",palabras.length,"palabras"],["💡",datos.ayudas.length,datos.ayudas.length===1?"ayuda":"ayudas"],["🏆",(datos.resueltos||[]).length||1,"resueltos"]],
-      captura:{el:raiz.querySelector(".pc-grilla")},anchoTablero:640,ladoTitulo:"Las palabras",lado:palabras.map(p=>({texto:p.numero+" · "+p.respuesta,estado:"ok"})),
+      captura:{el:raiz.querySelector(".pc-grilla"),preparar:(doc,g)=>{
+        /* Crucigrama armado y completo (aunque en el juego se esté viendo de cerca): todas las casillas con su letra. */
+        const cs=[...celdas.values()],f0=Math.min(...cs.map(x=>x.fila)),c0=Math.min(...cs.map(x=>x.columna)),nf=Math.max(...cs.map(x=>x.fila))-f0+1,nc=Math.max(...cs.map(x=>x.columna))-c0+1;
+        g.style.setProperty("--pc-cols",nc);g.style.setProperty("--pc-filas",nf);g.replaceChildren();
+        for(let f=f0;f<f0+nf;f++)for(let c=c0;c<c0+nc;c++){const k=clave(f,c),celda=celdas.get(k);
+          if(!celda){const ne=doc.createElement("span");ne.className="pc-negra";g.appendChild(ne);continue;}
+          const b=doc.createElement("button");b.className="pc-celda "+(datos.ayudas.includes(k)?"pc-revelada":"pc-correcta");
+          const ini=palabras.find(p=>p.casillas[0]===k);if(ini){const n=doc.createElement("small");n.textContent=ini.numero;b.appendChild(n);}
+          const l=doc.createElement("span");l.textContent=celda.letra;b.appendChild(l);g.appendChild(b);}
+      }},anchoTablero:640,ladoTitulo:"Las palabras",lado:palabras.length>16?[]:palabras.slice().sort((a,b)=>a.numero-b.numero||(a.direccion<b.direccion?-1:1)).map(p=>({texto:p.numero+(p.direccion==="V"?"↓ ":"→ ")+p.respuesta,estado:"ok"})),
       grilla:{celdas:[...celdas.entries()].map(([k,c])=>({f:c.fila,c:c.columna,letra:c.letra,estado:datos.ayudas.includes(k)?"ayuda":"ok"}))},
       texto:"✏️ Palabras Cruzadas · resolví «"+crucigrama.titulo+"» ("+palabras.length+" palabras"+(datos.ayudas.length?", "+datos.ayudas.length+" ayudas":", sin ayudas")+")."}),"pc-compartir"));}
     if(!d.open)d.showModal();

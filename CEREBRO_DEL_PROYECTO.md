@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — Palabras Cruzadas: el crucigrama sale armado en la foto de compartir
+- Qué: Gonzalo pidió que el crucigrama salga armado. En la copia que se fotografía se rearma la grilla completa (aunque en el juego se esté viendo de cerca) con todas las letras en verde, las ayudas en dorado y los números. Al costado, las palabras ordenadas por número con → / ↓; si el crucigrama tiene más de 16 palabras se saca la lista y la grilla ocupa todo el ancho. Probado resolviendo pc-1 (chico) y pc-10 (grande).
+- Dónde: palabras-cruzadas.js (v14), sw gya-cache-v736.
+
 ### 06/11/2026 — Sopa Fugaz: palabras pintadas en la foto de compartir
 - Qué: Gonzalo pidió que en la foto las palabras salgan pintadas. En la copia que se fotografía se esconden los trazos SVG y se pintan las casillas: cada palabra encontrada con su color del juego y las que faltaron en bordó (#842541, igual que en la lista), así se ve dónde estaban. Nueva opción captura.preparar(doc,clon) en compartir-resultado.js.
 - Dónde: sopa-fugaz.js, compartir-resultado.js, sw gya-cache-v735.
