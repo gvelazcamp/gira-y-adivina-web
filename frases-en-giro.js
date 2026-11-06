@@ -181,6 +181,7 @@ const FrasesEnGiro=(()=>{
     if(window.CompartirResultado){const nv=gano?nivel-1:nivel,palabras=frase.texto.split(" ");raiz.querySelector("#fgPanel .fg-panel-acciones")?.appendChild(CompartirResultado.boton(()=>({juego:"Frases en Giro",logo:ARTE("logo"),archivo:"frases-en-giro",
       titulo:gano?"¡FRASE ARMADA!":"ESTA SE ME ESCAPÓ",sub:"Nivel "+nv+" · "+puntos+" puntos"+(racha>1?" · racha x"+racha:""),
       cifras:[["⭐",puntos,"puntos"],["🔥",racha,"racha"],["🏆",datos.mejor,"mejor"]],
+      captura:[{el:"#fgEspacios",factor:1.6,estilo:"#fgEspacios,#fgEspacios *{opacity:1!important;filter:none!important}"},{el:"#fgBanco",estilo:"#fgBanco,#fgBanco *{opacity:1!important;filter:none!important}"}],
       filas:[{emoji:gano?"✅":"❌",texto:"“"+frase.texto+"”",estado:gano?"ok":"mal"}].concat(gano?[]:[{emoji:"💬",texto:palabras.length+" palabras para ordenar",estado:""}]),
       texto:"🌀 Frases en Giro · nivel "+nv+" · "+puntos+" puntos."})));}
   }

@@ -151,6 +151,7 @@ window.AhoraCaigo=(()=>{
         const elim=10-vivos.size,res={titulo,resumen,tipo,respuesta};bc.onclick=ev=>{ev.stopPropagation();CompartirResultado.abrir({juego:"No te caigas",logo:"assets/no-te-caigas/logo-v3.webp",archivo:"no-te-caigas",
           titulo:res.tipo==="derrota"?"¡ME CAÍ!":elim>=10?"¡ELIMINÉ A LOS 10!":String(res.titulo||"").toUpperCase(),sub:res.resumen,
           cifras:[["🕳️",elim+"/10","rivales eliminados"],["🔁",pases,pases===1?"pase":"pases"],["🧍",vivos.size,"quedan"]],
+          captura:{el:final.querySelector(".ac-final-escena")},
           filas:res.respuesta?[{emoji:"💬",texto:"La respuesta era: "+res.respuesta,estado:res.tipo==="derrota"?"mal":"ok"}]:[],
           texto:"🕳️ No te caigas · "+elim+" de 10 rivales eliminados."});};}
       ajustarPantalla();if(!final.open)final.showModal();ambiente(true);

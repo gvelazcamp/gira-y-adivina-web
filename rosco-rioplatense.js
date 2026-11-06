@@ -677,6 +677,8 @@ const RoscoRioplatense=(()=>{
     CompartirResultado.abrir({juego:"El Rosco",logo:ARTE("logo"),archivo:"el-rosco",
       titulo:faltan?"¡VUELTA AL ROSCO!":errores?"¡ROSCO COMPLETO!":"¡ROSCO PERFECTO!",sub:"Nivel "+nivel+" · "+items.length+" letras",
       cifras:[["✅",aciertos,"aciertos"],["❌",errores,"errores"],["⏳",faltan,"sin responder"]],
+      captura:{el:raiz.querySelector(".rr-rueda")},anchoTablero:540,ladoTitulo:"Las palabras",
+      lado:items.map((d,i)=>({texto:d.letra+" · "+String(d.palabra||"").toUpperCase(),estado:estados[i]==="acierto"?"ok":estados[i]==="error"?"mal":""})),
       circulo:items.map((d,i)=>({t:d.letra,estado:estados[i]==="acierto"?"ok":estados[i]==="error"?"mal":""})),centro:[puntos,"PUNTOS"],
       reto:"¿Te animás a completar la vuelta?",texto:"🎡 El Rosco · nivel "+nivel+" · "+puntos+" puntos · ✓ "+aciertos+" ✕ "+errores+"."});
   }

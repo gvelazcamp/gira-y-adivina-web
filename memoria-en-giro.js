@@ -148,6 +148,7 @@ const MemoriaEnGiro=(()=>{
     if(window.CompartirResultado){const nv=gano?nivel-1:nivel,vistos=new Map();cartas.forEach(c=>{if(!vistos.has(c.par))vistos.set(c.par,c);});raiz.querySelector("#mgPanel .mg-panel")?.appendChild(CompartirResultado.boton(()=>({juego:"Memoria en Giro",logo:ARTE("logo"),archivo:"memoria-en-giro",
       titulo:gano?"¡TODOS LOS PARES!":pares+" DE "+config.pares+" PARES",sub:"Nivel "+nv+" · "+(gano?puntos+" puntos":"se terminó el tiempo"),
       cifras:[["🃏",pares+"/"+config.pares,"pares"],["⭐",gano?puntos:datos.mejor,gano?"puntos":"mejor"],["⏱",Math.ceil(Math.max(0,tiempoMs)/1000)+"s",gano?"me sobró":"tiempo"]],
+      captura:{el:"#mgTablero"},
       filas:[...vistos.values()].map(c=>({emoji:c.simbolo,texto:c.encontrada?"Par encontrado":"Me faltó este par",estado:c.encontrada?"ok":"mal"})),
       texto:"🃏 Memoria en Giro · nivel "+nv+" · "+pares+"/"+config.pares+" pares."})));}
   }
