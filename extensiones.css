@@ -1362,3 +1362,8 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .ext-cta-equipo{margin-top:10px;background:linear-gradient(#4fe3cf,#1fa891)!important;box-shadow:0 5px 0 #0f6b5c!important;color:#10302b!important}
 .ext-cta-equipo .cta-txt small{color:#10302bcc!important}
 .ext-cta-equipo .cta-play{background:#ffffff55!important}
+/* Salas guardadas y aviso de compañero desconectado (06/11/2026) */
+.dl-fijas button small{opacity:.6;margin-left:6px;font-size:.72em}
+.dl-badge.dl-off{opacity:.8;border-color:#ff5c7a}
+.dl-badge.dl-off::after{content:"🔴 Sin conexión";position:absolute;top:100%;right:8px;margin-top:4px;font:800 .7rem Outfit,system-ui,sans-serif;background:#842541;color:#fff;padding:2px 8px;border-radius:99px;white-space:nowrap}
+#dlAvisar{margin-top:10px}

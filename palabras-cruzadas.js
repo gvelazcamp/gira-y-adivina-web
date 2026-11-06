@@ -23,23 +23,53 @@ window.PalabrasCruzadas=(()=>{
     for(const k of new Set([...Object.keys(ant.letras),...Object.keys(datos.letras)]))if((ant.letras[k]||"")!==(datos.letras[k]||""))cambios[k]=datos.letras[k]||"";
     const ay=datos.ayudas.filter(k=>!ant.ayudas.includes(k)),rv=datos.revisadas.filter(k=>!ant.revisadas.includes(k));
     equipo.visto=foto();
-    if(Object.keys(cambios).length||ay.length||rv.length)Duelo.enviarProgreso({tipo:"pc-cambios",n:++equipo.n,id:datos.actual,cambios,ayudas:ay,revisadas:rv});
+    const t={};for(const k of Object.keys(cambios)){equipo.ts[k]=++equipo.reloj;t[k]=equipo.ts[k];}
+    if(Object.keys(cambios).length||ay.length||rv.length)Duelo.enviarProgreso({tipo:"pc-cambios",n:++equipo.n,id:datos.actual,cambios,t,ayudas:ay,revisadas:rv});
   }
   function recibirCambios(p){
-    if(!equipo||!raiz||!p||p.tipo!=="pc-cambios"||p.id!==datos.actual)return;
+    if(!equipo||!raiz||!p)return;
+    if(p.tipo==="pc-sync"){recibirSync(p);return;}
+    if(p.tipo!=="pc-cambios"||p.id!==datos.actual)return;
     equipo.aplicando=true;
-    for(const [k,l] of Object.entries(p.cambios||{})){if(!celdas.has(k)||datos.ayudas.includes(k))continue;if(l&&/^[A-ZÑ]$/.test(l))datos.letras[k]=l;else delete datos.letras[k];}
+    for(const [k,l] of Object.entries(p.cambios||{})){if(!celdas.has(k)||datos.ayudas.includes(k))continue;
+      const rt=Number(p.t&&p.t[k])||0;if(rt&&!gana(rt,k))continue;if(rt){equipo.ts[k]=rt;equipo.reloj=Math.max(equipo.reloj,rt);}
+      if(l&&/^[A-ZÑ]$/.test(l))datos.letras[k]=l;else delete datos.letras[k];}
     for(const k of p.ayudas||[])if(celdas.has(k)&&!datos.ayudas.includes(k)){datos.ayudas.push(k);datos.letras[k]=celdas.get(k).letra;}
     for(const k of p.revisadas||[])if(celdas.has(k)&&!datos.revisadas.includes(k))datos.revisadas.push(k);
     equipo.visto=foto();equipo.aplicando=false;
     if(equipo.host)try{localStorage.setItem(CLAVE,JSON.stringify(datos));}catch(e){}
     pintar();if(terminado())verificarFinal();
   }
-  function enviarInicio(){Duelo.enviarRonda({tipo:"pc-inicio",id:datos.actual,...foto()});equipo.visto=foto();}
+  /* Cada casilla lleva un número de versión (reloj de Lamport): gana el cambio más nuevo y,
+     si empatan, el del anfitrión. Cada 4 s los dos mandan el crucigrama entero, así lo que se
+     perdió por mala señal se recupera solo; si el invitado quedó en otro crucigrama, se pasa al del anfitrión. */
+  const gana=(rt,k)=>{const lt=equipo.ts[k]||0;return rt>lt||(rt===lt&&!equipo.host);};
+  function sincronizar(){if(!equipo||!raiz)return;try{Duelo.enviarProgreso({tipo:"pc-sync",h:equipo.host?1:0,id:datos.actual,letras:datos.letras,ts:equipo.ts,ayudas:datos.ayudas,revisadas:datos.revisadas});}catch(e){}}
+  function recibirSync(p){
+    if(p.id!==datos.actual){if(!equipo.host&&p.h&&banco().some(c=>c.id===p.id)){recibirInicio({tipo:"pc-inicio",id:p.id,letras:p.letras,ayudas:p.ayudas,revisadas:p.revisadas});equipo.ts={...(p.ts||{})};equipo.reloj=Math.max(equipo.reloj,...Object.values(equipo.ts).map(Number).filter(Number.isFinite),0);}return;}
+    let cambio=false;equipo.aplicando=true;
+    const L=p.letras||{},T=p.ts||{};
+    for(const k of new Set([...Object.keys(L),...Object.keys(T)])){
+      if(!celdas.has(k)||datos.ayudas.includes(k))continue;
+      const rt=Number(T[k])||0,remota=/^[A-ZÑ]$/.test(L[k]||"")?L[k]:"",local=datos.letras[k]||"";
+      if(remota===local)continue;
+      if(rt===0&&(equipo.ts[k]||0)===0){if(!(p.h&&!equipo.host))continue;}
+      else if(!gana(rt,k))continue;
+      if(rt){equipo.ts[k]=rt;equipo.reloj=Math.max(equipo.reloj,rt);}
+      if(remota)datos.letras[k]=remota;else delete datos.letras[k];cambio=true;
+    }
+    for(const k of p.ayudas||[])if(celdas.has(k)&&!datos.ayudas.includes(k)){datos.ayudas.push(k);datos.letras[k]=celdas.get(k).letra;cambio=true;}
+    for(const k of p.revisadas||[])if(celdas.has(k)&&!datos.revisadas.includes(k)){datos.revisadas.push(k);cambio=true;}
+    equipo.visto=foto();equipo.aplicando=false;
+    if(!cambio)return;
+    if(equipo.host)try{localStorage.setItem(CLAVE,JSON.stringify(datos));}catch(e){}
+    pintar();if(terminado())verificarFinal();
+  }
+  function enviarInicio(){equipo.ts={};Duelo.enviarRonda({tipo:"pc-inicio",id:datos.actual,...foto()});equipo.visto=foto();}
   function recibirInicio(d){
     if(!equipo||!raiz||!d||d.tipo!=="pc-inicio"||!banco().some(c=>c.id===d.id))return;
     raiz.querySelector("#pcFinal")?.close();
-    datos.actual=d.id;datos.letras=d.letras||{};datos.ayudas=d.ayudas||[];datos.revisadas=d.revisadas||[];datos.seleccion=0;
+    datos.actual=d.id;datos.letras=d.letras||{};datos.ayudas=d.ayudas||[];datos.revisadas=d.revisadas||[];datos.seleccion=0;equipo.ts={};
     equipo.aplicando=true;preparar();equipo.visto=foto();equipo.aplicando=false;pintar();pintarEquipo();
   }
   function pintarEquipo(){
@@ -53,7 +83,7 @@ window.PalabrasCruzadas=(()=>{
     Duelo.mostrarLobby("Palabras Cruzadas","cruzadas-colab",{titulo:"Jugar en equipo",sub:"Un crucigrama · Entre los dos",frase:"te invita a completar un crucigrama juntos en",
       detalle:"Creá una sala para completar <b>tu crucigrama</b> entre dos, o unite al de otra persona. Cada letra que pone uno <b>aparece en el otro celular</b>.",
       onListo:soyHost=>{
-        if(!raiz)return;document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());raiz.querySelector("#pcAyuda")?.close?.();equipo={host:soyHost,respaldo,visto:foto(),aplicando:false,n:0};
+        if(!raiz)return;document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());raiz.querySelector("#pcAyuda")?.close?.();if(equipo)clearInterval(equipo.sync);equipo={host:soyHost,respaldo,visto:foto(),aplicando:false,n:0,ts:{},reloj:0};equipo.sync=setInterval(sincronizar,4000);
         Duelo.mostrarBadge();Duelo.onProgresoRival(recibirCambios);
         Duelo.onRivalSeFue(()=>{mensajeActual=(((Duelo.rivalActual()||{}).nombre)||"Tu compañero")+" salió del equipo.";pintar();});
         if(soyHost)enviarInicio();else Duelo.onRondaRecibida(recibirInicio);
@@ -61,7 +91,7 @@ window.PalabrasCruzadas=(()=>{
       }});
   }
   function salirEquipo(){
-    const e=equipo;equipo=null;try{Duelo.salir();}catch(err){}
+    const e=equipo;if(e)clearInterval(e.sync);equipo=null;try{Duelo.salir();}catch(err){}
     if(e&&!e.host){datos=cargar();if(e.respaldo!=null)try{localStorage.setItem(CLAVE,e.respaldo);}catch(err){}datos=cargar();preparar();}
     if(raiz){raiz.querySelectorAll("#pcSiguiente,#pcSiguienteFinal").forEach(x=>{x.disabled=false;x.textContent="Siguiente crucigrama";});pintar();pintarEquipo();}
   }

@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — Salas guardadas por juego + juegos en equipo que se recuperan solos
+- Qué: (1) Gonzalo pidió que si Juan lo invita a Sopa Fugaz les quede esa sala. Ahora cada juego con sala (duelos 1 vs 1 y "en equipo") guarda en gya_salas_duelo hasta 4 salas por juego: código, con quién y el rol. En el lobby aparece "TUS SALAS · 🔁 Con Juan": el que la creó la reabre como anfitrión; el invitado entra como invitado y tiene "📲 Avisarle por WhatsApp" (link con &anfitrion=1, que abre la sala como anfitrión). Palabra Secreta colaborativa sigue con sus salas fijas propias. (2) Auditoría: si un celular se quedaba sin señal unos segundos se perdían mensajes (MQTT QoS 0, sin cola) y en Crucigrama/Sopa los tableros quedaban distintos. Arreglo: Sopa manda todo lo encontrado cada 3 s y el invitado pide la ronda si quedó atrás; Crucigrama manda el crucigrama entero cada 4 s con versión por casilla (reloj de Lamport, empate gana el anfitrión) y el invitado se pasa al del anfitrión si quedó en otro; Línea: el anfitrión manda la línea cada 3 s y el invitado reenvía sus jugadas hasta que el anfitrión las confirma (en orden, una sola vez). (3) Latido cada 3 s en todas las salas de Duelo: si el compañero no da señales en 10 s, el globito muestra "🔴 Sin conexión".
+- Dónde: duelo-extensiones.js (v25), sopa-fugaz.js (v20), palabras-cruzadas.js (v16), linea-tiempo.js (v8), extensiones.css (v170), tests/colaborativos.cjs (cortes de señal, sala guardada, aviso sin conexión), sw gya-cache-v749.
+
 ### 06/11/2026 — Botón del inicio: "Jugá en equipo"
 - Qué: Gonzalo cambió el texto: "Jugá en equipo" / "De forma colaborativa, cada uno con su celular" (antes "Jugar con alguien"). Sigue solo para Gonzalo.
 - Dónde: index.html (#bJugarEquipo), sw gya-cache-v748.

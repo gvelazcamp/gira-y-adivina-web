@@ -34,7 +34,7 @@
   function salir(){
     terminarArrastre();clearInterval(reloj);reloj=null;document.querySelectorAll(".pf-bienv,.lt-compartir-capa").forEach(x=>x.remove());
     if((estado?.duelo||equipo)&&typeof Duelo!=="undefined")Duelo.salir();
-    if(raiz){raiz.remove();raiz=null;}estado=null;equipo=null;
+    if(raiz){raiz.remove();raiz=null;}estado=null;if(equipo)clearInterval(equipo.sync);equipo=null;
   }
 
   function elegirTema(){
@@ -237,13 +237,13 @@
   function avisarEquipo(m){
     if(!estado?.equipo||!equipo||typeof Duelo==="undefined")return;
     try{
-      if(!equipo.host){if(m)Duelo.enviarProgreso({tipo:"lt-acc",n:++equipo.n,r:equipo.r,...m});return;}
+      if(!equipo.host){if(m){const msg={tipo:"lt-acc",n:++equipo.n,r:equipo.r,...m};equipo.cola.push(msg);Duelo.enviarProgreso(msg);}return;}
       Duelo.enviarProgreso(fotoEquipo(m?.a==="poner"?m.d:null));
     }catch(e){}
   }
   function fotoEquipo(eco=null){
     const e=estado,id=c=>c?c.i:null;
-    return{tipo:"lt-estado",r:equipo.r,n:++equipo.n,ids:e.cartas.map(id),lugares:e.lugares.map(id),pila:e.pila.map(id),s:Math.max(0,((e.fin||Date.now())-e.inicio)/1000),listo:!!e.resultado,eco};
+    return{tipo:"lt-estado",r:equipo.r,n:++equipo.n,ack:equipo.vistoN,ids:e.cartas.map(id),lugares:e.lugares.map(id),pila:e.pila.map(id),s:Math.max(0,((e.fin||Date.now())-e.inicio)/1000),listo:!!e.resultado,eco};
   }
   function rondaEquipo(){
     if(!equipo?.host||!raiz)return;
@@ -257,8 +257,10 @@
     if(arrastre){(equipo.pendientes||(equipo.pendientes=[])).push(m);return;}
     const linea=raiz.querySelector(".lt-linea"),scroll=linea?linea.scrollTop:0;
     if(equipo.host){
-      if(m.tipo!=="lt-acc"||m.r!==equipo.r||!estado?.equipo||estado.resultado||!(m.n>equipo.vistoN))return;
+      /* Las jugadas del compañero se aplican en orden y una sola vez; las que se perdieron llegan reenviadas. */
+      if(m.tipo!=="lt-acc"||m.n!==equipo.vistoN+1)return;
       equipo.vistoN=m.n;
+      if(m.r!==equipo.r||!estado?.equipo||estado.resultado){avisarEquipo();return;}
       const c=estado.cartas.find(x=>x.i===m.c);
       if(m.a==="poner"&&c&&Number.isInteger(m.d)&&m.d>=0&&m.d<estado.lugares.length){moverCarta(c,m.d);estado.eco=m.d;}
       else if(m.a==="devolver"&&c)devolverCarta(c);
@@ -273,6 +275,9 @@
       equipo.vistoN=m.n;
       const porId=i=>i==null?null:estado.cartas.find(x=>x.i===i)||null;
       estado.lugares=m.lugares.map(porId);estado.pila=m.pila.map(porId).filter(Boolean);
+      /* Lo que todavía no confirmó el anfitrión se vuelve a aplicar encima (así no "rebota"). */
+      equipo.cola=equipo.cola.filter(x=>x.n>(Number(m.ack)||0));
+      if(!m.listo)for(const x of equipo.cola){if(x.r!==equipo.r)continue;const c=porId(x.c);if(x.a==="poner"&&c&&x.d>=0&&x.d<estado.lugares.length)moverCarta(c,x.d);else if(x.a==="devolver"&&c)devolverCarta(c);}
       estado.inicio=Date.now()-(Number(m.s)||0)*1000;
       if(Number.isInteger(m.eco))estado.eco=m.eco;
       if(m.listo&&!estado.resultado&&!estado.pila.length&&estado.lugares.every(Boolean)){estado.fin=Date.now();calcular();}
@@ -280,7 +285,14 @@
     }
     const l2=raiz?.querySelector(".lt-linea");if(l2)l2.scrollTop=scroll;
   }
-  function salirEquipo(){equipo=null;estado=null;try{Duelo.salir();}catch(e){}if(raiz)elegirTema();}
+  /* Cada 1,5 s: el anfitrión manda la línea entera (cada 3 s) y el invitado reenvía lo que no le confirmaron. */
+  function latirEquipo(){
+    if(!equipo||!estado?.equipo)return;
+    equipo.tic=(equipo.tic||0)+1;
+    if(equipo.host){if(equipo.tic%2===0)avisarEquipo();}
+    else for(const x of equipo.cola)try{Duelo.enviarProgreso(x);}catch(e){}
+  }
+  function salirEquipo(){if(equipo)clearInterval(equipo.sync);equipo=null;estado=null;try{Duelo.salir();}catch(e){}if(raiz)elegirTema();}
   function iniciarEquipo(){
     if(typeof Duelo==="undefined")return;
     Duelo.mostrarLobby("Línea del tiempo","linea-colab",{titulo:"Jugar en equipo",sub:"Una línea · Entre los dos",frase:"te invita a armar juntos",
@@ -288,7 +300,8 @@
       onListo:soyHost=>{
         if(!raiz)return;
         document.querySelectorAll(".pf-bienv").forEach(x=>x.remove());
-        equipo={host:soyHost,r:0,n:0,vistoN:0,pendientes:[]};
+        if(equipo)clearInterval(equipo.sync);
+        equipo={host:soyHost,r:0,n:0,vistoN:0,pendientes:[],cola:[]};equipo.sync=setInterval(latirEquipo,1500);
         Duelo.mostrarBadge();Duelo.actualizarBadge("🤝 juntos");
         Duelo.onProgresoRival(recibirEquipo);
         Duelo.onRivalSeFue(()=>{if(equipo&&typeof mostrarToast==="function")mostrarToast("👋",((Duelo.rivalActual()||{}).nombre||"Tu compañero")+" salió del equipo");});
