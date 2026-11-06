@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — El globito del compañero ya no tapa nada
+- Qué: Gonzalo: "no puede tapar algo de jugabilidad". En las extensiones el globito del compañero (avatar, 💬, valor) va dentro de la barra de arriba, en lugar del título y antes de la ✕ (clase .dl-con-globito en .ext-header). Fuera de las extensiones sigue flotando. El cartel "X propone…" de Palabra Secreta va abajo, sobre el teclado (el otro no lo está usando), sin tapar el tablero. Regla: nada de lo nuevo puede tapar el juego.
+- Dónde: duelo-extensiones.js (v28), extensiones.css (v172), sw gya-cache-v752.
+
 ### 06/11/2026 — Chat en los juegos en equipo y "💡 Proponer" en Palabra Secreta
 - Qué: Gonzalo pidió chat en todos los cooperativos y que en Palabra Secreta se pueda proponer una palabra y que el otro vote ("así no hay discusiones"). Chat genérico en Duelo (Duelo.activarChat): 💬 en el globito del compañero (tocar el globito abre el chat), frases rápidas, contador de no leídos, vista previa del mensaje. Va por "progreso" con tipo dl-chat, se reenvía hasta que el otro confirma (dl-chat-ok) y queda guardado por sala (gya_chat_<juego>_<código>, últimos 40). Activo en Sopa, Crucigrama, Línea y Palabra Secreta (el Puzzle ya tenía su chat). Palabra Secreta: botón "💡 Proponer" (solo el que tiene el teclado y con la palabra completa); al otro le aparece "Juan propone CARTA · ✅ Sí / ❌ No"; con Sí se manda sola, con No queda escrita y avisa "prefiere otra, hablenlo en el chat".
 - Dónde: duelo-extensiones.js (v27), palabra-secreta.js (v33), sopa-fugaz.js (v22), palabras-cruzadas.js (v18), linea-tiempo.js (v10), extensiones.css (v171), tests/colaborativos.cjs, sw gya-cache-v751.
