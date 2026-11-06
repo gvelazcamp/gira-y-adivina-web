@@ -1406,3 +1406,12 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .dl-badge.dl-badge-fila small,.dl-badge.dl-badge-fila b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 .dl-badge.dl-badge-fila.dl-off::after{top:auto;bottom:-6px;right:6px;font-size:.6rem;padding:1px 6px}
 .dl-propuesta{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 10px)}
+/* Palabra Secreta contrarreloj: barra de tiempo y primera letra de regalo (06/11/2026) */
+.ps-reloj{display:flex;align-items:center;gap:8px;max-width:300px;margin:6px auto 0}
+.ps-reloj[hidden]{display:none}
+.ps-reloj-barra{flex:1;height:10px;border-radius:99px;background:#352146;overflow:hidden}
+.ps-reloj-barra i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#1fa891,#4fe3cf);border-radius:99px;transition:width .2s linear}
+.ps-reloj-apurado .ps-reloj-barra i{background:linear-gradient(90deg,#E5197C,#ff4fa3)}
+.ps-reloj b{font:900 .85rem Outfit,system-ui,sans-serif;color:#F6EFE2;min-width:56px;text-align:right}
+.ps-reloj-apurado b{color:#ff6fb5}
+.ps-celda.ps-regalada{background:#248467!important;color:#fff!important;border-color:#37D6C0!important}
