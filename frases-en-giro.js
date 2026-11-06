@@ -181,7 +181,14 @@ const FrasesEnGiro=(()=>{
     if(window.CompartirResultado){const nv=gano?nivel-1:nivel,palabras=frase.texto.split(" ");raiz.querySelector("#fgPanel .fg-panel-acciones")?.appendChild(CompartirResultado.boton(()=>({juego:"Frases en Giro",logo:ARTE("logo"),archivo:"frases-en-giro",
       titulo:gano?"¡FRASE ARMADA!":"ESTA SE ME ESCAPÓ",sub:"Nivel "+nv+" · "+puntos+" puntos"+(racha>1?" · racha x"+racha:""),
       cifras:[["⭐",puntos,"puntos"],["🔥",racha,"racha"],["🏆",datos.mejor,"mejor"]],
-      captura:[{el:"#fgEspacios",factor:1.6,estilo:"#fgEspacios,#fgEspacios *{opacity:1!important;filter:none!important}"},{el:"#fgBanco",estilo:"#fgBanco,#fgBanco *{opacity:1!important;filter:none!important}"}],
+      captura:[{el:"#fgEspacios",factor:1.7,estilo:"#fgEspacios,#fgEspacios *{opacity:1!important;filter:none!important}",preparar:(doc,z)=>{
+        /* Frase completa y resaltada: cada palabra en su lugar; las que pusiste bien, de colores; las que no, en bordó. */
+        const P=[["#F5B301","#1E1033"],["#37D6C0","#1E1033"],["#7B3FE4","#fff"],["#E5197C","#fff"],["#2ED18A","#1E1033"],["#FF8A3D","#1E1033"],["#3DA5FF","#1E1033"],["#B66DFF","#fff"]];
+        const correctas=frase.texto.split(" ");z.replaceChildren();
+        correctas.forEach((w,i)=>{const puesta=espacios[i]!=null&&ficha(espacios[i])?.palabra===w,ok=gano||puesta,c=ok?P[i%P.length]:["#842541","#fff"];
+          const b=doc.createElement("span");b.textContent=w;b.style.cssText="display:inline-grid;place-items:center;min-height:40px;padding:4px 12px;margin:4px;border-radius:12px;border:2px solid #fff8;box-shadow:0 3px 0 #0005;font:900 18px Outfit,sans-serif;background:"+c[0]+";color:"+c[1];z.appendChild(b);});
+        z.style.display="flex";z.style.flexWrap="wrap";z.style.justifyContent="center";z.style.alignItems="center";
+      }}],
       filas:[{emoji:gano?"✅":"❌",texto:"“"+frase.texto+"”",estado:gano?"ok":"mal"}].concat(gano?[]:[{emoji:"💬",texto:palabras.length+" palabras para ordenar",estado:""}]),
       texto:"🌀 Frases en Giro · nivel "+nv+" · "+puntos+" puntos."})));}
   }

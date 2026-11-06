@@ -394,6 +394,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 06/11/2026 — Frases en Giro: frase completa y resaltada en la foto de compartir
+- Qué: Gonzalo pidió la frase completa resaltada. La foto muestra la frase correcta entera en sus lugares: si la armaste, cada palabra de un color distinto; si no, las que habías puesto bien en color y el resto en bordó. Se sacó el banco de fichas de la foto.
+- Dónde: frases-en-giro.js (v14), sw gya-cache-v740.
+
 ### 06/11/2026 — Rueda de Letras: crucigrama armado en la foto de compartir
 - Qué: Gonzalo pidió la rueda "armada". La foto rearma el crucigrama con todas las letras: cada palabra encontrada con un color distinto (igual en la lista del costado) y las que faltaron en bordó; abajo la rueda. Las piezas de captura (lista) ahora también aceptan preparar.
 - Dónde: rueda-de-letras.js, compartir-resultado.js, sw gya-cache-v739.
