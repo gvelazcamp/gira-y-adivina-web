@@ -147,6 +147,12 @@ window.AhoraCaigo=(()=>{
       final.querySelector(".ac-final-pases").textContent=pases+(pases===1?" pase disponible":" pases disponibles");
       final.querySelector(".ac-final-escena").appendChild(escenario);
       final.querySelector(".ac-final-primaria").textContent=fase==="listo"?"Sortear próximo rival":"Volver a jugar";
+      if(window.CompartirResultado){let bc=final.querySelector(".cr-boton");if(!bc){bc=CompartirResultado.boton(()=>null,"ac-compartir");final.querySelector(".ac-final-acciones").appendChild(bc);}
+        const elim=10-vivos.size,res={titulo,resumen,tipo,respuesta};bc.onclick=ev=>{ev.stopPropagation();CompartirResultado.abrir({juego:"No te caigas",logo:"assets/no-te-caigas/logo-v3.webp",archivo:"no-te-caigas",
+          titulo:res.tipo==="derrota"?"¡ME CAÍ!":elim>=10?"¡ELIMINÉ A LOS 10!":String(res.titulo||"").toUpperCase(),sub:res.resumen,
+          cifras:[["🕳️",elim+"/10","rivales eliminados"],["🔁",pases,pases===1?"pase":"pases"],["🧍",vivos.size,"quedan"]],
+          filas:res.respuesta?[{emoji:"💬",texto:"La respuesta era: "+res.respuesta,estado:res.tipo==="derrota"?"mal":"ok"}]:[],
+          texto:"🕳️ No te caigas · "+elim+" de 10 rivales eliminados."});};}
       ajustarPantalla();if(!final.open)final.showModal();ambiente(true);
     }
     final.querySelector(".ac-final-primaria").onclick=()=>{

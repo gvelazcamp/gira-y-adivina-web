@@ -1,0 +1,13 @@
+/* Compartir resultado (todas las extensiones). */
+html body button.cr-boton.cr-boton,#extContenido button.cr-boton.cr-boton{display:block;width:100%;min-height:44px;margin:8px 0 0;padding:8px 12px;border:0;border-radius:14px;background:linear-gradient(#ff4fa3,#E5197C);color:#fff;font:800 .95rem Outfit,system-ui,sans-serif;box-shadow:0 4px 0 #8E0F4C;cursor:pointer}
+html body button.cr-boton.cr-boton:active,#extContenido button.cr-boton.cr-boton:active{transform:translateY(2px);box-shadow:0 2px 0 #8E0F4C}
+.cr-compartir-capa{position:fixed;inset:0;z-index:10050;width:100%;height:100%;max-width:none;max-height:none;margin:0;border:0;display:grid;place-items:center;padding:14px;box-sizing:border-box;background:#0A0412E6;color:inherit}
+.cr-compartir-capa:not([open]){display:none}
+.cr-compartir-capa::backdrop{background:transparent}
+.cr-compartir-caja{position:relative;width:min(100%,380px);max-height:calc(100dvh - 28px);display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:22px;background:#2A1A3C;border:1px solid #F5B30177;box-shadow:0 18px 45px #0008;text-align:center;box-sizing:border-box;color:#F6EFE2;font-family:Outfit,system-ui,sans-serif}
+.cr-compartir-caja h3{margin:2px 36px 0;font:1.2rem 'Archivo Black',Outfit,sans-serif;color:#F5B301}
+.cr-compartir-foto{flex:1;min-height:120px;display:grid;place-items:center;color:#cdbbdf}
+.cr-compartir-foto img{display:block;max-width:100%;max-height:calc(100dvh - 190px);border-radius:14px;box-shadow:0 8px 24px #0009}
+.cr-compartir-x{position:absolute;top:10px;right:10px;width:32px;height:32px;min-height:0;padding:0;margin:0;border:0;border-radius:50%;background:#FFFFFF14;color:#F6EFE2;font-weight:900}
+.cr-compartir-ok{min-height:48px;margin:0;border:0;border-radius:14px;background:#E5197C;color:#fff;font:900 1.05rem Outfit,system-ui,sans-serif;box-shadow:0 5px 0 #8E0F4C}
+.cr-compartir-ok:disabled{opacity:.5}

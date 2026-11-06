@@ -200,6 +200,11 @@ window.GiraEncaja=(()=>{
     try{if(state.score>previous)localStorage.setItem(KEY,String(state.score));}catch(e){}
     panel('<div class="ge-mark">'+(won?'✦':'↻')+'</div><h2>'+(won?'¡Laboratorio completo!':'Probemos otra vez')+'</h2><p><b>'+state.score+' puntos</b> · Nivel '+state.level+'<br>'+(state.total-state.questionsAnswered)+' fichas · '+state.questionsAnswered+' preguntas</p><p>'+((state.score>previous)?'¡Nuevo récord!':('Récord: '+record()))+'</p><button class="ge-primary" data-retry>Volver a jugar</button><button data-back style="margin-top:10px">Elegir modo</button>');
     overlay.querySelector('[data-retry]').onclick=start;overlay.querySelector('[data-back]').onclick=intro;
+    if(window.CompartirResultado){const fichas=state.total-state.questionsAnswered;overlay.querySelector('.ge-panel').appendChild(CompartirResultado.boton(()=>({juego:"Girá y encajá",logo:"assets/gira-encaja/logo-v3.webp",archivo:"gira-y-encaja",
+      titulo:won?"¡LABORATORIO COMPLETO!":"LLEGUÉ AL NIVEL "+state.level,sub:state.score+" puntos"+((state.score>=record())?" · ¡récord!":" · Récord: "+record()),
+      cifras:[["⭐",state.score,"puntos"],["🧩",fichas,"fichas"],["❓",state.questionsAnswered,"preguntas"]],
+      filas:[{emoji:"🏁",texto:"Nivel alcanzado",valor:state.level,estado:won?"ok":""},{emoji:"❤️",texto:"Vidas que me quedaron",valor:Math.max(0,state.lives),estado:""}],
+      texto:"🧩 Girá y encajá · nivel "+state.level+" · "+state.score+" puntos."}),"ge-compartir"));}
   }
   function round(x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();}}
   function draw(){

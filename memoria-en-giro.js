@@ -145,6 +145,11 @@ const MemoriaEnGiro=(()=>{
       if(duelo){Duelo.enviarFinal({valor:puntos});Duelo.mostrarResultado({valor:puntos},{etiqueta:"puntos · "+pares+" de "+config.pares+" pares",onVolver:()=>{duelo=false;abrir(raiz.parentElement);}});return;}
       panel("Se terminó el tiempo","Encontraste "+pares+" de "+config.pares+" pares. Se cortó la racha"+(puntosPrevios?" y perdiste "+puntosPrevios+" puntos de esta partida":"")+". Mejor marca: "+datos.mejor+".","Otra ronda del nivel "+nivel,comenzar,null,"tiempo");
     }
+    if(window.CompartirResultado){const nv=gano?nivel-1:nivel,vistos=new Map();cartas.forEach(c=>{if(!vistos.has(c.par))vistos.set(c.par,c);});raiz.querySelector("#mgPanel .mg-panel")?.appendChild(CompartirResultado.boton(()=>({juego:"Memoria en Giro",logo:ARTE("logo"),archivo:"memoria-en-giro",
+      titulo:gano?"¡TODOS LOS PARES!":pares+" DE "+config.pares+" PARES",sub:"Nivel "+nv+" · "+(gano?puntos+" puntos":"se terminó el tiempo"),
+      cifras:[["🃏",pares+"/"+config.pares,"pares"],["⭐",gano?puntos:datos.mejor,gano?"puntos":"mejor"],["⏱",Math.ceil(Math.max(0,tiempoMs)/1000)+"s",gano?"me sobró":"tiempo"]],
+      filas:[...vistos.values()].map(c=>({emoji:c.simbolo,texto:c.encontrada?"Par encontrado":"Me faltó este par",estado:c.encontrada?"ok":"mal"})),
+      texto:"🃏 Memoria en Giro · nivel "+nv+" · "+pares+"/"+config.pares+" pares."})));}
   }
   function elegir(i){
     if(fase!=="juego"||cartas[i].encontrada||i===primera)return;
