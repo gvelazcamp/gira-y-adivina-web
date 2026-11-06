@@ -132,7 +132,7 @@ const Duelo=(()=>{
   let invitacion=null;
   try{
     const q=new URLSearchParams(location.search),j=q.get("duelo"),s=(q.get("sala")||"").toUpperCase();
-    if(DUELO_EXT[j]&&/^[A-HJ-NP-Z2-9]{4}$/.test(s))invitacion={juego:j,sala:s,de:(q.get("de")||"").replace(/[^\p{L}\p{N} ]/gu,"").trim().slice(0,14)};
+    if(DUELO_EXT[j]&&/^[A-HJ-NP-Z2-9]{4}$/.test(s))invitacion={juego:j,sala:s,de:(q.get("de")||"").replace(/[^\p{L}\p{N} ]/gu,"").trim().slice(0,14),host:q.get("anfitrion")==="1"};
   }catch(e){}
   function linkInvitacion(){
     let base="";try{base=location.origin+location.pathname;}catch(e){}
@@ -169,8 +169,31 @@ const Duelo=(()=>{
   /* Salas fijas del colaborativo de Palabra Secreta (como el Puzzle): el código queda guardado y sirve siempre. */
   const SALAS_PS="gya_palabra_salas";
   function salasFijas(){try{const l=JSON.parse(localStorage.getItem(SALAS_PS)||"[]");return Array.isArray(l)?l.filter(x=>x&&/^[A-HJ-NP-Z2-9]{4}$/.test(x.codigo)):[];}catch(e){return[];}}
+  /* Salas guardadas de cada juego (6/11/2026, Gonzalo: "Juan me invita a Sopa Fugaz y nos queda esa sala"):
+     se recuerda el código, con quién y el rol de cada uno. Quien creó la sala la vuelve a abrir como
+     anfitrión; el invitado entra como invitado y puede avisarle por WhatsApp (link con anfitrion=1). */
+  const SALAS_DL="gya_salas_duelo";
+  function salasTodas(){try{const l=JSON.parse(localStorage.getItem(SALAS_DL)||"[]");return Array.isArray(l)?l.filter(x=>x&&typeof x.juego==="string"&&/^[A-HJ-NP-Z2-9]{4}$/.test(x.codigo)&&(x.rol==="host"||x.rol==="guest")):[];}catch(e){return[];}}
+  function salasDe(j){return salasTodas().filter(x=>x.juego===j);}
+  function guardarSalaDuelo(cod,r){
+    const nueva={juego,codigo:cod,rol:soyHost?"host":"guest",con:String(r&&r.nombre||"").slice(0,30),t:Date.now()};
+    const otras=salasTodas().filter(x=>!(x.juego===juego&&x.codigo===cod)&&!(x.juego===juego&&nueva.con&&x.con===nueva.con));
+    const mias=[nueva].concat(otras.filter(x=>x.juego===juego)).slice(0,4);
+    try{localStorage.setItem(SALAS_DL,JSON.stringify(mias.concat(otras.filter(x=>x.juego!==juego)).slice(0,40)));}catch(e){}
+  }
+  function salasDueloHtml(j){
+    const l=salasDe(j);if(!l.length)return "";
+    const esc=t=>String(t).replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+    return '<div id="dlFijas" class="dl-fijas"><p>Tus salas</p>'+l.map(x=>'<button type="button" data-sala-dl="'+x.codigo+'" data-rol="'+x.rol+'" data-con="'+esc(x.con)+'">🔁 '+(x.con?'Con <b>'+esc(x.con)+'</b>':'Sala <b>'+x.codigo+'</b>')+' <small>'+x.codigo+'</small></button>').join("")+'</div>';
+  }
+  /* Latido: cada 3 s se avisa "sigo acá"; si el compañero no da señales en 10 s el globito lo muestra desconectado. */
+  let latidoTimer=null,ultimoRival=0;
+  function arrancarLatido(){clearInterval(latidoTimer);ultimoRival=Date.now();latidoTimer=setInterval(()=>{mandar({tipo:"latido"});pintarConexion();},3000);}
+  function rivalConectado(){return !!rival&&Date.now()-ultimoRival<10000;}
+  function pintarConexion(){if(!badgeEl)return;const off=!!rival&&!rivalSeFue&&Date.now()-ultimoRival>10000;badgeEl.classList.toggle("dl-off",off);}
   function recordarSala(cod,r){
-    if(juego!=="palabra-colaborativa")return;
+    arrancarLatido();
+    if(juego!=="palabra-colaborativa"){guardarSalaDuelo(cod,r);return;}
     const l=salasFijas().filter(x=>x.codigo!==cod);l.unshift({codigo:cod,con:String(r&&r.nombre||"").slice(0,30),t:Date.now()});
     try{localStorage.setItem(SALAS_PS,JSON.stringify(l.slice(0,6)));}catch(e){}
   }
@@ -186,6 +209,7 @@ const Duelo=(()=>{
   function recibir(t,pl){
     if(t!==temaIn())return;
     let m;try{m=JSON.parse(pl.toString());}catch(e){return;}
+    ultimoRival=Date.now();if(badgeEl&&badgeEl.classList.contains("dl-off"))pintarConexion();
     if(m.tipo==="hola"){
       rival={nombre:m.nombre,avatar:m.avatar,frame:m.frame};
       if(soyHost)mandar({tipo:"hola",nombre:(perfil&&perfil.nombre)||"Jugador",avatar:(perfil&&perfil.avatar)||null,frame:(typeof frameEquipado!=="undefined"?frameEquipado:null)});
@@ -198,6 +222,7 @@ const Duelo=(()=>{
     else if(m.tipo==="final"){finalRival=m.datos;if(cbFinal)cbFinal(m.datos);}
   }
   function cerrarCliente(){
+    clearInterval(latidoTimer);latidoTimer=null;
     if(holaTimer){clearInterval(holaTimer);holaTimer=null;}
     if(cliente){try{cliente.end(true);}catch(e){}cliente=null;}
   }
@@ -216,9 +241,10 @@ const Duelo=(()=>{
     let uniendose=false,yaDecidido=false;
     const c=activaCapa();
     c.innerHTML='<div class="dl-tarjeta"><h3>'+titulo+'</h3><p class="dl-sub">'+(sub||nombreJuego+' · 1 vs 1')+'</p>'+(detalle?'<p class="dl-detalle">'+detalle+'</p>':'')+
-      (idJuego==="palabra-colaborativa"?salasFijasHtml():'')+'<div id="dlElegir" class="dl-fila"><button type="button" id="dlCrear" class="dl-principal">Crear sala</button><button type="button" id="dlUnirse">Unirme con código</button></div>'+
+      (idJuego==="palabra-colaborativa"?salasFijasHtml():salasDueloHtml(idJuego))+'<div id="dlElegir" class="dl-fila"><button type="button" id="dlCrear" class="dl-principal">Crear sala</button><button type="button" id="dlUnirse">Unirme con código</button></div>'+
       '<div id="dlCodigoZona" hidden><button type="button" id="dlWpp" class="dl-wpp">📲 Invitar por WhatsApp</button><p>o pasale este código:</p><div class="dl-codigo" id="dlCodigo"></div>'+
       '<div class="dl-fila"><button type="button" id="dlCopiar">Copiar invitación</button></div></div>'+
+      '<button type="button" id="dlAvisar" class="dl-wpp" hidden>📲 Avisarle por WhatsApp</button>'+
       '<div id="dlEntrarZona" hidden><label class="dl-sr" for="dlInput">Código</label><input id="dlInput" maxlength="4" placeholder="CÓDIGO" autocomplete="off" autocapitalize="characters"><button type="button" id="dlEntrar" class="dl-principal">Unirme</button></div>'+
       '<p id="dlEstado" class="dl-estado" role="status"></p>'+
       '<button type="button" id="dlCancelar" class="dl-cerrar">Cancelar</button></div>';
@@ -275,9 +301,21 @@ const Duelo=(()=>{
     };
     c.querySelector("#dlEntrar").onclick=entrar;
     c.querySelectorAll("[data-sala-fija]").forEach(b=>b.onclick=()=>{c.querySelector("#dlInput").value=b.dataset.salaFija;c.querySelector("#dlElegir").hidden=true;entrar();});
+    c.querySelectorAll("[data-sala-dl]").forEach(b=>b.onclick=()=>{
+      const cod=b.dataset.salaDl,con=b.dataset.con||"tu compañero";
+      if(b.dataset.rol==="host"){crearSala(cod);return;}
+      c.querySelector("#dlFijas")?.remove();c.querySelector("#dlElegir").hidden=true;c.querySelector("#dlInput").value=cod;entrar();
+      const av=c.querySelector("#dlAvisar");av.hidden=false;
+      av.onclick=()=>{let base="";try{base=location.origin+location.pathname;}catch(e){}
+        const texto="¡"+(((perfil&&perfil.nombre)||"Tu amigo"))+" te espera en su sala de "+nombreJuego+" en Girá y Adiviná! 👥 Tocá el link para entrar: "+base+"?duelo="+juego+"&sala="+cod+"&anfitrion=1";
+        window.open("https://wa.me/?text="+encodeURIComponent(texto),"_blank");};
+      setTimeout(()=>{if(capa&&!activo&&cbRivalListo)estado("Esperando a "+con+"… Avisale que entre a la sala.");},2500);
+    });
     c.querySelector("#dlInput").onkeydown=e=>{if(e.key==="Enter")entrar();};
     if(invitacion&&invitacion.juego===idJuego){
       const inv=invitacion;invitacion=null;limpiarUrl();
+      c.querySelector("#dlFijas")?.remove();
+      if(inv.host){crearSala(inv.sala);return;}
       c.querySelector("#dlElegir").hidden=true;c.querySelector("#dlEntrarZona").hidden=false;
       c.querySelector("#dlInput").value=inv.sala;
       if(entradaDirecta){
@@ -336,8 +374,9 @@ const Duelo=(()=>{
     if(!finalRival)cbFinal=()=>pintar();
   }
   function estaActivo(){return activo;}
+  function soyAnfitrion(){return soyHost;}
   function rivalActual(){return rival;}
   function salir(){cbChau=null;if(cliente&&cliente.connected)mandar({tipo:"chau"});repintar=null;onListoJuego=null;rondaPendiente=null;cerrarCliente();cerrarCapa();quitarBadge();activo=false;rival=null;finalRival=null;cbRivalListo=null;cbRonda=null;cbProgreso=null;cbFinal=null;}
-  return{abrirInvitacion,hayInvitacion:()=>!!invitacion,invitacionPara:j=>!!(invitacion&&invitacion.juego===j),onRivalSeFue:cb=>{cbChau=cb;},mostrarLobby,enviarRonda,onRondaRecibida,enviarProgreso,onProgresoRival,mostrarBadge,actualizarBadge,enviarFinal,mostrarResultado,estaActivo,rivalActual,salir};
+  return{abrirInvitacion,hayInvitacion:()=>!!invitacion,invitacionPara:j=>!!(invitacion&&invitacion.juego===j),onRivalSeFue:cb=>{cbChau=cb;},mostrarLobby,enviarRonda,onRondaRecibida,enviarProgreso,onProgresoRival,rivalConectado,soyAnfitrion,mostrarBadge,actualizarBadge,enviarFinal,mostrarResultado,estaActivo,rivalActual,salir};
 })();
 window.Duelo=Duelo;

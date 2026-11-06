@@ -273,7 +273,7 @@ const SopaFugaz=(()=>{
   function armar(c){objetivos=elegirPalabras(c,mascara);construir(c);objetivos=objetivos.filter(w=>ubicadas[w]);elegirDibujos(c);Vistas.marcar(VISTAS,objetivos);}
   function iniciarRonda(){
     if(window.Fichas&&!Fichas.usar("sopa-fugaz",iniciarRonda))return;
-    duelo=false;equipo=null;
+    duelo=false;if(equipo)clearInterval(equipo.sync);equipo=null;
     const c=prepararRonda();armar(c);arrancarRonda(c);
   }
   function arrancarRonda(c){
@@ -424,12 +424,14 @@ const SopaFugaz=(()=>{
   /* En equipo: la misma sopa para los dos; lo que encuentra uno se marca en los dos tableros. */
   function actualizarEquipo(){if(equipo)Duelo.actualizarBadge("🤝 "+halladas.size+"/"+objetivos.length);}
   function rondaEquipo(){
-    const c=prepararRonda();armar(c);
-    Duelo.enviarRonda({tipo:"sf-ronda",objetivos,categoria,nivel,tablero,ubicadas,forma:forma&&forma.id,escaleras:[...escaleras],dibujos:[...conDibujo],todoDibujos,puntaje});
+    const c=prepararRonda();armar(c);equipo.r=(equipo.r||0)+1;
+    equipo.ultimaRonda={tipo:"sf-ronda",r:equipo.r,objetivos,categoria,nivel,tablero,ubicadas,forma:forma&&forma.id,escaleras:[...escaleras],dibujos:[...conDibujo],todoDibujos,puntaje};
+    Duelo.enviarRonda(equipo.ultimaRonda);
     equipo.mias=0;arrancarRonda(c);actualizarEquipo();
   }
   function recibirRondaEquipo(d){
-    if(!equipo||!d||d.tipo!=="sf-ronda")return;
+    if(!equipo||!d||d.tipo!=="sf-ronda"||(d.r&&d.r===equipo.r))return;
+    equipo.r=d.r||0;
     nivel=d.nivel;puntaje=d.puntaje||0;const c=prepararRonda();objetivos=d.objetivos;categoria=d.categoria;
     forma=SOPA_FORMAS.find(f=>f.id===d.forma)||null;mascara=forma?forma.mascara:mascaraCuadrada(c.n);tablero=d.tablero;ubicadas=d.ubicadas;
     escaleras=new Set(d.escaleras||[]);conDibujo=new Set(d.dibujos||[]);todoDibujos=!!d.todoDibujos;
@@ -442,16 +444,36 @@ const SopaFugaz=(()=>{
     typeof mostrarToast==="function"&&mostrarToast("🤝",((Duelo.rivalActual()||{}).nombre||"Tu compañero")+" encontró "+p.w);
     if(halladas.size===objetivos.length)terminar(true);
   }
-  function salirEquipo(){equipo=null;Duelo.salir();elegirModo();}
+  /* Cada 3 s cada uno manda todo lo que encontró: si un mensaje se perdió (mala señal), se recupera solo.
+     Si el invitado quedó en otra ronda, se la vuelve a pedir al anfitrión. */
+  function sincronizarEquipo(){
+    if(!equipo)return;
+    const h={};halladas.forEach((v,w)=>{h[w]=v.ind;});
+    try{Duelo.enviarProgreso({tipo:"sf-sync",r:equipo.r||0,h});}catch(e){}
+  }
+  function recibirEquipo(p){
+    if(!equipo||!p)return;
+    if(p.tipo==="sf-hallada"){recibirHallada(p);return;}
+    if(p.tipo==="sf-pedir"){if(equipo.host&&equipo.ultimaRonda)Duelo.enviarRonda(equipo.ultimaRonda);return;}
+    if(p.tipo!=="sf-sync")return;
+    if((p.r||0)!==(equipo.r||0)){
+      if(equipo.host&&equipo.ultimaRonda&&(p.r||0)<equipo.r)Duelo.enviarRonda(equipo.ultimaRonda);
+      else if(!equipo.host&&(p.r||0)>(equipo.r||0))Duelo.enviarProgreso({tipo:"sf-pedir"});
+      return;
+    }
+    for(const [w,ind] of Object.entries(p.h||{}))if(!halladas.has(w))recibirHallada({tipo:"sf-hallada",w,ind});
+  }
+  function salirEquipo(){if(equipo)clearInterval(equipo.sync);equipo=null;Duelo.salir();elegirModo();}
   function iniciarEquipo(){
     if(typeof Duelo==="undefined")return;
     modo="clasica";
     Duelo.mostrarLobby("Sopa Fugaz","sopa-colab",{titulo:"Jugar en equipo",sub:"Una sopa · Entre los dos",frase:"te invita a buscar palabras juntos en",
       detalle:"Los dos buscan en <b>la misma sopa</b>, cada uno en su celular. Lo que encuentra uno <b>se marca en los dos tableros</b>. ¡Completenla antes de que se acabe el tiempo!",
       onListo:soyHost=>{
-        duelo=false;modo="clasica";equipo={host:soyHost,mias:0};
+        if(equipo)clearInterval(equipo.sync);
+        duelo=false;modo="clasica";equipo={host:soyHost,mias:0,r:0};equipo.sync=setInterval(sincronizarEquipo,3000);
         Duelo.mostrarBadge();
-        Duelo.onProgresoRival(recibirHallada);
+        Duelo.onProgresoRival(recibirEquipo);
         Duelo.onRivalSeFue(()=>{if(equipo){typeof mostrarToast==="function"&&mostrarToast("👋",((Duelo.rivalActual()||{}).nombre||"Tu compañero")+" salió del equipo");}});
         if(soyHost)rondaEquipo();else Duelo.onRondaRecibida(recibirRondaEquipo);
       }});
@@ -534,7 +556,7 @@ const SopaFugaz=(()=>{
     document.removeEventListener("visibilitychange",alVolver);
     detenerMusicaJuego();
     if(typeof Duelo!=="undefined")Duelo.salir();
-    duelo=false;equipo=null;raiz=null;gridEl=null;listaEl=null;capsEl=null;celdas=[];intervalo=null;ocultoDesde=0;
+    duelo=false;if(equipo)clearInterval(equipo.sync);equipo=null;raiz=null;gridEl=null;listaEl=null;capsEl=null;celdas=[];intervalo=null;ocultoDesde=0;
   }
   return{abrir,salir,mejorPuntaje,configNivel,_ronda:()=>({objetivos,ubicadas,halladas:[...halladas.keys()],equipo})};
 })();

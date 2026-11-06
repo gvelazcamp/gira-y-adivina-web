@@ -5,8 +5,8 @@ const root=path.resolve(__dirname,'..');
 const server=http.createServer((req,res)=>{const file=path.join(root,new URL(req.url,'http://local').pathname.replace(/^\/$/,'/index.html'));if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);return res.end();}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.webp':'image/webp'})[path.extname(file)]||'application/octet-stream');res.end(fs.readFileSync(file));});
 const falso=()=>{document.querySelector('#splash')?.remove();document.documentElement.classList.remove('cargando');const s=document.querySelector('#setup');if(s)s.style.display='none';
  window.__charges=0;Fichas.usar=()=>{window.__charges++;return true;};
- MultiBroker.conectar=(ready,fail,assign)=>{const cl={connected:true,subs:new Set(),handlers:[],closed:false,subscribe(t){this.subs.add(t);},unsubscribe(t){this.subs.delete(t);},publish(t,m){if(!this.closed)window.__publish(t,String(m));},on(ev,fn){if(ev==='message')this.handlers.push(fn);return cl;},end(){this.closed=true;this.connected=false;}};
-  window.__deliver=(t,m)=>{if(!cl.closed&&cl.subs.has(t))for(const fn of cl.handlers)fn(t,m);};assign(cl);setTimeout(ready,0);};};
+ MultiBroker.conectar=(ready,fail,assign)=>{const cl={connected:true,subs:new Set(),handlers:[],closed:false,subscribe(t){this.subs.add(t);},unsubscribe(t){this.subs.delete(t);},publish(t,m){if(!this.closed&&!window.__sinRed)window.__publish(t,String(m));},on(ev,fn){if(ev==='message')this.handlers.push(fn);return cl;},end(){this.closed=true;this.connected=false;}};
+  window.__deliver=(t,m)=>{if(!cl.closed&&!window.__sinRed&&cl.subs.has(t))for(const fn of cl.handlers)fn(t,m);};assign(cl);setTimeout(ready,0);};};
 const norm=s=>s.toUpperCase().replace(/Ñ/g,'!').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/!/g,'Ñ').replace(/[^A-ZÑ]/g,'');
 (async()=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const base='http://127.0.0.1:'+server.address().port;
@@ -39,8 +39,10 @@ const norm=s=>s.toUpperCase().replace(/Ñ/g,'!').normalize('NFD').replace(/[̀-�
   const destino=p=>p.evaluate(()=>{const e=LineaTiempo._estado(),h=e.pila[0];return e.orden.findIndex(o=>o.anio===h.anio);});
   const llenos=p=>p.locator('.lt-lleno').count();
   for(let k=0;k<7;k++){const p=k%2?b:a,o=k%2?a:b;
+   if(k===3)await b.evaluate(()=>window.__sinRed=true);
    const d=await destino(p);await p.locator(`.lt-slot[data-i="${d}"]`).click();
-   await o.waitForFunction(n=>document.querySelectorAll('.lt-lleno').length===n,k+1);
+   if(k===3){await a.waitForTimeout(1600);assert.equal(await llenos(a),3,'sin red no llega');await b.evaluate(()=>window.__sinRed=false);}
+   await o.waitForFunction(n=>document.querySelectorAll('.lt-lleno').length===n,k+1,{timeout:6000});
    assert.equal(await llenos(p),k+1);
   }
   assert.equal(await a.evaluate(()=>LineaTiempo._estado().lugares.map(c=>c.titulo).join('|')),await b.evaluate(()=>LineaTiempo._estado().lugares.map(c=>c.titulo).join('|')),'la misma línea en los dos');
@@ -69,8 +71,10 @@ const norm=s=>s.toUpperCase().replace(/Ñ/g,'!').normalize('NFD').replace(/[̀-�
   async function arrastrar(page,ks){const boxes=await page.locator('.sf-celda').evaluateAll((els,ks)=>ks.map(k=>{const r=els[k].getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2};}),ks);
    await page.mouse.move(boxes[0].x,boxes[0].y);await page.mouse.down();for(const x of boxes.slice(1))await page.mouse.move(x.x,x.y,{steps:2});await page.mouse.up();}
   for(const [i,w] of ra.objetivos.entries()){const p=i%2?b:a,o=i%2?a:b;
+   if(i===2)await b.evaluate(()=>window.__sinRed=true);
    await arrastrar(p,ra.ubicadas[w]);
-   await o.waitForFunction(w=>SopaFugaz._ronda().halladas.includes(w),w);
+   if(i===2){await b.waitForTimeout(800);assert(!(await b.evaluate(w=>SopaFugaz._ronda().halladas.includes(w),w)),'sin red no llega');await b.evaluate(()=>window.__sinRed=false);}
+   await o.waitForFunction(w=>SopaFugaz._ronda().halladas.includes(w),w,{timeout:6000});
    if(i===0)await b.screenshot({path:process.env.S?process.env.S+'/sopa-equipo-b.png':'/dev/null'}).catch(()=>{});
   }
   await a.waitForFunction(()=>/juntos/.test(document.querySelector('.sf-panel h3')?.textContent||''));
@@ -78,7 +82,19 @@ const norm=s=>s.toUpperCase().replace(/Ñ/g,'!').normalize('NFD').replace(/[̀-�
   const mias=await a.evaluate(()=>SopaFugaz._ronda().equipo.mias)+await b.evaluate(()=>SopaFugaz._ronda().equipo.mias);
   assert.equal(mias,ra.objetivos.length,'cada palabra la encontró uno solo');
   await b.screenshot({path:process.env.S?process.env.S+'/sopa-equipo-fin.png':'/dev/null'}).catch(()=>{});
-  console.log('PASS Sopa Fugaz en equipo');
+  console.log('PASS Sopa Fugaz en equipo (con corte de señal)');
+  // Sala guardada: cada uno la ve en "Tus salas" con el nombre del otro y vuelven a entrar sin código.
+  for(const p of [a,b])await p.evaluate(()=>{Duelo.salir();Extensiones.abrirLobby();});
+  const salaA=await a.evaluate(()=>JSON.parse(localStorage.getItem('gya_salas_duelo')));const salaB=await b.evaluate(()=>JSON.parse(localStorage.getItem('gya_salas_duelo')));
+  assert.equal(salaA[0].juego,'sopa-colab');assert.equal(salaA[0].rol,'host');assert.equal(salaA[0].con,'Vale');assert.equal(salaB[0].rol,'guest');assert.equal(salaB[0].con,'Gonzalo');assert.equal(salaA[0].codigo,salaB[0].codigo);
+  await b.evaluate(()=>Extensiones.abrirJuego('sopa-fugaz'));await b.locator('.sf-modo-equipo').click();
+  assert.match(await b.locator('[data-sala-dl]').textContent(),/Gonzalo/);if(process.env.S)await b.screenshot({path:process.env.S+'/tus-salas.png'});await b.locator('[data-sala-dl]').click();
+  assert(await b.locator('#dlAvisar').isVisible(),'el invitado puede avisarle por WhatsApp');
+  await b.waitForTimeout(800);
+  await a.evaluate(()=>Extensiones.abrirJuego('sopa-fugaz'));await a.locator('.sf-modo-equipo').click();await a.locator('[data-sala-dl]').click();
+  await a.waitForSelector('.sf-celda');await b.waitForFunction(()=>SopaFugaz._ronda().objetivos.length>0&&document.querySelector('.sf-celda'));
+  assert.deepEqual((await b.evaluate(()=>SopaFugaz._ronda())).objetivos,(await a.evaluate(()=>SopaFugaz._ronda())).objetivos,'vuelven a jugar en la misma sala');
+  console.log('PASS sala guardada: "Tus salas" con el nombre del otro, sin código');
 
   /* ---------- Palabras Cruzadas en equipo ---------- */
   [a,b]=await sala('cruzadas-colab',async a=>{await a.evaluate(()=>Extensiones.abrirJuego('palabras-cruzadas'));await a.waitForTimeout(500);for(const s of ['#pcAyuda .pc-entendido','.pf-bienv-ok']){const ok=a.locator(s);if(await ok.isVisible())await ok.click();}await a.locator('#pcEquipoBoton').click();});
@@ -88,12 +104,18 @@ const norm=s=>s.toUpperCase().replace(/Ñ/g,'!').normalize('NFD').replace(/[̀-�
   const keys=w=>[...norm(w.respuesta)].map((_,n)=>(w.fila+(w.direccion==='V'?n:0))+','+(w.columna+(w.direccion==='H'?n:0)));
   const valor=(p,k)=>p.locator('.pc-celda[data-casilla="'+k+'"]>span').textContent();
   for(const [i,p,o] of [[0,a,b],[1,b,a]]){const w=pz.palabras[i],ks=keys(w),r=norm(w.respuesta);
+   if(i===1)await a.evaluate(()=>window.__sinRed=true);
    for(const [n,k] of ks.entries()){if((await valor(p,k))===r[n])continue;await p.locator('.pc-celda[data-casilla="'+k+'"]').click();await p.keyboard.type(r[n]);}
-   await o.waitForFunction(([ks,r])=>ks.every((k,n)=>document.querySelector('.pc-celda[data-casilla="'+k+'"]>span').textContent===r[n]),[ks,r]);
+   if(i===1){await a.waitForTimeout(600);assert(!(await a.evaluate(([ks,r])=>ks.every((k,n)=>document.querySelector('.pc-celda[data-casilla="'+k+'"]>span').textContent===r[n]),[ks,r])),'sin red no llega');await a.evaluate(()=>window.__sinRed=false);}
+   await o.waitForFunction(([ks,r])=>ks.every((k,n)=>document.querySelector('.pc-celda[data-casilla="'+k+'"]>span').textContent===r[n]),[ks,r],{timeout:7000});
   }
   const host=await a.evaluate(()=>JSON.parse(localStorage.getItem('gya_palabras_cruzadas')).letras);
   for(const k of keys(pz.palabras[1]))assert(host[k],'el anfitrión guarda lo que puso el compañero');
   await b.screenshot({path:process.env.S?process.env.S+'/cruzadas-equipo-b.png':'/dev/null'}).catch(()=>{});
+  // Si el compañero se queda sin señal, el globito lo muestra; al volver, se va el aviso.
+  await b.evaluate(()=>window.__sinRed=true);await a.waitForFunction(()=>document.querySelector('.dl-badge')?.classList.contains('dl-off'),null,{timeout:16000});
+  await b.evaluate(()=>window.__sinRed=false);await a.waitForFunction(()=>!document.querySelector('.dl-badge').classList.contains('dl-off'),null,{timeout:6000});
+  console.log('PASS aviso de compañero sin conexión');
   // el invitado sale y recupera su propio crucigrama
   await b.locator('#pcEquipoBoton').click();
   assert.match(await b.locator('#pcEquipoBoton').textContent(),/^🤝$/);
