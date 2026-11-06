@@ -470,7 +470,7 @@ const Extensiones=(()=>{
       pintarSelectorModo();
     }
   }
-  function abrirLobby(){
+  function abrirLobby(filtroInicial){
     precargarIconos();
     if(!EXTENSIONES_HABILITADAS)return;
     cerrarAvisoTV();
@@ -479,7 +479,7 @@ const Extensiones=(()=>{
     shell.querySelector("#extTitulo").textContent="Jugá más juegos de Girá y Adiviná";
     const selector=modoTVDisponible()?'<div class="ext-selector-modo" role="group" aria-label="Modo de pantalla"><span>Pantallas</span><button type="button" data-modo="celular" aria-pressed="true">📱 Celular</button><button type="button" data-modo="tv" aria-pressed="false">📺 TV</button></div>':"";
     contenido.innerHTML='<div class="ext-hero"><span>✦ MÁS JUEGOS, MÁS DESAFÍOS</span><h2>Extensiones</h2><p>Elegí un juego del universo Girá y Adiviná. Jugá gratis, sin gastar vidas ni monedas.</p></div><div id="extSecciones"></div>';
-    selectorLobby=selector;filtroLobby="todos";pintarSecciones();
+    selectorLobby=selector;filtroLobby=FILTROS_LOBBY.some(f=>f.id===filtroInicial)?filtroInicial:"todos";pintarSecciones();
     shell.scrollTop=0;
   }
   function prepararDueloTV(){
@@ -508,6 +508,13 @@ const Extensiones=(()=>{
   return{abrirLobby,abrirJuego,cerrar,prepararDueloTV};
 })();
 window.Extensiones=Extensiones;
+/* Botón "Jugar con alguien" del inicio: prueba solo para Gonzalo, abre Más juegos en "En equipo". */
+const botonEquipo=document.getElementById("bJugarEquipo");
+if(botonEquipo){
+  botonEquipo.onclick=()=>Extensiones.abrirLobby("equipo");
+  const verBotonEquipo=()=>{botonEquipo.hidden=!(EXTENSIONES_HABILITADAS&&typeof esGonzalo==="function"&&esGonzalo());};
+  verBotonEquipo();setInterval(verBotonEquipo,2000);
+}
 const botonExtensiones=document.getElementById("bExtensiones");
 if(botonExtensiones){
   botonExtensiones.hidden=!EXTENSIONES_HABILITADAS;

@@ -91,8 +91,8 @@ document.documentElement.classList.add("cargando");setTimeout(()=>document.docum
 <!-- Hojas de estilo sin bloquear el primer dibujo (con internet lento la
      pantalla de carga quedaba oscura y vacía hasta que bajaban). El juego
      queda tapado por la pantalla de carga hasta que termina de cargar. -->
-<link rel="preload" as="style" href="extensiones.css?v=168" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="extensiones.css?v=168"></noscript>
+<link rel="preload" as="style" href="extensiones.css?v=169" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="extensiones.css?v=169"></noscript>
 <link rel="stylesheet" href="rosco-horizontal.css?v=11">
 <link rel="stylesheet" href="ruleta-horizontal.css?v=2">
 <link rel="stylesheet" href="ahorcado-horizontal.css?v=2">
@@ -814,6 +814,7 @@ p.sub{margin:14px 0 24px;color:#C9B8DE}
    termine de cargar extensiones.css (preload asíncrono). */
 #bExtensiones{margin:16px 0 6px;background:linear-gradient(135deg,#633CCB 0%,#385DC3 52%,#148C9B 100%);box-shadow:0 6px 0 #174F71}
 #bExtensiones:active{box-shadow:0 2px 0 #174F71}
+#bJugarEquipo[hidden]{display:none}
 #bExtensiones .cta-play{background:#FFFFFF30;color:#F6D77A}
 #bExtensiones .cta-txt b{font-size:clamp(.96rem,4.2vw,1.2rem)}
 .cta-play{flex:0 0 auto;width:46px;height:46px;border-radius:50%;background:#FFFFFF2E;
@@ -1420,6 +1421,11 @@ body:not(.tvhost) #horizontalAyuda{display:none}
   <button class="btn-grande cta-jugar ext-cta" id="bExtensiones" type="button" onclick="if(window.Extensiones)Extensiones.abrirLobby();else this.dataset.pendiente='1'">
     <span class="cta-play">✦</span>
     <span class="cta-txt"><b>Jugá más juegos de Girá y Adiviná</b><small>Más juegos para descubrir</small></span>
+  </button>
+  <!-- Prueba solo Gonzalo (06/11/2026): lleva directo a Más juegos filtrado en "En equipo". -->
+  <button class="btn-grande cta-jugar ext-cta ext-cta-equipo" id="bJugarEquipo" type="button" hidden>
+    <span class="cta-play">🤝</span>
+    <span class="cta-txt"><b>Jugar con alguien</b><small>Juegos en equipo, cada uno en su celular</small></span>
   </button>
   <div class="mini-tit-fila">
     <img src="assets/decor/mas-disfrutar.webp" alt="Más para disfrutar" class="deco-mas-disfrutar">
@@ -12185,7 +12191,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <link rel="stylesheet" href="gira-encaja.css?v=7">
 <script src="gira-encaja-preguntas.js?v=1"></script>
 <script src="gira-encaja.js?v=13"></script>
-<script src="extensiones.js?v=143"></script>
+<script src="extensiones.js?v=144"></script>
 <script src="sala-tv.js?v=1"></script>
 <link rel="stylesheet" href="tele.css?v=46">
 <link rel="stylesheet" href="numero-voz.css?v=3">

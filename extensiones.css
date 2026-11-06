@@ -1357,3 +1357,8 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .ext-filtros button{flex:1 1 auto;min-height:36px;padding:6px 10px;border-radius:99px;border:1px solid #FFFFFF2e;background:#2A1A3C;color:#E4D8EB;font:800 .8rem Outfit,system-ui,sans-serif;white-space:nowrap;cursor:pointer}
 .ext-filtros button[aria-pressed="true"]{background:#F5B301;border-color:#F5B301;color:#2A1A3C}
 @media (orientation:landscape) and (max-height:600px){.ext-modos i{font-size:.58rem;padding:1px 5px}.ext-filtros{margin-top:8px}.ext-filtros button{min-height:30px;font-size:.72rem;flex:0 1 auto}}
+
+/* Botón "Jugar con alguien" del inicio (solo Gonzalo) */
+.ext-cta-equipo{margin-top:10px;background:linear-gradient(#4fe3cf,#1fa891)!important;box-shadow:0 5px 0 #0f6b5c!important;color:#10302b!important}
+.ext-cta-equipo .cta-txt small{color:#10302bcc!important}
+.ext-cta-equipo .cta-play{background:#ffffff55!important}
