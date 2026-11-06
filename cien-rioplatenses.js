@@ -199,6 +199,7 @@ const CienRioplatenses=(()=>{
     CompartirResultado.abrir({juego:"100 Rioplatenses Dicen",logo:ARTE("logo"),archivo:"100-rioplatenses",
       titulo:puntos+" PUNTOS",sub:resumen.length+" rondas · "+aciertos+" respuestas encontradas",
       cifras:[["⭐",puntos,"puntos"],["✅",aciertos+"/"+(resumen.length*6),"respuestas"],["🎯",resumen.length?Math.max(...resumen.map(r=>r.puntos||0)):0,"mejor ronda"]],
+      captura:{el:"#crTablero"},anchoTablero:640,ladoTitulo:"Mis rondas",lado:resumen.map((r,i)=>({texto:"Ronda "+(i+1)+" · "+r.aciertos+"/6",valor:r.puntos,estado:r.aciertos>=3?"ok":""})),
       filas:resumen.map((r,i)=>({emoji:r.aciertos>=4?"🔥":r.aciertos>=2?"👍":"😅",texto:"Ronda "+(i+1)+" · "+r.aciertos+"/6 respuestas",valor:r.puntos+" pts",estado:r.aciertos>=3?"ok":""})),
       texto:"🎡 100 Rioplatenses Dicen · "+puntos+" puntos."});
   }

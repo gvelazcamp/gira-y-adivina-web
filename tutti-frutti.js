@@ -1176,6 +1176,7 @@ const TuttiFrutti=(()=>{
     if(window.CompartirResultado){const yoRow=orden.find(o=>o[0].pid===on.pid),pos=orden.indexOf(yoRow)+1,gane=ganan.includes((yoRow&&yoRow[0].nombre)||"");raiz.querySelector(".imp-fin")?.appendChild(CompartirResultado.boton(()=>({juego:"Tutti Frutti",logo:ARTE("logo"),archivo:"tutti-frutti",
       titulo:gane?"¡GANÉ EL TUTTI FRUTTI!":ganan.length>1?"¡EMPATE!":"GANÓ "+String(ganan[0]||"").toUpperCase(),sub:(on.tot||RONDAS)+" rondas · "+orden.length+" jugadores",
       cifras:[["🏅",pos+"°","mi puesto"],["🏆",yoRow?yoRow[1]:0,"rondas ganadas"],["⭐",yoRow?yoRow[2]:0,"puntos"]],
+      captura:[{el:raiz.querySelector(".imp-fin .tf-trofeo"),factor:.8},{el:raiz.querySelector(".imp-fin .kar-podio"),factor:1.3}],
       filas:orden.map(([j,rg,pt],k)=>({emoji:["🥇","🥈","🥉"][k]||"🎖️",texto:(j.nombre||"?")+(j.pid===on.pid?" (yo)":""),valor:pt+" pts",estado:k===0?"ok":""})),
       texto:"🍓 Tutti Frutti · "+(gane?"¡gané!":"salí "+pos+"°")+" · "+(yoRow?yoRow[2]:0)+" puntos."})));}
     if(on.host)q("tfRevancha").onclick=e=>{const b=e&&e.currentTarget;if(b){if(b.disabled)return;b.disabled=true;}

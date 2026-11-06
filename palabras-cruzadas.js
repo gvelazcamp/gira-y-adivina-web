@@ -267,6 +267,7 @@ window.PalabrasCruzadas=(()=>{
     if(window.CompartirResultado&&!d.querySelector(".cr-boton")){const ref=d.querySelector("#pcRevisar");ref.before(CompartirResultado.boton(()=>({juego:"Palabras Cruzadas",logo:"assets/palabras-cruzadas/logo-v2.webp",archivo:"palabras-cruzadas",
       titulo:"¡CRUCIGRAMA COMPLETO!",sub:"«"+crucigrama.titulo+"»",
       cifras:[["📝",palabras.length,"palabras"],["💡",datos.ayudas.length,datos.ayudas.length===1?"ayuda":"ayudas"],["🏆",(datos.resueltos||[]).length||1,"resueltos"]],
+      captura:{el:raiz.querySelector(".pc-grilla")},anchoTablero:640,ladoTitulo:"Las palabras",lado:palabras.map(p=>({texto:p.numero+" · "+p.respuesta,estado:"ok"})),
       grilla:{celdas:[...celdas.entries()].map(([k,c])=>({f:c.fila,c:c.columna,letra:c.letra,estado:datos.ayudas.includes(k)?"ayuda":"ok"}))},
       texto:"✏️ Palabras Cruzadas · resolví «"+crucigrama.titulo+"» ("+palabras.length+" palabras"+(datos.ayudas.length?", "+datos.ayudas.length+" ayudas":", sin ayudas")+")."}),"pc-compartir"));}
     if(!d.open)d.showModal();

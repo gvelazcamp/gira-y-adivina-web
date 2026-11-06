@@ -189,6 +189,7 @@ const RuedaDeLetras=(()=>{
     if(window.CompartirResultado){const nv=gano?nivel:nivel;raiz.querySelector("#rlPanel .sf-acciones")?.appendChild(CompartirResultado.boton(()=>({juego:"Rueda de Letras",logo:ARTE("logo"),archivo:"rueda-de-letras",
       titulo:gano?"¡RUEDA COMPLETADA!":"SE ACABÓ EL TIEMPO",sub:"Nivel "+nv+" · "+puntos+" puntos",
       cifras:[["🔤",hechas.size+"/"+ronda.palabras.length,"ocultas"],["✨",extrasEncontradas.size,"extra"],["⭐",puntos,"puntos"]],
+      captura:[{el:"#rlGrilla",factor:1.4},{el:"#rlRueda"}],anchoTablero:620,ladoTitulo:"Las palabras",lado:ronda.palabras.map(w=>({texto:w,estado:hechas.has(w)?"ok":"mal"})),
       filas:ronda.palabras.map(w=>({emoji:hechas.has(w)?"✅":"❌",texto:w,estado:hechas.has(w)?"ok":"mal"})),
       texto:"🔤 Rueda de Letras · nivel "+nv+" · "+hechas.size+"/"+ronda.palabras.length+" palabras · "+puntos+" puntos."})));}
   }

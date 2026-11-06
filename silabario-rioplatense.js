@@ -245,6 +245,7 @@ const SilabarioRioplatense=(()=>{
     if(window.CompartirResultado)$("#sbPanel .sf-acciones").appendChild(CompartirResultado.boton(()=>({juego:"Silabario Rioplatense",logo:ARTE("logo"),archivo:"silabario",
       titulo:faltan?"¡SE TERMINÓ EL TIEMPO!":errores?"¡TABLERO TERMINADO!":"¡TABLERO PERFECTO!",sub:"Nivel "+nivel+" · "+puntos+" puntos",
       cifras:[["✅",aciertos,"aciertos"],["❌",errores,"errores"],["⭐",puntos,"puntos"]],
+      captura:{el:"#sbTablero",estilo:"#sbTablero,#sbTablero *{opacity:1!important;filter:none!important}"},anchoTablero:600,ladoTitulo:"Las respuestas",lado:items.map((d,k)=>({texto:d.respuesta,estado:estados[k]==="acierto"?"ok":estados[k]==="error"?"mal":""})),
       filas:items.map((d,k)=>({emoji:estados[k]==="acierto"?"✅":estados[k]==="error"?"❌":"⏳",texto:d.respuesta,estado:estados[k]==="acierto"?"ok":estados[k]==="error"?"mal":""})),
       texto:"🧩 Silabario Rioplatense · nivel "+nivel+" · "+aciertos+" aciertos · "+puntos+" puntos."})));
   }

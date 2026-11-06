@@ -431,6 +431,7 @@ const SopaFugaz=(()=>{
     CompartirResultado.abrir({juego:"Sopa Fugaz",logo:ARTE("logo"),archivo:"sopa-fugaz",
       titulo:ultimoGano?"¡SOPA COMPLETA!":"SE ACABÓ EL TIEMPO",sub:(modo==="giratoria"?"Sopa giratoria":"Sopa clásica")+" · Nivel "+nivel,
       cifras:[["🔎",halladas.size+"/"+objetivos.length,"palabras"],["⭐",puntaje,"puntos"],["⏱",reloj(Math.max(0,tiempoMs)),ultimoGano?"me sobró":"tiempo"]],
+      captura:{el:"#sfTablero"},anchoTablero:640,ladoTitulo:"Las palabras",lado:objetivos.map(w=>({texto:w,estado:halladas.has(w)?"ok":"mal"})),
       filas:objetivos.map(w=>({emoji:halladas.has(w)?"✅":"❌",texto:w,estado:halladas.has(w)?"ok":"mal"})),
       texto:"🔎 Sopa Fugaz · nivel "+nivel+" · "+halladas.size+"/"+objetivos.length+" palabras · "+puntaje+" puntos."});
   }

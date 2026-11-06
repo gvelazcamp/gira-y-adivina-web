@@ -236,8 +236,8 @@ const AhorcadoRioplatense=(()=>{
     panel("¡Se terminó!","Puntos: "+puntos+". Mejor: "+datos.mejor+".",[["Jugar de nuevo",iniciar],...OPCIONES_AMIGO],record?"record":puntos>0?"gano":"perdio");
     if(window.CompartirResultado){const ok=resultadosAh.filter(r=>r.gano).length;$("#ahPanel .sf-acciones").appendChild(CompartirResultado.boton(()=>({juego:"El Ahorcado",logo:ARTE("logo"),archivo:"el-ahorcado",
       titulo:record?"¡NUEVO RÉCORD!":ok+" DE "+resultadosAh.length+" PALABRAS",sub:puntos+" puntos · Mejor: "+datos.mejor,
-      cifras:[["✅",ok,"adivinadas"],["💀",resultadosAh.length-ok,"ahorcado"],["⭐",puntos,"puntos"]],
-      filas:resultadosAh.map(r=>({emoji:r.gano?"✅":"💀",texto:r.p,estado:r.gano?"ok":"mal"})),
+      captura:[{el:"#ahFigura",factor:2.2},{el:"#ahPregunta"},{el:"#ahPalabra",factor:1.15}],anchoTablero:620,
+      ladoTitulo:"Las que tocaron",lado:resultadosAh.map(r=>({emoji:r.gano?"✅":"💀",texto:r.p,estado:r.gano?"ok":"mal"})),
       texto:"🪢 El Ahorcado · "+ok+" palabras · "+puntos+" puntos."})));}
   }
   function quitarTildes(s){return s.normalize("NFD").split("").filter(ch=>{const n=ch.charCodeAt(0);return n<0x300||n>0x36f;}).join("");}
