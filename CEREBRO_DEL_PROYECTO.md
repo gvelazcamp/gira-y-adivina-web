@@ -395,6 +395,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 07/11/2026 — Usuarios: la cantidad de jugadores al lado del título
+- Qué: Gonzalo pidió la cantidad arriba, al costado de "👥 Usuarios", en vez de abajo de la lista. Ahora es una etiqueta dorada (#usrTotal) junto al título; abajo solo queda el estado (cargando, error o "Todavía no hay usuarios").
+- Dónde: index.html, sw gya-cache-v756.
+
 ### 07/11/2026 — Inicio: se saca el botón "Jugá en equipo"
 - Qué: Gonzalo: "no me parece tener otro botón más en el menú, ya se entiende como dejamos las extensiones". Se quitó #bJugarEquipo (era solo para Gonzalo) del inicio, su CSS y su JS. Lo colaborativo queda en Más juegos: filtro "🤝 En equipo" y etiquetas en cada tarjeta. Extensiones.abrirLobby("equipo") sigue funcionando.
 - Dónde: index.html, extensiones.js (v145), extensiones.css (v175), sw gya-cache-v755.
