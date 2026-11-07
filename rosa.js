@@ -18,7 +18,10 @@
   const GRUPO="embudo_rosa",K_VISTO="gya_rosa_cap"+CAPITULO.id,K_ID="gya_rosa_visitante",K_PASOS="gya_rosa_pasos",K_IR="gya_rosa_ir";
   const ls={get:k=>{try{return localStorage.getItem(k);}catch(e){return null;}},set:(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}},del:k=>{try{localStorage.removeItem(k);}catch(e){}}};
   const q=(()=>{try{return new URLSearchParams(location.search);}catch(e){return new URLSearchParams();}})();
-  const fuente=q.get("rosa")==="1"?"link":q.get("fbclid")?"meta":/^(ig|instagram|fb|facebook)$/i.test(q.get("utm_source")||"")?"utm":"";
+  /* Instagram no siempre agrega fbclid al link del anuncio: también se reconoce su navegador interno
+     (o que venga de instagram.com / facebook.com). El link de la bio trae ?rosa=1 y sigue contando como "link". */
+  const enAppMeta=(()=>{try{return /Instagram|FBAN|FBAV|FB_IAB|FBIOS/i.test(navigator.userAgent||"")||/instagram\.com|facebook\.com/i.test(document.referrer||"");}catch(e){return false;}})();
+  const fuente=q.get("rosa")==="1"?"link":q.get("fbclid")?"meta":/^(ig|instagram|fb|facebook)$/i.test(q.get("utm_source")||"")?"utm":enAppMeta?"app":"";
   const tienePerfil=()=>{try{return !!(typeof perfil!=="undefined"&&perfil&&perfil.nombre);}catch(e){return false;}};
 
   /* --- Embudo: llegó, jugó, la sacó / no, quiere seguir, se registró, entró a Palabra Secreta --- */
@@ -31,7 +34,9 @@
   async function subir(p){
     try{if(tienePerfil())p.nombre=perfil.nombre;}catch(e){}
     ls.set(K_PASOS,JSON.stringify(p));
-    try{const sb=typeof obtenerSupa==="function"?obtenerSupa():null;if(!sb)return;
+    try{const sb=typeof obtenerSupa==="function"?obtenerSupa():null;
+      /* Si la conexión todavía no cargó (internet lento), se reintenta en vez de perder el paso. */
+      if(!sb){if((subir.n=(subir.n||0)+1)<=20)setTimeout(()=>subir(pasos()),3000);return;}
       await sb.from("gya_ranking").upsert({grupo:GRUPO,apodo:visitante(),monedas_totales:0,ciudades_ganadas:0,mejor_racha:0,logros:0,estado_juego:p,actualizado_en:new Date().toISOString()},{onConflict:"grupo,apodo"});}catch(e){}
   }
   /* Resumen para Gonzalo (👥 Usuarios). */
@@ -39,7 +44,7 @@
     const sb=typeof obtenerSupa==="function"?obtenerSupa():null;if(!sb)return null;
     try{const r=await sb.from("gya_ranking").select("estado_juego,actualizado_en").eq("grupo",GRUPO).limit(5000);if(r.error)return null;
       const c={llego:0,jugo:0,gano:0,perdio:0,quiere:0,registro:0,palabra:0};
-      c.anuncio={llego:0,jugo:0};c.lista=[];for(const f of r.data||[]){const e=f.estado_juego||{};for(const k in c)if(e[k])c[k]++;if(e.origen==="meta"||e.origen==="utm"){if(e.llego)c.anuncio.llego++;if(e.jugo)c.anuncio.jugo++;c.lista.push({nombre:e.nombre||"",palabras:e.palabras||[],fin:e.gano?"gano":e.perdio?"perdio":"",registro:!!e.registro,fecha:f.actualizado_en||""});}}
+      c.anuncio={llego:0,jugo:0};c.lista=[];for(const f of r.data||[]){const e=f.estado_juego||{};for(const k in c)if(e[k])c[k]++;if(e.origen==="meta"||e.origen==="utm"||e.origen==="app"){if(e.llego)c.anuncio.llego++;if(e.jugo)c.anuncio.jugo++;c.lista.push({nombre:e.nombre||"",palabras:e.palabras||[],fin:e.gano?"gano":e.perdio?"perdio":"",registro:!!e.registro,fecha:f.actualizado_en||""});}}
       c.lista.sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
       return c;}catch(e){return null;}
   }
@@ -89,6 +94,9 @@
 .ro-panel p{margin:0 0 10px;font:700 .92rem/1.3 Outfit;color:#E4D8EB}
 .ro-si{display:block;width:100%;border:0;border-radius:14px;padding:14px;background:linear-gradient(#ff4fa3,#E5197C);color:#fff;font:900 1.05rem Outfit;cursor:pointer;box-shadow:0 4px 0 #8E0F4C}
 .ro-no{margin-top:8px;border:0;background:none;color:#9fb6c4;font:800 .85rem Outfit;text-decoration:underline;cursor:pointer}
+/* Pantallas bajas (el navegador de Instagram ocupa parte de arriba y de abajo): que entre el teclado entero sin deslizar. */
+@media (max-height:760px){.ro-esc{zoom:.72}.ro-c{max-height:40px;font-size:1.05rem}.ro-tec button{height:40px}.ro-lib{margin-top:6px;padding-top:6px}.ro-msj{margin-top:4px}}
+@media (max-height:640px){.ro-esc{zoom:.55}.ro-c{max-height:34px;font-size:.95rem}.ro-tec button{height:36px}.ro-tab{gap:3px}.ro-fila{gap:4px}}
 `;
     document.head.appendChild(st);
   }
