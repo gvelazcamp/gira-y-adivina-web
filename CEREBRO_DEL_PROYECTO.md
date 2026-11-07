@@ -395,6 +395,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 07/11/2026 — Pruebas: botón «📣 Anuncio Doña Rosa» con las palabras que pusieron
+- Qué: la línea de arriba de 🧪 Pruebas pasó a ser un botón (muestra jugaron · llegaron). Al tocarlo abre la lista de los que vinieron por la publicidad: nombre (si después se hicieron perfil; si no, «(sin nombre)»), si la sacaron o no, si se registraron y las palabras que probaron. Sirve para armar la historia siguiente («pusieron tales cosas»). Las palabras y el nombre se guardan desde hoy en la fila del visitante (estado_juego.palabras / .nombre, grupo embudo_rosa); el nombre se completa solo cuando vuelve a abrir el juego con perfil.
+- Dónde: rosa.js (subir(), resumen().lista, v3), index.html (#bPruebaAnuncio, verAnuncioRosa()), sw.js (gya-cache-v760).
+
 ### 07/11/2026 — Pruebas de Gonzalo: cuántos jugaron del anuncio
 - Qué: al abrir 🧪 Pruebas aparece «📣 Jugaron del anuncio: N (llegaron M)». Solo cuenta a los que vinieron por la publicidad (origen meta/utm del embudo de Doña Rosa), no a los del link ?rosa=1. Base anterior a Doña Rosa: 64 visitas desde el anuncio, 0 registros.
 - Dónde: rosa.js (resumen() suma c.anuncio, v2), index.html (#pruebasAnuncio en capaPruebas), sw.js (gya-cache-v759).
