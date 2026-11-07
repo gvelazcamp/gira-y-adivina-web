@@ -25,16 +25,22 @@
   function visitante(){let id=ls.get(K_ID);if(!id){id="v"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);ls.set(K_ID,id);}return id;}
   function pasos(){try{return JSON.parse(ls.get(K_PASOS)||"{}")||{};}catch(e){return {};}}
   async function paso(nombre){
-    const p=pasos();if(p[nombre])return;p[nombre]=Date.now();p.cap=CAPITULO.id;p.origen=p.origen||fuente||"?";ls.set(K_PASOS,JSON.stringify(p));
+    const p=pasos();if(p[nombre])return;p[nombre]=Date.now();p.cap=CAPITULO.id;p.origen=p.origen||fuente||"?";await subir(p);
+  }
+  /* Guarda en la fila del visitante las palabras que puso y su nombre (si ya tiene perfil). */
+  async function subir(p){
+    try{if(tienePerfil())p.nombre=perfil.nombre;}catch(e){}
+    ls.set(K_PASOS,JSON.stringify(p));
     try{const sb=typeof obtenerSupa==="function"?obtenerSupa():null;if(!sb)return;
       await sb.from("gya_ranking").upsert({grupo:GRUPO,apodo:visitante(),monedas_totales:0,ciudades_ganadas:0,mejor_racha:0,logros:0,estado_juego:p,actualizado_en:new Date().toISOString()},{onConflict:"grupo,apodo"});}catch(e){}
   }
   /* Resumen para Gonzalo (👥 Usuarios). */
   async function resumen(){
     const sb=typeof obtenerSupa==="function"?obtenerSupa():null;if(!sb)return null;
-    try{const r=await sb.from("gya_ranking").select("estado_juego").eq("grupo",GRUPO).limit(5000);if(r.error)return null;
+    try{const r=await sb.from("gya_ranking").select("estado_juego,actualizado_en").eq("grupo",GRUPO).limit(5000);if(r.error)return null;
       const c={llego:0,jugo:0,gano:0,perdio:0,quiere:0,registro:0,palabra:0};
-      c.anuncio={llego:0,jugo:0};for(const f of r.data||[]){const e=f.estado_juego||{};for(const k in c)if(e[k])c[k]++;if(e.origen==="meta"||e.origen==="utm"){if(e.llego)c.anuncio.llego++;if(e.jugo)c.anuncio.jugo++;}}
+      c.anuncio={llego:0,jugo:0};c.lista=[];for(const f of r.data||[]){const e=f.estado_juego||{};for(const k in c)if(e[k])c[k]++;if(e.origen==="meta"||e.origen==="utm"){if(e.llego)c.anuncio.llego++;if(e.jugo)c.anuncio.jugo++;c.lista.push({nombre:e.nombre||"",palabras:e.palabras||[],fin:e.gano?"gano":e.perdio?"perdio":"",registro:!!e.registro,fecha:f.actualizado_en||""});}}
+      c.lista.sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
       return c;}catch(e){return null;}
   }
 
@@ -114,7 +120,7 @@
       if(borrador.length<5){mensaje("Faltan letras: la clave tiene 5.");return;}
       if(!valida(borrador)){mensaje("Esa palabra no está en el diccionario.");return;}
       if(!mios.length)paso("jugo");
-      mios.push(borrador);borrador="";
+      mios.push(borrador);borrador="";{const p=pasos();p.palabras=mios.slice();subir(p);}
       if(mios[mios.length-1]===CAPITULO.clave){fin="gano";paso("gano");}
       else if(mios.length>=3){fin="perdio";paso("perdio");}
       ls.set(K_VISTO,fin||"jugando");pintar();
@@ -157,6 +163,8 @@
   }
   function arrancar(){
     irAPalabra();
+    /* Si llegó por el anuncio y después se hizo el perfil, se anota su nombre. */
+    setTimeout(()=>{const p=pasos();if(p.llego&&tienePerfil()&&p.nombre!==perfil.nombre)subir(p);},4000);
     if(!fuente)return;
     const visto=ls.get(K_VISTO);if(visto&&fuente!=="link")return;
     mostrar();
