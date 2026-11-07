@@ -395,6 +395,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 07/11/2026 — Pruebas de Gonzalo: cuántos jugaron del anuncio
+- Qué: al abrir 🧪 Pruebas aparece «📣 Jugaron del anuncio: N (llegaron M)». Solo cuenta a los que vinieron por la publicidad (origen meta/utm del embudo de Doña Rosa), no a los del link ?rosa=1. Base anterior a Doña Rosa: 64 visitas desde el anuncio, 0 registros.
+- Dónde: rosa.js (resumen() suma c.anuncio, v2), index.html (#pruebasAnuncio en capaPruebas), sw.js (gya-cache-v759).
+
 ### 07/11/2026 — Palabra Secreta: «¿Cómo se juega?» corto y sin scroll
 - Qué: Gonzalo dijo que el popup tenía demasiada letra. Ahora: una línea de qué hacer, los 4 colores con su ficha de ejemplo (verde, amarillo, gris, raya violeta) en una grilla, y una línea de retos (repetir palabra, ⏱ contrarreloj). Entra sin scroll en 360×640.
 - Dónde: palabra-secreta.js (ayuda(), v35), extensiones.css (.ps-ayuda-corta/.ps-ayuda-ley, v176), sw.js (gya-cache-v758), tests/palabra-secreta-repetidas.cjs.

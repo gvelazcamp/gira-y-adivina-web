@@ -34,7 +34,7 @@
     const sb=typeof obtenerSupa==="function"?obtenerSupa():null;if(!sb)return null;
     try{const r=await sb.from("gya_ranking").select("estado_juego").eq("grupo",GRUPO).limit(5000);if(r.error)return null;
       const c={llego:0,jugo:0,gano:0,perdio:0,quiere:0,registro:0,palabra:0};
-      for(const f of r.data||[]){const e=f.estado_juego||{};for(const k in c)if(e[k])c[k]++;}
+      c.anuncio={llego:0,jugo:0};for(const f of r.data||[]){const e=f.estado_juego||{};for(const k in c)if(e[k])c[k]++;if(e.origen==="meta"||e.origen==="utm"){if(e.llego)c.anuncio.llego++;if(e.jugo)c.anuncio.jugo++;}}
       return c;}catch(e){return null;}
   }
 
