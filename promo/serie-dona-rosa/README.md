@@ -25,3 +25,8 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 - Gonzalo pasa: la palabra más votada, 3 o 4 nombres de los que comentaron y el audio grabado en ElevenLabs (voz César Rodríguez) con el texto que le pasa Claude (texto plano, sin etiquetas).
 - Claude ajusta la escena (`capitulo-N.html`, mismo motor: `T`, `pintar()`, `SUBS`, `TIEMPOS`), toma los tiempos de la voz con `ffmpeg silencedetect`, graba cuadros con Playwright (1080×1920, 30 fps), une voz + música bajita + cierre, y verifica que los colores de cada intento coincidan con la clave.
 - Desde la sesión de Claude ElevenLabs genera pero no deja bajar los audios (Forbidden): por eso Gonzalo graba y manda el mp3.
+
+## Página de llegada (rosa.js)
+- Quien toca el link del anuncio (Meta le agrega fbclid) ve la libreta del último capítulo y juega los intentos que quedan; después crea su perfil y entra a Palabra Secreta. Para la bio usar `https://girayadivina.com/?rosa=1`.
+- **Cada capítulo nuevo:** actualizar `CAPITULO` en `rosa.js` (id nuevo para que la vean de nuevo, clave, intentos con los nombres de los que comentaron, textos) y subir `rosa.js?v=` en index.html y sw.js.
+- Embudo: 👥 Usuarios (solo Gonzalo) muestra llegaron / jugaron / la sacaron / quieren seguir / se registraron / entraron a Palabra Secreta.

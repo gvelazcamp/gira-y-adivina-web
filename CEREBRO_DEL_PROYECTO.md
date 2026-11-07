@@ -395,6 +395,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 07/11/2026 — Página de llegada «Doña Rosa» para los que vienen del anuncio
+- Qué: 64 personas entraron desde el anuncio y no se registraba nadie (caían en el inicio y el perfil). Idea de Gonzalo: que sigan la historia. rosa.js muestra, a quien llega con la marca de Meta (fbclid), utm_source=ig/fb o ?rosa=1, el almacén y la libreta con los intentos del último capítulo (Pepito MATES, Marta PERRO, Juanchi VERDE) y 3 intentos para abrir el candado (clave TERMO, valida con el diccionario de Palabra Secreta). Si la saca: candado abierto y «¡Salvaste a Doña Rosa!»; si no: «¡Casi!» sin revelar la palabra. Después «¿Querés seguir jugando a Palabra Secreta?» → si no tiene perfil va directo a «Elegí tu nombre» (sin el tutorial de la rueda) y al terminar abre Palabra Secreta. «Saltar» deja el inicio normal. Se muestra una vez por capítulo (gya_rosa_cap<N>); ?rosa=1 la muestra siempre (sirve para el link de la bio). Embudo en Supabase (gya_ranking, grupo embudo_rosa, una fila por visitante: llego, jugo, gano/perdio, quiere, registro, palabra) y Gonzalo lo ve en 👥 Usuarios. Al publicar un capítulo nuevo: actualizar CAPITULO en rosa.js (id, clave, intentos con nombres, textos) y subir su ?v=.
+- Dónde: rosa.js (nuevo, v1), index.html (script + línea del embudo en Usuarios), sw.js (app shell + gya-cache-v757), promo/serie-dona-rosa/README.md.
+
 ### 07/11/2026 — Usuarios: la cantidad de jugadores al lado del título
 - Qué: Gonzalo pidió la cantidad arriba, al costado de "👥 Usuarios", en vez de abajo de la lista. Ahora es una etiqueta dorada (#usrTotal) junto al título; abajo solo queda el estado (cargando, error o "Todavía no hay usuarios").
 - Dónde: index.html, sw gya-cache-v756.

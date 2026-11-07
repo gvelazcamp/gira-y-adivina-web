@@ -816,6 +816,8 @@ p.sub{margin:14px 0 24px;color:#C9B8DE}
 #bExtensiones:active{box-shadow:0 2px 0 #174F71}
 .usr-total{display:inline-block;margin-left:10px;padding:2px 12px;border-radius:99px;background:#F5B30126;border:1px solid #F5B30188;color:#F5B301;font-size:.6em;vertical-align:middle}
 .usr-total[hidden]{display:none}
+.usr-embudo{margin:-6px 0 12px!important;padding:8px 10px;border-radius:12px;background:#E5197C1f;border:1px solid #E5197C55;color:#FFD0E6!important;font-size:.82rem!important;line-height:1.35}
+.usr-embudo[hidden]{display:none}
 #bExtensiones .cta-play{background:#FFFFFF30;color:#F6D77A}
 #bExtensiones .cta-txt b{font-size:clamp(.96rem,4.2vw,1.2rem)}
 .cta-play{flex:0 0 auto;width:46px;height:46px;border-radius:50%;background:#FFFFFF2E;
@@ -1518,6 +1520,7 @@ body:not(.tvhost) #horizontalAyuda{display:none}
 <div class="capa" id="capaUsuarios"><div class="caja rk-caja">
   <h2>👥 Usuarios<span id="usrTotal" class="usr-total" hidden></span></h2>
   <p class="sub" style="margin:6px 0 14px">Todos los que jugaron, se hayan anotado al ranking o no.</p>
+  <p class="sub usr-embudo" id="usrEmbudo" hidden></p>
   <div class="rk-lista" id="usrLista"></div>
   <p class="estado" id="usrEstado" style="margin-top:8px"></p>
   <button class="no" id="usrAgregar" style="display:none;width:100%;border-radius:14px;padding:12px;font-weight:700;margin-top:10px">➕ Agregar jugador a Social</button>
@@ -5548,6 +5551,9 @@ async function usrCargarLista(){
     cont.appendChild(d);
   });
   {const n=(data&&data.length)||0,t=$("usrTotal");if(t){t.textContent=n;t.hidden=!n;}$("usrEstado").textContent=n?"":"Todavía no hay usuarios.";}
+  /* Embudo del anuncio de Doña Rosa (rosa.js), solo para Gonzalo. */
+  if(esGonzalo()&&window.DonaRosa)DonaRosa.resumen().then(c=>{const e=$("usrEmbudo");if(!e||!c||!c.llego)return;e.hidden=false;
+    e.textContent="📣 Anuncio Doña Rosa: "+c.llego+" llegaron · "+c.jugo+" jugaron · "+c.gano+" la sacaron · "+c.quiere+" quieren seguir · "+c.registro+" se registraron · "+c.palabra+" entraron a Palabra Secreta";});
   /* Si yo tengo perfil pero no aparezco, me registro de nuevo y recargo
      una vez; si falla, se muestra el motivo para poder arreglarlo. */
   const meVeo=(data||[]).some(f=>misClaves.includes(normApodo(f.apodo)));
@@ -12141,6 +12147,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="rueda-de-letras.js?v=20"></script>
 <script src="palabra-secreta-datos.js?v=3"></script>
 <script src="palabra-secreta.js?v=34"></script>
+<script src="rosa.js?v=1"></script>
 <link rel="stylesheet" href="palabras-cruzadas.css?v=8">
 <script src="palabras-cruzadas-datos.js?v=3"></script>
 <script src="palabras-cruzadas.js?v=18"></script>
