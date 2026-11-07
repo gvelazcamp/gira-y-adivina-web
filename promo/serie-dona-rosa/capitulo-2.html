@@ -1,0 +1,169 @@
+<!doctype html><html lang="es-UY"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-family:Outfit,sans-serif}
+#e{position:relative;width:1080px;height:1920px;overflow:hidden;background:#24384a}
+.cab{position:absolute;left:0;right:0;top:0;height:140px;background:#1b2e3c;padding:28px 44px}
+.cab b{display:block;font:900 52px "Archivo Black";color:#FCEFD2;letter-spacing:1px}
+.cab small{display:block;font:800 24px Outfit;color:#9fb6c4;letter-spacing:2px;margin-top:4px}
+.info{position:absolute;left:40px;right:40px;top:160px;height:96px;background:#FCEFD2;border-radius:14px;display:flex;justify-content:space-between;align-items:center;padding:0 32px;color:#26323c}
+.info small{display:block;font:800 21px Outfit;letter-spacing:2px;color:#8a7a6a}
+.info b{display:block;font:900 40px "Archivo Black"}.info .der{text-align:right}.info .der b{color:#2d7a8a}
+/* escena */
+#esc{position:absolute;left:0;right:0;top:280px;height:1000px;background:linear-gradient(#bfe3d0 0,#cfe9d8 55%,#9fc79a 55%,#8fb98a 100%);overflow:hidden}
+.edif{position:absolute;left:150px;width:780px;top:140px;height:560px;background:#F3D9A4;border:8px solid #7a4a2a;border-bottom:0}
+.techo{position:absolute;left:120px;width:840px;top:96px;height:60px;background:#b4532f;border-radius:6px}
+.cartel{position:absolute;left:300px;width:480px;top:170px;height:90px;background:#2d5d7a;border:6px solid #f3e3c0;border-radius:10px;display:grid;place-items:center;font:900 46px "Archivo Black";color:#FCEFD2;letter-spacing:2px}
+.cartel small{display:block;font:800 18px Outfit;color:#cfe3ee;margin-top:-6px;text-align:center}
+.toldo{position:absolute;left:170px;width:740px;top:280px;height:80px;background:repeating-linear-gradient(90deg,#d6403a 0 62px,#f6efe2 62px 124px);clip-path:polygon(0 0,100% 0,100% 70%,96% 100%,92% 70%,88% 100%,84% 70%,80% 100%,76% 70%,72% 100%,68% 70%,64% 100%,60% 70%,56% 100%,52% 70%,48% 100%,44% 70%,40% 100%,36% 70%,32% 100%,28% 70%,24% 100%,20% 70%,16% 100%,12% 70%,8% 100%,4% 70%,0 100%)}
+.vent{position:absolute;top:400px;width:210px;height:220px;background:#6fa8c0;border:8px solid #7a4a2a}
+.vent i{position:absolute;left:10px;right:10px;height:8px;background:#7a4a2a}
+.vent b{position:absolute;width:26px;height:40px;border-radius:6px 6px 4px 4px}
+.puerta{position:absolute;left:450px;top:390px;width:180px;height:310px;background:#5b3a26;border:8px solid #7a4a2a}
+.puerta .aviso{position:absolute;left:18px;top:60px;width:130px;padding:8px 4px;background:#fff7e0;border:3px solid #c43;font:900 18px/1.1 Outfit;color:#c43;text-align:center;transform:rotate(-6deg)}
+.vereda{position:absolute;left:0;right:0;top:700px;height:90px;background:#d8cdb6;border-top:6px solid #b9ab8f}
+.calle{position:absolute;left:0;right:0;top:790px;height:210px;background:#6b6b6b}
+.calle i{position:absolute;top:95px;height:16px;width:110px;background:#f3e3c0}
+/* Doña Rosa */
+.rosa{position:absolute;width:120px;height:200px}#rosa{left:640px;top:520px}
+.rosa .pelo{position:absolute;left:24px;top:0;width:72px;height:64px;border-radius:50%;background:#c9c9cf}
+.rosa .rodete{position:absolute;left:44px;top:-22px;width:34px;height:30px;border-radius:50%;background:#c9c9cf}
+.rosa .cara{position:absolute;left:30px;top:16px;width:60px;height:62px;border-radius:50%;background:#f1c6a0}
+.rosa .cara::before,.rosa .cara::after{content:"";position:absolute;top:26px;width:8px;height:8px;border-radius:50%;background:#3a2a20}
+.rosa .cara::before{left:16px}.rosa .cara::after{right:16px}
+.rosa .cuerpo{position:absolute;left:14px;top:76px;width:92px;height:100px;border-radius:26px 26px 10px 10px;background:#7b4fa3}
+.rosa .delantal{position:absolute;left:32px;top:96px;width:56px;height:80px;border-radius:8px;background:#fff3dc}
+.rosa .pies{position:absolute;left:28px;top:174px;width:64px;height:20px;background:#3a2a20;border-radius:10px}
+/* pizarra con el tablero */
+#piz{position:absolute;left:110px;width:860px;top:300px;height:930px;background:#FFF8E6 repeating-linear-gradient(#FFF8E6 0 58px,#cfe0ee 58px 60px);border-left:14px solid #b4532f;border-radius:10px 22px 22px 10px;box-shadow:0 20px 50px #0009;opacity:0;transform:scale(.8)}
+#piz::before{content:"";position:absolute;left:70px;top:0;bottom:0;width:4px;background:#e58a8a}
+#piz h4{text-align:center;font:900 44px "Archivo Black";color:#7a2a1a;margin:26px 0 0;letter-spacing:2px}
+#piz .sub2{text-align:center;font:800 26px Outfit;color:#8a6a5a;margin:2px 0 16px}
+#piz .cand{position:absolute;right:28px;top:14px;font-size:72px}
+#tab{display:grid;grid-template-rows:repeat(6,104px);gap:14px;justify-content:center}
+.fila{display:grid;grid-template-columns:170px repeat(5,104px);gap:12px;align-items:center}
+.fila .n{font:900 30px "Archivo Black";color:#2d5d7a;text-align:right;padding-right:6px;white-space:nowrap}
+#globo{position:absolute;left:740px;top:390px;background:#fff;border-radius:30px;padding:16px 22px;font:900 34px/1.05 Outfit;color:#5b3a26;opacity:0;box-shadow:0 8px 20px #0004}
+.c{width:104px;height:104px;background:url(../../assets/palabra-secreta/casilla.webp) center/100% 100%;display:grid;place-items:center;font:900 54px "Archivo Black";color:#fff}
+.c.verde{background-image:url(../../assets/palabra-secreta/verde.webp)}.c.amarilla{background-image:url(../../assets/palabra-secreta/amarilla.webp);color:#3A2400}.c.gris{background-image:url(../../assets/palabra-secreta/gris.webp)}
+.c.q{color:#F5B301}
+#sub{position:absolute;left:46px;right:46px;top:1320px;height:420px;display:flex;align-items:center;justify-content:center;text-align:center;font:900 76px/1.06 "Archivo Black";color:#FCEFD2;text-transform:uppercase}
+#sub em{font-style:normal;color:#F5C451}
+#firma{position:absolute;left:44px;bottom:36px;font:800 24px Outfit;color:#9fb6c4}
+
+.info{height:270px;padding:0;background:none;gap:18px;align-items:stretch}
+.info>div:first-child{background:#FCEFD2;border-radius:14px;padding:22px 26px;width:300px;display:flex;flex-direction:column;justify-content:center}
+.info>div:first-child b{font-size:54px;color:#c43}
+#votos{flex:1;background:#2f4a33;border:8px solid #7a4a2a;border-radius:14px;padding:16px 24px;color:#FCEFD2;box-shadow:inset 0 0 30px #0006}
+#votos h5{font:900 40px "Archivo Black";color:#F5C451;letter-spacing:1px}
+#votos h5 span{color:#FCEFD2}
+#votos ul{list-style:none;display:grid;grid-template-columns:1fr;gap:4px 18px;margin-top:10px;border-top:3px solid #ffffff40;padding-top:12px}
+#votos ul.dos{grid-template-columns:1fr 1fr}
+#votos li{font:800 32px Outfit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#votos ul.dos li{font-size:25px}
+.marco{position:absolute;left:0;right:0;top:450px;height:860px;overflow:hidden}#esc{top:0;height:860px}
+/* puerta que se abre */
+.puerta{background:#1a100a;perspective:600px}
+.hoja{position:absolute;inset:0;background:#5b3a26;transform-origin:left center}
+.hoja .aviso{left:18px;top:60px}#candP{position:absolute;right:-22px;top:150px;font-size:64px}
+/* adentro del almacén */
+#intM{opacity:0}#int{position:absolute;inset:0;background:#e9d3a6}
+#int .est{position:absolute;left:60px;right:60px;height:16px;background:#7a4a2a}
+#int .prod{position:absolute;width:44px;border-radius:8px 8px 4px 4px}
+#int .barra{position:absolute;left:0;right:0;top:560px;height:300px;background:#8a5530;border-top:26px solid #b4703e}
+#int .barra::after{content:"";position:absolute;left:40px;right:40px;top:40px;bottom:30px;border:6px solid #6b3f22;border-radius:8px}
+#lib{position:absolute;left:330px;top:440px;width:300px;height:130px;background:#b4532f;border-radius:10px 16px 16px 10px;border-left:18px solid #7a2a1a;box-shadow:0 10px 0 #5b3a26}
+#lib b{position:absolute;left:30px;top:30px;font:900 30px "Archivo Black";color:#FCEFD2;letter-spacing:1px}
+#lib i{position:absolute;right:-14px;top:36px;font-style:normal;font-size:60px}
+#lib .pv{position:absolute;inset:-6px;border-radius:12px;background:radial-gradient(circle at 20% 30%,#cfc6b8 0 6px,transparent 7px),radial-gradient(circle at 60% 20%,#cfc6b8 0 5px,transparent 6px),radial-gradient(circle at 80% 70%,#cfc6b8 0 7px,transparent 8px),radial-gradient(circle at 40% 75%,#cfc6b8 0 5px,transparent 6px),#bdb3a466}
+#rosaIn{left:700px;top:400px}
+.nube{position:absolute;width:90px;height:60px;border-radius:50%;background:#d8d0c2;opacity:0;filter:blur(4px)}
+/* libreta en grande */
+#piz{top:460px;height:830px}
+.pag{position:absolute;inset:0}
+.deuda{text-align:center;font:800 32px/1.25 Outfit;color:#5b3a26;margin:6px 0 18px}
+.deuda b{font:900 42px "Archivo Black";color:#c43}
+.tapado{display:inline-block;width:230px;height:46px;vertical-align:middle;border-radius:22px;background:radial-gradient(ellipse at 25% 50%,#a99f90 0 35%,transparent 65%),radial-gradient(ellipse at 70% 45%,#b8ad9c 0 40%,transparent 70%),radial-gradient(ellipse at 50% 55%,#c9bfae 0 50%,transparent 75%);filter:blur(2px)}
+#polvoB{position:absolute;inset:0;border-radius:10px 22px 22px 10px;background:radial-gradient(circle at 15% 20%,#9d927f 0 10px,transparent 11px),radial-gradient(circle at 70% 35%,#9d927f 0 8px,transparent 9px),radial-gradient(circle at 40% 65%,#9d927f 0 12px,transparent 13px),radial-gradient(circle at 85% 80%,#9d927f 0 9px,transparent 10px),#c9bfaecc;pointer-events:none}
+#tabA{display:grid;grid-template-rows:repeat(6,104px);gap:14px;justify-content:center}
+#tabA .fila{grid-template-columns:200px repeat(5,104px)}
+#candA{position:absolute;right:16px;top:10px;font-size:70px;line-height:1}
+#tabB{display:grid;grid-template-rows:repeat(6,96px);gap:10px;justify-content:center}#tabB .fila{grid-template-columns:170px repeat(5,96px)}#tabB .c{width:96px;height:96px;font-size:50px}
+</style></head><body><div id="e">
+<div class="cab"><b>EL ALMACÉN DE DOÑA ROSA</b><small>CAPÍTULO 2 · LA LIBRETA DEL FIADO</small></div>
+<div class="info"><div><small>DÍA 2 · CIERRA EN</small><b id="quedan">3 DÍAS</b><small style="margin-top:6px">VECINOS AYUDANDO</small></div><div id="votos"><h5>VOTARON <span>TERMO</span> <i id="candV" style="font-style:normal">🔒</i></h5><ul id="lista"></ul></div></div>
+<div class="marco"><div id="esc">
+ <div class="techo"></div><div class="edif"></div>
+ <div class="cartel"><div>ALMACÉN ROSA<small>DESDE 1985</small></div></div>
+ <div class="toldo"></div>
+ <div class="vent" style="left:200px"><i style="top:70px"></i><i style="top:140px"></i></div>
+ <div class="vent" style="left:670px"><i style="top:70px"></i><i style="top:140px"></i></div>
+ <div class="puerta"><div class="hoja" id="hoja"><div class="aviso" id="aviso">CIERRA<br>EN 3 DÍAS</div><div id="candP">🔒</div></div></div>
+ <div class="vereda"></div><div class="calle"><i style="left:60px"></i><i style="left:330px"></i><i style="left:600px"></i><i style="left:870px"></i></div>
+ <div id="rosa" class="rosa"><div class="rodete"></div><div class="pelo"></div><div class="cara"></div><div class="cuerpo"></div><div class="delantal"></div><div class="pies"></div></div>
+</div></div>
+<div class="marco" id="intM"><div id="int">
+ <div class="est" style="top:150px"></div><div class="est" style="top:300px"></div>
+ <div id="rosaIn" class="rosa"><div class="rodete"></div><div class="pelo"></div><div class="cara"></div><div class="cuerpo"></div><div class="delantal"></div><div class="pies"></div></div>
+ <div class="barra"></div>
+ <div id="lib"><b>FIADO</b><div class="pv"></div></div>
+ <div class="nube" style="left:320px;top:400px"></div><div class="nube" style="left:560px;top:390px"></div><div class="nube" style="left:440px;top:370px"></div>
+</div></div>
+<div id="piz">
+ <div class="pag" id="pA"><h4>CANDADO DEL ALMACÉN</h4><p class="sub2">La clave que votaron ustedes</p><div id="candA">🔒</div><div id="tabA"></div></div>
+ <div class="pag" id="pB"><h4>PÁGINA 1 · CHELO</h4><p class="deuda">me debe <b>$ 30.000</b> de <span class="tapado"></span></p><div id="tabB"></div><div id="polvoB"></div></div>
+</div>
+<div id="sub"></div><div id="firma">@girayadivina</div>
+</div>
+<script>
+/* ====== LO QUE SE CAMBIA EN CADA CAPÍTULO ====== */
+const VOTARON=["@silvina.martinezok","@matipienia","@santii.yz"];   // los que comentaron TERMO (se cambian sin regrabar la voz)
+const CLAVE_ANTERIOR="TERMO";
+const JUG=[["Don Tito","PASTA",["gris","gris","gris","gris","verde"]],["Nelly","TRIGO",["gris","amarilla","gris","gris","gris"]],["Pepito","MENTA",["gris","verde","gris","gris","verde"]]];   // pistas de YERBA
+/* ================================================ */
+document.querySelectorAll(".vent").forEach(v=>{const cols=["#d6403a","#F5B301","#2d7a8a","#7b4fa3","#3c9a5f"];for(let f=0;f<3;f++)for(let k=0;k<5;k++){const b=document.createElement("b");b.style.left=(14+k*38)+"px";b.style.top=(24+f*70)+"px";b.style.background=cols[(f+k)%5];v.appendChild(b);}});
+{const it=document.getElementById("int"),cols=["#d6403a","#F5B301","#2d7a8a","#7b4fa3","#3c9a5f","#e58a2a"];for(const [y,h] of [[150,70],[300,80]])for(let k=0;k<15;k++){const b=document.createElement("b");b.className="prod";b.style.left=(80+k*62)+"px";b.style.top=(y-h)+"px";b.style.height=h+"px";b.style.background=cols[(k*7+y)%6];it.insertBefore(b,it.firstChild);}}
+const ul=document.getElementById("lista");if(VOTARON.length>3)ul.classList.add("dos");VOTARON.forEach(n=>{const li=document.createElement("li");li.textContent=n;ul.appendChild(li);});
+function fila(nombre){const d=document.createElement("div");d.className="fila";const n=document.createElement("div");n.className="n";n.textContent=nombre;d.appendChild(n);for(let i=0;i<5;i++){const c=document.createElement("div");c.className="c";d.appendChild(c);}return d;}
+const ANTES=[["Pepito","MATES",["amarilla","gris","amarilla","amarilla","gris"]],["Marta","PERRO",["gris","verde","verde","gris","verde"]],["Juanchi","VERDE",["gris","verde","verde","gris","gris"]]];   // tablero del capítulo 1, tal cual
+{const tA=document.getElementById("tabA");ANTES.forEach(([n,w,col])=>{const f=fila(n);[...f.querySelectorAll(".c")].forEach((c,i)=>{c.textContent=w[i];c.className="c "+col[i];});tA.appendChild(f);});tA.appendChild(fila("Doña Rosa"));tA.appendChild(fila(""));tA.appendChild(fila(""));}
+const tabB=document.getElementById("tabB");JUG.forEach(j=>tabB.appendChild(fila(j[0])));for(let k=0;k<3;k++)tabB.appendChild(fila("¿Vos?"));
+let T=0,SUBS=[],TIEMPOS={};
+const cl=(x,a,b)=>Math.max(a,Math.min(b,x)),ease=t=>1-Math.pow(1-t,3),io=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function voltear(c,letra,col,tk,tv){c.textContent=T>=tk?letra:"";c.className="c"+(T>=tv+0.1?" "+col:"");const v=cl((T-tv)/0.2,0,1);c.style.transform=v>0&&v<1?"scaleY("+Math.abs(Math.cos(v*Math.PI))+")":(T>=tk&&T<tk+0.15?"scale(1.12)":"");}
+function pintar(){
+  const s=SUBS.find(x=>T>=x[0]&&T<x[1]);document.getElementById("sub").innerHTML=s?"<span>"+s[2]+"</span>":"";
+  /* afuera: camina hasta la puerta, abre y entra */
+  const w=io(cl((T-TIEMPOS.camina)/(TIEMPOS.llega-TIEMPOS.camina),0,1));const r=document.getElementById("rosa");
+  const en=cl((T-TIEMPOS.entra)/0.9,0,1);
+  r.style.left=(640-160*w)+"px";r.style.top=(520-30*en)+"px";r.style.opacity=1-en;
+  r.style.transform="translateY("+(w>0&&w<1?-Math.abs(Math.sin(T*9))*10:-Math.abs(Math.sin(T*3))*4)+"px) scale("+(1-0.15*en)+")";
+  document.getElementById("hoja").style.transform="rotateY("+(-80*ease(cl((T-TIEMPOS.abre_p)/0.7,0,1)))+"deg)";
+  document.getElementById("esc").style.transform="scale("+(1+0.12*ease(cl((T-TIEMPOS.abre_p)/1.6,0,1)))+")";document.getElementById("esc").style.transformOrigin="50% 62%";
+  /* adentro: la libreta en la barra, con polvo */
+  const inn=cl((T-TIEMPOS.adentro)/0.5,0,1);const it=document.getElementById("int");document.getElementById("intM").style.opacity=inn;
+  it.style.transform="scale("+(1+0.35*io(cl((T-TIEMPOS.adentro-0.6)/(TIEMPOS.piz-TIEMPOS.adentro-0.6),0,1)))+")";it.style.transformOrigin="48% 58%";
+  document.getElementById("rosaIn").style.transform="translateY("+(-Math.abs(Math.sin(T*3))*5)+"px)";
+  document.querySelectorAll(".nube").forEach((n,k)=>{const t=(T-TIEMPOS.adentro-0.9-k*0.25);n.style.opacity=t>0&&t<1.4?0.8*(1-t/1.4):0;n.style.transform="translateY("+(-t*50)+"px) scale("+(1+t*0.6)+")";});
+  const piz=document.getElementById("piz");let p=0;for(const [a,z] of [[TIEMPOS.piz,TIEMPOS.cierraPiz],[TIEMPOS.pagina,99]])if(T>=a&&T<z)p=Math.min(ease(cl((T-a)/0.5,0,1)),ease(cl((z-T)/0.4,0,1)));piz.style.opacity=p;piz.style.transform="scale("+(0.8+0.2*p)+")";
+  document.getElementById("pA").style.opacity=T<TIEMPOS.pagina?1:0;document.getElementById("pB").style.opacity=T>=TIEMPOS.pagina?1:0;
+  document.getElementById("candP").textContent=T>=TIEMPOS.abre?"🔓":"🔒";
+  /* T... E... R... M... O... (de a una, sin color) y después todo verde */
+  [...document.querySelectorAll("#tabA .fila")[3].querySelectorAll(".c")].forEach((c,i)=>voltear(c,CLAVE_ANTERIOR[i],"verde",TIEMPOS.letras[i],TIEMPOS.verde+i*0.14));
+  const abierto=T>=TIEMPOS.abre;const ca=document.getElementById("candA");ca.textContent=abierto?"🔓":"🔒";
+  ca.style.transform=!abierto&&T>=TIEMPOS.letras[0]?"rotate("+Math.sin(T*(T>=TIEMPOS.verde-0.6?34:10))*(T>=TIEMPOS.verde-0.6?16:5)+"deg)":abierto?"scale("+(1+0.35*Math.max(0,1-(T-TIEMPOS.abre)/0.5))+")":"";
+  document.getElementById("candV").textContent=abierto?"🔓":"🔒";
+  const g=T>=TIEMPOS.gracias&&T<TIEMPOS.gracias+2.2?1+0.04*Math.sin((T-TIEMPOS.gracias)*8):1;document.getElementById("votos").style.transform="scale("+g+")";
+  [...document.querySelectorAll("#lista li")].forEach((li,k)=>{li.style.color=T>=TIEMPOS.gracias+k*0.3&&T<TIEMPOS.gracias+2.4?"#F5C451":"";});
+  /* página de Chelo: el polvo se va soplando, menos sobre la mercadería */
+  document.getElementById("polvoB").style.opacity=1-ease(cl((T-TIEMPOS.sopla)/1.4,0,1));
+  const filas=[...document.querySelectorAll("#tabB .fila")].map(f=>[...f.querySelectorAll(".c")]);const nombres=[...document.querySelectorAll("#tabB .n")];
+  JUG.forEach(([n,w,col],k)=>{const t0=TIEMPOS["j"+k];nombres[k].style.opacity=T>=t0-0.3?1:0;filas[k].forEach((c,i)=>voltear(c,w[i],col[i],t0+i*0.18,t0+1.1+i*0.18));});
+  for(let k=JUG.length;k<filas.length;k++){nombres[k].style.opacity=T>=TIEMPOS.pregunta?1:0;filas[k].forEach((c,i)=>{c.textContent=T>=TIEMPOS.pregunta?"?":"";c.className="c"+(T>=TIEMPOS.pregunta?" q":"");c.style.transform=T>=TIEMPOS.pregunta&&k===JUG.length?"scale("+(1+0.07*Math.sin(T*6+i))+")":"";});}
+}
+const TOTAL=45.0;
+TIEMPOS={camina:0.3,llega:2.4,piz:5.85,letras:[7.62,8.42,9.28,10.28,11.21],verde:11.45,abre:12.12,cierraPiz:14.0,gracias:14.14,abre_p:14.4,entra:15.0,adentro:15.9,pagina:18.9,sopla:19.92,j0:25.84,j1:29.25,j2:32.9,pregunta:36.67};
+SUBS=[[0,1.43,"Es el <em>día dos</em>."],[1.43,3.6,"Doña Rosa, con la ayuda de sus <em>nuevos amigos</em>,"],[3.6,5.85,"va a intentar abrir el <em>candado</em>."],[5.85,7.62,"Ustedes votaron <em>TERMO</em>."],[7.62,8.42,"T…"],[8.42,9.28,"T… E…"],[9.28,10.28,"T… E… R…"],[10.28,11.21,"T… E… R… M…"],[11.21,12.04,"T… E… R… M… O…"],[12.04,13.0,"¡Se <em>abrió</em>!"],[13.0,14.14,"¡Era <em>TERMO</em>!"],[14.14,16.26,"<em>Gracias</em> a todos los que comentaron."],[16.26,19.92,"Pero después de tres meses, la libreta está llena de <em>polvo</em>."],[19.92,23.78,"Su primer cliente es <em>Chelo</em>: le debe <em>$ 30.000</em> de…"],[23.78,25.84,"algo que el polvo <em>no deja leer</em>."],[25.84,29.25,"<em>Don Tito</em> probó PASTA: solo la A, al final."],[29.25,32.9,"<em>Nelly</em> probó TRIGO: la R está, pero en otro lugar."],[32.9,36.67,"Y <em>Pepito</em> probó MENTA: la E y la A, en su lugar."],[36.67,37.78,"¿Qué le debe <em>Chelo</em>?"],[37.78,38.64,"<em>Comentalo.</em>"],[38.64,45,"Si cobra, Doña Rosa paga parte de su <em>primer mes</em> de alquiler."]];
+pintar();
+</script></body></html>

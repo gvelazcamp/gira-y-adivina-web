@@ -395,6 +395,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 07/11/2026 — Doña Rosa capítulo 2: la página del anuncio pasa a Chelo y la YERBA
+- Qué: la página de llegada del anuncio ahora es el capítulo 2: «PÁGINA 1 · CHELO — Me debe $ 30.000 de…», con las pistas Don Tito PASTA, Nelly TRIGO y Pepito MENTA, y 3 intentos para el visitante (clave YERBA). Si la saca: «🎉 ¡Doña Rosa cobró!». Los que ya vieron el capítulo 1 la ven de nuevo (id 2). En el embudo cada capítulo cuenta como fila aparte y en Pruebas → Anuncio Doña Rosa se ve «Cap. N». Al terminar, la página baja sola hasta el botón «¡Sí, quiero jugar!». Video y escena del capítulo 2 en promo/serie-dona-rosa/.
+- Dónde: rosa.js (CAPITULO id 2 con hoja/sub/icono/ganoTitulo, pasos por capítulo, v5), index.html (Cap. en la lista), sw.js (gya-cache-v762), promo/serie-dona-rosa/capitulo-2.html y README.md.
+
 ### 07/11/2026 — Doña Rosa: también la ven los que entran por el navegador de Instagram
 - Qué: el anuncio marcaba 128 visitas (64 nuevas) pero solo 2 «llegaron»: Instagram no siempre agrega fbclid al link. Ahora rosa.js también reconoce el navegador interno de Instagram/Facebook (o que venga de instagram.com/facebook.com) como origen «app» y cuenta como anuncio. Si la conexión con Supabase no cargó todavía, el paso se reintenta (antes se perdía). Y en pantallas bajas (≤760 px de alto, como dentro de Instagram) la escena y el teclado se achican para que el botón Probar se vea sin deslizar (antes quedaba cortado abajo).
 - Dónde: rosa.js (enAppMeta, subir() con reintento, @media max-height, v4), sw.js (gya-cache-v761).

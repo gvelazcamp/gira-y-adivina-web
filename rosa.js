@@ -9,12 +9,19 @@
      lo ve en 👥 Usuarios.
    - Al publicar un capítulo nuevo se actualiza CAPITULO (clave, intentos con sus nombres y textos). */
 (function(){
-  const CAPITULO={id:1,clave:"TERMO",
-    intentos:[["Pepito","MATES"],["Marta","PERRO"],["Juanchi","VERDE"]],
-    titulo:"La libreta del fiado",
-    pedido:"¡Ayudame a abrir la libreta! 🔒",
-    gano:"¡La abriste! Ahora Doña Rosa puede cobrar el fiado y el almacén no cierra.",
-    perdio:"Doña Rosa todavía no la puede abrir 😢 Mirá cómo sigue en el próximo capítulo."};
+  /* Capítulo 1 (07/11): clave TERMO, intentos Pepito MATES, Marta PERRO, Juanchi VERDE.
+     Capítulo 2 (07/11): abrió el candado del almacén con TERMO; la libreta tiene polvo y hay que adivinar
+     qué le debe Chelo ($ 30.000 de YERBA). */
+  const CAPITULO={id:2,clave:"YERBA",
+    intentos:[["Don Tito","PASTA"],["Nelly","TRIGO"],["Pepito","MENTA"]],
+    titulo:"Capítulo 2 · La libreta del fiado",
+    hoja:"PÁGINA 1 · CHELO",          // título de la libreta
+    icono:"🧉",                        // arriba a la derecha de la libreta (sin icono: candado 🔒/🔓)
+    sub:"Me debe $ 30.000 de…",        // renglón debajo del título
+    pedido:"¿Qué me debe Chelo? El polvo no me deja leer 😩",
+    ganoTitulo:"🎉 ¡Doña Rosa cobró!",
+    gano:"¡Era YERBA! Chelo le paga los $ 30.000 y Doña Rosa ya junta parte del primer mes de alquiler.",
+    perdio:"Todavía no se sabe qué le debe Chelo 😢 Mirá cómo sigue en el próximo capítulo."};
   const GRUPO="embudo_rosa",K_VISTO="gya_rosa_cap"+CAPITULO.id,K_ID="gya_rosa_visitante",K_PASOS="gya_rosa_pasos",K_IR="gya_rosa_ir";
   const ls={get:k=>{try{return localStorage.getItem(k);}catch(e){return null;}},set:(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}},del:k=>{try{localStorage.removeItem(k);}catch(e){}}};
   const q=(()=>{try{return new URLSearchParams(location.search);}catch(e){return new URLSearchParams();}})();
@@ -26,7 +33,8 @@
 
   /* --- Embudo: llegó, jugó, la sacó / no, quiere seguir, se registró, entró a Palabra Secreta --- */
   function visitante(){let id=ls.get(K_ID);if(!id){id="v"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);ls.set(K_ID,id);}return id;}
-  function pasos(){try{return JSON.parse(ls.get(K_PASOS)||"{}")||{};}catch(e){return {};}}
+  /* Cada capítulo empieza su propio recorrido (una fila por visitante y capítulo). */
+  function pasos(){try{const p=JSON.parse(ls.get(K_PASOS)||"{}")||{};return p.cap&&p.cap!==CAPITULO.id?{}:p;}catch(e){return {};}}
   async function paso(nombre){
     const p=pasos();if(p[nombre])return;p[nombre]=Date.now();p.cap=CAPITULO.id;p.origen=p.origen||fuente||"?";await subir(p);
   }
@@ -37,14 +45,14 @@
     try{const sb=typeof obtenerSupa==="function"?obtenerSupa():null;
       /* Si la conexión todavía no cargó (internet lento), se reintenta en vez de perder el paso. */
       if(!sb){if((subir.n=(subir.n||0)+1)<=20)setTimeout(()=>subir(pasos()),3000);return;}
-      await sb.from("gya_ranking").upsert({grupo:GRUPO,apodo:visitante(),monedas_totales:0,ciudades_ganadas:0,mejor_racha:0,logros:0,estado_juego:p,actualizado_en:new Date().toISOString()},{onConflict:"grupo,apodo"});}catch(e){}
+      await sb.from("gya_ranking").upsert({grupo:GRUPO,apodo:visitante()+(CAPITULO.id>1?"_c"+CAPITULO.id:""),monedas_totales:0,ciudades_ganadas:0,mejor_racha:0,logros:0,estado_juego:p,actualizado_en:new Date().toISOString()},{onConflict:"grupo,apodo"});}catch(e){}
   }
   /* Resumen para Gonzalo (👥 Usuarios). */
   async function resumen(){
     const sb=typeof obtenerSupa==="function"?obtenerSupa():null;if(!sb)return null;
     try{const r=await sb.from("gya_ranking").select("estado_juego,actualizado_en").eq("grupo",GRUPO).limit(5000);if(r.error)return null;
       const c={llego:0,jugo:0,gano:0,perdio:0,quiere:0,registro:0,palabra:0};
-      c.anuncio={llego:0,jugo:0};c.lista=[];for(const f of r.data||[]){const e=f.estado_juego||{};for(const k in c)if(e[k])c[k]++;if(e.origen==="meta"||e.origen==="utm"||e.origen==="app"){if(e.llego)c.anuncio.llego++;if(e.jugo)c.anuncio.jugo++;c.lista.push({nombre:e.nombre||"",palabras:e.palabras||[],fin:e.gano?"gano":e.perdio?"perdio":"",registro:!!e.registro,fecha:f.actualizado_en||""});}}
+      c.anuncio={llego:0,jugo:0};c.lista=[];for(const f of r.data||[]){const e=f.estado_juego||{};for(const k in c)if(e[k])c[k]++;if(e.origen==="meta"||e.origen==="utm"||e.origen==="app"){if(e.llego)c.anuncio.llego++;if(e.jugo)c.anuncio.jugo++;c.lista.push({cap:e.cap||1,nombre:e.nombre||"",palabras:e.palabras||[],fin:e.gano?"gano":e.perdio?"perdio":"",registro:!!e.registro,fecha:f.actualizado_en||""});}}
       c.lista.sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
       return c;}catch(e){return null;}
   }
@@ -75,6 +83,7 @@
 .ro-globo{position:absolute;left:8px;bottom:8px;max-width:150px;background:#fff;color:#5b3a26;border-radius:14px;padding:6px 9px;font:800 .72rem/1.15 Outfit;box-shadow:0 4px 12px #0004}
 .ro-lib{position:relative;max-width:440px;margin:10px auto 0;background:#FFF8E6 repeating-linear-gradient(#FFF8E6 0 38px,#cfe0ee 38px 39px);border-left:8px solid #b4532f;border-radius:6px 14px 14px 6px;padding:8px 10px 10px;color:#2A1A3C}
 .ro-lib h4{margin:0;text-align:center;font:900 .95rem "Archivo Black",sans-serif;color:#7a2a1a;letter-spacing:1px}
+.ro-sub{margin:2px 0 0;text-align:center;font:800 .82rem Outfit;color:#7a2a1a}
 .ro-cand{position:absolute;right:8px;top:4px;font-size:1.5rem}
 .ro-tab{display:grid;gap:5px;margin-top:6px}
 .ro-fila{display:grid;grid-template-columns:62px repeat(5,1fr);gap:5px;align-items:center}
@@ -110,14 +119,14 @@
     for(let k=0;k<libres;k++){const act=k===0&&!fin;filas+='<div class="ro-fila vos"><span class="n">'+(act?"Vos ✍️":"Vos")+'</span>'+[0,1,2,3,4].map(i=>'<span class="ro-c'+(act&&i===borrador.length?" act":"")+'">'+(act?(borrador[i]||""):"")+'</span>').join("")+'</div>';}
     const tecla=t=>'<button type="button" data-t="'+t+'">'+t+'</button>';
     const tec=fin?"":'<div class="ro-tec"><div>'+[..."QWERTYUIOP"].map(tecla).join("")+'</div><div>'+[..."ASDFGHJKLÑ"].map(tecla).join("")+'</div><div><button type="button" class="ancho" data-t="⌫">⌫ Borrar</button>'+[..."ZXCVBNM"].map(tecla).join("")+'<button type="button" class="ancho env" data-t="OK">Probar</button></div></div>';
-    const panel=fin?'<div class="ro-panel"><h3>'+(abierto?"🎉 ¡Salvaste a Doña Rosa!":"¡Casi!")+'</h3><p>'+(abierto?CAPITULO.gano:CAPITULO.perdio)+'</p><p>¿Querés seguir jugando a <b>Palabra Secreta</b>? Una palabra nueva cada vez, gratis.</p><button type="button" class="ro-si" id="roSi">🔤 ¡Sí, quiero jugar!</button><button type="button" class="ro-no" id="roNo">Ahora no</button></div>':"";
+    const panel=fin?'<div class="ro-panel"><h3>'+(abierto?(CAPITULO.ganoTitulo||"🎉 ¡Salvaste a Doña Rosa!"):"¡Casi!")+'</h3><p>'+(abierto?CAPITULO.gano:CAPITULO.perdio)+'</p><p>¿Querés seguir jugando a <b>Palabra Secreta</b>? Una palabra nueva cada vez, gratis.</p><button type="button" class="ro-si" id="roSi">🔤 ¡Sí, quiero jugar!</button><button type="button" class="ro-no" id="roNo">Ahora no</button></div>':"";
     capa.innerHTML='<div class="ro-cab"><div><small>'+CAPITULO.titulo+'</small><b>EL ALMACÉN DE DOÑA ROSA</b></div><button type="button" class="ro-x" id="roSaltar">Saltar ✕</button></div>'+
       '<div class="ro-esc"><div class="ro-edif"></div><div class="ro-cartel">ALMACÉN ROSA</div><div class="ro-toldo"></div><div class="ro-puerta"></div><div class="ro-aviso'+(abierto?" ok":"")+'">'+(abierto?"¡ABIERTO!":"CIERRA<br>PRONTO")+'</div>'+rosaHtml()+'<div class="ro-globo">'+(abierto?"¡Gracias, vecino! 💜":fin?"Ay… ¿cuál era? 😢":CAPITULO.pedido)+'</div></div>'+
-      '<div class="ro-lib"><span class="ro-cand">'+(abierto?"🔓":"🔒")+'</span><h4>LIBRETA DEL FIADO</h4><div class="ro-tab">'+filas+'</div></div>'+
-      '<p class="ro-msj" id="roMsj">'+(fin?"":"Tenés "+libres+" intento"+(libres===1?"":"s")+". Clave de 5 letras.")+'</p>'+tec+panel;
+      '<div class="ro-lib"><span class="ro-cand">'+(CAPITULO.icono||(abierto?"🔓":"🔒"))+'</span><h4>'+(CAPITULO.hoja||"LIBRETA DEL FIADO")+'</h4>'+(CAPITULO.sub?'<p class="ro-sub">'+CAPITULO.sub+'</p>':'')+'<div class="ro-tab">'+filas+'</div></div>'+
+      '<p class="ro-msj" id="roMsj">'+(fin?"":"Tenés "+libres+" intento"+(libres===1?"":"s")+". Palabra de 5 letras.")+'</p>'+tec+panel;
     capa.querySelector("#roSaltar").onclick=()=>cerrar(false);
     capa.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>tecla_(b.dataset.t));
-    const si=capa.querySelector("#roSi");if(si){si.onclick=()=>cerrar(true);si.focus({preventScroll:true});}
+    const si=capa.querySelector("#roSi");if(si){si.onclick=()=>cerrar(true);si.focus({preventScroll:true});setTimeout(()=>{try{capa&&capa.scrollTo({top:capa.scrollHeight,behavior:"smooth"});}catch(e){}},600);}
     const no=capa.querySelector("#roNo");if(no)no.onclick=()=>cerrar(false);
   }
   function mensaje(t){const m=capa&&capa.querySelector("#roMsj");if(m)m.textContent=t;}
@@ -125,7 +134,7 @@
     if(fin||!capa)return;
     if(t==="⌫"){borrador=borrador.slice(0,-1);pintar();return;}
     if(t==="OK"){
-      if(borrador.length<5){mensaje("Faltan letras: la clave tiene 5.");return;}
+      if(borrador.length<5){mensaje("Faltan letras: son 5.");return;}
       if(!valida(borrador)){mensaje("Esa palabra no está en el diccionario.");return;}
       if(!mios.length)paso("jugo");
       mios.push(borrador);borrador="";{const p=pasos();p.palabras=mios.slice();subir(p);}

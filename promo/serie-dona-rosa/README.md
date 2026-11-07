@@ -13,6 +13,13 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 - Texto grabado (ElevenLabs, voz CESAR RODRIGUEZ, id 4GeB1bS2GAHAsGRM0eeU): ver `capitulo-1.html` (SUBS con los tiempos de la voz).
 - Video: escena `capitulo-1.html` + voz + música de fondo bajita (`assets/audio/palabra-secreta-musica.mp3` a volumen 0.10) + cierre de 4 s «¿Te animás a jugar vos? Jugá a Palabra Secreta en www.girayadivina.com» con Giro de cuerpo entero (`presentacion-y-locucion-extensiones/Giro/Giro_festejando_cuerpo.webp`; usar siempre los Giro de esa carpeta, sin recorte).
 
+## Capítulo 2 (listo, 07/11/2026)
+- Historia (idea de Gonzalo): «Es el día dos». Doña Rosa llega a la puerta del almacén, que tiene el candado. En el candado está el tablero del capítulo 1 tal cual (Pepito MATES, Marta PERRO, Juanchi VERDE) y en la 4.ª fila Doña Rosa escribe T… E… R… M… O… (letra por letra con la voz), se pone verde y se abre. Abre la puerta, entra y ve la libreta en la barra, llena de polvo. Página 1: **Chelo** le debe $ 30.000 de… (tapado por el polvo).
+- Palabra: **YERBA**. Pistas (pedidas por Gonzalo): Don Tito PASTA (A verde al final), Nelly TRIGO (R amarilla), Pepito MENTA (E y A verdes). Queda _E__A con R. (TERMA no vale: T y M grises.)
+- Pizarra «VOTARON TERMO» con los que comentaron (sin cantidad): @silvina.martinezok, @matipienia, @santii.yz. Se cambian en `VOTARON` de `capitulo-2.html` sin regrabar la voz (la voz no dice nombres).
+- Si cobra, Doña Rosa paga parte de su primer mes de alquiler.
+- Escena `capitulo-2.html` (voz de 45 s + cierre de 4 s = 49 s).
+
 ## Lo que sigue (plan acordado)
 1. **Capítulo 2:** «¡La descubrieron! Era TERMO». Se abre el candado 🔓 y la libreta muestra la primera página: «Me debe: _ _ _ _ _».
 2. **Cada página de la libreta es un deudor del barrio**; la palabra secreta es su apodo u oficio (FLACO, RUBIA, BOCHA, CHAPA, PINTOR, MODISTA…; el juego acepta 5, 6 y 7 letras). Ej.: «el Flaco le debe $3.000 desde el Mundial».
@@ -28,5 +35,5 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 
 ## Página de llegada (rosa.js)
 - Quien toca el link del anuncio (Meta le agrega fbclid) ve la libreta del último capítulo y juega los intentos que quedan; después crea su perfil y entra a Palabra Secreta. Para la bio usar `https://girayadivina.com/?rosa=1`.
-- **Cada capítulo nuevo:** actualizar `CAPITULO` en `rosa.js` (id nuevo para que la vean de nuevo, clave, intentos con los nombres de los que comentaron, textos) y subir `rosa.js?v=` en index.html y sw.js.
+- **Cada capítulo nuevo:** actualizar `CAPITULO` en `rosa.js` (id nuevo para que la vean de nuevo, clave, intentos, `hoja`/`sub`/`icono` de la libreta y textos) y subir `rosa.js?v=` en index.html y sw.js. Cada capítulo es una fila nueva por visitante en el embudo (🧪 Pruebas → 📣 Anuncio Doña Rosa muestra «Cap. N»).
 - Embudo: 👥 Usuarios (solo Gonzalo) muestra llegaron / jugaron / la sacaron / quieren seguir / se registraron / entraron a Palabra Secreta.
