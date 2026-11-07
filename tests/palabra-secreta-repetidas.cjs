@@ -49,7 +49,7 @@ const server=http.createServer((req,res)=>{const file=path.join(root,new URL(req
   await fixture(['ERRARON']);assert.equal(await row(0).locator('.ps-repetida').count(),0);assert(await cell(0,4).evaluate(e=>e.classList.contains('ausente')&&!e.classList.contains('ps-repetida')),'a third gray R is an excess copy and has no stripe');
   await fixture(['MANTEL'],'BANANA');assert.equal(await row(0).locator('.exacta.ps-repetida').count(),2,'one A of three and one N of two both warn');
   await fixture(['CASACA'],'BANANA');assert.equal(await row(0).locator('.ps-repetida').count(),0,'all three As placed: no stripe');
-  await page.locator('#psAyuda').click();assert.match(await page.locator('#psAyudaPanel').textContent(),/palabra completa.*incluidas las verdes/);assert.match(await page.locator('#psAyudaPanel').textContent(),/una sola E/);
+  await page.locator('#psAyuda').click();assert.match(await page.locator('#psAyudaPanel').textContent(),/palabras completas/);assert.match(await page.locator('#psAyudaPanel').textContent(),/Raya violeta: hay otra O más/);
   assert.deepEqual(errors,[]);console.log('PASS: stripe means another copy is still missing in that row, yellow/green stripes, excess gray copies, triple letters, keyboard, accessible legend, draft, final result and real shared PNG pixels.');
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});
