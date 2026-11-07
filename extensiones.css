@@ -1358,10 +1358,6 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .ext-filtros button[aria-pressed="true"]{background:#F5B301;border-color:#F5B301;color:#2A1A3C}
 @media (orientation:landscape) and (max-height:600px){.ext-modos i{font-size:.58rem;padding:1px 5px}.ext-filtros{margin-top:8px}.ext-filtros button{min-height:30px;font-size:.72rem;flex:0 1 auto}}
 
-/* Botón "Jugar con alguien" del inicio (solo Gonzalo) */
-.ext-cta-equipo{margin-top:10px;background:linear-gradient(#4fe3cf,#1fa891)!important;box-shadow:0 5px 0 #0f6b5c!important;color:#10302b!important}
-.ext-cta-equipo .cta-txt small{color:#10302bcc!important}
-.ext-cta-equipo .cta-play{background:#ffffff55!important}
 /* Salas guardadas y aviso de compañero desconectado (06/11/2026) */
 .dl-fijas button small{opacity:.6;margin-left:6px;font-size:.72em}
 .dl-badge.dl-off{opacity:.8;border-color:#ff5c7a}

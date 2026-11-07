@@ -395,6 +395,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 07/11/2026 — Inicio: se saca el botón "Jugá en equipo"
+- Qué: Gonzalo: "no me parece tener otro botón más en el menú, ya se entiende como dejamos las extensiones". Se quitó #bJugarEquipo (era solo para Gonzalo) del inicio, su CSS y su JS. Lo colaborativo queda en Más juegos: filtro "🤝 En equipo" y etiquetas en cada tarjeta. Extensiones.abrirLobby("equipo") sigue funcionando.
+- Dónde: index.html, extensiones.js (v145), extensiones.css (v175), sw gya-cache-v755.
+
 ### 06/11/2026 — Serie de Instagram/TikTok «El almacén de Doña Rosa» guardada
 - Qué: Gonzalo aprobó la serie y pidió guardarla. Plan, historia, clave del capítulo 1 (TERMO), cómo se arma cada capítulo y la escena reutilizable quedaron en promo/serie-dona-rosa/ (README.md y capitulo-1.html). Agregado a "Pendientes que sí tienen fuente".
 - Dónde: promo/serie-dona-rosa/, CEREBRO_DEL_PROYECTO.md. No toca el juego.
