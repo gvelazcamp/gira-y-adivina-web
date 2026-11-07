@@ -6591,7 +6591,7 @@ async function verAnuncioRosa(){
   const a=res.anuncio,l=res.lista.filter(x=>x.palabras.length);
   const fin={gano:"✅ la sacó",perdio:"❌ no la sacó"};
   caja.innerHTML='<p class="imp-ayuda"><b>Llegaron: '+a.llego+' · Jugaron: '+a.jugo+'</b></p>'+
-    (l.length?'<table><tr><th>Quién</th><th>Palabras</th></tr>'+l.map(x=>'<tr><td><b>'+rkEsc(x.nombre||"(sin nombre)")+'</b><small>'+rkEsc(fin[x.fin]||"")+(x.registro?" · se registró":"")+'</small></td><td>'+rkEsc(x.palabras.join(", "))+'</td></tr>').join("")+'</table>':'<p>Todavía nadie puso palabras (se guardan desde hoy).</p>');
+    (l.length?'<table><tr><th>Quién</th><th>Palabras</th></tr>'+l.map(x=>'<tr><td><b>'+rkEsc(x.nombre||"(sin nombre)")+'</b><small>Cap. '+x.cap+' · '+rkEsc(fin[x.fin]||"")+(x.registro?" · se registró":"")+'</small></td><td>'+rkEsc(x.palabras.join(", "))+'</td></tr>').join("")+'</table>':'<p>Todavía nadie puso palabras (se guardan desde hoy).</p>');
 }
 $("bPruebaFallasReg").onclick=()=>{if(!esGonzalo())return;$("capaPruebas").classList.remove("ver");$("capaMas").classList.remove("ver");verFallasRegistro();};
 $("bPruebaContraReloj").onclick=()=>{if(!esGonzalo())return;$("capaPruebas").classList.remove("ver");$("capaMas").classList.remove("ver");if(window.Extensiones){Extensiones.abrirJuego("contra-reloj-rioplatense");setTimeout(()=>{if(window.ContraRelojRioplatense)ContraRelojRioplatense.prueba();},300);}};
@@ -12164,7 +12164,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="rueda-de-letras.js?v=20"></script>
 <script src="palabra-secreta-datos.js?v=3"></script>
 <script src="palabra-secreta.js?v=35"></script>
-<script src="rosa.js?v=4"></script>
+<script src="rosa.js?v=5"></script>
 <link rel="stylesheet" href="palabras-cruzadas.css?v=8">
 <script src="palabras-cruzadas-datos.js?v=3"></script>
 <script src="palabras-cruzadas.js?v=18"></script>
