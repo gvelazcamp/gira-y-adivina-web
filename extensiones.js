@@ -508,13 +508,6 @@ const Extensiones=(()=>{
   return{abrirLobby,abrirJuego,cerrar,prepararDueloTV};
 })();
 window.Extensiones=Extensiones;
-/* Botón "Jugar con alguien" del inicio: prueba solo para Gonzalo, abre Más juegos en "En equipo". */
-const botonEquipo=document.getElementById("bJugarEquipo");
-if(botonEquipo){
-  botonEquipo.onclick=()=>Extensiones.abrirLobby("equipo");
-  const verBotonEquipo=()=>{botonEquipo.hidden=!(EXTENSIONES_HABILITADAS&&typeof esGonzalo==="function"&&esGonzalo());};
-  verBotonEquipo();setInterval(verBotonEquipo,2000);
-}
 const botonExtensiones=document.getElementById("bExtensiones");
 if(botonExtensiones){
   botonExtensiones.hidden=!EXTENSIONES_HABILITADAS;
