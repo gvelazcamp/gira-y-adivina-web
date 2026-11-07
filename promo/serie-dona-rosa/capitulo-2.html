@@ -92,14 +92,14 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
 #tabB{display:grid;grid-template-rows:repeat(6,96px);gap:10px;justify-content:center}#tabB .fila{grid-template-columns:170px repeat(5,96px)}#tabB .c{width:96px;height:96px;font-size:50px}
 </style></head><body><div id="e">
 <div class="cab"><b>EL ALMACÉN DE DOÑA ROSA</b><small>CAPÍTULO 2 · LA LIBRETA DEL FIADO</small></div>
-<div class="info"><div><small>DÍA 2 · CIERRA EN</small><b id="quedan">3 DÍAS</b><small style="margin-top:6px">VECINOS AYUDANDO</small></div><div id="votos"><h5>VOTARON <span>TERMO</span> <i id="candV" style="font-style:normal">🔒</i></h5><ul id="lista"></ul></div></div>
+<div class="info"><div><small>DÍA 2 · CIERRA EN</small><b id="quedan">2 DÍAS</b><small style="margin-top:6px">VECINOS AYUDANDO</small></div><div id="votos"><h5>VOTARON <span>TERMO</span> <i id="candV" style="font-style:normal">🔒</i></h5><ul id="lista"></ul></div></div>
 <div class="marco"><div id="esc">
  <div class="techo"></div><div class="edif"></div>
  <div class="cartel"><div>ALMACÉN ROSA<small>DESDE 1985</small></div></div>
  <div class="toldo"></div>
  <div class="vent" style="left:200px"><i style="top:70px"></i><i style="top:140px"></i></div>
  <div class="vent" style="left:670px"><i style="top:70px"></i><i style="top:140px"></i></div>
- <div class="puerta"><div class="hoja" id="hoja"><div class="aviso" id="aviso">CIERRA<br>EN 3 DÍAS</div><div id="candP">🔒</div></div></div>
+ <div class="puerta"><div class="hoja" id="hoja"><div class="aviso" id="aviso">CIERRA<br>EN 2 DÍAS</div></div></div>
  <div class="vereda"></div><div class="calle"><i style="left:60px"></i><i style="left:330px"></i><i style="left:600px"></i><i style="left:870px"></i></div>
  <div id="rosa" class="rosa"><div class="rodete"></div><div class="pelo"></div><div class="cara"></div><div class="cuerpo"></div><div class="delantal"></div><div class="pies"></div></div>
 </div></div>
@@ -107,11 +107,11 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
  <div class="est" style="top:150px"></div><div class="est" style="top:300px"></div>
  <div id="rosaIn" class="rosa"><div class="rodete"></div><div class="pelo"></div><div class="cara"></div><div class="cuerpo"></div><div class="delantal"></div><div class="pies"></div></div>
  <div class="barra"></div>
- <div id="lib"><b>FIADO</b><div class="pv"></div></div>
+ <div id="lib"><b>FIADO</b><i>🔒</i><div class="pv"></div></div>
  <div class="nube" style="left:320px;top:400px"></div><div class="nube" style="left:560px;top:390px"></div><div class="nube" style="left:440px;top:370px"></div>
 </div></div>
 <div id="piz">
- <div class="pag" id="pA"><h4>CANDADO DEL ALMACÉN</h4><p class="sub2">La clave que votaron ustedes</p><div id="candA">🔒</div><div id="tabA"></div></div>
+ <div class="pag" id="pA"><h4>LIBRETA DEL FIADO</h4><p class="sub2">Clave de 5 letras</p><div id="candA">🔒</div><div id="tabA"></div></div>
  <div class="pag" id="pB"><h4>PÁGINA 1 · CHELO</h4><p class="deuda">me debe <b>$ 30.000</b> de <span class="tapado"></span></p><div id="tabB"></div><div id="polvoB"></div></div>
 </div>
 <div id="sub"></div><div id="firma">@girayadivina</div>
@@ -146,9 +146,9 @@ function pintar(){
   it.style.transform="scale("+(1+0.35*io(cl((T-TIEMPOS.adentro-0.6)/(TIEMPOS.piz-TIEMPOS.adentro-0.6),0,1)))+")";it.style.transformOrigin="48% 58%";
   document.getElementById("rosaIn").style.transform="translateY("+(-Math.abs(Math.sin(T*3))*5)+"px)";
   document.querySelectorAll(".nube").forEach((n,k)=>{const t=(T-TIEMPOS.adentro-0.9-k*0.25);n.style.opacity=t>0&&t<1.4?0.8*(1-t/1.4):0;n.style.transform="translateY("+(-t*50)+"px) scale("+(1+t*0.6)+")";});
-  const piz=document.getElementById("piz");let p=0;for(const [a,z] of [[TIEMPOS.piz,TIEMPOS.cierraPiz],[TIEMPOS.pagina,99]])if(T>=a&&T<z)p=Math.min(ease(cl((T-a)/0.5,0,1)),ease(cl((z-T)/0.4,0,1)));piz.style.opacity=p;piz.style.transform="scale("+(0.8+0.2*p)+")";
-  document.getElementById("pA").style.opacity=T<TIEMPOS.pagina?1:0;document.getElementById("pB").style.opacity=T>=TIEMPOS.pagina?1:0;
-  document.getElementById("candP").textContent=T>=TIEMPOS.abre?"🔓":"🔒";
+  const piz=document.getElementById("piz");let p=0;for(const [a,z] of [[TIEMPOS.piz,99]])if(T>=a&&T<z)p=Math.min(ease(cl((T-a)/0.5,0,1)),ease(cl((z-T)/0.4,0,1)));piz.style.opacity=p;piz.style.transform="scale("+(0.8+0.2*p)+")";
+  const b=ease(cl((T-TIEMPOS.pagina)/0.6,0,1));document.getElementById("pA").style.opacity=1-b;document.getElementById("pB").style.opacity=b;
+  
   /* T... E... R... M... O... (de a una, sin color) y después todo verde */
   [...document.querySelectorAll("#tabA .fila")[3].querySelectorAll(".c")].forEach((c,i)=>voltear(c,CLAVE_ANTERIOR[i],"verde",TIEMPOS.letras[i],TIEMPOS.verde+i*0.14));
   const abierto=T>=TIEMPOS.abre;const ca=document.getElementById("candA");ca.textContent=abierto?"🔓":"🔒";
@@ -163,7 +163,7 @@ function pintar(){
   for(let k=JUG.length;k<filas.length;k++){nombres[k].style.opacity=T>=TIEMPOS.pregunta?1:0;filas[k].forEach((c,i)=>{c.textContent=T>=TIEMPOS.pregunta?"?":"";c.className="c"+(T>=TIEMPOS.pregunta?" q":"");c.style.transform=T>=TIEMPOS.pregunta&&k===JUG.length?"scale("+(1+0.07*Math.sin(T*6+i))+")":"";});}
 }
 const TOTAL=45.0;
-TIEMPOS={camina:0.3,llega:2.4,piz:5.85,letras:[7.62,8.42,9.28,10.28,11.21],verde:11.45,abre:12.12,cierraPiz:14.0,gracias:14.14,abre_p:14.4,entra:15.0,adentro:15.9,pagina:18.9,sopla:19.92,j0:25.84,j1:29.25,j2:32.9,pregunta:36.67};
+TIEMPOS={camina:0.3,llega:2.1,abre_p:2.2,entra:2.8,adentro:3.8,piz:5.85,letras:[7.62,8.42,9.28,10.28,11.21],verde:11.45,abre:12.12,gracias:14.14,pagina:16.4,sopla:19.92,j0:25.84,j1:29.25,j2:32.9,pregunta:36.67};
 SUBS=[[0,1.43,"Es el <em>día dos</em>."],[1.43,3.6,"Doña Rosa, con la ayuda de sus <em>nuevos amigos</em>,"],[3.6,5.85,"va a intentar abrir el <em>candado</em>."],[5.85,7.62,"Ustedes votaron <em>TERMO</em>."],[7.62,8.42,"T…"],[8.42,9.28,"T… E…"],[9.28,10.28,"T… E… R…"],[10.28,11.21,"T… E… R… M…"],[11.21,12.04,"T… E… R… M… O…"],[12.04,13.0,"¡Se <em>abrió</em>!"],[13.0,14.14,"¡Era <em>TERMO</em>!"],[14.14,16.26,"<em>Gracias</em> a todos los que comentaron."],[16.26,19.92,"Pero después de tres meses, la libreta está llena de <em>polvo</em>."],[19.92,23.78,"Su primer cliente es <em>Chelo</em>: le debe <em>$ 30.000</em> de…"],[23.78,25.84,"algo que el polvo <em>no deja leer</em>."],[25.84,29.25,"<em>Don Tito</em> probó PASTA: solo la A, al final."],[29.25,32.9,"<em>Nelly</em> probó TRIGO: la R está, pero en otro lugar."],[32.9,36.67,"Y <em>Pepito</em> probó MENTA: la E y la A, en su lugar."],[36.67,37.78,"¿Qué le debe <em>Chelo</em>?"],[37.78,38.64,"<em>Comentalo.</em>"],[38.64,45,"Si cobra, Doña Rosa paga parte de su <em>primer mes</em> de alquiler."]];
 pintar();
 </script></body></html>
