@@ -1,0 +1,27 @@
+# Serie para Instagram y TikTok: «El almacén de Doña Rosa»
+
+Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los comentarios, palabras de Palabra Secreta para salvar el almacén de Doña Rosa. Inspirada en el formato de series interactivas tipo «La estación de Vera»: historia con meta, cuenta regresiva, la gente decide en comentarios y su nombre aparece en el video. Historia y arte propios.
+
+## Historia
+- Doña Rosa (82 años) tiene un almacén en el barrio hace 40 años. Cierra en 6 días: debe 3 meses de alquiler.
+- Los vecinos le deben fiado y está todo anotado en su **libreta**, que tiene un **candado** con una palabra de 5 letras que ella no recuerda.
+- Cada intento lo hace un vecino (nombre en la fila de la libreta). La más votada en los comentarios es el intento del día siguiente.
+
+## Capítulo 1 (publicado/listo)
+- Clave: **TERMO** (el termo que tiene siempre en el mostrador). Es la única palabra posible con las pistas mostradas (verificado con el diccionario del juego).
+- Intentos mostrados: Pepito MATES (M, T, E amarillas), Marta PERRO (E, R, O verdes), Juanchi VERDE (nada nuevo). Quedan 3 días / 3 intentos.
+- Texto grabado (ElevenLabs, voz CESAR RODRIGUEZ, id 4GeB1bS2GAHAsGRM0eeU): ver `capitulo-1.html` (SUBS con los tiempos de la voz).
+- Video: escena `capitulo-1.html` + voz + música de fondo bajita (`assets/audio/palabra-secreta-musica.mp3` a volumen 0.10) + cierre de 4 s «¿Te animás a jugar vos? Jugá a Palabra Secreta en www.girayadivina.com» con Giro de cuerpo entero (`presentacion-y-locucion-extensiones/Giro/Giro_festejando_cuerpo.webp`; usar siempre los Giro de esa carpeta, sin recorte).
+
+## Lo que sigue (plan acordado)
+1. **Capítulo 2:** «¡La descubrieron! Era TERMO». Se abre el candado 🔓 y la libreta muestra la primera página: «Me debe: _ _ _ _ _».
+2. **Cada página de la libreta es un deudor del barrio**; la palabra secreta es su apodo u oficio (FLACO, RUBIA, BOCHA, CHAPA, PINTOR, MODISTA…; el juego acepta 5, 6 y 7 letras). Ej.: «el Flaco le debe $3.000 desde el Mundial».
+3. Al descubrirla, Doña Rosa cobra y sube el contador «Juntado: $X de $20.000».
+4. Con la plata, los seguidores votan qué se arregla («¿El toldo o la heladera?»). El almacén va cambiando en cada capítulo (toldo nuevo, heladera, pintura, cartel luminoso, vidriera).
+5. Cada video arranca con «Ayer ustedes dijeron…» y los nombres de los que comentaron en la libreta. Una palabra cada 2 o 3 capítulos. Mismo video para Instagram y TikTok.
+6. Para que una palabra dure hasta el último intento, elegir pistas que dejen tantas opciones como intentos (ej.: con _ARRO quedan BARRO, CARRO, JARRO).
+
+## Cómo se hace cada capítulo
+- Gonzalo pasa: la palabra más votada, 3 o 4 nombres de los que comentaron y el audio grabado en ElevenLabs (voz César Rodríguez) con el texto que le pasa Claude (texto plano, sin etiquetas).
+- Claude ajusta la escena (`capitulo-N.html`, mismo motor: `T`, `pintar()`, `SUBS`, `TIEMPOS`), toma los tiempos de la voz con `ffmpeg silencedetect`, graba cuadros con Playwright (1080×1920, 30 fps), une voz + música bajita + cierre, y verifica que los colores de cada intento coincidan con la clave.
+- Desde la sesión de Claude ElevenLabs genera pero no deja bajar los audios (Forbidden): por eso Gonzalo graba y manda el mp3.
