@@ -395,6 +395,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 07/11/2026 — Doña Rosa capítulo 2: el candado vuelve a la libreta
+- Qué: en el video del capítulo 2 el candado había quedado en la puerta y no coincidía con el capítulo 1 (el candado es de la libreta del fiado). Ahora Doña Rosa entra, la libreta está en la barra con el candado y el tablero del capítulo 1, y TERMO la abre en la 4.ª fila. Cartel corregido a «cierra en 2 días». Regla: antes de armar un capítulo, revisar que no contradiga los anteriores y avisarle a Gonzalo si un pedido lo hace.
+- Dónde: promo/serie-dona-rosa/capitulo-2.html y README.md.
+
 ### 07/11/2026 — Doña Rosa capítulo 2: la página del anuncio pasa a Chelo y la YERBA
 - Qué: la página de llegada del anuncio ahora es el capítulo 2: «PÁGINA 1 · CHELO — Me debe $ 30.000 de…», con las pistas Don Tito PASTA, Nelly TRIGO y Pepito MENTA, y 3 intentos para el visitante (clave YERBA). Si la saca: «🎉 ¡Doña Rosa cobró!». Los que ya vieron el capítulo 1 la ven de nuevo (id 2). En el embudo cada capítulo cuenta como fila aparte y en Pruebas → Anuncio Doña Rosa se ve «Cap. N». Al terminar, la página baja sola hasta el botón «¡Sí, quiero jugar!». Video y escena del capítulo 2 en promo/serie-dona-rosa/.
 - Dónde: rosa.js (CAPITULO id 2 con hoja/sub/icono/ganoTitulo, pasos por capítulo, v5), index.html (Cap. en la lista), sw.js (gya-cache-v762), promo/serie-dona-rosa/capitulo-2.html y README.md.
