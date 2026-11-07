@@ -27,6 +27,6 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 - Desde la sesión de Claude ElevenLabs genera pero no deja bajar los audios (Forbidden): por eso Gonzalo graba y manda el mp3.
 
 ## Página de llegada (rosa.js)
-- Quien toca el link del anuncio (Meta le agrega fbclid) ve la libreta del último capítulo y juega los intentos que quedan; después crea su perfil y entra a Palabra Secreta. Para la bio usar .
-- **Cada capítulo nuevo:** actualizar  en  (id nuevo para que la vean de nuevo, clave, intentos con los nombres de los que comentaron, textos) y subir  en index.html y sw.js.
+- Quien toca el link del anuncio (Meta le agrega fbclid) ve la libreta del último capítulo y juega los intentos que quedan; después crea su perfil y entra a Palabra Secreta. Para la bio usar `https://girayadivina.com/?rosa=1`.
+- **Cada capítulo nuevo:** actualizar `CAPITULO` en `rosa.js` (id nuevo para que la vean de nuevo, clave, intentos con los nombres de los que comentaron, textos) y subir `rosa.js?v=` en index.html y sw.js.
 - Embudo: 👥 Usuarios (solo Gonzalo) muestra llegaron / jugaron / la sacaron / quieren seguir / se registraron / entraron a Palabra Secreta.
