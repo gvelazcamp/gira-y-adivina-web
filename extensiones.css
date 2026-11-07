@@ -1439,3 +1439,9 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .cr-fin-reloj b{font:900 .85rem Outfit,system-ui,sans-serif;min-width:52px;text-align:right}
 .cr-fin-acciones{display:flex;justify-content:center;margin-top:8px}
 .cr-fin-acciones:empty{display:none}
+/* Palabra Secreta: «¿Cómo se juega?» corto, entra sin scroll (07/11/2026) */
+.ps-ayuda-corta .ps-panel-dibujo{max-height:17vh}
+.ps-ayuda-corta p{margin:6px 0}
+.ps-ayuda-ley{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:center;text-align:left;max-width:300px;margin:10px auto}
+.ps-ayuda-ley .ps-ejemplo{margin:0!important}
+.ps-ayuda-retos{font-size:.88em;opacity:.9}
