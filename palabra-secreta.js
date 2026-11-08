@@ -215,6 +215,7 @@ const PalabraSecreta=(()=>{
     const f=raiz.querySelector("#psFinal");
     f.replaceChildren();f.hidden=!partida.terminada;
     if(!partida.terminada)return;
+    if(partida.gano&&!duelo&&!colaborativo){try{window.DonaRosa&&DonaRosa.ganoPalabra&&DonaRosa.ganoPalabra();}catch(e){}}
     /* Al cerrar el popup se puede revisar el tablero y continuar desde ahí. */
     const c=document.createElement("div");c.className="ps-final-caja";f.appendChild(c);
     const ocultar=()=>{
