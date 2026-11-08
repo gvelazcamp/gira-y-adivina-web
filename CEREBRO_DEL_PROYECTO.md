@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Usuarios: se marca quién vino del anuncio de Doña Rosa
+- Qué: el embudo decía «0 se registraron» pero había usuarios nuevos (ej. Mic4l0k4): solo contaba los registros hechos desde el cartel «Guardá tu partida» o al seguir desde Doña Rosa. Ahora, en 👥 Usuarios (solo Gonzalo), cada usuario cuyo respaldo trae gya_rosa_pasos (llegó desde el anuncio, no por ?rosa=1) muestra «📣 Vino del anuncio de Doña Rosa», y arriba «👥 Con perfil que vinieron del anuncio: N». No une a los que bajaron la app de Play (otro almacenamiento).
+- Dónde: index.html (lista de Usuarios, #usrDelAnuncio), sw.js (gya-cache-v772).
+
 ### 08/11/2026 — Doña Rosa: «llegó» vuelve a contarse siempre
 - Qué: «Llegaron» quedó en ~257 desde la noche del 07/11, justo desde que se agregó «llegó solo si la página se ve» (el anuncio pasó de 293 a 698 visitas). Se saca ese filtro; el registro crudo (embudo_rosa_raw) guarda visibilityState para medir aparte si Instagram la precarga.
 - Dónde: rosa.js (v13), sw.js (gya-cache-v771).

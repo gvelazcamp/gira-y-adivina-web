@@ -1530,6 +1530,7 @@ body:not(.tvhost) #horizontalAyuda{display:none}
   <h2>👥 Usuarios<span id="usrTotal" class="usr-total" hidden></span></h2>
   <p class="sub" style="margin:6px 0 14px">Todos los que jugaron, se hayan anotado al ranking o no.</p>
   <p class="sub usr-embudo" id="usrEmbudo" hidden></p>
+  <p class="sub usr-embudo" id="usrDelAnuncio" hidden></p>
   <div class="rk-lista" id="usrLista"></div>
   <p class="estado" id="usrEstado" style="margin-top:8px"></p>
   <button class="no" id="usrAgregar" style="display:none;width:100%;border-radius:14px;padding:12px;font-weight:700;margin-top:10px">➕ Agregar jugador a Social</button>
@@ -5518,8 +5519,12 @@ async function usrCargarLista(){
   const AHORA=Date.now(),VENTANA_ONLINE_MS=3*60*1000;
   const rkPerfil=cargarRkPerfil();
   const misClaves=[normApodo(perfil.nombre),rkPerfil&&rkPerfil.apodo?normApodo(rkPerfil.apodo):null];
+  let delAnuncio=0;
   (data||[]).forEach(f=>{
     let estado=f.estado_juego;if(typeof estado==="string"){try{estado=JSON.parse(estado);}catch(e){estado=null;}}
+    /* Vino del anuncio de Doña Rosa: su respaldo trae el recorrido (gya_rosa_pasos) aunque se haya registrado por cualquier lado. */
+    let rosaP=null;try{rosaP=JSON.parse(estado?.localStorage?.gya_rosa_pasos||"null");}catch(e){}
+    const vinoAnuncio=!!(rosaP&&rosaP.llego&&rosaP.origen&&rosaP.origen!=="link");if(vinoAnuncio)delAnuncio++;
     const online=f.actualizado_en&&(AHORA-new Date(f.actualizado_en).getTime())<VENTANA_ONLINE_MS&&estado?.presenciaMapa?.visible!==false;
     const avance=avanceMapaDeFila(f);
     const soyYo=misClaves.includes(normApodo(f.apodo));
@@ -5532,7 +5537,7 @@ async function usrCargarLista(){
       '<span class="rk-ciudad">'+rkEsc(avance.texto)+'</span>'+
       '<span>🗺️ '+avance.ganadas+'/'+avance.total+' · 🏆 racha '+f.mejor_racha+' · 🏅 '+f.logros+'</span>'+
       (ultimo?'<span class="rk-ultimo">🎮 Último juego: '+rkEsc(ultimo.n)+(ultimo.t?' · '+haceCuanto(ultimo.t):'')+'</span>':'')+
-      (esGonzalo()?'<span class="rk-ultimo">'+({playstore:"📲 App de Play Store",instalada_web:"🌐 Instalada desde el navegador",navegador:"🌐 Juega en el navegador"}[estado?.localStorage?.gya_origen_app]||"❔ Sin dato (todavía no abrió la versión nueva)")+'</span>':'')+'</div>';
+      (esGonzalo()?'<span class="rk-ultimo">'+({playstore:"📲 App de Play Store",instalada_web:"🌐 Instalada desde el navegador",navegador:"🌐 Juega en el navegador"}[estado?.localStorage?.gya_origen_app]||"❔ Sin dato (todavía no abrió la versión nueva)")+'</span>':'')+(esGonzalo()&&vinoAnuncio?'<span class="rk-ultimo">📣 Vino del anuncio de Doña Rosa</span>':'')+'</div>';
     if(!soyYo){
       const b=document.createElement("button");
       b.className="no";b.textContent="Invitar";
@@ -5562,6 +5567,7 @@ async function usrCargarLista(){
     cont.appendChild(d);
   });
   {const n=(data&&data.length)||0,t=$("usrTotal");if(t){t.textContent=n;t.hidden=!n;}$("usrEstado").textContent=n?"":"Todavía no hay usuarios.";}
+  {const e=$("usrDelAnuncio");if(e){e.hidden=!esGonzalo()||!delAnuncio;e.textContent="👥 Con perfil que vinieron del anuncio de Doña Rosa: "+delAnuncio+" (se registraron por cualquier lado, en este navegador)";}}
   /* Embudo del anuncio de Doña Rosa (rosa.js), solo para Gonzalo. */
   if(esGonzalo()&&window.DonaRosa)DonaRosa.resumen().then(c=>{const e=$("usrEmbudo");if(!e||!c||!c.llego)return;e.hidden=false;
     e.textContent="📣 Anuncio Doña Rosa: "+c.llego+" llegaron · "+c.jugo+" jugaron · "+c.gano+" la sacaron · "+c.quiere+" quieren seguir · "+c.play+" fueron a Google Play · "+c.registro+" se registraron · "+c.palabra+" entraron a Palabra Secreta · "+c.ps_jugo+" jugaron Palabra Secreta · "+c.reg_ofrecido+" vieron «Guardá tu partida»";});
