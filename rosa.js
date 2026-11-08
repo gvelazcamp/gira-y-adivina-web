@@ -29,10 +29,10 @@
     pista:"No puede faltar en el mate 🧉",
     hoja:"PÁGINA 1 · CHELO",          // título de la libreta
     icono:"🧉",                        // arriba a la derecha de la libreta (sin icono: candado 🔒/🔓)
-    sub:"Me debe $ 30.000 de…",        // renglón debajo del título
+    sub:"Chelo me debe…",        // renglón debajo del título
     pedido:"¿Qué me debe Chelo? El polvo no me deja leer 😩",
     ganoTitulo:"🎉 ¡Doña Rosa cobró!",
-    gano:"¡Era YERBA! Chelo le paga los $ 30.000 y Doña Rosa ya paga más de la mitad de su deuda.",
+    gano:"¡Era YERBA! Chelo paga y Doña Rosa empieza a cubrir su deuda (entre él y otros vecinos le deben más de $ 30.000).",
     perdio:"Todavía no se sabe qué le debe Chelo 😢 Mirá cómo sigue en el próximo capítulo."};
   /* Capítulo activo: el 1 para todos; el 2 con el link ?cap=2 (anuncio nuevo). Se recuerda en el celular para que el
      juego completo (index.html) siga contando en el capítulo correcto. */
