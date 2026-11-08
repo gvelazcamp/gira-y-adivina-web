@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa capítulo 3: escena del video (sin voz)
+- Qué: promo/serie-dona-rosa/capitulo-3.html. Libreta de Chelo con YERBA y sello PAGADO → adentro del almacén (cartel «ALMACÉN DOÑA ROSA», mostrador, caja) → TOC TOC, entra el cobrador, Doña Rosa le da billetes → «Le doy 3 días más» (1 DÍA → 4 DÍAS) → barra de la deuda → página 2 de Cacho (LICOR, GRAPA, TINTO) → «Seguí la historia». Tiempos estimados hasta tener la voz.
+- Por qué: Gonzalo pidió ver el video sin audio.
+
 ### 08/11/2026 — Doña Rosa capítulo 3 cargado en el juego (solo con ?cap=3)
 - Qué: CAPITULO_3 en rosa.js: página 2, «Cacho me debe…», clave SIDRA, intentos Pepito LICOR, Nelly GRAPA, Juanchi TINTO (queda _I_RA: SIDRA o BIRRA), pista «Para brindar 🥂». BIRRA agregada a PALABRA_VALIDAS. index.html acepta ?cap=3 (ROSA_CAP). Cartel de rosa.html: «ALMACÉN DOÑA ROSA». El anuncio que corre sigue en el capítulo 1.
 - Por qué: Gonzalo — siguiente fiado, una bebida con duda.

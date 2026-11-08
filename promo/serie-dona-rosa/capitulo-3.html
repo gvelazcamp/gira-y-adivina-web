@@ -1,0 +1,239 @@
+<!doctype html><html lang="es-UY"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+<!-- Capítulo 3 · El cobrador (08/11/2026, idea de Gonzalo). Mismo motor que capitulo-2.html: T, pintar(), SUBS, TIEMPOS.
+     Los TIEMPOS son estimados hasta que llegue la voz de ElevenLabs; con la voz se ajustan con silencedetect. -->
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-family:Outfit,sans-serif}
+#e{position:relative;width:1080px;height:1920px;overflow:hidden;background:#24384a}
+.cab{position:absolute;left:0;right:0;top:0;height:140px;background:#1b2e3c;padding:28px 44px}
+.cab b{display:block;font:900 52px "Archivo Black";color:#FCEFD2;letter-spacing:1px}
+.cab small{display:block;font:800 24px Outfit;color:#9fb6c4;letter-spacing:2px;margin-top:4px}
+.info{position:absolute;left:40px;right:40px;top:160px;height:96px;background:#FCEFD2;border-radius:14px;display:flex;justify-content:space-between;align-items:center;padding:0 32px;color:#26323c}
+.info small{display:block;font:800 21px Outfit;letter-spacing:2px;color:#8a7a6a}
+.info b{display:block;font:900 40px "Archivo Black"}.info .der{text-align:right}.info .der b{color:#2d7a8a}
+/* escena */
+#esc{position:absolute;left:0;right:0;top:280px;height:1000px;background:linear-gradient(#bfe3d0 0,#cfe9d8 55%,#9fc79a 55%,#8fb98a 100%);overflow:hidden}
+.edif{position:absolute;left:150px;width:780px;top:140px;height:560px;background:#F3D9A4;border:8px solid #7a4a2a;border-bottom:0}
+.techo{position:absolute;left:120px;width:840px;top:96px;height:60px;background:#b4532f;border-radius:6px}
+.cartel{position:absolute;left:300px;width:480px;top:170px;height:90px;background:#2d5d7a;border:6px solid #f3e3c0;border-radius:10px;display:grid;place-items:center;font:900 46px "Archivo Black";color:#FCEFD2;letter-spacing:2px}
+.cartel small{display:block;font:800 18px Outfit;color:#cfe3ee;margin-top:-6px;text-align:center}
+.toldo{position:absolute;left:170px;width:740px;top:280px;height:80px;background:repeating-linear-gradient(90deg,#d6403a 0 62px,#f6efe2 62px 124px);clip-path:polygon(0 0,100% 0,100% 70%,96% 100%,92% 70%,88% 100%,84% 70%,80% 100%,76% 70%,72% 100%,68% 70%,64% 100%,60% 70%,56% 100%,52% 70%,48% 100%,44% 70%,40% 100%,36% 70%,32% 100%,28% 70%,24% 100%,20% 70%,16% 100%,12% 70%,8% 100%,4% 70%,0 100%)}
+.vent{position:absolute;top:400px;width:210px;height:220px;background:#6fa8c0;border:8px solid #7a4a2a}
+.vent i{position:absolute;left:10px;right:10px;height:8px;background:#7a4a2a}
+.vent b{position:absolute;width:26px;height:40px;border-radius:6px 6px 4px 4px}
+.puerta{position:absolute;left:450px;top:390px;width:180px;height:310px;background:#5b3a26;border:8px solid #7a4a2a}
+.puerta .aviso{position:absolute;left:18px;top:60px;width:130px;padding:8px 4px;background:#fff7e0;border:3px solid #c43;font:900 18px/1.1 Outfit;color:#c43;text-align:center;transform:rotate(-6deg)}
+.vereda{position:absolute;left:0;right:0;top:700px;height:90px;background:#d8cdb6;border-top:6px solid #b9ab8f}
+.calle{position:absolute;left:0;right:0;top:790px;height:210px;background:#6b6b6b}
+.calle i{position:absolute;top:95px;height:16px;width:110px;background:#f3e3c0}
+/* Doña Rosa */
+.rosa{position:absolute;width:120px;height:200px}#rosa{left:640px;top:520px}
+.rosa .pelo{position:absolute;left:24px;top:0;width:72px;height:64px;border-radius:50%;background:#c9c9cf}
+.rosa .rodete{position:absolute;left:44px;top:-22px;width:34px;height:30px;border-radius:50%;background:#c9c9cf}
+.rosa .cara{position:absolute;left:30px;top:16px;width:60px;height:62px;border-radius:50%;background:#f1c6a0}
+.rosa .cara::before,.rosa .cara::after{content:"";position:absolute;top:26px;width:8px;height:8px;border-radius:50%;background:#3a2a20}
+.rosa .cara::before{left:16px}.rosa .cara::after{right:16px}
+.rosa .cuerpo{position:absolute;left:14px;top:76px;width:92px;height:100px;border-radius:26px 26px 10px 10px;background:#7b4fa3}
+.rosa .delantal{position:absolute;left:32px;top:96px;width:56px;height:80px;border-radius:8px;background:#fff3dc}
+.rosa .pies{position:absolute;left:28px;top:174px;width:64px;height:20px;background:#3a2a20;border-radius:10px}
+/* pizarra con el tablero */
+#piz{position:absolute;left:110px;width:860px;top:300px;height:930px;background:#FFF8E6 repeating-linear-gradient(#FFF8E6 0 58px,#cfe0ee 58px 60px);border-left:14px solid #b4532f;border-radius:10px 22px 22px 10px;box-shadow:0 20px 50px #0009;opacity:0;transform:scale(.8)}
+#piz::before{content:"";position:absolute;left:70px;top:0;bottom:0;width:4px;background:#e58a8a}
+#piz h4{text-align:center;font:900 44px "Archivo Black";color:#7a2a1a;margin:26px 0 0;letter-spacing:2px}
+#piz .sub2{text-align:center;font:800 26px Outfit;color:#8a6a5a;margin:2px 0 16px}
+#piz .cand{position:absolute;right:28px;top:14px;font-size:72px}
+#tab{display:grid;grid-template-rows:repeat(6,104px);gap:14px;justify-content:center}
+.fila{display:grid;grid-template-columns:170px repeat(5,104px);gap:12px;align-items:center}
+.fila .n{font:900 30px "Archivo Black";color:#2d5d7a;text-align:right;padding-right:6px;white-space:nowrap}
+#globo{position:absolute;left:740px;top:390px;background:#fff;border-radius:30px;padding:16px 22px;font:900 34px/1.05 Outfit;color:#5b3a26;opacity:0;box-shadow:0 8px 20px #0004}
+.c{width:104px;height:104px;background:url(../../assets/palabra-secreta/casilla.webp) center/100% 100%;display:grid;place-items:center;font:900 54px "Archivo Black";color:#fff}
+.c.verde{background-image:url(../../assets/palabra-secreta/verde.webp)}.c.amarilla{background-image:url(../../assets/palabra-secreta/amarilla.webp);color:#3A2400}.c.gris{background-image:url(../../assets/palabra-secreta/gris.webp)}
+.c.q{color:#F5B301}
+#sub{position:absolute;left:46px;right:46px;top:1320px;height:420px;display:flex;align-items:center;justify-content:center;text-align:center;font:900 76px/1.06 "Archivo Black";color:#FCEFD2;text-transform:uppercase}
+#sub em{font-style:normal;color:#F5C451}
+#firma{position:absolute;left:44px;bottom:36px;font:800 24px Outfit;color:#9fb6c4}
+
+.info{height:270px;padding:0;background:none;gap:18px;align-items:stretch}
+.info>div:first-child{background:#FCEFD2;border-radius:14px;padding:22px 26px;width:300px;display:flex;flex-direction:column;justify-content:center}
+.info>div:first-child b{font-size:54px;color:#c43}
+#votos{flex:1;background:#2f4a33;border:8px solid #7a4a2a;border-radius:14px;padding:16px 24px;color:#FCEFD2;box-shadow:inset 0 0 30px #0006}
+#votos h5{font:900 40px "Archivo Black";color:#F5C451;letter-spacing:1px}
+#votos h5 span{color:#FCEFD2}
+#votos ul{list-style:none;display:grid;grid-template-columns:1fr;gap:4px 18px;margin-top:10px;border-top:3px solid #ffffff40;padding-top:12px}
+#votos ul.dos{grid-template-columns:1fr 1fr}
+#votos li{font:800 32px Outfit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#votos ul.dos{grid-template-rows:repeat(3,auto);grid-auto-flow:column;grid-template-columns:none;gap:4px 22px}#votos ul.dos li{font-size:25px}#votos h5{font-size:38px}#listaMarco{height:130px;overflow:hidden;margin-top:10px;padding-top:8px;border-top:3px solid #ffffff40}#listaMarco #lista{margin-top:0;border-top:0;padding-top:0}#votos ul.mueve{grid-template-rows:none;grid-auto-flow:row;grid-template-columns:1fr 1fr}
+.marco{position:absolute;left:0;right:0;top:450px;height:860px;overflow:hidden}#esc{top:0;height:860px}
+/* puerta que se abre */
+.puerta{background:#1a100a;perspective:600px}
+.hoja{position:absolute;inset:0;background:#5b3a26;transform-origin:left center}
+.hoja .aviso{left:18px;top:60px}#candP{position:absolute;right:-22px;top:150px;font-size:64px}
+/* adentro del almacén */
+#intM{opacity:0}#int{position:absolute;inset:0;background:#e9d3a6}
+#int .est{position:absolute;left:60px;right:60px;height:16px;background:#7a4a2a}
+#int .prod{position:absolute;width:44px;border-radius:8px 8px 4px 4px}
+#int .barra{position:absolute;left:0;right:0;top:560px;height:300px;background:#8a5530;border-top:26px solid #b4703e}
+#int .barra::after{content:"";position:absolute;left:40px;right:40px;top:40px;bottom:30px;border:6px solid #6b3f22;border-radius:8px}
+#lib{position:absolute;left:330px;top:440px;width:300px;height:130px;background:#b4532f;border-radius:10px 16px 16px 10px;border-left:18px solid #7a2a1a;box-shadow:0 10px 0 #5b3a26}
+#lib b{position:absolute;left:30px;top:30px;font:900 30px "Archivo Black";color:#FCEFD2;letter-spacing:1px}
+#lib i{position:absolute;right:-14px;top:36px;font-style:normal;font-size:60px}
+#lib .pv{position:absolute;inset:-6px;border-radius:12px;background:radial-gradient(circle at 20% 30%,#cfc6b8 0 6px,transparent 7px),radial-gradient(circle at 60% 20%,#cfc6b8 0 5px,transparent 6px),radial-gradient(circle at 80% 70%,#cfc6b8 0 7px,transparent 8px),radial-gradient(circle at 40% 75%,#cfc6b8 0 5px,transparent 6px),#bdb3a466}
+#rosaIn{left:700px;top:400px}
+.nube{position:absolute;width:90px;height:60px;border-radius:50%;background:#d8d0c2;opacity:0;filter:blur(4px)}
+/* libreta en grande */
+#piz{top:460px;height:830px}
+.pag{position:absolute;inset:0}
+.deuda{text-align:center;font:800 32px/1.25 Outfit;color:#5b3a26;margin:6px 0 18px}
+.deuda b{font:900 42px "Archivo Black";color:#c43}
+.tapado{display:inline-block;width:230px;height:46px;vertical-align:middle;border-radius:22px;background:radial-gradient(ellipse at 25% 50%,#a99f90 0 35%,transparent 65%),radial-gradient(ellipse at 70% 45%,#b8ad9c 0 40%,transparent 70%),radial-gradient(ellipse at 50% 55%,#c9bfae 0 50%,transparent 75%);filter:blur(2px)}
+#polvoB{position:absolute;inset:0;border-radius:10px 22px 22px 10px;background:radial-gradient(circle at 15% 20%,#9d927f 0 10px,transparent 11px),radial-gradient(circle at 70% 35%,#9d927f 0 8px,transparent 9px),radial-gradient(circle at 40% 65%,#9d927f 0 12px,transparent 13px),radial-gradient(circle at 85% 80%,#9d927f 0 9px,transparent 10px),#c9bfaecc;pointer-events:none}
+#tabA{display:grid;grid-template-rows:repeat(6,104px);gap:14px;justify-content:center}
+#tabA .fila{grid-template-columns:200px repeat(5,104px)}
+#candA{position:absolute;right:16px;top:10px;font-size:70px;line-height:1}
+#tabB{display:grid;grid-template-rows:repeat(6,96px);gap:10px;justify-content:center}#tabB .fila{grid-template-columns:170px repeat(5,96px)}#tabB .c{width:96px;height:96px;font-size:50px}
+
+/* Final (08/11): la deuda se va pagando y los vecinos que siguen la historia ayudan */
+#deuda{position:absolute;left:90px;right:90px;top:640px;padding:34px 36px 40px;background:#1b2e3c;border:6px solid #F5C451;border-radius:30px;text-align:center;color:#FCEFD2;opacity:0;box-shadow:0 24px 60px #000a}
+#deuda h4{font:900 50px "Archivo Black",sans-serif;color:#F5C451;letter-spacing:1px}
+#deuda .barra{position:relative;height:64px;margin:26px 0 14px;border-radius:32px;background:#ffffff1c;overflow:hidden;border:3px solid #ffffff30}
+#deuda .barra i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#3c9a5f,#5fd38a);border-radius:32px}
+#deuda p{font:800 38px Outfit}#deuda p b{color:#F5C451}
+#vecinos{height:80px;margin-top:14px;font-size:58px;letter-spacing:6px}
+#seguir{display:inline-block;margin-top:18px;padding:18px 40px;border-radius:40px;background:linear-gradient(#ff4fa3,#E5197C);color:#fff;font:900 44px Outfit;box-shadow:0 8px 0 #8E0F4C;opacity:0}
+
+/* ===== Capítulo 3: adentro del almacén, con el mostrador ===== */
+#int{background:#e9d3a6}
+#int .est{left:40px;right:300px}
+.cartelIn{position:absolute;left:220px;width:640px;top:26px;height:100px;background:#2d5d7a;border:6px solid #f3e3c0;border-radius:12px;display:grid;place-items:center;font:900 44px "Archivo Black";color:#FCEFD2;letter-spacing:2px;box-shadow:0 8px 0 #1b3a4c}
+.cartelIn small{display:block;font:800 17px Outfit;color:#cfe3ee;margin-top:-8px;text-align:center;letter-spacing:3px}
+#piso{position:absolute;left:0;right:0;top:620px;bottom:0;background:repeating-linear-gradient(90deg,#b98c5a 0 118px,#a87c4c 118px 120px)}
+#puertaIn{position:absolute;left:830px;top:200px;width:200px;height:420px;background:#1a100a;border:10px solid #7a4a2a;border-bottom:0;perspective:700px}
+#hojaIn{position:absolute;inset:0;background:#5b3a26;transform-origin:right center}
+#hojaIn::after{content:"";position:absolute;left:22px;top:200px;width:18px;height:18px;border-radius:50%;background:#e8c46a}
+#hojaIn i{position:absolute;left:30px;right:30px;top:40px;height:120px;background:#6fa8c0;border:6px solid #7a4a2a}
+#int .barra{width:780px;right:auto}
+#caja{position:absolute;left:80px;top:430px;width:210px;height:130px;background:#3a5d7a;border-radius:14px 14px 6px 6px;box-shadow:0 8px 0 #24384a}
+#caja .pant{position:absolute;left:24px;right:24px;top:16px;height:44px;background:#bfe3d0;border-radius:6px;font:900 30px "Archivo Black";color:#24384a;text-align:center;line-height:44px}
+#caja .botones{position:absolute;left:24px;right:24px;top:70px;height:40px;background:repeating-linear-gradient(90deg,#FCEFD2 0 26px,transparent 26px 34px);opacity:.8;border-radius:4px}
+#cajon{position:absolute;left:66px;top:540px;width:240px;height:60px;background:#2d4a60;border-radius:0 0 10px 10px;overflow:hidden}
+#cajon .plata{position:absolute;left:14px;right:14px;bottom:6px;height:0;background:repeating-linear-gradient(90deg,#5fb37a 0 40px,#4a9a64 40px 46px);border-radius:4px}
+#libM{position:absolute;left:340px;top:500px;width:220px;height:66px;background:#b4532f;border-radius:8px 12px 12px 8px;border-left:14px solid #7a2a1a;transform:skewX(-14deg);box-shadow:0 8px 0 #5b3a26}
+#libM b{position:absolute;left:34px;top:14px;font:900 30px "Archivo Black";color:#FCEFD2;transform:skewX(14deg)}
+#rosaIn{left:590px;top:390px}
+/* el cobrador */
+#cob{position:absolute;width:150px;height:270px;left:860px;top:340px;opacity:0}
+#cob .som{position:absolute;left:28px;top:-16px;width:94px;height:30px;background:#2b2b33;border-radius:10px 10px 4px 4px}
+#cob .som::before{content:"";position:absolute;left:-16px;right:-16px;bottom:-6px;height:12px;background:#2b2b33;border-radius:8px}
+#cob .cara{position:absolute;left:42px;top:10px;width:66px;height:70px;border-radius:50%;background:#e8b48e}
+#cob .cara::before,#cob .cara::after{content:"";position:absolute;top:28px;width:8px;height:8px;border-radius:50%;background:#2a1a10}
+#cob .cara::before{left:18px}#cob .cara::after{right:18px}
+#cob .bigote{position:absolute;left:58px;top:58px;width:34px;height:10px;background:#3a2a20;border-radius:0 0 10px 10px}
+#cob .saco{position:absolute;left:22px;top:80px;width:106px;height:120px;background:#5d6470;border-radius:26px 26px 8px 8px}
+#cob .cami{position:absolute;left:60px;top:80px;width:30px;height:60px;background:#f4f4f4;clip-path:polygon(0 0,100% 0,50% 100%)}
+#cob .corb{position:absolute;left:70px;top:88px;width:10px;height:56px;background:#b4302a;border-radius:2px 2px 6px 6px}
+#cob .pier{position:absolute;left:38px;top:198px;width:74px;height:62px;background:repeating-linear-gradient(90deg,#3c424c 0 32px,transparent 32px 42px)}
+#cob .zap{position:absolute;left:32px;top:256px;width:88px;height:14px;background:#1d1d22;border-radius:8px}
+#cob .mal{position:absolute;left:-40px;top:150px;width:84px;height:62px;background:#7a4a2a;border-radius:8px;border:4px solid #5b3a26}
+#cob .mal::before{content:"";position:absolute;left:24px;top:-18px;width:28px;height:16px;border:5px solid #5b3a26;border-bottom:0;border-radius:10px 10px 0 0}
+.bill{position:absolute;width:76px;height:40px;background:#5fb37a;border:3px solid #2f7a4a;border-radius:4px;font:900 22px "Archivo Black";color:#1f5a34;text-align:center;line-height:34px;opacity:0}
+.flota{position:absolute;font-size:52px;opacity:0}
+#toc{position:absolute;left:780px;top:120px;font:900 64px "Archivo Black";color:#c43;opacity:0;text-shadow:0 4px 0 #fff7e0}
+#globo2{position:absolute;left:470px;top:200px;max-width:440px;background:#fff;border-radius:30px;padding:18px 26px;font:900 36px/1.1 Outfit;color:#24384a;opacity:0;box-shadow:0 8px 20px #0004}
+#sello{position:absolute;left:300px;top:440px;padding:10px 26px;border:8px solid #c43;border-radius:12px;font:900 76px "Archivo Black";color:#c43;opacity:0;transform:rotate(-14deg);background:#fff8e6cc}
+#pC .deuda{margin-bottom:18px}.linea{display:inline-block;width:230px;border-bottom:4px dotted #8a6a5a;height:30px;vertical-align:middle}
+#tabC{display:grid;grid-template-rows:repeat(6,96px);gap:10px;justify-content:center}#tabC .fila{grid-template-columns:170px repeat(5,96px)}#tabC .c{width:96px;height:96px;font-size:50px}
+#seguir{position:absolute;left:50%;top:1232px;margin:0;transform-origin:center;translate:-50% 0;z-index:5}
+</style></head><body><div id="e">
+<div class="cab"><b>EL ALMACÉN DE DOÑA ROSA</b><small>CAPÍTULO 3 · EL COBRADOR</small></div>
+<div class="info"><div><small>DÍA 3 · CIERRA EN</small><b id="quedan">1 DÍA</b><small style="margin-top:6px">VECINOS AYUDANDO</small></div><div id="votos"><h5>LOS QUE <span>AYUDARON</span> 🔓</h5><div id="listaMarco"><ul id="lista"></ul></div></div></div>
+<div class="marco"><div id="int">
+ <div class="cartelIn"><div>ALMACÉN DOÑA ROSA<small>DESDE 1985</small></div></div>
+ <div class="est" style="top:260px"></div><div class="est" style="top:410px"></div>
+ <div id="piso"></div>
+ <div id="puertaIn"><div id="hojaIn"><i></i></div></div>
+ <div id="toc">TOC TOC</div>
+ <div id="rosaIn" class="rosa"><div class="rodete"></div><div class="pelo"></div><div class="cara"></div><div class="cuerpo"></div><div class="delantal"></div><div class="pies"></div></div>
+ <div id="cajon"><div class="plata"></div></div>
+ <div class="barra"></div>
+ <div id="caja"><div class="pant" id="pant">$</div><div class="botones"></div></div>
+ <div id="libM"><b>FIADO</b></div>
+ <div id="cob"><div class="mal"></div><div class="pier"></div><div class="zap"></div><div class="saco"></div><div class="cami"></div><div class="corb"></div><div class="cara"></div><div class="bigote"></div><div class="som"></div></div>
+ <div class="bill" id="b0">$</div><div class="bill" id="b1">$</div><div class="bill" id="b2">$</div>
+ <div id="globo2"></div>
+</div></div>
+<div id="piz">
+ <div class="pag" id="pB"><h4>PÁGINA 1 · CHELO</h4><p class="deuda">Chelo me debe: <b>YERBA</b></p><div id="tabB"></div><div id="sello">PAGADO</div></div>
+ <div class="pag" id="pC"><h4>PÁGINA 2 · CACHO</h4><p class="deuda">Cacho me debe: <span class="linea"></span></p><div id="tabC"></div></div>
+</div>
+<div id="deuda"><h4>DEUDA DE DOÑA ROSA</h4><div class="barra"><i id="deudaFill"></i></div><p id="deudaTxt">Pagó una parte: <b>todavía falta</b></p><div id="vecinos"></div></div>
+<div id="seguir">👤 Seguí la historia</div>
+<div id="sub"></div><div id="firma">@girayadivina</div>
+</div>
+<script>
+/* ====== LO QUE SE CAMBIA EN CADA CAPÍTULO ====== */
+const VOTARON=["@silvina.martinezok","@matipienia","@santii.yz","@abrilu_113_","@misteryhoumans269","@ambaragustinaquiroga","@jas_mica6","@15_ele_15","@isx.013","@lufre2","@stadieaylen","@caceres_lautaro","@rizzo.juli","@_evii_143341","@pazs_313","@cat.alina387","@benja_dre"];   // PROVISORIO: van los que comenten el capítulo 2
+const CLAVE_ANTERIOR="YERBA";
+const JUG_ANT=[["Don Tito","PASTA",["gris","gris","gris","gris","verde"]],["Nelly","TRIGO",["gris","amarilla","gris","gris","gris"]],["Pepito","TERMA",["gris","verde","verde","gris","verde"]]];   // tablero del capítulo 2, tal cual
+const JUG=[["Pepito","LICOR",["gris","verde","gris","gris","amarilla"]],["Nelly","GRAPA",["gris","amarilla","gris","gris","verde"]],["Juanchi","TINTO",["gris","verde","gris","gris","gris"]]];   // pistas de SIDRA (BIRRA da los mismos colores)
+/* ================================================ */
+{const it=document.getElementById("int"),cols=["#d6403a","#F5B301","#2d7a8a","#7b4fa3","#3c9a5f","#e58a2a"];for(const [y,h] of [[260,70],[410,80]])for(let k=0;k<11;k++){const b=document.createElement("b");b.className="prod";b.style.left=(70+k*62)+"px";b.style.top=(y-h)+"px";b.style.height=h+"px";b.style.background=cols[(k*7+y)%6];it.insertBefore(b,it.children[1]);}
+ for(let k=0;k<8;k++){const f=document.createElement("div");f.className="flota";f.textContent=k%2?"🪙":"👤";it.appendChild(f);}}
+const ul=document.getElementById("lista");if(VOTARON.length>6)ul.classList.add("dos","mueve");else if(VOTARON.length>3)ul.classList.add("dos");VOTARON.forEach(n=>{const li=document.createElement("li");li.textContent=n;ul.appendChild(li);});
+function fila(nombre){const d=document.createElement("div");d.className="fila";const n=document.createElement("div");n.className="n";n.textContent=nombre;d.appendChild(n);for(let i=0;i<5;i++){const c=document.createElement("div");c.className="c";d.appendChild(c);}return d;}
+{const tB=document.getElementById("tabB");JUG_ANT.forEach(([n,w,col])=>{const f=fila(n);[...f.querySelectorAll(".c")].forEach((c,i)=>{c.textContent=w[i];c.className="c "+col[i];});tB.appendChild(f);});tB.appendChild(fila("Doña Rosa"));tB.appendChild(fila(""));tB.appendChild(fila(""));}
+const tabC=document.getElementById("tabC");JUG.forEach(j=>tabC.appendChild(fila(j[0])));for(let k=0;k<3;k++)tabC.appendChild(fila("¿Vos?"));
+let T=0,SUBS=[],TIEMPOS={};
+const cl=(x,a,b)=>Math.max(a,Math.min(b,x)),ease=t=>1-Math.pow(1-t,3),io=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function voltear(c,letra,col,tk,tv){c.textContent=T>=tk?letra:"";c.className="c"+(T>=tv+0.1?" "+col:"");const v=cl((T-tv)/0.2,0,1);c.style.transform=v>0&&v<1?"scaleY("+Math.abs(Math.cos(v*Math.PI))+")":(T>=tk&&T<tk+0.15?"scale(1.12)":"");}
+function ventana(a,z,fi,fo){return Math.min(ease(cl((T-a)/(fi||0.5),0,1)),ease(cl((z-T)/(fo||0.4),0,1)));}
+function pintar(){
+  const s=SUBS.find(x=>T>=x[0]&&T<x[1]);document.getElementById("sub").innerHTML=s?"<span>"+s[2]+"</span>":"";
+  /* libreta: página de Chelo (YERBA y PAGADO) al principio; después página 2, Cacho */
+  const piz=document.getElementById("piz");const p=Math.max(T<TIEMPOS.adentro?ventana(-1,TIEMPOS.adentro,0.5,0.5):0,ventana(TIEMPOS.vuelta,99,0.5,0.4));
+  piz.style.opacity=p;piz.style.transform="scale("+(0.8+0.2*p)+")";
+  const fl=cl((T-TIEMPOS.pagina2)/0.7,0,1);const pB=document.getElementById("pB"),pC=document.getElementById("pC");
+  pB.style.opacity=1-fl;pC.style.opacity=fl;pB.style.transform="perspective(1400px) rotateY("+(-90*ease(cl((T-TIEMPOS.pagina2)/0.5,0,1)))+"deg)";pB.style.transformOrigin="left center";
+  [...document.querySelectorAll("#tabB .fila")[3].querySelectorAll(".c")].forEach((c,i)=>voltear(c,CLAVE_ANTERIOR[i],"verde",TIEMPOS.letras+i*0.28,TIEMPOS.verde+i*0.14));
+  const se=document.getElementById("sello"),sa=cl((T-TIEMPOS.pago)/0.3,0,1);se.style.opacity=sa;se.style.transform="rotate(-14deg) scale("+(sa<1?2.2-1.2*ease(sa):1)+")";
+  /* adentro: el mostrador con la caja y la libreta */
+  const inn=cl((T-TIEMPOS.adentro+0.3)/0.6,0,1);document.getElementById("int").parentNode.style.opacity=inn;
+  document.getElementById("rosaIn").style.transform="translateY("+(-Math.abs(Math.sin(T*3))*5)+"px)";
+  /* plata que entra: vecinos y monedas caen en la caja */
+  [...document.querySelectorAll(".flota")].forEach((f,k)=>{const t=(T-TIEMPOS.vecinos-k*0.45)/1.2;f.style.opacity=t>0&&t<1?1-0.3*t:0;const x0=120+((k*137)%640),y0=40;f.style.left=(x0+(170-x0)*ease(cl(t,0,1)))+"px";f.style.top=(y0+(470-y0)*ease(cl(t,0,1)))+"px";f.style.transform="scale("+(1-0.5*cl(t,0,1))+")";});
+  const lleno=cl((T-TIEMPOS.vecinos)/(TIEMPOS.justo-TIEMPOS.vecinos),0,1)*(1-0.6*cl((T-TIEMPOS.entrega)/3,0,1));
+  document.querySelector("#cajon .plata").style.height=(44*lleno)+"px";
+  document.getElementById("cajon").style.transform="translateY("+(T>=TIEMPOS.vecinos?0:-50)+"px)";
+  document.getElementById("pant").textContent="$".repeat(1+Math.round(lleno*4));
+  /* golpean la puerta */
+  const tc=document.getElementById("toc");const tt=T-TIEMPOS.golpe;tc.style.opacity=tt>0&&tt<1.6?1:0;tc.style.transform="rotate("+(Math.sin(T*40)*6)+"deg) scale("+(1+0.1*Math.abs(Math.sin(T*12)))+")";
+  document.getElementById("hojaIn").style.transform="rotateY("+(80*ease(cl((T-TIEMPOS.cobrador)/0.7,0,1)))+"deg)";
+  /* entra el cobrador */
+  const cb=document.getElementById("cob"),ce=cl((T-TIEMPOS.cobrador-0.3)/1.3,0,1);
+  cb.style.opacity=cl((T-TIEMPOS.cobrador-0.2)/0.3,0,1);cb.style.left=(870-110*io(ce))+"px";
+  const mira=ease(cl((T-TIEMPOS.mira)/0.6,0,1))*(1-ease(cl((T-TIEMPOS.dias)/0.5,0,1)));
+  cb.style.transform="translateY("+(ce>0&&ce<1?-Math.abs(Math.sin(T*9))*10:-Math.abs(Math.sin(T*2.5))*3)+"px) rotate("+(-8*mira)+"deg)";cb.style.transformOrigin="50% 100%";
+  /* Doña Rosa le entrega una parte de la plata: 3 billetes van de la caja al maletín */
+  for(let k=0;k<3;k++){const b=document.getElementById("b"+k),t=(T-TIEMPOS.entrega-0.4-k*0.8)/0.9;b.style.opacity=t>0&&t<1.15?1:0;const e=io(cl(t,0,1));b.style.left=(150+(560-150)*e)+"px";b.style.top=(470-140*Math.sin(e*Math.PI)+(510-470)*e)+"px";b.style.transform="rotate("+(e*30-10)+"deg)";}
+  /* globo del cobrador */
+  const g2=document.getElementById("globo2");const gt=T>=TIEMPOS.dias?"Le doy <b style='color:#3c9a5f'>3 días más</b>.":T>=TIEMPOS.mira?"Mmm… a ver esa libreta.":T>=TIEMPOS.cobrador+1.6?"Buenas, Doña Rosa. Vengo a cobrar.":"";
+  g2.innerHTML=gt;g2.style.opacity=gt&&T<TIEMPOS.falta?1:0;
+  /* días: 1 DÍA → 4 DÍAS */
+  const q=document.getElementById("quedan");q.textContent=T>=TIEMPOS.dias+0.3?"4 DÍAS":"1 DÍA";q.style.color=T>=TIEMPOS.dias+0.3?"#3c9a5f":"";
+  q.style.transform="scale("+(1+0.25*Math.max(0,1-Math.abs(T-TIEMPOS.dias-0.3)/0.4))+")";q.style.transformOrigin="left center";
+  /* «Pero todavía falta»: la barra de la deuda */
+  {const dd=document.getElementById("deuda"),a=ventana(TIEMPOS.falta,TIEMPOS.vuelta,0.4,0.35);dd.style.opacity=a;dd.style.transform="scale("+(0.9+0.1*a)+")";
+   document.getElementById("deudaFill").style.width=(65+15*ease(cl((T-TIEMPOS.falta-0.2)/1,0,1)))+"%";}
+  /* página de Cacho */
+  const filas=[...document.querySelectorAll("#tabC .fila")].map(f=>[...f.querySelectorAll(".c")]);const nombres=[...document.querySelectorAll("#tabC .n")];
+  JUG.forEach(([n,w,col],k)=>{const t0=TIEMPOS["j"+k];nombres[k].style.opacity=T>=t0-0.3?1:0;filas[k].forEach((c,i)=>voltear(c,w[i],col[i],t0+i*0.15,t0+0.8+i*0.15));});
+  for(let k=JUG.length;k<filas.length;k++){nombres[k].style.opacity=T>=TIEMPOS.pregunta?1:0;filas[k].forEach((c,i)=>{c.textContent=T>=TIEMPOS.pregunta?"?":"";c.className="c"+(T>=TIEMPOS.pregunta?" q":"");c.style.transform=T>=TIEMPOS.pregunta&&k===JUG.length?"scale("+(1+0.07*Math.sin(T*6+i))+")":"";});}
+  const sg=document.getElementById("seguir");const b2=ease(cl((T-TIEMPOS.seguir)/0.4,0,1));sg.style.opacity=b2;sg.style.transform="scale("+(b2*(1+0.05*Math.sin(T*7)))+")";
+  if(ul.classList.contains("mueve")){const m=document.getElementById("listaMarco"),extra=Math.max(0,ul.scrollHeight-m.clientHeight+12),dur=extra/30,ciclo=dur+5;const t=(T%ciclo);const y=t<2?0:t<2+dur?(t-2)*30:extra;ul.style.transform="translateY("+(-y)+"px)";}
+  [...document.querySelectorAll("#lista li")].forEach((li,k)=>{li.style.color=T>=TIEMPOS.letras+k*0.2&&T<TIEMPOS.verde+1.5?"#F5C451":"";});
+}
+const TOTAL=42.6;   /* ESTIMADO sin voz; la voz sigue con «Jugá en girá y adiviná punto com» sobre el cierre (cierre.html) */
+TIEMPOS={letras:1.6,verde:3.6,pago:7.4,adentro:8.4,vecinos:8.6,justo:13.4,golpe:14.6,cobrador:16.0,entrega:17.4,mira:21.0,dias:23.0,falta:24.8,vuelta:26.2,pagina2:27.6,j0:33.6,j1:35.2,j2:36.6,pregunta:38.0,seguir:40.6};
+SUBS=[[0,1.3,"<em>Día tres.</em>"],[1.3,3.6,"Ayer la mayoría comentó <em>YERBA</em>…"],[3.6,5.0,"¡Y era <em>YERBA</em>!"],[5.0,7.4,"Chelo le debía la yerba de <em>todo el mes</em>,"],[7.4,8.4,"y <em>pagó</em>."],[8.4,11.6,"Con eso, y con cada <em>vecino nuevo</em> que sigue la historia,"],[11.6,13.4,"Doña Rosa juntó <em>unos pesos</em>."],[13.4,14.6,"Y justo…"],[14.6,16.0,"golpean la <em>puerta</em>."],[16.0,17.4,"Es el <em>cobrador</em>."],[17.4,21.0,"Doña Rosa abre la caja y le entrega <em>una parte</em> de la plata."],[21.0,23.0,"El cobrador mira la <em>libreta</em>…"],[23.0,24.8,"y le da <em>tres días más</em>."],[24.8,26.2,"Pero <em>todavía falta</em>."],[26.2,28.2,"Doña Rosa da vuelta la <em>página</em>."],[28.2,29.8,"Página dos: <em>Cacho</em>."],[29.8,31.0,"Cacho me debe…"],[31.0,32.3,"¿Qué le debe <em>Cacho</em>?"],[32.3,33.6,"Es algo para <em>tomar</em>."],[33.6,35.2,"<em>Pepito</em> dijo LICOR."],[35.2,36.6,"<em>Nelly</em>, GRAPA."],[36.6,38.0,"<em>Juanchi</em>, TINTO."],[38.0,39.2,"¿Vos qué <em>decís</em>?"],[39.2,40.6,"<em>Comentá</em> tu respuesta."],[40.6,42.6,"<em>Seguí las historias</em> de Doña Rosa."]];
+pintar();
+</script></body></html>
