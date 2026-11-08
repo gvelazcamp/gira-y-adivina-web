@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa: «llegó» vuelve a contarse siempre
+- Qué: «Llegaron» quedó en ~257 desde la noche del 07/11, justo desde que se agregó «llegó solo si la página se ve» (el anuncio pasó de 293 a 698 visitas). Se saca ese filtro; el registro crudo (embudo_rosa_raw) guarda visibilityState para medir aparte si Instagram la precarga.
+- Dónde: rosa.js (v13), sw.js (gya-cache-v771).
+
 ### 08/11/2026 — Doña Rosa: diagnóstico de aperturas y errores
 - Qué: el anuncio marcaba 698 visitas al sitio y el embudo solo 257 «llegaron» (de noche casi no subió desde que la página es liviana y «llegó» cuenta solo si la página se ve). Se agregó un registro crudo: index.html anota cada apertura desde el anuncio (etapa «juego», y si lo mandó a Doña Rosa) y rosa.html anota apenas abre (etapa «rosa», con visibilityState y celular), sin esperar a la librería (fetch directo a la API con keepalive), en gya_ranking grupo embudo_rosa_raw. Errores de JavaScript, «Doña Rosa no apareció a los 6 s» y «página oculta a los 6 s» van a embudo_rosa_err. Se ve en 🧪 Pruebas → 📣 Anuncio Doña Rosa (línea 🔎 y tabla de errores). Sospecha principal: el filtro de «llegó solo si se ve» (en el navegador de Instagram la página podría figurar oculta).
 - Dónde: rosa.html, index.html (redirección y verAnuncioRosa), sw.js (gya-cache-v770).
