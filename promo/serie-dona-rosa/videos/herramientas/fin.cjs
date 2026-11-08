@@ -1,0 +1,2 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:1920}});
+await p.goto('http://localhost:8794/promo/serie-dona-rosa/cierre.html');await p.waitForTimeout(1500);await p.evaluate(async()=>{await Promise.all([...document.images].map(i=>i.decode().catch(()=>{})));});await p.screenshot({path:process.argv[2]});await b.close();})();
