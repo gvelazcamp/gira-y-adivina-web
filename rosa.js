@@ -48,6 +48,9 @@
   /* En rosa.html (página liviana del anuncio) no está el juego: el perfil se mira en localStorage. */
   const SOLA=!!window.ROSA_SOLA;
   const URL_PLAY="https://play.google.com/store/apps/details?id=io.github.gvelazcamp.twa&referrer=utm_source%3Ddona_rosa";
+  /* Gonzalo (08/11): «Seguí jugando a Palabra Secreta en la app». Si la app está instalada se abre directo en Palabra Secreta
+     (con su cuenta, sin registrarse de nuevo); si no, Android usa el respaldo y va a Google Play. */
+  const URL_APP="intent://girayadivina.com/index.html?ext=palabra-secreta#Intent;scheme=https;package=io.github.gvelazcamp.twa;S.browser_fallback_url="+encodeURIComponent(URL_PLAY)+";end";
   const ANDROID=(()=>{try{return SOLA&&/Android/i.test(navigator.userAgent||"");}catch(e){return false;}})();
   /* Mientras juega a Doña Rosa, el juego completo se baja atrás (sin apurar a Doña Rosa): así al tocar
      «Seguir» abre enseguida en vez de esperar los ~11 s de carga. */
@@ -135,6 +138,7 @@
 .ro-panel{max-width:440px;margin:10px auto 0;background:#1b2e3c;border:2px solid #F5C451;border-radius:18px;padding:14px;text-align:center}
 .ro-panel h3{margin:0 0 6px;font:900 1.2rem "Archivo Black",sans-serif;color:#F5C451}
 .ro-panel p{margin:0 0 10px;font:700 .92rem/1.3 Outfit;color:#E4D8EB}
+.ro-nota{margin:6px 0 2px!important;font:700 .78rem/1.25 Outfit!important;color:#9fb6c4!important}
 .ro-si{display:block;width:100%;text-align:center;text-decoration:none;border:0;border-radius:14px;padding:14px;background:linear-gradient(#ff4fa3,#E5197C);color:#fff;font:900 1.05rem Outfit;cursor:pointer;box-shadow:0 4px 0 #8E0F4C}
 .ro-no{margin-top:8px;border:0;background:none;color:#9fb6c4;font:800 .85rem Outfit;text-decoration:underline;cursor:pointer}
 /* Pantallas bajas (el navegador de Instagram ocupa parte de arriba y de abajo): que entre el teclado entero sin deslizar. */
@@ -154,7 +158,7 @@
     const tecla=t=>'<button type="button" data-t="'+t+'">'+t+'</button>';
     const tec=fin?"":'<div class="ro-tec"><div>'+[..."QWERTYUIOP"].map(tecla).join("")+'</div><div>'+[..."ASDFGHJKLÑ"].map(tecla).join("")+'</div><div><button type="button" class="ancho" data-t="⌫">⌫ Borrar</button>'+[..."ZXCVBNM"].map(tecla).join("")+'<button type="button" class="ancho env" data-t="OK">Probar</button></div></div>';
     /* Android (en la página liviana): primero se ofrece seguir en la app de Google Play; el navegador queda como segunda opción. */
-    const seguir=ANDROID?'<p>¿Querés seguir jugando? Bajate la app gratis: <b>Palabra Secreta</b> y más de 20 juegos.</p><a class="ro-si" id="roPlay" href="'+URL_PLAY+'" target="_blank" rel="noopener">▶ Seguir en Google Play</a><button type="button" class="ro-no" id="roSi">Seguir en el navegador</button>'
+    const seguir=ANDROID?'<p>¿Querés seguir jugando a <b>Palabra Secreta</b>? Una palabra nueva cada vez, gratis.</p><a class="ro-si" id="roPlay" href="'+URL_APP+'">▶ Seguí jugando en la app</a><p class="ro-nota">Si ya tenés la app, se abre directo con tu partida. Si no, la bajás gratis de Google Play.</p><button type="button" class="ro-no" id="roSi">Seguir en el navegador</button>'
       :'<p>¿Querés seguir jugando a <b>Palabra Secreta</b>? Una palabra nueva cada vez, gratis.</p><button type="button" class="ro-si" id="roSi">🔤 ¡Sí, quiero jugar!</button><button type="button" class="ro-no" id="roNo">Ahora no</button>';
     const panel=fin?'<div class="ro-panel"><h3>'+(abierto?(CAPITULO.ganoTitulo||"🎉 ¡Salvaste a Doña Rosa!"):"¡Casi!")+'</h3><p>'+(abierto?CAPITULO.gano:CAPITULO.perdio)+'</p>'+seguir+'</div>':"";
     capa.innerHTML='<div class="ro-cab"><div><small>'+CAPITULO.titulo+'</small><b>EL ALMACÉN DE DOÑA ROSA</b></div>'+(fin?'':'<button type="button" class="ro-x env" data-t="OK">Probar</button>')+'</div>'+
@@ -183,7 +187,9 @@
       ls.set(K_VISTO,fin||"jugando");pintar();
       if(fin==="gano"){try{if(typeof sonarSFX==="function")sonarSFX("aplausos");}catch(e){}
         /* Gonzalo (08/11): al sacar Doña Rosa ya se ofrece guardar la racha (Doña Rosa cuenta como nivel 1 de Palabra Secreta). */
-        if(SOLA&&!tienePerfil()&&!ls.get("gya_rosa_reg_visto")){ls.set("gya_rosa_reg_visto","1");paso("reg_ofrecido");setTimeout(registroRapido,1200);}}
+        /* En Android el camino principal es la app (con su cuenta): el cartel de guardar sale recién si sigue en el navegador
+           (al ganar su primera palabra en Palabra Secreta). En iPhone/compu sale acá. */
+        if(SOLA&&!ANDROID&&!tienePerfil()&&!ls.get("gya_rosa_reg_visto")){ls.set("gya_rosa_reg_visto","1");paso("reg_ofrecido");setTimeout(registroRapido,1200);}}
       return;
     }
     if(/^[A-ZÑ]$/.test(t)&&borrador.length<5){borrador+=t;pintar();}
