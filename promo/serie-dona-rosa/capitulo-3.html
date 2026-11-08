@@ -144,6 +144,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
 #pC .deuda{margin-bottom:18px}.linea{display:inline-block;width:230px;border-bottom:4px dotted #8a6a5a;height:30px;vertical-align:middle}
 #tabC{display:grid;grid-template-rows:repeat(6,96px);gap:10px;justify-content:center}#tabC .fila{grid-template-columns:170px repeat(5,96px)}#tabC .c{width:96px;height:96px;font-size:50px}
 #seguir{position:absolute;left:50%;top:1232px;margin:0;transform-origin:center;translate:-50% 0;z-index:5}
+#duda{position:absolute;left:50%;top:1100px;translate:-50% 0;white-space:nowrap;padding:18px 36px;border-radius:28px;background:#1b2e3c;border:6px solid #F5C451;font:900 54px "Archivo Black";color:#FCEFD2;box-shadow:0 14px 34px #0009;opacity:0;z-index:4}#duda b{color:#F5C451}
 </style></head><body><div id="e">
 <div class="cab"><b>EL ALMACÉN DE DOÑA ROSA</b><small>CAPÍTULO 3 · EL COBRADOR</small></div>
 <div class="info"><div><small>DÍA 3 · CIERRA EN</small><b id="quedan">1 DÍA</b><small style="margin-top:6px">VECINOS AYUDANDO</small></div><div id="votos"><h5>LOS QUE <span>AYUDARON</span> 🔓</h5><div id="listaMarco"><ul id="lista"></ul></div></div></div>
@@ -167,6 +168,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
  <div class="pag" id="pC"><h4>PÁGINA 2 · CACHO</h4><p class="deuda">Cacho me debe: <span class="linea"></span></p><div id="tabC"></div></div>
 </div>
 <div id="deuda"><h4>DEUDA DE DOÑA ROSA</h4><div class="barra"><i id="deudaFill"></i></div><p id="deudaTxt">Pagó una parte: <b>todavía falta</b></p><div id="vecinos"></div></div>
+<div id="duda">¿Qué <b>bebida</b> le debe? 🤔</div>
 <div id="seguir">👤 Seguí la historia</div>
 <div id="sub"></div><div id="firma">@girayadivina</div>
 </div>
@@ -228,12 +230,13 @@ function pintar(){
   const filas=[...document.querySelectorAll("#tabC .fila")].map(f=>[...f.querySelectorAll(".c")]);const nombres=[...document.querySelectorAll("#tabC .n")];
   JUG.forEach(([n,w,col],k)=>{const t0=TIEMPOS["j"+k];nombres[k].style.opacity=T>=t0-0.3?1:0;filas[k].forEach((c,i)=>voltear(c,w[i],col[i],t0+i*0.15,t0+0.8+i*0.15));});
   for(let k=JUG.length;k<filas.length;k++){nombres[k].style.opacity=T>=TIEMPOS.pregunta?1:0;filas[k].forEach((c,i)=>{c.textContent=T>=TIEMPOS.pregunta?"?":"";c.className="c"+(T>=TIEMPOS.pregunta?" q":"");c.style.transform=T>=TIEMPOS.pregunta&&k===JUG.length?"scale("+(1+0.07*Math.sin(T*6+i))+")":"";});}
+  const du=document.getElementById("duda"),da=ease(cl((T-TIEMPOS.duda)/0.4,0,1));du.style.opacity=da;du.style.transform="scale("+(da*(1+0.04*Math.sin(T*6)))+")";
   const sg=document.getElementById("seguir");const b2=ease(cl((T-TIEMPOS.seguir)/0.4,0,1));sg.style.opacity=b2;sg.style.transform="scale("+(b2*(1+0.05*Math.sin(T*7)))+")";
   if(ul.classList.contains("mueve")){const m=document.getElementById("listaMarco"),extra=Math.max(0,ul.scrollHeight-m.clientHeight+12),dur=extra/30,ciclo=dur+5;const t=(T%ciclo);const y=t<2?0:t<2+dur?(t-2)*30:extra;ul.style.transform="translateY("+(-y)+"px)";}
   [...document.querySelectorAll("#lista li")].forEach((li,k)=>{li.style.color=T>=TIEMPOS.letras+k*0.2&&T<TIEMPOS.verde+1.5?"#F5C451":"";});
 }
-const TOTAL=42.6;   /* ESTIMADO sin voz; la voz sigue con «Jugá en girá y adiviná punto com» sobre el cierre (cierre.html) */
-TIEMPOS={letras:1.6,verde:3.6,pago:7.4,adentro:8.4,vecinos:8.6,justo:13.4,golpe:14.6,cobrador:16.0,entrega:17.4,mira:21.0,dias:23.0,falta:24.8,vuelta:26.2,pagina2:27.6,j0:33.6,j1:35.2,j2:36.6,pregunta:38.0,seguir:40.6};
-SUBS=[[0,1.3,"<em>Día tres.</em>"],[1.3,3.6,"Ayer la mayoría comentó <em>YERBA</em>…"],[3.6,5.0,"¡Y era <em>YERBA</em>!"],[5.0,7.4,"Chelo le debía la yerba de <em>todo el mes</em>,"],[7.4,8.4,"y <em>pagó</em>."],[8.4,11.6,"Con eso, y con cada <em>vecino nuevo</em> que sigue la historia,"],[11.6,13.4,"Doña Rosa juntó <em>unos pesos</em>."],[13.4,14.6,"Y justo…"],[14.6,16.0,"golpean la <em>puerta</em>."],[16.0,17.4,"Es el <em>cobrador</em>."],[17.4,21.0,"Doña Rosa abre la caja y le entrega <em>una parte</em> de la plata."],[21.0,23.0,"El cobrador mira la <em>libreta</em>…"],[23.0,24.8,"y le da <em>tres días más</em>."],[24.8,26.2,"Pero <em>todavía falta</em>."],[26.2,28.2,"Doña Rosa da vuelta la <em>página</em>."],[28.2,29.8,"Página dos: <em>Cacho</em>."],[29.8,31.0,"Cacho me debe…"],[31.0,32.3,"¿Qué le debe <em>Cacho</em>?"],[32.3,33.6,"Es algo para <em>tomar</em>."],[33.6,35.2,"<em>Pepito</em> dijo LICOR."],[35.2,36.6,"<em>Nelly</em>, GRAPA."],[36.6,38.0,"<em>Juanchi</em>, TINTO."],[38.0,39.2,"¿Vos qué <em>decís</em>?"],[39.2,40.6,"<em>Comentá</em> tu respuesta."],[40.6,42.6,"<em>Seguí las historias</em> de Doña Rosa."]];
+const TOTAL=44.0;   /* ESTIMADO sin voz; la voz sigue con «Jugá en girá y adiviná punto com» sobre el cierre (cierre.html) */
+TIEMPOS={letras:1.6,verde:3.6,pago:7.4,adentro:8.4,vecinos:8.6,justo:13.4,golpe:14.6,cobrador:16.0,entrega:17.4,mira:21.0,dias:23.0,falta:24.8,vuelta:26.2,pagina2:27.6,j0:33.6,j1:35.2,j2:36.6,pregunta:38.0,duda:39.2,seguir:42.0};
+SUBS=[[0,1.3,"<em>Día tres.</em>"],[1.3,3.6,"Ayer la mayoría comentó <em>YERBA</em>…"],[3.6,5.0,"¡Y era <em>YERBA</em>!"],[5.0,7.4,"Chelo le debía la yerba de <em>todo el mes</em>,"],[7.4,8.4,"y <em>pagó</em>."],[8.4,11.6,"Con eso, y con cada <em>vecino nuevo</em> que sigue la historia,"],[11.6,13.4,"Doña Rosa juntó <em>unos pesos</em>."],[13.4,14.6,"Y justo…"],[14.6,16.0,"golpean la <em>puerta</em>."],[16.0,17.4,"Es el <em>cobrador</em>."],[17.4,21.0,"Doña Rosa abre la caja y le entrega <em>una parte</em> de la plata."],[21.0,23.0,"El cobrador mira la <em>libreta</em>…"],[23.0,24.8,"y le da <em>tres días más</em>."],[24.8,26.2,"Pero <em>todavía falta</em>."],[26.2,28.2,"Doña Rosa da vuelta la <em>página</em>."],[28.2,29.8,"Página dos: <em>Cacho</em>."],[29.8,31.0,"Cacho me debe…"],[31.0,32.3,"¿Qué le debe <em>Cacho</em>?"],[32.3,33.6,"Es algo para <em>tomar</em>."],[33.6,35.2,"<em>Pepito</em> dijo LICOR."],[35.2,36.6,"<em>Nelly</em>, GRAPA."],[36.6,38.0,"<em>Juanchi</em>, TINTO."],[38.0,39.2,"¿Vos qué <em>decís</em>?"],[39.2,40.6,"¿Qué <em>bebida</em> le debe?"],[40.6,42.0,"<em>Comentá</em> tu respuesta."],[42.0,44.0,"<em>Seguí las historias</em> de Doña Rosa."]];
 pintar();
 </script></body></html>
