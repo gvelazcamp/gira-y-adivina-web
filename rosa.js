@@ -14,9 +14,9 @@
   /* Capítulo 1 (07/11): clave TERMO, intentos Pepito MATES, Marta PERRO, Juanchi VERDE.
      Capítulo 2 (07/11): abrió el candado del almacén con TERMO; la libreta tiene polvo y hay que adivinar
      qué le debe Chelo ($ 30.000 de YERBA). */
-  /* Gonzalo (08/11): el capítulo 2 se publica cuando él lo diga (cuando suba el video). Hasta entonces, capítulo 1.
-     Para pasar al 2: renombrar CAPITULO_2 a CAPITULO (y este a otro nombre) y subir rosa.js?v=. */
-  const CAPITULO={id:1,clave:"TERMO",
+  /* Gonzalo (08/11): el capítulo 1 sigue para todos; el 2 se abre con el link https://girayadivina.com/?cap=2 (anuncio nuevo).
+     Para pasar a todos al 2: en el script del principio de index.html poner ROSA_CAP por defecto en 2 y acá devolver CAPITULO_2. */
+  const CAPITULO_1={id:1,clave:"TERMO",
     intentos:[["Pepito","MATES"],["Marta","PERRO"],["Juanchi","VERDE"]],
     titulo:"La libreta del fiado",
     pista:"Sirve para tomar mate 🧉",   // botón «💡 Pista» de la libreta (Gonzalo, 08/11)
@@ -34,6 +34,10 @@
     ganoTitulo:"🎉 ¡Doña Rosa cobró!",
     gano:"¡Era YERBA! Chelo le paga los $ 30.000 y Doña Rosa ya paga más de la mitad de su deuda.",
     perdio:"Todavía no se sabe qué le debe Chelo 😢 Mirá cómo sigue en el próximo capítulo."};
+  /* Capítulo activo: el 1 para todos; el 2 con el link ?cap=2 (anuncio nuevo). Se recuerda en el celular para que el
+     juego completo (index.html) siga contando en el capítulo correcto. */
+  const CAPITULO=(()=>{let c=1;try{const qq=new URLSearchParams(location.search);if(qq.get("cap")==="2"){c=2;localStorage.setItem("gya_rosa_cap_activo","2");}
+    else if(qq.get("cap")==="1"||qq.get("rosa")==="1")localStorage.removeItem("gya_rosa_cap_activo");else if(localStorage.getItem("gya_rosa_cap_activo")==="2")c=2;}catch(e){}return c===2?CAPITULO_2:CAPITULO_1;})();
   const GRUPO="embudo_rosa",K_VISTO="gya_rosa_cap"+CAPITULO.id,K_ID="gya_rosa_visitante",K_PASOS="gya_rosa_pasos",K_IR="gya_rosa_ir";
   const ls={get:k=>{try{return localStorage.getItem(k);}catch(e){return null;}},set:(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}},del:k=>{try{localStorage.removeItem(k);}catch(e){}}};
   const q=(()=>{try{return new URLSearchParams(location.search);}catch(e){return new URLSearchParams();}})();
