@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — PENDIENTE: Doña Rosa capítulo 3 «El cobrador»
+- Qué: idea anotada, sin armar. Día 3, mismo almacén con cartel «ALMACÉN DOÑA ROSA»; era YERBA, cobró a Chelo y con los seguidores nuevos junta plata; llega el cobrador con maletín y ella le paga una parte. Detalle en promo/serie-dona-rosa/README.md.
+- Por qué: Gonzalo lo pidió para pensar el capítulo 3; se arma solo cuando lo pida.
+
 ### 08/11/2026 — Doña Rosa: video y voz del capítulo 2 guardados en el repo
 - Qué: `promo/serie-dona-rosa/videos/` guarda el video final del capítulo 2, la voz de ElevenLabs, la placa de cierre y los scripts para volver a armarlo (pasos en el README de la serie).
 - Por qué: Gonzalo — que no quede solo en una carpeta temporal que se borra.
