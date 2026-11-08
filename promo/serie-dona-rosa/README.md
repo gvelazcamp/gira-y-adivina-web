@@ -37,6 +37,14 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 - Claude ajusta la escena (`capitulo-N.html`, mismo motor: `T`, `pintar()`, `SUBS`, `TIEMPOS`), toma los tiempos de la voz con `ffmpeg silencedetect`, graba cuadros con Playwright (1080×1920, 30 fps), une voz + música bajita + cierre, y verifica que los colores de cada intento coincidan con la clave.
 - Desde la sesión de Claude ElevenLabs genera pero no deja bajar los audios (Forbidden): por eso Gonzalo graba y manda el mp3.
 
+## Videos guardados (permanentes, en `videos/`)
+- `Dona-Rosa-Capitulo-2.mp4` (video final, 59,7 s), `Dona-Rosa-Capitulo-2-voz.mp3` (la voz que grabó Gonzalo en ElevenLabs, 57,8 s) y `cierre.png` (la placa final de 4,6 s).
+- `herramientas/`: `rec.cjs` (graba los cuadros), `fin.cjs` (saca `cierre.png` de `cierre.html`), `prev.cjs` (capturas sueltas para revisar).
+- Para rehacerlo: en la raíz del repo `python3 -m http.server 8794`; después
+  `mkdir -p X/fr && node promo/serie-dona-rosa/videos/herramientas/rec.cjs X 2` (X = carpeta de trabajo), y
+  `ffmpeg -framerate 30 -i X/fr/%05d.jpg -loop 1 -framerate 30 -t 4.6 -i videos/cierre.png -filter_complex "[0:v]scale=1080:1920,format=yuv420p,setsar=1[a];[1:v]scale=1080:1920,format=yuv420p,setsar=1[b];[a][b]concat=n=2:v=1[v]" -map "[v]" -c:v libx264 -crf 20 v.mp4`, y por último sumar la voz: `ffmpeg -i v.mp4 -i videos/Dona-Rosa-Capitulo-2-voz.mp3 -filter_complex "[1:a]apad[a]" -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 160k -shortest final.mp4`.
+- Cada capítulo nuevo: guardar acá también su video y su voz.
+
 ## Página de llegada (rosa.js)
 - **Link por capítulo:** `https://girayadivina.com/?cap=2` abre directo el capítulo 2 (para el anuncio de ese capítulo); sin `cap` sigue el capítulo 1.
 - Quien toca el link del anuncio (Meta le agrega fbclid) ve la libreta del último capítulo y juega los intentos que quedan; después crea su perfil y entra a Palabra Secreta. Para la bio usar `https://girayadivina.com/?rosa=1`.

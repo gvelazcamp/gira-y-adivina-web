@@ -396,6 +396,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa: video y voz del capítulo 2 guardados en el repo
+- Qué: `promo/serie-dona-rosa/videos/` guarda el video final del capítulo 2, la voz de ElevenLabs, la placa de cierre y los scripts para volver a armarlo (pasos en el README de la serie).
+- Por qué: Gonzalo — que no quede solo en una carpeta temporal que se borra.
+- Archivos: promo/serie-dona-rosa/videos/, promo/serie-dona-rosa/README.md.
+
 ### 08/11/2026 — Doña Rosa cap. 2: «Chelo y otros vecinos le deben más de $ 30.000»
 - Qué: el video del capítulo 2 y el texto del juego (CAPITULO_2 en rosa.js) ya no dicen que Chelo solo debe $ 30.000: «Chelo me debe: …», y entre él y otros vecinos le deben más de $ 30.000. Si Chelo paga, Doña Rosa empieza a cubrir su deuda. Voz nueva de 57,8 s, sin música.
 - Por qué: Gonzalo — que $ 30.000 de un solo vecino no suene raro entre Uruguay y Argentina.
