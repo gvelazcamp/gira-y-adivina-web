@@ -41,6 +41,16 @@
   const fuente=q.get("rosa")==="1"?"link":q.get("fbclid")?"meta":/^(ig|instagram|fb|facebook)$/i.test(q.get("utm_source")||"")?"utm":enAppMeta?"app":"";
   /* En rosa.html (página liviana del anuncio) no está el juego: el perfil se mira en localStorage. */
   const SOLA=!!window.ROSA_SOLA;
+  const URL_PLAY="https://play.google.com/store/apps/details?id=io.github.gvelazcamp.twa&referrer=utm_source%3Ddona_rosa";
+  const ANDROID=(()=>{try{return SOLA&&/Android/i.test(navigator.userAgent||"");}catch(e){return false;}})();
+  /* Mientras juega a Doña Rosa, el juego completo se baja atrás (sin apurar a Doña Rosa): así al tocar
+     «Seguir» abre enseguida en vez de esperar los ~11 s de carga. */
+  function precargarJuego(){
+    try{fetch("index.html",{credentials:"same-origin"}).then(r=>r.text()).then(html=>{
+      const urls=[...html.matchAll(/<(?:script[^>]*\ssrc|link[^>]*rel="(?:stylesheet|preload)"[^>]*\shref)="([^"]+)"/g)].map(m=>m[1]).filter(u=>!/^(https?:)?\/\//.test(u)&&!/\.webp|\.png|\.jpg/.test(u));
+      let i=0;const sig=()=>{const u=urls[i++];if(!u)return;fetch(u,{credentials:"same-origin"}).catch(()=>{}).finally(sig);};
+      for(let k=0;k<3;k++)sig();}).catch(()=>{});}catch(e){}
+  }
   const tienePerfil=()=>{try{if(SOLA)return !!localStorage.getItem("gya_nombre");return !!(typeof perfil!=="undefined"&&perfil&&perfil.nombre);}catch(e){return false;}};
 
   /* --- Embudo: llegó, jugó, la sacó / no, quiere seguir, se registró, entró a Palabra Secreta --- */
@@ -63,7 +73,7 @@
   async function resumen(){
     const sb=typeof obtenerSupa==="function"?obtenerSupa():null;if(!sb)return null;
     try{const r=await sb.from("gya_ranking").select("estado_juego,actualizado_en").eq("grupo",GRUPO).limit(5000);if(r.error)return null;
-      const c={llego:0,jugo:0,gano:0,perdio:0,quiere:0,registro:0,palabra:0};
+      const c={llego:0,jugo:0,gano:0,perdio:0,quiere:0,play:0,registro:0,palabra:0};
       c.anuncio={llego:0,jugo:0};c.lista=[];for(const f of r.data||[]){const e=f.estado_juego||{};for(const k in c)if(e[k])c[k]++;if(e.origen==="meta"||e.origen==="utm"||e.origen==="app"){if(e.llego)c.anuncio.llego++;if(e.jugo)c.anuncio.jugo++;c.lista.push({cap:e.cap||1,nombre:e.nombre||"",palabras:e.palabras||[],fin:e.gano?"gano":e.perdio?"perdio":"",registro:!!e.registro,fecha:f.actualizado_en||""});}}
       c.lista.sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
       return c;}catch(e){return null;}
@@ -115,7 +125,7 @@
 .ro-panel{max-width:440px;margin:10px auto 0;background:#1b2e3c;border:2px solid #F5C451;border-radius:18px;padding:14px;text-align:center}
 .ro-panel h3{margin:0 0 6px;font:900 1.2rem "Archivo Black",sans-serif;color:#F5C451}
 .ro-panel p{margin:0 0 10px;font:700 .92rem/1.3 Outfit;color:#E4D8EB}
-.ro-si{display:block;width:100%;border:0;border-radius:14px;padding:14px;background:linear-gradient(#ff4fa3,#E5197C);color:#fff;font:900 1.05rem Outfit;cursor:pointer;box-shadow:0 4px 0 #8E0F4C}
+.ro-si{display:block;width:100%;text-align:center;text-decoration:none;border:0;border-radius:14px;padding:14px;background:linear-gradient(#ff4fa3,#E5197C);color:#fff;font:900 1.05rem Outfit;cursor:pointer;box-shadow:0 4px 0 #8E0F4C}
 .ro-no{margin-top:8px;border:0;background:none;color:#9fb6c4;font:800 .85rem Outfit;text-decoration:underline;cursor:pointer}
 /* Pantallas bajas (el navegador de Instagram ocupa parte de arriba y de abajo): que entre el teclado entero sin deslizar. */
 @media (max-height:760px){.ro-esc{zoom:.72}.ro-c{max-height:40px;font-size:1.05rem}.ro-tec button{height:40px}.ro-lib{margin-top:6px;padding-top:6px}.ro-msj{margin-top:4px}}
@@ -133,7 +143,10 @@
     for(let k=0;k<libres;k++){const act=k===0&&!fin;filas+='<div class="ro-fila vos"><span class="n">'+(act?"Vos ✍️":"Vos")+'</span>'+[0,1,2,3,4].map(i=>'<span class="ro-c'+(act&&i===borrador.length?" act":"")+'">'+(act?(borrador[i]||""):"")+'</span>').join("")+'</div>';}
     const tecla=t=>'<button type="button" data-t="'+t+'">'+t+'</button>';
     const tec=fin?"":'<div class="ro-tec"><div>'+[..."QWERTYUIOP"].map(tecla).join("")+'</div><div>'+[..."ASDFGHJKLÑ"].map(tecla).join("")+'</div><div><button type="button" class="ancho" data-t="⌫">⌫ Borrar</button>'+[..."ZXCVBNM"].map(tecla).join("")+'<button type="button" class="ancho env" data-t="OK">Probar</button></div></div>';
-    const panel=fin?'<div class="ro-panel"><h3>'+(abierto?(CAPITULO.ganoTitulo||"🎉 ¡Salvaste a Doña Rosa!"):"¡Casi!")+'</h3><p>'+(abierto?CAPITULO.gano:CAPITULO.perdio)+'</p><p>¿Querés seguir jugando a <b>Palabra Secreta</b>? Una palabra nueva cada vez, gratis.</p><button type="button" class="ro-si" id="roSi">🔤 ¡Sí, quiero jugar!</button><button type="button" class="ro-no" id="roNo">Ahora no</button></div>':"";
+    /* Android (en la página liviana): primero se ofrece seguir en la app de Google Play; el navegador queda como segunda opción. */
+    const seguir=ANDROID?'<p>¿Querés seguir jugando? Bajate la app gratis: <b>Palabra Secreta</b> y más de 20 juegos.</p><a class="ro-si" id="roPlay" href="'+URL_PLAY+'" target="_blank" rel="noopener">▶ Seguir en Google Play</a><button type="button" class="ro-no" id="roSi">Seguir en el navegador</button>'
+      :'<p>¿Querés seguir jugando a <b>Palabra Secreta</b>? Una palabra nueva cada vez, gratis.</p><button type="button" class="ro-si" id="roSi">🔤 ¡Sí, quiero jugar!</button><button type="button" class="ro-no" id="roNo">Ahora no</button>';
+    const panel=fin?'<div class="ro-panel"><h3>'+(abierto?(CAPITULO.ganoTitulo||"🎉 ¡Salvaste a Doña Rosa!"):"¡Casi!")+'</h3><p>'+(abierto?CAPITULO.gano:CAPITULO.perdio)+'</p>'+seguir+'</div>':"";
     capa.innerHTML='<div class="ro-cab"><div><small>'+CAPITULO.titulo+'</small><b>EL ALMACÉN DE DOÑA ROSA</b></div>'+(fin?'':'<button type="button" class="ro-x env" data-t="OK">Probar</button>')+'</div>'+
       '<div class="ro-esc"><div class="ro-edif"></div><div class="ro-cartel">ALMACÉN ROSA</div><div class="ro-toldo"></div><div class="ro-puerta"></div><div class="ro-aviso'+(abierto?" ok":"")+'">'+(abierto?"¡ABIERTO!":"CIERRA<br>PRONTO")+'</div>'+rosaHtml()+'<div class="ro-globo">'+(abierto?"¡Gracias, vecino! 💜":fin?"Ay… ¿cuál era? 😢":CAPITULO.pedido)+'</div></div>'+
       '<div class="ro-lib"><span class="ro-cand">'+(CAPITULO.icono||(abierto?"🔓":"🔒"))+'</span><h4>'+(CAPITULO.hoja||"LIBRETA DEL FIADO")+'</h4>'+(CAPITULO.sub?'<p class="ro-sub">'+CAPITULO.sub+'</p>':'')+'<div class="ro-tab">'+filas+'</div></div>'+
@@ -142,6 +155,7 @@
     capa.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>tecla_(b.dataset.t));
     const si=capa.querySelector("#roSi");if(si){si.onclick=()=>cerrar(true);si.focus({preventScroll:true});setTimeout(()=>{try{capa&&capa.scrollTo({top:capa.scrollHeight,behavior:"smooth"});}catch(e){}},600);}
     const no=capa.querySelector("#roNo");if(no)no.onclick=()=>cerrar(false);
+    const pl=capa.querySelector("#roPlay");if(pl)pl.onclick=()=>{paso("play");ls.set(K_VISTO,fin||"play");};
   }
   function mensaje(t){const m=capa&&capa.querySelector("#roMsj");if(m)m.textContent=t;}
   function tecla_(t){
@@ -203,7 +217,7 @@
     return ls.get(K_IR)==="palabra-secreta";
   }
   function arrancar(){
-    if(SOLA){mostrar();return;}
+    if(SOLA){mostrar();const ya=()=>setTimeout(precargarJuego,1500);if(document.readyState==="complete")ya();else window.addEventListener("load",ya);return;}
     if(q.get("norosa")==="1"){try{q.delete("norosa");const t=q.toString();history.replaceState(null,"",location.pathname+(t?"?"+t:""));}catch(e){}}
     irAPalabra();
     /* Si llegó por el anuncio y después se hizo el perfil, se anota su nombre. */

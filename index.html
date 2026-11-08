@@ -5561,7 +5561,7 @@ async function usrCargarLista(){
   {const n=(data&&data.length)||0,t=$("usrTotal");if(t){t.textContent=n;t.hidden=!n;}$("usrEstado").textContent=n?"":"Todavía no hay usuarios.";}
   /* Embudo del anuncio de Doña Rosa (rosa.js), solo para Gonzalo. */
   if(esGonzalo()&&window.DonaRosa)DonaRosa.resumen().then(c=>{const e=$("usrEmbudo");if(!e||!c||!c.llego)return;e.hidden=false;
-    e.textContent="📣 Anuncio Doña Rosa: "+c.llego+" llegaron · "+c.jugo+" jugaron · "+c.gano+" la sacaron · "+c.quiere+" quieren seguir · "+c.registro+" se registraron · "+c.palabra+" entraron a Palabra Secreta";});
+    e.textContent="📣 Anuncio Doña Rosa: "+c.llego+" llegaron · "+c.jugo+" jugaron · "+c.gano+" la sacaron · "+c.quiere+" quieren seguir · "+c.play+" fueron a Google Play · "+c.registro+" se registraron · "+c.palabra+" entraron a Palabra Secreta";});
   /* Si yo tengo perfil pero no aparezco, me registro de nuevo y recargo
      una vez; si falla, se muestra el motivo para poder arreglarlo. */
   const meVeo=(data||[]).some(f=>misClaves.includes(normApodo(f.apodo)));
@@ -12171,7 +12171,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="rueda-de-letras.js?v=20"></script>
 <script src="palabra-secreta-datos.js?v=3"></script>
 <script src="palabra-secreta.js?v=35"></script>
-<script src="rosa.js?v=8"></script>
+<script src="rosa.js?v=9"></script>
 <link rel="stylesheet" href="palabras-cruzadas.css?v=8">
 <script src="palabras-cruzadas-datos.js?v=3"></script>
 <script src="palabras-cruzadas.js?v=18"></script>
