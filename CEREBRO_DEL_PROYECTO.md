@@ -396,6 +396,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa cap. 2: «Chelo y otros vecinos le deben más de $ 30.000»
+- Qué: el video del capítulo 2 y el texto del juego (CAPITULO_2 en rosa.js) ya no dicen que Chelo solo debe $ 30.000: «Chelo me debe: …», y entre él y otros vecinos le deben más de $ 30.000. Si Chelo paga, Doña Rosa empieza a cubrir su deuda. Voz nueva de 57,8 s, sin música.
+- Por qué: Gonzalo — que $ 30.000 de un solo vecino no suene raro entre Uruguay y Argentina.
+- Archivos: promo/serie-dona-rosa/capitulo-2.html, rosa.js (v18), README de la serie.
+
 ### 08/11/2026 — Doña Rosa: «Seguí jugando en la app» abre la app directo en Palabra Secreta
 - Qué: pedido de Gonzalo para que los que ya están registrados en la app no se registren de nuevo. En Android, al terminar Doña Rosa el botón principal es «▶ Seguí jugando en la app» (con nota: si ya tenés la app se abre directo con tu partida; si no, la bajás de Google Play). Usa un enlace intent:// al paquete io.github.gvelazcamp.twa con https://girayadivina.com/index.html?ext=palabra-secreta y respaldo a Google Play. En Android ya no sale «Guardá tu racha» en Doña Rosa (si sigue en el navegador, sale al ganar su primera palabra en Palabra Secreta); en iPhone/compu sigue saliendo al sacarla. Abrir la app desde el navegador de Instagram anda en la mayoría de los Android, no se pudo probar en un celular real.
 - Dónde: rosa.js (URL_APP, v17), sw.js (gya-cache-v777), promo/REGLAS-PROMOCION.md.

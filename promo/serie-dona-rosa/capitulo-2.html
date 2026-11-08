@@ -121,9 +121,9 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
 </div></div>
 <div id="piz">
  <div class="pag" id="pA"><h4>LIBRETA DEL FIADO</h4><p class="sub2">Clave de 5 letras</p><div id="candA">🔒</div><div id="tabA"></div></div>
- <div class="pag" id="pB"><h4>PÁGINA 1 · CHELO</h4><p class="deuda">me debe <b>$ 30.000</b> de <span class="tapado"></span></p><div id="tabB"></div><div id="polvoB"></div></div>
+ <div class="pag" id="pB"><h4>PÁGINA 1 · CHELO</h4><p class="deuda">Chelo me debe: <span class="tapado"></span></p><div id="tabB"></div><div id="polvoB"></div></div>
 </div>
-<div id="deuda"><h4>DEUDA DE DOÑA ROSA</h4><div class="barra"><i id="deudaFill"></i></div><p id="deudaTxt">Si cobra a Chelo: <b>más de la mitad</b></p><div id="vecinos"></div><div id="seguir">👤 Seguí la historia</div></div>
+<div id="deuda"><h4>DEUDA DE DOÑA ROSA</h4><div class="barra"><i id="deudaFill"></i></div><p id="deudaTxt">Chelo y otros vecinos: <b>más de $ 30.000</b></p><div id="vecinos"></div><div id="seguir">👤 Seguí la historia</div></div>
 <div id="sub"></div><div id="firma">@girayadivina</div>
 </div>
 <script>
@@ -168,8 +168,8 @@ function pintar(){
   if(ul.classList.contains("mueve")){const m=document.getElementById("listaMarco"),extra=Math.max(0,ul.scrollHeight-m.clientHeight+12),dur=extra/30,ciclo=dur+5;const t=(T%ciclo);const y=t<2?0:t<2+dur?(t-2)*30:extra;ul.style.transform="translateY("+(-y)+"px)";}
   /* Deuda: aparece al decir «si cobra…», se llena hasta más de la mitad, los vecinos suman y al final «Seguí la historia». */
   {const dd=document.getElementById("deuda"),a=ease(cl((T-TIEMPOS.deuda)/0.5,0,1));dd.style.opacity=a;dd.style.transform="scale("+(0.9+0.1*a)+")";
-   const f1=55*ease(cl((T-TIEMPOS.deuda-0.4)/1.6,0,1)),f2=20*cl((T-TIEMPOS.vecinos)/(TIEMPOS.seguir-TIEMPOS.vecinos),0,1);document.getElementById("deudaFill").style.width=(f1+f2)+"%";
-   document.getElementById("deudaTxt").innerHTML=T<TIEMPOS.vecinos?"Si cobra a Chelo: <b>más de la mitad</b>":"Cada vecino que sigue la historia <b>ayuda</b>";
+   const f1=35*ease(cl((T-TIEMPOS.deuda-0.4)/1.6,0,1)),f2=30*cl((T-TIEMPOS.vecinos)/(TIEMPOS.seguir-TIEMPOS.vecinos),0,1);document.getElementById("deudaFill").style.width=(f1+f2)+"%";
+   document.getElementById("deudaTxt").innerHTML=T<TIEMPOS.vecinos?"Chelo y otros vecinos: <b>más de $ 30.000</b>":"Cada vecino que sigue la historia <b>ayuda</b>";
    const nv=T<TIEMPOS.vecinos?0:Math.min(8,1+Math.floor((T-TIEMPOS.vecinos)/0.8));document.getElementById("vecinos").textContent="👤".repeat(nv);
    const sg=document.getElementById("seguir");const b2=ease(cl((T-TIEMPOS.seguir)/0.4,0,1));sg.style.opacity=b2;sg.style.transform="scale("+(b2*(1+0.05*Math.sin(T*7)))+")";
    document.getElementById("piz").style.filter=a>0?"brightness("+(1-0.45*a)+")":"";}
@@ -181,8 +181,8 @@ function pintar(){
   JUG.forEach(([n,w,col],k)=>{const t0=TIEMPOS["j"+k];nombres[k].style.opacity=T>=t0-0.3?1:0;filas[k].forEach((c,i)=>voltear(c,w[i],col[i],t0+i*0.18,t0+1.1+i*0.18));});
   for(let k=JUG.length;k<filas.length;k++){nombres[k].style.opacity=T>=TIEMPOS.pregunta?1:0;filas[k].forEach((c,i)=>{c.textContent=T>=TIEMPOS.pregunta?"?":"";c.className="c"+(T>=TIEMPOS.pregunta?" q":"");c.style.transform=T>=TIEMPOS.pregunta&&k===JUG.length?"scale("+(1+0.07*Math.sin(T*6+i))+")":"";});}
 }
-const TOTAL=52.4;   /* la voz sigue con «Jugá en girá y adiviná punto com» sobre el cierre (cierre.html) */
-TIEMPOS={camina:0.3,llega:2.1,abre_p:2.2,entra:2.8,adentro:3.8,piz:5.93,letras:[8.09,8.89,9.81,10.87,11.85],verde:12.0,abre:12.52,gracias:14.45,pagina:16.65,sopla:20.07,j0:26.48,j1:29.81,j2:33.39,pregunta:37.97,deuda:39.97,vecinos:43.31,seguir:50.47};
-SUBS=[[0,1.44,"Es el <em>día dos</em>."],[1.44,3.9,"Doña Rosa, con la ayuda de sus <em>nuevos amigos</em>,"],[3.9,5.93,"va a intentar abrir el <em>candado</em>."],[5.93,8.09,"La mayoría comentó <em>TERMO</em>."],[8.09,8.89,"T…"],[8.89,9.81,"T… E…"],[9.81,10.87,"T… E… R…"],[10.87,11.85,"T… E… R… M…"],[11.85,12.52,"T… E… R… M… O…"],[12.52,13.43,"¡Se <em>abrió</em>!"],[13.43,14.45,"¡Era <em>TERMO</em>!"],[14.45,16.55,"<em>Gracias</em> a todos los que comentaron."],[16.55,20.07,"Pero después de tres meses, la libreta está llena de <em>polvo</em>."],[20.07,24.17,"Su primer cliente es <em>Chelo</em>: le debe <em>$ 30.000</em> de…"],[24.17,26.48,"algo que el polvo <em>no deja leer</em>."],[26.48,29.81,"<em>Don Tito</em> probó PASTA: solo la A, al final."],[29.81,33.39,"<em>Nelly</em> probó TRIGO: la R está, pero en otro lugar."],[33.39,37.97,"Y <em>Pepito</em> probó TERMA: la E, la R y la A, en su lugar."],[37.97,39.07,"¿Qué le debe <em>Chelo</em>?"],[39.07,39.97,"<em>Comentalo.</em>"],[39.97,43.31,"Si cobra, Doña Rosa paga <em>más de la mitad</em> de su deuda."],[43.31,47.8,"Cada vecino que se suma a <em>seguir la historia</em> la ayuda a cubrir la deuda más rápido,"],[47.8,50.47,"y después empezamos a <em>arreglar su almacén</em>."],[50.47,52.4,"<em>Seguí las historias</em> de Doña Rosa."]];
+const TOTAL=55.1;   /* la voz sigue con «Jugá en girá y adiviná punto com» sobre el cierre (cierre.html) */
+TIEMPOS={camina:0.3,llega:2.1,abre_p:2.2,entra:2.8,adentro:3.8,piz:6.05,letras:[8.17,9.0,9.86,10.8,11.76],verde:11.9,abre:12.52,gracias:14.37,pagina:16.45,sopla:19.91,j0:29.28,j1:32.63,j2:36.52,pregunta:40.78,deuda:42.78,vecinos:46.06,seguir:53.2};
+SUBS=[[0,1.4,"Es el <em>día dos</em>."],[1.4,4.1,"Doña Rosa, con la ayuda de sus <em>nuevos amigos</em>,"],[4.1,6.05,"va a intentar abrir el <em>candado</em>."],[6.05,8.17,"La mayoría comentó <em>TERMO</em>."],[8.17,9.0,"T…"],[9.0,9.86,"T… E…"],[9.86,10.8,"T… E… R…"],[10.8,11.76,"T… E… R… M…"],[11.76,12.52,"T… E… R… M… O…"],[12.52,13.33,"¡Se <em>abrió</em>!"],[13.33,14.37,"¡Era <em>TERMO</em>!"],[14.37,16.36,"<em>Gracias</em> a todos los que comentaron."],[16.36,19.91,"Pero después de tres meses, la libreta está llena de <em>polvo</em>."],[19.91,21.8,"Su primer cliente es <em>Chelo</em>."],[21.8,25.75,"Entre él y otros vecinos, le deben <em>más de $ 30.000</em>."],[25.75,27.04,"¿En qué le debe <em>Chelo</em>?"],[27.04,29.28,"Algo que el polvo <em>no deja leer</em>."],[29.28,32.63,"<em>Don Tito</em> probó PASTA: solo la A, al final."],[32.63,36.52,"<em>Nelly</em> probó TRIGO: la R está, pero en otro lugar."],[36.52,40.78,"Y <em>Pepito</em> probó TERMA: la E, la R y la A, en su lugar."],[40.78,41.86,"¿Qué le debe <em>Chelo</em>?"],[41.86,42.78,"<em>Comentalo.</em>"],[42.78,46.06,"Si Chelo paga, Doña Rosa <em>empieza a cubrir</em> su deuda."],[46.06,50.45,"Cada vecino que se suma a <em>seguir la historia</em> la ayuda a cubrir la deuda más rápido,"],[50.45,53.2,"y después empezamos a <em>arreglar su almacén</em>."],[53.2,55.1,"<em>Seguí las historias</em> de Doña Rosa."]];
 pintar();
 </script></body></html>
