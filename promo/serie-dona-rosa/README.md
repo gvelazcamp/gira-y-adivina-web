@@ -13,7 +13,7 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 - Texto grabado (ElevenLabs, voz CESAR RODRIGUEZ, id 4GeB1bS2GAHAsGRM0eeU): ver `capitulo-1.html` (SUBS con los tiempos de la voz).
 - Video: escena `capitulo-1.html` + voz + música de fondo bajita (`assets/audio/palabra-secreta-musica.mp3` a volumen 0.10) + cierre de 4 s «¿Te animás a jugar vos? Jugá a Palabra Secreta en www.girayadivina.com» con Giro de cuerpo entero (`presentacion-y-locucion-extensiones/Giro/Giro_festejando_cuerpo.webp`; usar siempre los Giro de esa carpeta, sin recorte).
 
-## Capítulo 2 (listo, 07/11/2026)
+## Capítulo 2 (video listo, 07/11/2026; en la página del juego se publica solo cuando Gonzalo lo pida: `CAPITULO_2` en rosa.js)
 - Historia (idea de Gonzalo): «Es el día dos». Doña Rosa abre la puerta y entra al almacén; en la barra está la libreta con el candado (igual que en el capítulo 1: el candado es de la libreta, no de la puerta). En la libreta está el tablero del capítulo 1 tal cual (Pepito MATES, Marta PERRO, Juanchi VERDE) y en la 4.ª fila Doña Rosa escribe T… E… R… M… O… (letra por letra con la voz), se pone verde y se abre. Está llena de polvo. Página 1: **Chelo** le debe $ 30.000 de… (tapado por el polvo). Cartel: «DÍA 2 · CIERRA EN 2 DÍAS» (el capítulo 1 terminaba con 3 días).
 - Palabra: **YERBA**. Pistas (pedidas por Gonzalo): Don Tito PASTA (A verde al final), Nelly TRIGO (R amarilla), Pepito MENTA (E y A verdes). Queda _E__A con R. (TERMA no vale: T y M grises.)
 - Pizarra «VOTARON TERMO» con los que comentaron (sin cantidad): @silvina.martinezok, @matipienia, @santii.yz. Se cambian en `VOTARON` de `capitulo-2.html` sin regrabar la voz (la voz no dice nombres).

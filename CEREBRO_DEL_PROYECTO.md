@@ -395,6 +395,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa: la página del anuncio vuelve al capítulo 1
+- Qué: el capítulo 2 se había publicado en la página del anuncio sin que Gonzalo lo pidiera (se tomó un «Continúa» como sí). Vuelve el capítulo 1 (TERMO), con los cambios nuevos (sin «Saltar» al entrar, «Probar» arriba). El capítulo 2 queda listo en CAPITULO_2 dentro de rosa.js: se publica solo cuando Gonzalo lo pida. Regla: publicar un capítulo nuevo en la página solo con pedido explícito.
+- Dónde: rosa.js (v7), sw.js (gya-cache-v764).
+
 ### 08/11/2026 — Doña Rosa: sin «Saltar» al entrar y «Probar» también arriba
 - Qué: de 95 que llegaron del anuncio jugaron 5. Pedido de Gonzalo: al entrar ya no está «Saltar ✕»; en su lugar, al lado del título, hay otro botón «Probar» (rosa). «Saltar e ir al juego» aparece chico debajo del teclado recién después del primer intento. Texto al sacarla: «Doña Rosa ya paga más de la mitad de su deuda» (igual que el video del capítulo 2). Entra sin deslizar en 360×600 y 390×680.
 - Dónde: rosa.js (v6), sw.js (gya-cache-v763).
