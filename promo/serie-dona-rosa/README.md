@@ -24,6 +24,13 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 - Final del capítulo 2 (08/11, voz de 54,9 s): «Cada vecino que se suma a seguir la historia la ayuda a cubrir la deuda más rápido, y después empezamos a arreglar su almacén. Seguí las historias de Doña Rosa.» En pantalla, una barra «DEUDA DE DOÑA ROSA» que se llena (más de la mitad con lo de Chelo y un poco más con cada 👤 vecino) y el botón «👤 Seguí la historia». No se piden «me gusta»: Instagram baja el alcance de lo que pide interacción directa; pedir que sigan la historia está bien.
 - Escena `capitulo-2.html` (voz de 45 s + cierre de 4 s = 49 s).
 
+## Capítulo 3 · El cobrador (idea de Gonzalo, 08/11/2026 — PENDIENTE, no armar hasta que lo pida)
+- «Día 3». Mismo almacén de siempre, ahora con el cartel «ALMACÉN DOÑA ROSA» arriba del mostrador (queda fijo para todos los capítulos que siguen).
+- Arranca con «Ayer ustedes dijeron…»: era **YERBA**. Con eso Doña Rosa le pudo cobrar a Chelo, y con lo que suman los seguidores nuevos junta plata.
+- Justo en ese momento golpean la puerta: entra **el cobrador** con maletín. Doña Rosa saca la plata de la caja y le entrega una parte. La barra «DEUDA DE DOÑA ROSA» baja, pero todavía falta.
+- Coherencia: el capítulo 2 decía «CIERRA EN 2 DÍAS» → el 3 dice «CIERRA EN 1 DÍA». El cobrador le da unos días más (si no, en el 4 cierra).
+- Falta decidir con Gonzalo: si tiene palabra para adivinar (página 2 de la libreta) o solo historia con una pregunta para comentar, y el texto para ElevenLabs.
+
 ## Lo que sigue (plan acordado)
 1. **Capítulo 2:** «¡La descubrieron! Era TERMO». Se abre el candado 🔓 y la libreta muestra la primera página: «Me debe: _ _ _ _ _».
 2. **Cada página de la libreta es un deudor del barrio**; la palabra secreta es su apodo u oficio (FLACO, RUBIA, BOCHA, CHAPA, PINTOR, MODISTA…; el juego acepta 5, 6 y 7 letras). Ej.: «el Flaco le debe $3.000 desde el Mundial».
