@@ -395,6 +395,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa: el juego se baja mientras juegan y a Android se le ofrece Google Play
+- Qué: para perder la menor cantidad de jugadores (pedido de Gonzalo). En rosa.html, 1,5 s después de que carga Doña Rosa se baja atrás el juego completo (index.html y sus scripts/estilos), así al tocar «Seguir» abre más rápido: en 4G simulado, de 12,5 s a ~7 s si jugó unos 25 s. En Android, al terminar, el botón principal es «▶ Seguir en Google Play» (app gratis) y abajo «Seguir en el navegador»; en iPhone/compu sigue «¡Sí, quiero jugar!». El embudo cuenta «fueron a Google Play» (paso play), visible en 👥 Usuarios.
+- Dónde: rosa.js (precargarJuego, ANDROID/URL_PLAY, v9), index.html (línea del embudo), sw.js (gya-cache-v766).
+
 ### 08/11/2026 — Doña Rosa en página liviana: aparece en 1 segundo en vez de 11
 - Qué: desde Instagram (celular con 4G) el juego tardaba unos 11 s en mostrar a Doña Rosa (antes carga los 57 scripts del juego) y de ~165 visitas del anuncio solo 95 la veían. Ahora un script al principio de index.html manda al que viene del anuncio (fbclid, utm de ig/fb, navegador de Instagram/Facebook o ?rosa=1) y todavía no jugó el capítulo a rosa.html, una página chica con solo Doña Rosa (aparece en ~1 s). Al terminar («¡Sí, quiero jugar!», «Ahora no» o «Saltar e ir al juego») vuelve a index.html?norosa=1; si quiere jugar y no tiene perfil, el inicio (tutChequearBienvenida → DonaRosa.tomarInicio) abre «Elegí tu nombre» en vez del tutorial y después Palabra Secreta. El que entra normal no cambia. ROSA_CAP del script de index.html tiene que ser igual a CAPITULO.id de rosa.js.
 - Dónde: rosa.html (nuevo), rosa.js (modo SOLA, tomarInicio, v8), index.html (redirección al principio y tutChequearBienvenida), sw.js (gya-cache-v765), promo/serie-dona-rosa/README.md.
