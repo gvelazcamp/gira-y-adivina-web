@@ -73,7 +73,7 @@
   async function resumen(){
     const sb=typeof obtenerSupa==="function"?obtenerSupa():null;if(!sb)return null;
     try{const r=await sb.from("gya_ranking").select("estado_juego,actualizado_en").eq("grupo",GRUPO).limit(5000);if(r.error)return null;
-      const c={llego:0,jugo:0,gano:0,perdio:0,quiere:0,play:0,registro:0,palabra:0};
+      const c={llego:0,jugo:0,gano:0,perdio:0,quiere:0,play:0,registro:0,palabra:0,ps_jugo:0};
       c.anuncio={llego:0,jugo:0};c.lista=[];for(const f of r.data||[]){const e=f.estado_juego||{};for(const k in c)if(e[k])c[k]++;if(e.origen==="meta"||e.origen==="utm"||e.origen==="app"){if(e.llego)c.anuncio.llego++;if(e.jugo)c.anuncio.jugo++;c.lista.push({cap:e.cap||1,nombre:e.nombre||"",palabras:e.palabras||[],fin:e.gano?"gano":e.perdio?"perdio":"",registro:!!e.registro,fecha:f.actualizado_en||""});}}
       c.lista.sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
       return c;}catch(e){return null;}
@@ -199,27 +199,39 @@
     if(ls.get(K_IR)!=="palabra-secreta")return;
     let n=0;const t=setInterval(()=>{
       if(++n>1200){clearInterval(t);return;}
-      if(!tienePerfil()||!window.Extensiones||document.readyState!=="complete")return;
-      clearInterval(t);ls.del(K_IR);
-      if(ls.get("gya_rosa_sinperfil")){ls.del("gya_rosa_sinperfil");paso("registro");}
+      if((!tienePerfil()&&!ls.get("gya_rosa_directo"))||!window.Extensiones||document.readyState!=="complete")return;
+      clearInterval(t);ls.del(K_IR);ls.del("gya_rosa_directo");
+      if(ls.get("gya_rosa_sinperfil")&&tienePerfil()){ls.del("gya_rosa_sinperfil");paso("registro");}
       setTimeout(()=>{try{Extensiones.abrirJuego("palabra-secreta");paso("palabra");}catch(e){}},400);
     },500);
   }
   function mostrar(){
     estilos();capa=document.createElement("div");capa.id="rosaCapa";capa.setAttribute("role","dialog");capa.setAttribute("aria-label","El almacén de Doña Rosa");
-    document.body.appendChild(capa);pintar();document.addEventListener("keydown",teclado,true);paso("llego");
+    document.body.appendChild(capa);pintar();document.addEventListener("keydown",teclado,true);
+    /* Instagram a veces carga la página por adelantado sin mostrarla: «llegó» cuenta solo cuando se ve. */
+    if(document.visibilityState!=="hidden")paso("llego");
+    else{const v=()=>{if(document.visibilityState!=="hidden"){document.removeEventListener("visibilitychange",v);paso("llego");}};document.addEventListener("visibilitychange",v);}
   }
   /* Lo llama el inicio del juego (tutChequearBienvenida): si viene de rosa.html con «¡Sí, quiero jugar!», en vez del
      tutorial va directo a elegir nombre y avatar (si no tiene perfil) y después a Palabra Secreta. */
   function tomarInicio(){
+    /* Gonzalo (08/11): los del anuncio sin perfil se iban en «Elegí tu nombre». Ahora entran directo a Palabra Secreta
+       y el nombre se pide más tarde (el registro se cuenta cuando lo crean, ver vigilarRegistro). */
     if(ls.get("gya_rosa_perfil")){ls.del("gya_rosa_perfil");document.getElementById("capaBienvenida")?.classList.remove("ver");
-      try{if(typeof abrirPerfil==="function")abrirPerfil(()=>irAPalabra());}catch(e){}irAPalabra();return true;}
+      ls.set("gya_rosa_directo","1");irAPalabra();return true;}
     return ls.get(K_IR)==="palabra-secreta";
   }
+  /* Si vino del anuncio sin perfil y lo crea más tarde (en cualquier momento de la visita), se cuenta «se registró». */
+  function vigilarRegistro(){
+    if(!ls.get("gya_rosa_sinperfil"))return;
+    const t=setInterval(()=>{if(!ls.get("gya_rosa_sinperfil")){clearInterval(t);return;}if(tienePerfil()){ls.del("gya_rosa_sinperfil");paso("registro");clearInterval(t);}},5000);
+  }
+  /* Lo llama Palabra Secreta en cada palabra que prueba: así se ve quién del anuncio jugó de verdad. */
+  function jugoPalabra(){const p=pasos();if(!p.llego)return;if(!p.ps_jugo)paso("ps_jugo");}
   function arrancar(){
     if(SOLA){mostrar();const ya=()=>setTimeout(precargarJuego,1500);if(document.readyState==="complete")ya();else window.addEventListener("load",ya);return;}
     if(q.get("norosa")==="1"){try{q.delete("norosa");const t=q.toString();history.replaceState(null,"",location.pathname+(t?"?"+t:""));}catch(e){}}
-    irAPalabra();
+    irAPalabra();vigilarRegistro();
     /* Si llegó por el anuncio y después se hizo el perfil, se anota su nombre. */
     setTimeout(()=>{const p=pasos();if(p.llego&&tienePerfil()&&p.nombre!==perfil.nombre)subir(p);},4000);
     if(!fuente||location.search.indexOf("norosa")>=0)return;
@@ -227,6 +239,6 @@
     const visto=ls.get(K_VISTO);if(visto&&fuente!=="link")return;
     mostrar();
   }
-  window.DonaRosa={resumen,tomarInicio,mostrar:()=>{if(!capa){mios=[];borrador="";fin=null;mostrar();}}};
+  window.DonaRosa={resumen,tomarInicio,jugoPalabra,mostrar:()=>{if(!capa){mios=[];borrador="";fin=null;mostrar();}}};
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arrancar);else arrancar();
 })();

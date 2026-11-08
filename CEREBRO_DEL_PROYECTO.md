@@ -395,6 +395,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa: los del anuncio juegan Palabra Secreta sin pedirles el nombre
+- Qué: con la página liviana subieron los que juegan (5→10) y los que quieren seguir (1→5), pero ninguno se registró: se iban en «Elegí tu nombre». Ahora, si vienen de Doña Rosa sin perfil y quieren seguir, entran directo a Palabra Secreta; el nombre se pide más tarde (cuando lo crean, se cuenta «se registraron»). Embudo nuevo: «jugaron Palabra Secreta» (ps_jugo, lo marca palabra-secreta.js en cada palabra). «Llegaron» ahora cuenta solo si la página se ve (Instagram a veces la carga por adelantado: de 95 se saltó a 239 en una hora). Después vemos cómo resolver el registro.
+- Dónde: rosa.js (tomarInicio sin perfil, vigilarRegistro, jugoPalabra, llegó solo visible, v10), palabra-secreta.js (v36), index.html (línea del embudo), sw.js (gya-cache-v767).
+
 ### 08/11/2026 — Doña Rosa: el juego se baja mientras juegan y a Android se le ofrece Google Play
 - Qué: para perder la menor cantidad de jugadores (pedido de Gonzalo). En rosa.html, 1,5 s después de que carga Doña Rosa se baja atrás el juego completo (index.html y sus scripts/estilos), así al tocar «Seguir» abre más rápido: en 4G simulado, de 12,5 s a ~7 s si jugó unos 25 s. En Android, al terminar, el botón principal es «▶ Seguir en Google Play» (app gratis) y abajo «Seguir en el navegador»; en iPhone/compu sigue «¡Sí, quiero jugar!». El embudo cuenta «fueron a Google Play» (paso play), visible en 👥 Usuarios.
 - Dónde: rosa.js (precargarJuego, ANDROID/URL_PLAY, v9), index.html (línea del embudo), sw.js (gya-cache-v766).
