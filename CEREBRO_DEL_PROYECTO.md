@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Social: el cartel de redes entra sin deslizar
+- Qué: en 👥 Social la imagen «Próximamente en redes» empujaba el botón «Cerrar» fuera de la pantalla. Ahora la imagen se achica según el alto (max-height: calc(86dvh − 300px)) y entran la imagen, el texto y los dos botones sin deslizar (probado en 390×844, 412×780 y 360×640). No toca el deslizado de la página.
+- Dónde: index.html (#capaSocial), sw.js (gya-cache-v769).
+
 ### 08/11/2026 — Reglas de promoción guardadas
 - Qué: Gonzalo pidió que todo lo que sea promoción se haga como quedó Doña Rosa. Regla en «Reglas de contenido y visuales» y detalle en promo/REGLAS-PROMOCION.md (también referenciado desde serie-dona-rosa/README.md y CLAUDE.md).
 - Dónde: CEREBRO_DEL_PROYECTO.md, promo/REGLAS-PROMOCION.md, promo/serie-dona-rosa/README.md, CLAUDE.md.
