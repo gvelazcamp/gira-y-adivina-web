@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — IDEA para mucho más adelante: Doña Rosa en la tele (Rosco)
+- Qué: anotada, sin armar. Doña Rosa invitada a un programa de TV, recibe un sobre para jugar al Rosco, llega a la última palabra y los seguidores la completan → lleva la serie a otro juego. Detalle en promo/serie-dona-rosa/README.md («Ideas para mucho más adelante»).
+
 ### 08/11/2026 — Doña Rosa capítulo 3: escena del video (sin voz)
 - Qué: promo/serie-dona-rosa/capitulo-3.html. Libreta de Chelo con YERBA y sello PAGADO → adentro del almacén (cartel «ALMACÉN DOÑA ROSA», mostrador, caja) → TOC TOC, entra el cobrador, Doña Rosa le da billetes → «Le doy 3 días más» (1 DÍA → 4 DÍAS) → barra de la deuda → página 2 de Cacho (LICOR, GRAPA, TINTO) → «Seguí la historia». Tiempos estimados hasta tener la voz.
 - Por qué: Gonzalo pidió ver el video sin audio.

@@ -35,6 +35,9 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 - Falta: la voz de Gonzalo (texto abajo) y los nombres de los que comentaron el capítulo 2 (VOTARON es provisorio, tiene los del capítulo 1).
 - Texto para ElevenLabs (texto plano): «Día tres. Ayer la mayoría comentó yerba… y era yerba. Chelo le debía la yerba de todo el mes, y pagó. Con eso, y con cada vecino nuevo que sigue la historia, Doña Rosa juntó unos pesos. Y justo… golpean la puerta. Es el cobrador. Doña Rosa abre la caja y le entrega una parte de la plata. El cobrador mira la libreta… y le da tres días más. Pero todavía falta. Doña Rosa da vuelta la página. Página dos: Cacho. Cacho me debe… ¿Qué le debe Cacho? Es algo para tomar. Pepito dijo licor. Nelly, grapa. Juanchi, tinto. ¿Vos qué decís? ¿Qué bebida le debe? Comentá tu respuesta. Seguí las historias de Doña Rosa. Jugá en girá y adiviná punto com.»
 
+## Ideas para mucho más adelante (Gonzalo; no armar hasta que lo pida)
+- **Doña Rosa en la tele (08/11/2026):** la invitan a un programa de TV. Recibe un sobre para jugar al Rosco, contenta lo abre, llega hasta la última palabra del rosco y los seguidores tienen que completarla. Sirve para llevar la serie a otro juego (Rosco Rioplatense) además de Palabra Secreta.
+
 ## Lo que sigue (plan acordado)
 1. **Capítulo 2:** «¡La descubrieron! Era TERMO». Se abre el candado 🔓 y la libreta muestra la primera página: «Me debe: _ _ _ _ _».
 2. **Cada página de la libreta es un deudor del barrio**; la palabra secreta es su apodo u oficio (FLACO, RUBIA, BOCHA, CHAPA, PINTOR, MODISTA…; el juego acepta 5, 6 y 7 letras). Ej.: «el Flaco le debe $3.000 desde el Mundial».
