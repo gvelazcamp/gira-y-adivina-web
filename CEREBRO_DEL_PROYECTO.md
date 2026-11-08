@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa: «Seguí jugando en la app» abre la app directo en Palabra Secreta
+- Qué: pedido de Gonzalo para que los que ya están registrados en la app no se registren de nuevo. En Android, al terminar Doña Rosa el botón principal es «▶ Seguí jugando en la app» (con nota: si ya tenés la app se abre directo con tu partida; si no, la bajás de Google Play). Usa un enlace intent:// al paquete io.github.gvelazcamp.twa con https://girayadivina.com/index.html?ext=palabra-secreta y respaldo a Google Play. En Android ya no sale «Guardá tu racha» en Doña Rosa (si sigue en el navegador, sale al ganar su primera palabra en Palabra Secreta); en iPhone/compu sigue saliendo al sacarla. Abrir la app desde el navegador de Instagram anda en la mayoría de los Android, no se pudo probar en un celular real.
+- Dónde: rosa.js (URL_APP, v17), sw.js (gya-cache-v777), promo/REGLAS-PROMOCION.md.
+
 ### 08/11/2026 — Doña Rosa: link directo al capítulo 2 (?cap=2)
 - Qué: para el anuncio nuevo del capítulo 2 sin cambiar el de los demás. https://girayadivina.com/?cap=2 abre la página liviana con el capítulo 2 (Chelo, YERBA, pistas PASTA/TRIGO/TERMA); el link de siempre sigue en el capítulo 1. El capítulo elegido se recuerda en el celular (gya_rosa_cap_activo) para que el juego completo cuente en el capítulo correcto; ?cap=1 o ?rosa=1 lo vuelven al 1. Probado: llega, YERBA, «Guardá tu racha», Palabra Secreta nivel 2, embudo como «Cap. 2».
 - Dónde: index.html (redirección: ROSA_CAP según ?cap), rosa.js (CAPITULO_1/CAPITULO_2, v16), sw.js (gya-cache-v776), promo/serie-dona-rosa/README.md.

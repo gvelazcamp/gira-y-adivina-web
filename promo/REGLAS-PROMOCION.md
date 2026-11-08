@@ -20,7 +20,7 @@ ver `serie-dona-rosa/README.md`).
 - 1,5 s después de que carga la página liviana, se precargan `index.html` y sus scripts/estilos, así al seguir abre rápido.
 
 ## 4. Al terminar
-- **Android:** botón principal «▶ Seguir en Google Play» (app gratis); abajo «Seguir en el navegador».
+- **Android:** botón principal «▶ Seguí jugando en la app» (intent:// que abre la app instalada directo en el juego, con su cuenta; si no la tiene, va a Google Play); abajo «Seguir en el navegador». En Android el registro no se pide en la página del anuncio (el camino principal es la app).
 - **iPhone/compu:** «¡Sí, quiero jugar!».
 - Al seguir en el navegador: **sin pedir el nombre**, directo al juego (ej. Palabra Secreta), sin tutorial.
 
