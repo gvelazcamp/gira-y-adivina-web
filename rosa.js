@@ -39,7 +39,9 @@
      (o que venga de instagram.com / facebook.com). El link de la bio trae ?rosa=1 y sigue contando como "link". */
   const enAppMeta=(()=>{try{return /Instagram|FBAN|FBAV|FB_IAB|FBIOS/i.test(navigator.userAgent||"")||/instagram\.com|facebook\.com/i.test(document.referrer||"");}catch(e){return false;}})();
   const fuente=q.get("rosa")==="1"?"link":q.get("fbclid")?"meta":/^(ig|instagram|fb|facebook)$/i.test(q.get("utm_source")||"")?"utm":enAppMeta?"app":"";
-  const tienePerfil=()=>{try{return !!(typeof perfil!=="undefined"&&perfil&&perfil.nombre);}catch(e){return false;}};
+  /* En rosa.html (página liviana del anuncio) no está el juego: el perfil se mira en localStorage. */
+  const SOLA=!!window.ROSA_SOLA;
+  const tienePerfil=()=>{try{if(SOLA)return !!localStorage.getItem("gya_nombre");return !!(typeof perfil!=="undefined"&&perfil&&perfil.nombre);}catch(e){return false;}};
 
   /* --- Embudo: llegó, jugó, la sacó / no, quiere seguir, se registró, entró a Palabra Secreta --- */
   function visitante(){let id=ls.get(K_ID);if(!id){id="v"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);ls.set(K_ID,id);}return id;}
@@ -169,6 +171,9 @@
     if(!capa)return;
     document.removeEventListener("keydown",teclado,true);
     capa.remove();capa=null;ls.set(K_VISTO,fin||"salteado");
+    /* Página liviana: se pasa al juego completo (index.html) y ahí sigue (perfil y Palabra Secreta). */
+    if(SOLA){if(quiere){paso("quiere");ls.set(K_IR,"palabra-secreta");if(!tienePerfil()){ls.set("gya_rosa_sinperfil","1");ls.set("gya_rosa_perfil","1");}}
+      document.body.style.background="#160B24";setTimeout(()=>location.replace("index.html?norosa=1"),quiere?350:50);return;}
     try{history.replaceState(null,"",location.pathname);}catch(e){}
     if(quiere){paso("quiere");
       /* Sin perfil: en vez del tutorial de la rueda, directo a elegir nombre y avatar. */
@@ -190,14 +195,24 @@
     estilos();capa=document.createElement("div");capa.id="rosaCapa";capa.setAttribute("role","dialog");capa.setAttribute("aria-label","El almacén de Doña Rosa");
     document.body.appendChild(capa);pintar();document.addEventListener("keydown",teclado,true);paso("llego");
   }
+  /* Lo llama el inicio del juego (tutChequearBienvenida): si viene de rosa.html con «¡Sí, quiero jugar!», en vez del
+     tutorial va directo a elegir nombre y avatar (si no tiene perfil) y después a Palabra Secreta. */
+  function tomarInicio(){
+    if(ls.get("gya_rosa_perfil")){ls.del("gya_rosa_perfil");document.getElementById("capaBienvenida")?.classList.remove("ver");
+      try{if(typeof abrirPerfil==="function")abrirPerfil(()=>irAPalabra());}catch(e){}irAPalabra();return true;}
+    return ls.get(K_IR)==="palabra-secreta";
+  }
   function arrancar(){
+    if(SOLA){mostrar();return;}
+    if(q.get("norosa")==="1"){try{q.delete("norosa");const t=q.toString();history.replaceState(null,"",location.pathname+(t?"?"+t:""));}catch(e){}}
     irAPalabra();
     /* Si llegó por el anuncio y después se hizo el perfil, se anota su nombre. */
     setTimeout(()=>{const p=pasos();if(p.llego&&tienePerfil()&&p.nombre!==perfil.nombre)subir(p);},4000);
-    if(!fuente)return;
+    if(!fuente||location.search.indexOf("norosa")>=0)return;
+    /* Normalmente el que viene del anuncio ya pasó por rosa.html (redirección al principio de index.html); esto queda por las dudas. */
     const visto=ls.get(K_VISTO);if(visto&&fuente!=="link")return;
     mostrar();
   }
-  window.DonaRosa={resumen,mostrar:()=>{if(!capa){mios=[];borrador="";fin=null;mostrar();}}};
+  window.DonaRosa={resumen,tomarInicio,mostrar:()=>{if(!capa){mios=[];borrador="";fin=null;mostrar();}}};
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arrancar);else arrancar();
 })();

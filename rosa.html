@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es-UY">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>El almacén de Doña Rosa · Girá y Adiviná</title>
+<meta name="theme-color" content="#24384a">
+<link rel="icon" href="icono-192.png">
+<!-- Página liviana del anuncio (08/11/2026): solo Doña Rosa, para que aparezca en 1 o 2 segundos.
+     index.html manda acá al que viene de Instagram/Facebook (o con ?rosa=1); al terminar vuelve a index.html?norosa=1. -->
+<style>html,body{margin:0;background:#24384a}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@600;800;900&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<script src="lib/supabase.min.js?v=2.45.4" defer></script>
+<script>
+window.ROSA_SOLA=true;
+const SUPA_URL="https://qfeubudlnoogwzozywph.supabase.co";
+const SUPA_KEY="sb_publishable_NHKQdADMpHSaSDW9WAlRGA_QLLJkeR7";
+let supaCliente=null;
+function obtenerSupa(){if(!supaCliente&&window.supabase&&window.supabase.createClient)supaCliente=window.supabase.createClient(SUPA_URL,SUPA_KEY);return supaCliente;}
+</script>
+</head>
+<body>
+<script src="palabra-secreta-datos.js?v=3"></script>
+<script src="rosa.js?v=8"></script>
+</body>
+</html>
