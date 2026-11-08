@@ -396,8 +396,8 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
-### 08/11/2026 — Doña Rosa capítulo 2: la tercera pista pasa a FERIA
-- Qué: pedido de Gonzalo: que la R quede en verde junto a la E y la A. Pepito ahora prueba FERIA (F gris, E verde, R verde, I gris, A verde) en vez de MENTA, en la escena y en CAPITULO_2 de rosa.js (todavía no publicado en la página). La voz grabada decía «menta»: hay que regrabarla.
+### 08/11/2026 — Doña Rosa capítulo 2: la tercera pista pasa a TERMA
+- Qué: pedido de Gonzalo: que la R quede en verde junto a la E y la A. Pepito ahora prueba TERMA (T gris, E verde, R verde, M gris, A verde; Gonzalo eligió TERMA por parecida a TERMO) en vez de MENTA, en la escena y en CAPITULO_2 de rosa.js (todavía no publicado en la página). La voz grabada decía «menta»: hay que regrabarla.
 - Dónde: promo/serie-dona-rosa/capitulo-2.html, README.md, rosa.js (CAPITULO_2).
 
 ### 08/11/2026 — Pruebas → Anuncio Doña Rosa: se lee bien en el celular
