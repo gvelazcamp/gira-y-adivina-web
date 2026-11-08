@@ -395,6 +395,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa: sin «Saltar» al entrar y «Probar» también arriba
+- Qué: de 95 que llegaron del anuncio jugaron 5. Pedido de Gonzalo: al entrar ya no está «Saltar ✕»; en su lugar, al lado del título, hay otro botón «Probar» (rosa). «Saltar e ir al juego» aparece chico debajo del teclado recién después del primer intento. Texto al sacarla: «Doña Rosa ya paga más de la mitad de su deuda» (igual que el video del capítulo 2). Entra sin deslizar en 360×600 y 390×680.
+- Dónde: rosa.js (v6), sw.js (gya-cache-v763).
+
 ### 07/11/2026 — Doña Rosa capítulo 2: el candado vuelve a la libreta
 - Qué: en el video del capítulo 2 el candado había quedado en la puerta y no coincidía con el capítulo 1 (el candado es de la libreta del fiado). Ahora Doña Rosa entra, la libreta está en la barra con el candado y el tablero del capítulo 1, y TERMO la abre en la 4.ª fila. Cartel corregido a «cierra en 2 días». Regla: antes de armar un capítulo, revisar que no contradiga los anteriores y avisarle a Gonzalo si un pedido lo hace.
 - Dónde: promo/serie-dona-rosa/capitulo-2.html y README.md.

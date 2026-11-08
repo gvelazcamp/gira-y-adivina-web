@@ -7,6 +7,8 @@
      y la persona todavía no jugó este capítulo. El que entra normal ve el inicio de siempre.
    - Cada paso se cuenta en Supabase (gya_ranking, grupo "embudo_rosa"; una fila por visitante) y Gonzalo
      lo ve en 👥 Usuarios.
+   - Al entrar no hay «Saltar» (pedido de Gonzalo, 08/11): arriba hay otro botón «Probar», y «Saltar e ir al juego»
+     aparece chico abajo recién después del primer intento.
    - Al publicar un capítulo nuevo se actualiza CAPITULO (clave, intentos con sus nombres y textos). */
 (function(){
   /* Capítulo 1 (07/11): clave TERMO, intentos Pepito MATES, Marta PERRO, Juanchi VERDE.
@@ -20,7 +22,7 @@
     sub:"Me debe $ 30.000 de…",        // renglón debajo del título
     pedido:"¿Qué me debe Chelo? El polvo no me deja leer 😩",
     ganoTitulo:"🎉 ¡Doña Rosa cobró!",
-    gano:"¡Era YERBA! Chelo le paga los $ 30.000 y Doña Rosa ya junta parte del primer mes de alquiler.",
+    gano:"¡Era YERBA! Chelo le paga los $ 30.000 y Doña Rosa ya paga más de la mitad de su deuda.",
     perdio:"Todavía no se sabe qué le debe Chelo 😢 Mirá cómo sigue en el próximo capítulo."};
   const GRUPO="embudo_rosa",K_VISTO="gya_rosa_cap"+CAPITULO.id,K_ID="gya_rosa_visitante",K_PASOS="gya_rosa_pasos",K_IR="gya_rosa_ir";
   const ls={get:k=>{try{return localStorage.getItem(k);}catch(e){return null;}},set:(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}},del:k=>{try{localStorage.removeItem(k);}catch(e){}}};
@@ -71,6 +73,8 @@
 .ro-cab{display:flex;align-items:center;justify-content:space-between;gap:8px;max-width:440px;margin:0 auto}
 .ro-cab b{font:900 1.05rem "Archivo Black",Outfit,sans-serif;letter-spacing:.5px}.ro-cab small{display:block;font:800 .7rem Outfit;color:#9fb6c4;letter-spacing:1.5px;text-transform:uppercase}
 .ro-x{border:0;background:#ffffff1a;color:#FCEFD2;border-radius:99px;padding:7px 12px;font:800 .78rem Outfit;cursor:pointer;white-space:nowrap}
+.ro-x.env{background:#E5197C;color:#fff;padding:9px 18px;font-size:.9rem;box-shadow:0 3px 0 #8E0F4C}
+.ro-salir{text-align:center}.ro-salir .ro-no{margin-top:4px;font-size:.78rem}
 .ro-esc{position:relative;max-width:440px;height:150px;margin:8px auto 0;border-radius:16px;overflow:hidden;background:linear-gradient(#bfe3d0 0,#cfe9d8 60%,#d8cdb6 60%,#d8cdb6 78%,#6b6b6b 78%)}
 .ro-edif{position:absolute;left:50%;transform:translateX(-50%);top:18px;width:250px;height:86px;background:#F3D9A4;border:4px solid #7a4a2a;border-bottom:0}
 .ro-cartel{position:absolute;left:50%;transform:translateX(-50%);top:6px;background:#2d5d7a;color:#FCEFD2;font:900 .72rem "Archivo Black",sans-serif;padding:3px 10px;border-radius:6px;border:2px solid #f3e3c0;white-space:nowrap;z-index:2}
@@ -120,11 +124,11 @@
     const tecla=t=>'<button type="button" data-t="'+t+'">'+t+'</button>';
     const tec=fin?"":'<div class="ro-tec"><div>'+[..."QWERTYUIOP"].map(tecla).join("")+'</div><div>'+[..."ASDFGHJKLÑ"].map(tecla).join("")+'</div><div><button type="button" class="ancho" data-t="⌫">⌫ Borrar</button>'+[..."ZXCVBNM"].map(tecla).join("")+'<button type="button" class="ancho env" data-t="OK">Probar</button></div></div>';
     const panel=fin?'<div class="ro-panel"><h3>'+(abierto?(CAPITULO.ganoTitulo||"🎉 ¡Salvaste a Doña Rosa!"):"¡Casi!")+'</h3><p>'+(abierto?CAPITULO.gano:CAPITULO.perdio)+'</p><p>¿Querés seguir jugando a <b>Palabra Secreta</b>? Una palabra nueva cada vez, gratis.</p><button type="button" class="ro-si" id="roSi">🔤 ¡Sí, quiero jugar!</button><button type="button" class="ro-no" id="roNo">Ahora no</button></div>':"";
-    capa.innerHTML='<div class="ro-cab"><div><small>'+CAPITULO.titulo+'</small><b>EL ALMACÉN DE DOÑA ROSA</b></div><button type="button" class="ro-x" id="roSaltar">Saltar ✕</button></div>'+
+    capa.innerHTML='<div class="ro-cab"><div><small>'+CAPITULO.titulo+'</small><b>EL ALMACÉN DE DOÑA ROSA</b></div>'+(fin?'':'<button type="button" class="ro-x env" data-t="OK">Probar</button>')+'</div>'+
       '<div class="ro-esc"><div class="ro-edif"></div><div class="ro-cartel">ALMACÉN ROSA</div><div class="ro-toldo"></div><div class="ro-puerta"></div><div class="ro-aviso'+(abierto?" ok":"")+'">'+(abierto?"¡ABIERTO!":"CIERRA<br>PRONTO")+'</div>'+rosaHtml()+'<div class="ro-globo">'+(abierto?"¡Gracias, vecino! 💜":fin?"Ay… ¿cuál era? 😢":CAPITULO.pedido)+'</div></div>'+
       '<div class="ro-lib"><span class="ro-cand">'+(CAPITULO.icono||(abierto?"🔓":"🔒"))+'</span><h4>'+(CAPITULO.hoja||"LIBRETA DEL FIADO")+'</h4>'+(CAPITULO.sub?'<p class="ro-sub">'+CAPITULO.sub+'</p>':'')+'<div class="ro-tab">'+filas+'</div></div>'+
-      '<p class="ro-msj" id="roMsj">'+(fin?"":"Tenés "+libres+" intento"+(libres===1?"":"s")+". Palabra de 5 letras.")+'</p>'+tec+panel;
-    capa.querySelector("#roSaltar").onclick=()=>cerrar(false);
+      '<p class="ro-msj" id="roMsj">'+(fin?"":"Tenés "+libres+" intento"+(libres===1?"":"s")+". Palabra de 5 letras.")+'</p>'+tec+(!fin&&mios.length?'<div class="ro-salir"><button type="button" class="ro-no" id="roSaltar">Saltar e ir al juego</button></div>':'')+panel;
+    const sal=capa.querySelector("#roSaltar");if(sal)sal.onclick=()=>cerrar(false);
     capa.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>tecla_(b.dataset.t));
     const si=capa.querySelector("#roSi");if(si){si.onclick=()=>cerrar(true);si.focus({preventScroll:true});setTimeout(()=>{try{capa&&capa.scrollTo({top:capa.scrollHeight,behavior:"smooth"});}catch(e){}},600);}
     const no=capa.querySelector("#roNo");if(no)no.onclick=()=>cerrar(false);
