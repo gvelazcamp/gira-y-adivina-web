@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa: diagnóstico de aperturas y errores
+- Qué: el anuncio marcaba 698 visitas al sitio y el embudo solo 257 «llegaron» (de noche casi no subió desde que la página es liviana y «llegó» cuenta solo si la página se ve). Se agregó un registro crudo: index.html anota cada apertura desde el anuncio (etapa «juego», y si lo mandó a Doña Rosa) y rosa.html anota apenas abre (etapa «rosa», con visibilityState y celular), sin esperar a la librería (fetch directo a la API con keepalive), en gya_ranking grupo embudo_rosa_raw. Errores de JavaScript, «Doña Rosa no apareció a los 6 s» y «página oculta a los 6 s» van a embudo_rosa_err. Se ve en 🧪 Pruebas → 📣 Anuncio Doña Rosa (línea 🔎 y tabla de errores). Sospecha principal: el filtro de «llegó solo si se ve» (en el navegador de Instagram la página podría figurar oculta).
+- Dónde: rosa.html, index.html (redirección y verAnuncioRosa), sw.js (gya-cache-v770).
+
 ### 08/11/2026 — Doña Rosa capítulo 2: escena final guardada en el proyecto
 - Qué: se reinició el entorno y se perdieron los archivos de trabajo. Se guarda en el repo la escena final del capítulo 2 (pizarra «LOS QUE AYUDARON» con 12 nombres, 2 columnas y deslizado solo con más de 6; tiempos y subtítulos de la voz «La mayoría comentó»; final «más de la mitad de su deuda») y el cierre de 4 s (cierre.html). Regla: lo que haga falta para rehacer un video va al repo, no solo al scratchpad.
 - Dónde: promo/serie-dona-rosa/capitulo-2.html, cierre.html, README.md.

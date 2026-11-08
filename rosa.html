@@ -9,6 +9,24 @@
 <!-- Página liviana del anuncio (08/11/2026): solo Doña Rosa, para que aparezca en 1 o 2 segundos.
      index.html manda acá al que viene de Instagram/Facebook (o con ?rosa=1); al terminar vuelve a index.html?norosa=1. -->
 <style>html,body{margin:0;background:#24384a}</style>
+<script>
+/* Diagnóstico (08/11/2026): el anuncio marcaba ~700 visitas y solo ~260 «llegaron». Apenas abre esta página se anota
+   una «apertura» (sin esperar a nada), y cualquier error de JavaScript se guarda con el celular, para ver si a alguien
+   no le carga. Va directo a la API de Supabase (sin la librería), con keepalive. Gonzalo lo ve en 🧪 Pruebas → Anuncio Doña Rosa. */
+(function(){
+  var URL_SB="https://qfeubudlnoogwzozywph.supabase.co/rest/v1/gya_ranking",K="sb_publishable_NHKQdADMpHSaSDW9WAlRGA_QLLJkeR7";
+  function anotar(grupo,datos){try{fetch(URL_SB,{method:"POST",keepalive:true,headers:{apikey:K,Authorization:"Bearer "+K,"Content-Type":"application/json",Prefer:"return=minimal"},
+    body:JSON.stringify({grupo:grupo,apodo:"r"+Date.now().toString(36)+Math.random().toString(36).slice(2,7),monedas_totales:0,ciudades_ganadas:0,mejor_racha:0,logros:0,estado_juego:datos,actualizado_en:new Date().toISOString()})}).catch(function(){});}catch(e){}}
+  var ua=(navigator.userAgent||"").slice(0,200),vis=null;try{vis=localStorage.getItem("gya_rosa_visitante");}catch(e){}
+  anotar("embudo_rosa_raw",{etapa:"rosa",vs:document.visibilityState,ua:ua,v:vis,q:location.search.slice(0,60),t:Date.now()});
+  var n=0;function err(m,f,l){if(++n>3)return;anotar("embudo_rosa_err",{m:String(m).slice(0,300),f:String(f||"").slice(-60),l:l||0,ua:ua,t:Date.now()});}
+  window.addEventListener("error",function(e){err(e.message,e.filename,e.lineno);});
+  window.addEventListener("unhandledrejection",function(e){err("promesa: "+(e.reason&&e.reason.message||e.reason));});
+  /* Si a los 6 s Doña Rosa no apareció, también se anota. */
+  setTimeout(function(){if(!document.getElementById("rosaCapa"))err("Doña Rosa no apareció a los 6 s");else if(document.visibilityState==="hidden")err("Página oculta a los 6 s (visibilityState=hidden)");},6000);
+})();
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@600;800;900&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <script src="lib/supabase.min.js?v=2.45.4" defer></script>
@@ -22,6 +40,6 @@ function obtenerSupa(){if(!supaCliente&&window.supabase&&window.supabase.createC
 </head>
 <body>
 <script src="palabra-secreta-datos.js?v=3"></script>
-<script src="rosa.js?v=11"></script>
+<script src="rosa.js?v=12"></script>
 </body>
 </html>

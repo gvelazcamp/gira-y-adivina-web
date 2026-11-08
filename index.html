@@ -9,6 +9,8 @@
 (function(){try{var ROSA_CAP=1,q=new URLSearchParams(location.search),ua=navigator.userAgent||"",ref=document.referrer||"";
   if(q.get("norosa")==="1")return;
   var link=q.get("rosa")==="1",anuncio=!!q.get("fbclid")||/^(ig|instagram|fb|facebook)$/i.test(q.get("utm_source")||"")||/Instagram|FBAN|FBAV|FB_IAB|FBIOS/i.test(ua)||/instagram\.com|facebook\.com/i.test(ref);
+  if(anuncio){try{var K="sb_publishable_NHKQdADMpHSaSDW9WAlRGA_QLLJkeR7";fetch("https://qfeubudlnoogwzozywph.supabase.co/rest/v1/gya_ranking",{method:"POST",keepalive:true,headers:{apikey:K,Authorization:"Bearer "+K,"Content-Type":"application/json",Prefer:"return=minimal"},
+    body:JSON.stringify({grupo:"embudo_rosa_raw",apodo:"i"+Date.now().toString(36)+Math.random().toString(36).slice(2,7),monedas_totales:0,ciudades_ganadas:0,mejor_racha:0,logros:0,estado_juego:{etapa:"juego",manda:!!(link||!localStorage.getItem("gya_rosa_cap"+ROSA_CAP)),ua:ua.slice(0,200),t:Date.now()},actualizado_en:new Date().toISOString()})}).catch(function(){});}catch(e){}}
   if(link||(anuncio&&!localStorage.getItem("gya_rosa_cap"+ROSA_CAP))){document.documentElement.style.background="#24384a";location.replace("rosa.html"+location.search);}}catch(e){}})();</script>
 <script>/* Versión de la app de Play Store que abrió el juego: ?app=N (la 16 llega así desde el puente de github.io;
    desde la 18 conviene que el start_url de la app traiga ?app=18) o ?comprobar_partida=1 (la 17). En el navegador no hay número. */
@@ -6598,7 +6600,16 @@ async function verAnuncioRosa(){
   if(!res){caja.textContent="No se pudo cargar (¿sin internet?).";return;}
   const a=res.anuncio,l=res.lista.filter(x=>x.palabras.length);
   const fin={gano:"✅ la sacó",perdio:"❌ no la sacó"};
-  caja.innerHTML='<p class="imp-ayuda"><b>Llegaron: '+a.llego+' · Jugaron: '+a.jugo+'</b></p>'+
+  /* Diagnóstico: aperturas crudas (antes de todo) y errores de la página del anuncio. */
+  let diag="";try{const sb=obtenerSupa();if(sb){
+    const raw=await sb.from("gya_ranking").select("estado_juego").eq("grupo","embudo_rosa_raw").limit(5000);
+    const er=await sb.from("gya_ranking").select("estado_juego,actualizado_en").eq("grupo","embudo_rosa_err").order("actualizado_en",{ascending:false}).limit(8);
+    const rr=(raw.data||[]).map(x=>x.estado_juego||{}),juego=rr.filter(x=>x.etapa==="juego"),rosa=rr.filter(x=>x.etapa==="rosa");
+    const ios=rosa.filter(x=>/iPhone|iPad/.test(x.ua||"")).length;
+    diag='<p class="imp-ayuda">🔎 <b>Desde el anuncio abrieron el juego: '+juego.length+'</b> (mandados a Doña Rosa: '+juego.filter(x=>x.manda).length+') · <b>abrieron Doña Rosa: '+rosa.length+'</b> (iPhone: '+ios+', ocultas al abrir: '+rosa.filter(x=>x.vs==="hidden").length+') · <b>errores: '+((er.data||[]).length)+'</b></p>'+
+      ((er.data||[]).length?'<table><tr><th>Error</th><th>Celular</th></tr>'+(er.data||[]).map(x=>{const e=x.estado_juego||{};return'<tr><td><small>'+rkEsc(e.m||"")+(e.f?' · '+rkEsc(e.f)+':'+e.l:'')+'</small></td><td><small>'+rkEsc((e.ua||"").replace(/.*?\((.*?)\).*/,"$1").slice(0,60))+'</small></td></tr>';}).join("")+'</table>':'');
+  }}catch(e){}
+  caja.innerHTML=diag+'<p class="imp-ayuda"><b>Llegaron: '+a.llego+' · Jugaron: '+a.jugo+'</b></p>'+
     (l.length?'<table><tr><th>Quién</th><th>Palabras</th></tr>'+l.map(x=>'<tr><td><b>'+rkEsc(x.nombre||"(sin nombre)")+'</b><small>Cap. '+x.cap+' · '+rkEsc(fin[x.fin]||"")+(x.registro?" · se registró":"")+'</small></td><td>'+rkEsc(x.palabras.join(", "))+'</td></tr>').join("")+'</table>':'<p>Todavía nadie puso palabras (se guardan desde hoy).</p>');
 }
 $("bPruebaFallasReg").onclick=()=>{if(!esGonzalo())return;$("capaPruebas").classList.remove("ver");$("capaMas").classList.remove("ver");verFallasRegistro();};
@@ -12172,7 +12183,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="rueda-de-letras.js?v=20"></script>
 <script src="palabra-secreta-datos.js?v=3"></script>
 <script src="palabra-secreta.js?v=37"></script>
-<script src="rosa.js?v=11"></script>
+<script src="rosa.js?v=12"></script>
 <link rel="stylesheet" href="palabras-cruzadas.css?v=8">
 <script src="palabras-cruzadas-datos.js?v=3"></script>
 <script src="palabras-cruzadas.js?v=18"></script>
