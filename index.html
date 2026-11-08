@@ -5570,7 +5570,7 @@ async function usrCargarLista(){
   {const e=$("usrDelAnuncio");if(e){e.hidden=!esGonzalo()||!delAnuncio;e.textContent="👥 Con perfil que vinieron del anuncio de Doña Rosa: "+delAnuncio+" (se registraron por cualquier lado, en este navegador)";}}
   /* Embudo del anuncio de Doña Rosa (rosa.js), solo para Gonzalo. */
   if(esGonzalo()&&window.DonaRosa)DonaRosa.resumen().then(c=>{const e=$("usrEmbudo");if(!e||!c||!c.llego)return;e.hidden=false;
-    e.textContent="📣 Anuncio Doña Rosa: "+c.llego+" llegaron · "+c.jugo+" jugaron · "+c.gano+" la sacaron · "+c.quiere+" quieren seguir · "+c.play+" fueron a Google Play · "+c.registro+" se registraron · "+c.palabra+" entraron a Palabra Secreta · "+c.ps_jugo+" jugaron Palabra Secreta · "+c.reg_ofrecido+" vieron «Guardá tu partida»";});
+    e.textContent="📣 Anuncio Doña Rosa: "+c.llego+" llegaron · "+c.jugo+" jugaron · "+c.pista+" pidieron pista · "+c.gano+" la sacaron · "+c.quiere+" quieren seguir · "+c.play+" fueron a Google Play · "+c.registro+" se registraron · "+c.palabra+" entraron a Palabra Secreta · "+c.ps_jugo+" jugaron Palabra Secreta · "+c.reg_ofrecido+" vieron «Guardá tu partida»";});
   /* Si yo tengo perfil pero no aparezco, me registro de nuevo y recargo
      una vez; si falla, se muestra el motivo para poder arreglarlo. */
   const meVeo=(data||[]).some(f=>misClaves.includes(normApodo(f.apodo)));
@@ -12196,7 +12196,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="rueda-de-letras.js?v=20"></script>
 <script src="palabra-secreta-datos.js?v=3"></script>
 <script src="palabra-secreta.js?v=37"></script>
-<script src="rosa.js?v=13"></script>
+<script src="rosa.js?v=14"></script>
 <link rel="stylesheet" href="palabras-cruzadas.css?v=8">
 <script src="palabras-cruzadas-datos.js?v=3"></script>
 <script src="palabras-cruzadas.js?v=18"></script>

@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa: botón «💡 Pista» en la libreta
+- Qué: idea de Gonzalo para que más gente se anime a escribir la primera palabra. Arriba a la izquierda de la libreta hay un botón «💡 Pista»; al tocarlo Doña Rosa lo dice en su globo y abajo aparece «💡 Pista: …». Capítulo 1: «Sirve para tomar mate 🧉»; capítulo 2 (sin publicar): «No puede faltar en el mate 🧉» (CAPITULO.pista). Se cuenta en el embudo («pidieron pista»). Entra sin deslizar en 390×680 y 360×600.
+- Dónde: rosa.js (v14), index.html (línea del embudo), sw.js (gya-cache-v774).
+
 ### 08/11/2026 — Doña Rosa capítulo 2: la tercera pista pasa a TERMA
 - Qué: pedido de Gonzalo: que la R quede en verde junto a la E y la A. Pepito ahora prueba TERMA (T gris, E verde, R verde, M gris, A verde; Gonzalo eligió TERMA por parecida a TERMO) en vez de MENTA, en la escena y en CAPITULO_2 de rosa.js (todavía no publicado en la página). La voz grabada decía «menta»: hay que regrabarla.
 - Dónde: promo/serie-dona-rosa/capitulo-2.html, README.md, rosa.js (CAPITULO_2).
