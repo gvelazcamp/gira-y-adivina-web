@@ -14,7 +14,15 @@
   /* Capítulo 1 (07/11): clave TERMO, intentos Pepito MATES, Marta PERRO, Juanchi VERDE.
      Capítulo 2 (07/11): abrió el candado del almacén con TERMO; la libreta tiene polvo y hay que adivinar
      qué le debe Chelo ($ 30.000 de YERBA). */
-  const CAPITULO={id:2,clave:"YERBA",
+  /* Gonzalo (08/11): el capítulo 2 se publica cuando él lo diga (cuando suba el video). Hasta entonces, capítulo 1.
+     Para pasar al 2: renombrar CAPITULO_2 a CAPITULO (y este a otro nombre) y subir rosa.js?v=. */
+  const CAPITULO={id:1,clave:"TERMO",
+    intentos:[["Pepito","MATES"],["Marta","PERRO"],["Juanchi","VERDE"]],
+    titulo:"La libreta del fiado",
+    pedido:"¡Ayudame a abrir la libreta! 🔒",
+    gano:"¡La abriste! Ahora Doña Rosa puede cobrar el fiado y el almacén no cierra.",
+    perdio:"Doña Rosa todavía no la puede abrir 😢 Mirá cómo sigue en el próximo capítulo."};
+  const CAPITULO_2={id:2,clave:"YERBA",
     intentos:[["Don Tito","PASTA"],["Nelly","TRIGO"],["Pepito","MENTA"]],
     titulo:"Capítulo 2 · La libreta del fiado",
     hoja:"PÁGINA 1 · CHELO",          // título de la libreta
