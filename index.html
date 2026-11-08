@@ -1473,7 +1473,8 @@ body:not(.tvhost) #horizontalAyuda{display:none}
 </div>
 <div class="capa" id="capaSocial">
   <div class="caja" style="max-width:420px;padding:16px">
-    <img src="assets/social/promo-redes.webp" alt="Girá y Adiviná Rioplatense en redes" style="width:100%;border-radius:14px;display:block;margin-bottom:14px" loading="lazy">
+    <!-- Sin deslizar (08/11/2026, Gonzalo): la imagen se achica para que entren el texto y los dos botones. -->
+    <img src="assets/social/promo-redes.webp" alt="Girá y Adiviná Rioplatense en redes" style="display:block;max-width:100%;max-height:calc(86dvh - 300px);width:auto;height:auto;object-fit:contain;border-radius:14px;margin:0 auto 12px" loading="lazy">
     <p class="sub" id="socialCiudadInfo" style="margin:0 0 8px"></p>
     <button class="btn-grande" id="socialContinuar" style="margin-bottom:10px">Ver el avance de los jugadores</button>
     <button class="no" id="socialCerrar" style="width:100%;border-radius:12px;padding:13px;font-weight:700">Cerrar</button>
