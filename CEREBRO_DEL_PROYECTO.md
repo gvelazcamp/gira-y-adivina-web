@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa: link directo al capítulo 2 (?cap=2)
+- Qué: para el anuncio nuevo del capítulo 2 sin cambiar el de los demás. https://girayadivina.com/?cap=2 abre la página liviana con el capítulo 2 (Chelo, YERBA, pistas PASTA/TRIGO/TERMA); el link de siempre sigue en el capítulo 1. El capítulo elegido se recuerda en el celular (gya_rosa_cap_activo) para que el juego completo cuente en el capítulo correcto; ?cap=1 o ?rosa=1 lo vuelven al 1. Probado: llega, YERBA, «Guardá tu racha», Palabra Secreta nivel 2, embudo como «Cap. 2».
+- Dónde: index.html (redirección: ROSA_CAP según ?cap), rosa.js (CAPITULO_1/CAPITULO_2, v16), sw.js (gya-cache-v776), promo/serie-dona-rosa/README.md.
+
 ### 08/11/2026 — Doña Rosa: «Guardá tu racha» al sacarla y Palabra Secreta desde el nivel 2
 - Qué: idea de Gonzalo. En la página liviana del anuncio, al sacar la palabra de Doña Rosa (1,2 s después) se abre «🎉 ¡Muy bien! ¿Guardamos tu racha?» (nombre, país, avatar; revisa que el nombre no esté usado). Como ahí no está el juego, queda pendiente (gya_rosa_reg_pend) y index.html crea el perfil al entrar (aplicarRegistroPendiente) y cuenta «se registraron». Doña Rosa cuenta como el nivel 1: el que la sacó entra a Palabra Secreta en el nivel 2 si nunca había jugado (PalabraSecreta.empezarEnNivel). El cartel ya no se repite al ganar en Palabra Secreta. Promo/REGLAS-PROMOCION.md: el registro se ofrece al ganar el juego del anuncio.
 - Dónde: rosa.js (v15), palabra-secreta.js (empezarEnNivel, v38), sw.js (gya-cache-v775), promo/REGLAS-PROMOCION.md.
