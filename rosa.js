@@ -73,7 +73,7 @@
   async function resumen(){
     const sb=typeof obtenerSupa==="function"?obtenerSupa():null;if(!sb)return null;
     try{const r=await sb.from("gya_ranking").select("estado_juego,actualizado_en").eq("grupo",GRUPO).limit(5000);if(r.error)return null;
-      const c={llego:0,jugo:0,gano:0,perdio:0,quiere:0,play:0,registro:0,palabra:0,ps_jugo:0};
+      const c={llego:0,jugo:0,gano:0,perdio:0,quiere:0,play:0,registro:0,palabra:0,ps_jugo:0,reg_ofrecido:0};
       c.anuncio={llego:0,jugo:0};c.lista=[];for(const f of r.data||[]){const e=f.estado_juego||{};for(const k in c)if(e[k])c[k]++;if(e.origen==="meta"||e.origen==="utm"||e.origen==="app"){if(e.llego)c.anuncio.llego++;if(e.jugo)c.anuncio.jugo++;c.lista.push({cap:e.cap||1,nombre:e.nombre||"",palabras:e.palabras||[],fin:e.gano?"gano":e.perdio?"perdio":"",registro:!!e.registro,fecha:f.actualizado_en||""});}}
       c.lista.sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
       return c;}catch(e){return null;}
@@ -198,7 +198,9 @@
   function irAPalabra(){
     if(ls.get(K_IR)!=="palabra-secreta")return;
     let n=0;const t=setInterval(()=>{
-      if(++n>1200){clearInterval(t);return;}
+      /* Si otra espera ya lo abrió (irAPalabra se puede llamar dos veces), esta se corta: si no, al crear el perfil
+         más tarde volvía a abrir Palabra Secreta encima de la partida. */
+      if(++n>1200||ls.get(K_IR)!=="palabra-secreta"){clearInterval(t);return;}
       if((!tienePerfil()&&!ls.get("gya_rosa_directo"))||!window.Extensiones||document.readyState!=="complete")return;
       clearInterval(t);ls.del(K_IR);ls.del("gya_rosa_directo");
       if(ls.get("gya_rosa_sinperfil")&&tienePerfil()){ls.del("gya_rosa_sinperfil");paso("registro");}
@@ -228,6 +230,66 @@
   }
   /* Lo llama Palabra Secreta en cada palabra que prueba: así se ve quién del anuncio jugó de verdad. */
   function jugoPalabra(){const p=pasos();if(!p.llego)return;if(!p.ps_jugo)paso("ps_jugo");}
+  /* Registro rápido (Gonzalo, 08/11): al que vino del anuncio y juega Palabra Secreta sin perfil, cuando adivina su
+     primera palabra se le ofrece guardar la partida: nombre, país y avatar en una sola ventana. Una sola vez. */
+  function ganoPalabra(){
+    try{if(SOLA||tienePerfil()||!pasos().llego||ls.get("gya_rosa_reg_visto"))return;}catch(e){return;}
+    ls.set("gya_rosa_reg_visto","1");paso("reg_ofrecido");setTimeout(registroRapido,1300);
+  }
+  function registroRapido(){
+    if(tienePerfil()||document.getElementById("rosaReg"))return;
+    let nombre="",pais=null,avatar=null,todos=false;
+    const lista=(typeof AVATARES!=="undefined"?AVATARES:[]).filter(a=>a!=="avatar-22");
+    const c=document.createElement("div");c.id="rosaReg";c.setAttribute("role","dialog");
+    if(!document.getElementById("rosaRegEstilos")){const st=document.createElement("style");st.id="rosaRegEstilos";st.textContent=`
+#rosaReg{position:fixed;inset:0;z-index:2147482500;background:#0b0614c4;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:max(16px,env(safe-area-inset-top)) 14px 16px;font-family:Outfit,system-ui,sans-serif}
+#rosaReg *{box-sizing:border-box}
+.rr-caja{width:100%;max-width:420px;margin-top:4vh;background:linear-gradient(#2a1846,#1c1030);border:2px solid #F5C451;border-radius:22px;padding:18px 16px 14px;color:#FCEFD2;text-align:center;box-shadow:0 20px 50px #000a}
+.rr-caja h3{margin:0;font:900 1.35rem "Archivo Black",sans-serif;color:#F5C451}
+.rr-caja p{margin:6px 0 12px;font:700 .95rem/1.3 Outfit;color:#E4D8EB}
+.rr-nom{width:100%;background:#ffffff12;border:1px solid #ffffff2a;border-radius:14px;padding:12px;color:#fff;font:800 1.05rem Outfit;outline:none}
+.rr-nom:focus{border-color:#F5C451}
+.rr-lbl{margin:12px 0 6px;text-align:left;font:800 .78rem Outfit;color:#b9a8cc;letter-spacing:.5px}
+.rr-paises{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rr-paises button{padding:10px;border-radius:12px;background:#ffffff10;border:1px solid #ffffff22;color:#FCEFD2;font:800 .92rem Outfit;cursor:pointer}
+.rr-paises button.si{background:#F5C45122;border-color:#F5C451}
+.rr-avs{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.rr-avs button{padding:0;border:2px solid transparent;border-radius:50%;background:#ffffff10;cursor:pointer;aspect-ratio:1;overflow:hidden}
+.rr-avs button.si{border-color:#F5C451;box-shadow:0 0 0 3px #F5C45155}
+.rr-avs img{width:100%;height:100%;display:block}
+.rr-mas{margin-top:6px;border:0;background:none;color:#F5C451;font:800 .82rem Outfit;cursor:pointer}
+.rr-msj{min-height:1.2em;margin-top:8px;font:800 .82rem Outfit;color:#ff9a9a}
+.rr-ok{display:block;width:100%;margin-top:6px;border:0;border-radius:14px;padding:13px;background:linear-gradient(#ff4fa3,#E5197C);color:#fff;font:900 1.05rem Outfit;box-shadow:0 4px 0 #8E0F4C;cursor:pointer}
+.rr-ok:disabled{opacity:.45;cursor:default}
+.rr-no{margin-top:9px;border:0;background:none;font:800 .85rem Outfit;color:#9fb6c4;text-decoration:underline;cursor:pointer}`;document.head.appendChild(st);}
+    const pintarR=()=>{
+      const avs=(todos?lista:lista.slice(0,12)).map(a=>'<button type="button" data-a="'+a+'" class="'+(a===avatar?"si":"")+'"><img src="assets/avatars/'+a+'.webp" alt=""></button>').join("");
+      c.innerHTML='<div class="rr-caja"><h3>🎉 ¡Muy bien!</h3><p>¿Guardamos tu racha? Poné tu nombre y elegí tu avatar: así no perdés tu partida.</p>'+
+        '<input class="rr-nom" id="rrNom" maxlength="12" placeholder="Tu nombre" autocomplete="nickname">'+
+        '<div class="rr-lbl">PAÍS</div><div class="rr-paises"><button type="button" data-p="uruguay" class="'+(pais==="uruguay"?"si":"")+'">🇺🇾 Uruguay</button><button type="button" data-p="argentina" class="'+(pais==="argentina"?"si":"")+'">🇦🇷 Argentina</button></div>'+
+        '<div class="rr-lbl">AVATAR</div><div class="rr-avs">'+avs+'</div>'+(todos?'':'<button type="button" class="rr-mas" id="rrMas">Ver más avatares ▾</button>')+
+        '<div class="rr-msj" id="rrMsj"></div><button type="button" class="rr-ok" id="rrOk">💾 Guardar mi partida</button><button type="button" class="rr-no" id="rrNo">Ahora no, sigo jugando</button></div>';
+      const inp=c.querySelector("#rrNom");inp.value=nombre;inp.oninput=()=>{nombre=inp.value;listo();};
+      c.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{pais=b.dataset.p;pintarR();});
+      c.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{avatar=b.dataset.a;pintarR();});
+      const m=c.querySelector("#rrMas");if(m)m.onclick=()=>{todos=true;pintarR();};
+      c.querySelector("#rrNo").onclick=()=>c.remove();
+      c.querySelector("#rrOk").onclick=guardar;listo();
+    };
+    const listo=()=>{const b=c.querySelector("#rrOk");if(b)b.disabled=!(nombre.trim()&&pais&&avatar);};
+    const msj=t=>{const e=c.querySelector("#rrMsj");if(e)e.textContent=t;};
+    async function guardar(){
+      const n=nombre.trim().slice(0,12);if(!n||!pais||!avatar)return;
+      try{if(typeof nombrePerfilAutomatico==="function"&&nombrePerfilAutomatico(n)){msj("Elegí un nombre propio, distinto de "+n+".");return;}}catch(e){}
+      const b=c.querySelector("#rrOk");b.disabled=true;b.textContent="Guardando…";
+      let libre=true;try{if(typeof nombrePerfilDisponible==="function")libre=await nombrePerfilDisponible(n);}catch(e){}
+      if(!libre){b.textContent="💾 Guardar mi partida";listo();msj("Ese nombre ya lo usa otro jugador. Probá otro, por ej. "+n+"2.");return;}
+      try{guardarPerfil(n,avatar,pais,"");try{mapaPaisForzado=null;sincronizarMundoActivo();}catch(e){}}catch(e){b.textContent="💾 Guardar mi partida";listo();msj("No se pudo guardar, probá de nuevo.");return;}
+      c.remove();if(ls.get("gya_rosa_sinperfil")){ls.del("gya_rosa_sinperfil");}paso("registro");
+      try{if(typeof mostrarToast==="function")mostrarToast("✅","¡Listo, "+n+"! Tu partida quedó guardada.");}catch(e){}
+    }
+    pintarR();document.body.appendChild(c);
+  }
   function arrancar(){
     if(SOLA){mostrar();const ya=()=>setTimeout(precargarJuego,1500);if(document.readyState==="complete")ya();else window.addEventListener("load",ya);return;}
     if(q.get("norosa")==="1"){try{q.delete("norosa");const t=q.toString();history.replaceState(null,"",location.pathname+(t?"?"+t:""));}catch(e){}}
@@ -239,6 +301,6 @@
     const visto=ls.get(K_VISTO);if(visto&&fuente!=="link")return;
     mostrar();
   }
-  window.DonaRosa={resumen,tomarInicio,jugoPalabra,mostrar:()=>{if(!capa){mios=[];borrador="";fin=null;mostrar();}}};
+  window.DonaRosa={resumen,tomarInicio,jugoPalabra,ganoPalabra,registroRapido,mostrar:()=>{if(!capa){mios=[];borrador="";fin=null;mostrar();}}};
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arrancar);else arrancar();
 })();

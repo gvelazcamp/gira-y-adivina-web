@@ -395,6 +395,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa: «Guardá tu partida» al ganar la primera palabra
+- Qué: a quien vino del anuncio y juega Palabra Secreta sin perfil, cuando adivina su primera palabra (1,3 s después) se le abre una sola vez «🎉 ¡Muy bien! ¿Guardamos tu racha?» con nombre, país (🇺🇾/🇦🇷) y avatar (12 + «Ver más avatares»), botón «💾 Guardar mi partida» y «Ahora no, sigo jugando». Usa las mismas reglas del perfil (nombre propio, que no esté usado) y guardarPerfil; la partida de Palabra Secreta no se pierde. Embudo: «vieron Guardá tu partida» (reg_ofrecido) y «se registraron». Arreglado de paso: irAPalabra podía quedar esperando dos veces y, al crear el perfil, reabría Palabra Secreta encima de la partida.
+- Dónde: rosa.js (ganoPalabra, registroRapido, irAPalabra, v11), palabra-secreta.js (final() avisa al ganar, v37), index.html (línea del embudo), sw.js (gya-cache-v768).
+
 ### 08/11/2026 — Doña Rosa: los del anuncio juegan Palabra Secreta sin pedirles el nombre
 - Qué: con la página liviana subieron los que juegan (5→10) y los que quieren seguir (1→5), pero ninguno se registró: se iban en «Elegí tu nombre». Ahora, si vienen de Doña Rosa sin perfil y quieren seguir, entran directo a Palabra Secreta; el nombre se pide más tarde (cuando lo crean, se cuenta «se registraron»). Embudo nuevo: «jugaron Palabra Secreta» (ps_jugo, lo marca palabra-secreta.js en cada palabra). «Llegaron» ahora cuenta solo si la página se ve (Instagram a veces la carga por adelantado: de 95 se saltó a 239 en una hora). Después vemos cómo resolver el registro.
 - Dónde: rosa.js (tomarInicio sin perfil, vigilarRegistro, jugoPalabra, llegó solo visible, v10), palabra-secreta.js (v36), index.html (línea del embudo), sw.js (gya-cache-v767).
