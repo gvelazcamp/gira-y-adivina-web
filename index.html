@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content, viewport-fit=cover">
 <style>html{background:#160B24}html.cargando body>*:not(#splash){visibility:hidden}</style>
+<script>/* Doña Rosa (08/11/2026): el que viene del anuncio (o de ?rosa=1) va primero a rosa.html, una página liviana
+   que aparece en 1 o 2 segundos (este juego tarda unos 11 en un celular con 4G). ROSA_CAP tiene que ser igual a CAPITULO.id de rosa.js. */
+(function(){try{var ROSA_CAP=1,q=new URLSearchParams(location.search),ua=navigator.userAgent||"",ref=document.referrer||"";
+  if(q.get("norosa")==="1")return;
+  var link=q.get("rosa")==="1",anuncio=!!q.get("fbclid")||/^(ig|instagram|fb|facebook)$/i.test(q.get("utm_source")||"")||/Instagram|FBAN|FBAV|FB_IAB|FBIOS/i.test(ua)||/instagram\.com|facebook\.com/i.test(ref);
+  if(link||(anuncio&&!localStorage.getItem("gya_rosa_cap"+ROSA_CAP))){document.documentElement.style.background="#24384a";location.replace("rosa.html"+location.search);}}catch(e){}})();</script>
 <script>/* Versión de la app de Play Store que abrió el juego: ?app=N (la 16 llega así desde el puente de github.io;
    desde la 18 conviene que el start_url de la app traiga ?app=18) o ?comprobar_partida=1 (la 17). En el navegador no hay número. */
 (function(){try{const q=new URLSearchParams(location.search),n=+q.get("app")||(q.get("comprobar_partida")==="1"?17:0);
@@ -3547,6 +3553,7 @@ function avisoPlayWeb(siguiente){
   return true;
 }
 function tutChequearBienvenida(){
+  if(window.DonaRosa&&DonaRosa.tomarInicio&&DonaRosa.tomarInicio())return;
   if(avisoPlayWeb(tutChequearBienvenida))return;
   if(tutEsPrimeraVez()){
     tutMarcarBienvenidaVista();
@@ -12164,7 +12171,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="rueda-de-letras.js?v=20"></script>
 <script src="palabra-secreta-datos.js?v=3"></script>
 <script src="palabra-secreta.js?v=35"></script>
-<script src="rosa.js?v=7"></script>
+<script src="rosa.js?v=8"></script>
 <link rel="stylesheet" href="palabras-cruzadas.css?v=8">
 <script src="palabras-cruzadas-datos.js?v=3"></script>
 <script src="palabras-cruzadas.js?v=18"></script>

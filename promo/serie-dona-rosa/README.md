@@ -35,5 +35,6 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 
 ## Página de llegada (rosa.js)
 - Quien toca el link del anuncio (Meta le agrega fbclid) ve la libreta del último capítulo y juega los intentos que quedan; después crea su perfil y entra a Palabra Secreta. Para la bio usar `https://girayadivina.com/?rosa=1`.
+- La página del anuncio es `rosa.html` (liviana, aparece en ~1 s); `index.html` redirige ahí al que viene de Instagram/Facebook. **Al cambiar de capítulo, subir también `ROSA_CAP` en el script del principio de index.html.**
 - **Cada capítulo nuevo:** actualizar `CAPITULO` en `rosa.js` (id nuevo para que la vean de nuevo, clave, intentos, `hoja`/`sub`/`icono` de la libreta y textos) y subir `rosa.js?v=` en index.html y sw.js. Cada capítulo es una fila nueva por visitante en el embudo (🧪 Pruebas → 📣 Anuncio Doña Rosa muestra «Cap. N»).
 - Embudo: 👥 Usuarios (solo Gonzalo) muestra llegaron / jugaron / la sacaron / quieren seguir / se registraron / entraron a Palabra Secreta.

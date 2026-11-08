@@ -395,6 +395,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa en página liviana: aparece en 1 segundo en vez de 11
+- Qué: desde Instagram (celular con 4G) el juego tardaba unos 11 s en mostrar a Doña Rosa (antes carga los 57 scripts del juego) y de ~165 visitas del anuncio solo 95 la veían. Ahora un script al principio de index.html manda al que viene del anuncio (fbclid, utm de ig/fb, navegador de Instagram/Facebook o ?rosa=1) y todavía no jugó el capítulo a rosa.html, una página chica con solo Doña Rosa (aparece en ~1 s). Al terminar («¡Sí, quiero jugar!», «Ahora no» o «Saltar e ir al juego») vuelve a index.html?norosa=1; si quiere jugar y no tiene perfil, el inicio (tutChequearBienvenida → DonaRosa.tomarInicio) abre «Elegí tu nombre» en vez del tutorial y después Palabra Secreta. El que entra normal no cambia. ROSA_CAP del script de index.html tiene que ser igual a CAPITULO.id de rosa.js.
+- Dónde: rosa.html (nuevo), rosa.js (modo SOLA, tomarInicio, v8), index.html (redirección al principio y tutChequearBienvenida), sw.js (gya-cache-v765), promo/serie-dona-rosa/README.md.
+
 ### 08/11/2026 — Doña Rosa: la página del anuncio vuelve al capítulo 1
 - Qué: el capítulo 2 se había publicado en la página del anuncio sin que Gonzalo lo pidiera (se tomó un «Continúa» como sí). Vuelve el capítulo 1 (TERMO), con los cambios nuevos (sin «Saltar» al entrar, «Probar» arriba). El capítulo 2 queda listo en CAPITULO_2 dentro de rosa.js: se publica solo cuando Gonzalo lo pida. Regla: publicar un capítulo nuevo en la página solo con pedido explícito.
 - Dónde: rosa.js (v7), sw.js (gya-cache-v764).
