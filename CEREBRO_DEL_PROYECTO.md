@@ -175,6 +175,7 @@ Este archivo orienta; el código conserva la implementación, los datos conserva
 - No inventar lugares o elementos de una ciudad como si fueran reales; verificar referencias cuando se cree arte geográfico.
 - **REGLA DE GONZALO (19/10/2026): el deslizado (scroll) NUNCA se toca.** Nada de `overscroll-behavior`, `touch-action`, `scroll-snap`, `scroll-behavior`, `overflow` en html/body ni listeners de touch/wheel que frenen el deslizar en las pantallas del juego. Si algo parece pedirlo (p. ej. la recarga al deslizar hacia abajo), preguntarle antes a Gonzalo. Los juegos con PantallaFija/canvas propios (Puzzle, Bomba, etc.) manejan su propio toque y no cuentan.
 - **REGLA DE GONZALO (ruleta de la partida):** el PRIMER giro de cada partida nunca es PIERDE TURNO ni QUIEBRA, y nunca salen dos "malos" seguidos (PIERDE TURNO o QUIEBRA, de cualquier jugador). Vale en todos los modos (máquina, sala de a dos, Sala TV, local): todos los giros pasan por hostGirar() (index.html), con S.girosHechos y S.ultimoMalo.
+- **REGLA DE GONZALO (08/11/2026): todo lo que sea promoción (anuncios, links de bio, campañas) se arma como la página de Doña Rosa: página de llegada liviana (1–2 s), solo jugar (sin «Saltar» al entrar), el juego se precarga mientras juega, Android → Google Play primero, sin pedir nombre al seguir y el registro al ganar la primera partida, embudo medido paso a paso y prueba con navegador de Instagram + 4G + gzip antes de publicar.** Detalle en `promo/REGLAS-PROMOCION.md`.
 - Para audio, revisar referencias existentes antes de sustituir una pista. No borrar música o sonidos de otras extensiones por cambiar una sola.
 
 ## 5. Recuperación: encontrar y reactivar el contexto necesario
@@ -394,6 +395,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 
 ## Registro de cambios
+
+### 08/11/2026 — Reglas de promoción guardadas
+- Qué: Gonzalo pidió que todo lo que sea promoción se haga como quedó Doña Rosa. Regla en «Reglas de contenido y visuales» y detalle en promo/REGLAS-PROMOCION.md (también referenciado desde serie-dona-rosa/README.md y CLAUDE.md).
+- Dónde: CEREBRO_DEL_PROYECTO.md, promo/REGLAS-PROMOCION.md, promo/serie-dona-rosa/README.md, CLAUDE.md.
 
 ### 08/11/2026 — Doña Rosa: «Guardá tu partida» al ganar la primera palabra
 - Qué: a quien vino del anuncio y juega Palabra Secreta sin perfil, cuando adivina su primera palabra (1,3 s después) se le abre una sola vez «🎉 ¡Muy bien! ¿Guardamos tu racha?» con nombre, país (🇺🇾/🇦🇷) y avatar (12 + «Ver más avatares»), botón «💾 Guardar mi partida» y «Ahora no, sigo jugando». Usa las mismas reglas del perfil (nombre propio, que no esté usado) y guardarPerfil; la partida de Palabra Secreta no se pierde. Embudo: «vieron Guardá tu partida» (reg_ofrecido) y «se registraron». Arreglado de paso: irAPalabra podía quedar esperando dos veces y, al crear el perfil, reabría Palabra Secreta encima de la partida.

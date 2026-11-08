@@ -1,5 +1,7 @@
 # Serie para Instagram y TikTok: «El almacén de Doña Rosa»
 
+> Reglas generales para cualquier promoción: `../REGLAS-PROMOCION.md`.
+
 Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los comentarios, palabras de Palabra Secreta para salvar el almacén de Doña Rosa. Inspirada en el formato de series interactivas tipo «La estación de Vera»: historia con meta, cuenta regresiva, la gente decide en comentarios y su nombre aparece en el video. Historia y arte propios.
 
 ## Historia
