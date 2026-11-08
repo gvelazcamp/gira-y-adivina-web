@@ -34,10 +34,26 @@
     ganoTitulo:"🎉 ¡Doña Rosa cobró!",
     gano:"¡Era YERBA! Chelo paga y Doña Rosa empieza a cubrir su deuda (entre él y otros vecinos le deben más de $ 30.000).",
     perdio:"Todavía no se sabe qué le debe Chelo 😢 Mirá cómo sigue en el próximo capítulo."};
-  /* Capítulo activo: el 1 para todos; el 2 con el link ?cap=2 (anuncio nuevo). Se recuerda en el celular para que el
-     juego completo (index.html) siga contando en el capítulo correcto. */
-  const CAPITULO=(()=>{let c=1;try{const qq=new URLSearchParams(location.search);if(qq.get("cap")==="2"){c=2;localStorage.setItem("gya_rosa_cap_activo","2");}
-    else if(qq.get("cap")==="1"||qq.get("rosa")==="1")localStorage.removeItem("gya_rosa_cap_activo");else if(localStorage.getItem("gya_rosa_cap_activo")==="2")c=2;}catch(e){}return c===2?CAPITULO_2:CAPITULO_1;})();
+  /* Capítulo 3 (08/11, Gonzalo): llegó el cobrador; página 2 de la libreta, ¿qué le debe Cacho? Una bebida con duda:
+     con estos intentos queda _I_RA → SIDRA o BIRRA (las dos dan los mismos colores; BIRRA se agregó al diccionario
+     para que escribirla no la descarte). Pista que sirve para las dos. */
+  const CAPITULO_3={id:3,clave:"SIDRA",
+    intentos:[["Pepito","LICOR"],["Nelly","GRAPA"],["Juanchi","TINTO"]],
+    titulo:"Capítulo 3 · El cobrador",
+    pista:"Para brindar 🥂",
+    hoja:"PÁGINA 2 · CACHO",
+    icono:"🥂",
+    sub:"Cacho me debe…",
+    pedido:"¿Qué me debe Cacho? Es algo para tomar 🤔",
+    ganoTitulo:"🎉 ¡Doña Rosa cobró!",
+    gano:"¡Era SIDRA! Cacho paga y Doña Rosa sigue cubriendo su deuda antes de que vuelva el cobrador.",
+    perdio:"Todavía no se sabe qué le debe Cacho 😢 Mirá cómo sigue en el próximo capítulo."};
+  /* Capítulo activo: el 1 para todos; el 2 y el 3 con el link ?cap=2 / ?cap=3 (anuncio de ese capítulo). Se recuerda en el
+     celular para que el juego completo (index.html) siga contando en el capítulo correcto. */
+  const CAPS={1:CAPITULO_1,2:CAPITULO_2,3:CAPITULO_3};
+  const CAPITULO=(()=>{let c=1;try{const qq=new URLSearchParams(location.search),qc=qq.get("cap"),ac=localStorage.getItem("gya_rosa_cap_activo");
+    if(qc==="2"||qc==="3"){c=+qc;localStorage.setItem("gya_rosa_cap_activo",qc);}
+    else if(qc==="1"||qq.get("rosa")==="1")localStorage.removeItem("gya_rosa_cap_activo");else if(ac==="2"||ac==="3")c=+ac;}catch(e){}return CAPS[c];})();
   const GRUPO="embudo_rosa",K_VISTO="gya_rosa_cap"+CAPITULO.id,K_ID="gya_rosa_visitante",K_PASOS="gya_rosa_pasos",K_IR="gya_rosa_ir";
   const ls={get:k=>{try{return localStorage.getItem(k);}catch(e){return null;}},set:(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}},del:k=>{try{localStorage.removeItem(k);}catch(e){}}};
   const q=(()=>{try{return new URLSearchParams(location.search);}catch(e){return new URLSearchParams();}})();
@@ -162,7 +178,7 @@
       :'<p>¿Querés seguir jugando a <b>Palabra Secreta</b>? Una palabra nueva cada vez, gratis.</p><button type="button" class="ro-si" id="roSi">🔤 ¡Sí, quiero jugar!</button><button type="button" class="ro-no" id="roNo">Ahora no</button>';
     const panel=fin?'<div class="ro-panel"><h3>'+(abierto?(CAPITULO.ganoTitulo||"🎉 ¡Salvaste a Doña Rosa!"):"¡Casi!")+'</h3><p>'+(abierto?CAPITULO.gano:CAPITULO.perdio)+'</p>'+seguir+'</div>':"";
     capa.innerHTML='<div class="ro-cab"><div><small>'+CAPITULO.titulo+'</small><b>EL ALMACÉN DE DOÑA ROSA</b></div>'+(fin?'':'<button type="button" class="ro-x env" data-t="OK">Probar</button>')+'</div>'+
-      '<div class="ro-esc"><div class="ro-edif"></div><div class="ro-cartel">ALMACÉN ROSA</div><div class="ro-toldo"></div><div class="ro-puerta"></div><div class="ro-aviso'+(abierto?" ok":"")+'">'+(abierto?"¡ABIERTO!":"CIERRA<br>PRONTO")+'</div>'+rosaHtml()+'<div class="ro-globo">'+(abierto?"¡Gracias, vecino! 💜":fin?"Ay… ¿cuál era? 😢":verPista&&CAPITULO.pista?"💡 "+CAPITULO.pista:CAPITULO.pedido)+'</div></div>'+
+      '<div class="ro-esc"><div class="ro-edif"></div><div class="ro-cartel">ALMACÉN DOÑA ROSA</div><div class="ro-toldo"></div><div class="ro-puerta"></div><div class="ro-aviso'+(abierto?" ok":"")+'">'+(abierto?"¡ABIERTO!":"CIERRA<br>PRONTO")+'</div>'+rosaHtml()+'<div class="ro-globo">'+(abierto?"¡Gracias, vecino! 💜":fin?"Ay… ¿cuál era? 😢":verPista&&CAPITULO.pista?"💡 "+CAPITULO.pista:CAPITULO.pedido)+'</div></div>'+
       '<div class="ro-lib">'+(!fin&&CAPITULO.pista?'<button type="button" class="ro-pista'+(verPista?' si':'')+'" id="roPista">💡 Pista</button>':'')+'<span class="ro-cand">'+(CAPITULO.icono||(abierto?"🔓":"🔒"))+'</span><h4>'+(CAPITULO.hoja||"LIBRETA DEL FIADO")+'</h4>'+(CAPITULO.sub?'<p class="ro-sub">'+CAPITULO.sub+'</p>':'')+'<div class="ro-tab">'+filas+'</div></div>'+
       '<p class="ro-msj" id="roMsj">'+(fin?"":"Tenés "+libres+" intento"+(libres===1?"":"s")+". Palabra de 5 letras.")+'</p>'+tec+(!fin&&mios.length?'<div class="ro-salir"><button type="button" class="ro-no" id="roSaltar">Saltar e ir al juego</button></div>':'')+panel;
     const sal=capa.querySelector("#roSaltar");if(sal)sal.onclick=()=>cerrar(false);

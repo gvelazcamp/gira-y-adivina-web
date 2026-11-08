@@ -29,7 +29,10 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 - Arranca con «Ayer ustedes dijeron…»: era **YERBA**. Con eso Doña Rosa le pudo cobrar a Chelo, y con lo que suman los seguidores nuevos junta plata.
 - Justo en ese momento golpean la puerta: entra **el cobrador** con maletín. Doña Rosa saca la plata de la caja y le entrega una parte. La barra «DEUDA DE DOÑA ROSA» baja, pero todavía falta.
 - Coherencia: el capítulo 2 decía «CIERRA EN 2 DÍAS» → el 3 dice «CIERRA EN 1 DÍA». El cobrador le da unos días más (si no, en el 4 cierra).
-- Falta decidir con Gonzalo: si tiene palabra para adivinar (página 2 de la libreta) o solo historia con una pregunta para comentar, y el texto para ElevenLabs.
+- Palabra (Gonzalo, 08/11): página 2 de la libreta, **«Cacho me debe…»** (Cacho es uno de los «otros vecinos» del capítulo 2). Clave **SIDRA**; intentos Pepito LICOR, Nelly GRAPA, Juanchi TINTO → queda _I_RA y la duda es SIDRA o **BIRRA** (las dos dan exactamente los mismos colores). Pista «Para brindar 🥂» (sirve para las dos). BIRRA se agregó al diccionario de Palabra Secreta para que escribirla no la descarte.
+- Ya cargado en el juego: `CAPITULO_3` en rosa.js, se abre solo con `https://girayadivina.com/?cap=3`. El cartel de la página del anuncio ahora dice «ALMACÉN DOÑA ROSA» en todos los capítulos.
+- Falta: la voz de Gonzalo (texto abajo), los nombres de los que comentaron el capítulo 2 y armar `capitulo-3.html` + video.
+- Texto para ElevenLabs (texto plano): «Día tres. Ayer la mayoría comentó yerba… y era yerba. Chelo le debía la yerba de todo el mes, y pagó. Con eso, y con cada vecino nuevo que sigue la historia, Doña Rosa juntó unos pesos. Y justo… golpean la puerta. Es el cobrador. Doña Rosa abre la caja y le entrega una parte de la plata. El cobrador mira la libreta… y le da tres días más. Pero todavía falta. Doña Rosa da vuelta la página. Página dos: Cacho. Cacho me debe… ¿Qué le debe Cacho? Es algo para tomar. Pepito dijo licor. Nelly, grapa. Juanchi, tinto. ¿Vos qué decís? Comentá tu respuesta. Seguí las historias de Doña Rosa. Jugá en girá y adiviná punto com.»
 
 ## Lo que sigue (plan acordado)
 1. **Capítulo 2:** «¡La descubrieron! Era TERMO». Se abre el candado 🔓 y la libreta muestra la primera página: «Me debe: _ _ _ _ _».
