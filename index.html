@@ -6597,8 +6597,8 @@ $("bPruebaAnuncio").onclick=()=>{if(!esGonzalo())return;verAnuncioRosa();};
 /* 📣 Anuncio Doña Rosa: cuántos vinieron de la publicidad y qué palabras pusieron (con nombre si se hicieron perfil). */
 async function verAnuncioRosa(){
   const viejo=document.querySelector(".anuncio-rosa");if(viejo)viejo.remove();
-  const c=document.createElement("div");c.className="pf-confirmar fallas-reg anuncio-rosa";
-  c.innerHTML='<div class="mg-panel pf-caja"><h3>📣 Anuncio Doña Rosa</h3><div class="tf-dudas-lista">Cargando…</div><button type="button" data-x="1">Cerrar</button></div>';
+  const c=document.createElement("div");c.className="pf-confirmar fallas-reg anuncio-rosa";c.style.overflowX="hidden";
+  c.innerHTML='<div class="mg-panel pf-caja" style="max-width:min(520px,calc(100vw - 24px));box-sizing:border-box;overflow-x:hidden"><h3>📣 Anuncio Doña Rosa</h3><div class="tf-dudas-lista">Cargando…</div><button type="button" data-x="1">Cerrar</button></div>';
   document.body.appendChild(c);
   c.addEventListener("click",e=>{if(e.target===c||e.target.closest("button[data-x]"))c.remove();});
   const caja=c.querySelector(".tf-dudas-lista");
@@ -6612,11 +6612,18 @@ async function verAnuncioRosa(){
     const er=await sb.from("gya_ranking").select("estado_juego,actualizado_en").eq("grupo","embudo_rosa_err").order("actualizado_en",{ascending:false}).limit(8);
     const rr=(raw.data||[]).map(x=>x.estado_juego||{}),juego=rr.filter(x=>x.etapa==="juego"),rosa=rr.filter(x=>x.etapa==="rosa");
     const ios=rosa.filter(x=>/iPhone|iPad/.test(x.ua||"")).length;
-    diag='<p class="imp-ayuda">🔎 <b>Desde el anuncio abrieron el juego: '+juego.length+'</b> (mandados a Doña Rosa: '+juego.filter(x=>x.manda).length+') · <b>abrieron Doña Rosa: '+rosa.length+'</b> (iPhone: '+ios+', ocultas al abrir: '+rosa.filter(x=>x.vs==="hidden").length+') · <b>errores: '+((er.data||[]).length)+'</b></p>'+
-      ((er.data||[]).length?'<table><tr><th>Error</th><th>Celular</th></tr>'+(er.data||[]).map(x=>{const e=x.estado_juego||{};return'<tr><td><small>'+rkEsc(e.m||"")+(e.f?' · '+rkEsc(e.f)+':'+e.l:'')+'</small></td><td><small>'+rkEsc((e.ua||"").replace(/.*?\((.*?)\).*/,"$1").slice(0,60))+'</small></td></tr>';}).join("")+'</table>':'');
+    /* Errores que mete el propio navegador de Instagram/Facebook (no son del juego): no se muestran. */
+    const ajeno=e=>/^Script error\.?$/.test(e.m||"")||/iabjs:|_AutofillCallbackHandler|Java object is gone/.test((e.m||"")+(e.f||""));
+    const errs=(er.data||[]).map(x=>x.estado_juego||{}).filter(e=>!ajeno(e));
+    const cel=ua=>{ua=ua||"";if(/iPhone|iPad/.test(ua))return"iPhone";const m=ua.match(/Android[^;)]*;\s*([^;)]+?)(?:\s+Build|\))/);return m?"Android "+m[1].trim().slice(0,24):"Android";};
+    diag='<div style="text-align:left;font-size:.9rem;line-height:1.35;overflow-wrap:anywhere">'+
+      '<p>🔎 <b>Desde el anuncio abrieron el juego:</b> '+juego.length+' (mandados a Doña Rosa: '+juego.filter(x=>x.manda).length+')</p>'+
+      '<p>🔎 <b>Abrieron Doña Rosa:</b> '+rosa.length+' (iPhone: '+ios+' · ocultas al abrir: '+rosa.filter(x=>x.vs==="hidden").length+')</p>'+
+      '<p>🔎 <b>Errores del juego:</b> '+errs.length+(errs.length?'':' ✅')+'</p>'+
+      errs.map(e=>'<div style="margin:6px 0;padding:8px 10px;border-radius:10px;background:#ffffff10"><small>'+rkEsc(e.m||"")+(e.f?' · '+rkEsc(e.f)+':'+e.l:'')+'<br>📱 '+rkEsc(cel(e.ua))+'</small></div>').join("")+'</div>';
   }}catch(e){}
   caja.innerHTML=diag+'<p class="imp-ayuda"><b>Llegaron: '+a.llego+' · Jugaron: '+a.jugo+'</b></p>'+
-    (l.length?'<table><tr><th>Quién</th><th>Palabras</th></tr>'+l.map(x=>'<tr><td><b>'+rkEsc(x.nombre||"(sin nombre)")+'</b><small>Cap. '+x.cap+' · '+rkEsc(fin[x.fin]||"")+(x.registro?" · se registró":"")+'</small></td><td>'+rkEsc(x.palabras.join(", "))+'</td></tr>').join("")+'</table>':'<p>Todavía nadie puso palabras (se guardan desde hoy).</p>');
+    (l.length?'<table style="width:100%;table-layout:fixed;overflow-wrap:anywhere"><tr><th>Quién</th><th>Palabras</th></tr>'+l.map(x=>'<tr><td><b>'+rkEsc(x.nombre||"(sin nombre)")+'</b><small>Cap. '+x.cap+' · '+rkEsc(fin[x.fin]||"")+(x.registro?" · se registró":"")+'</small></td><td>'+rkEsc(x.palabras.join(", "))+'</td></tr>').join("")+'</table>':'<p>Todavía nadie puso palabras (se guardan desde hoy).</p>');
 }
 $("bPruebaFallasReg").onclick=()=>{if(!esGonzalo())return;$("capaPruebas").classList.remove("ver");$("capaMas").classList.remove("ver");verFallasRegistro();};
 $("bPruebaContraReloj").onclick=()=>{if(!esGonzalo())return;$("capaPruebas").classList.remove("ver");$("capaMas").classList.remove("ver");if(window.Extensiones){Extensiones.abrirJuego("contra-reloj-rioplatense");setTimeout(()=>{if(window.ContraRelojRioplatense)ContraRelojRioplatense.prueba();},300);}};

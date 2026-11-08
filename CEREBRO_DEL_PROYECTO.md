@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Pruebas → Anuncio Doña Rosa: se lee bien en el celular
+- Qué: la ventana se salía por la derecha (tabla de errores y palabras muy anchas). Ahora entra en la pantalla: diagnóstico en renglones, errores como tarjetas con el celular resumido, y la tabla de palabras se parte en renglones. Los errores que mete el propio navegador de Instagram/Facebook (Script error., iabjs://…, _AutofillCallbackHandler, Java object is gone) no se guardan ni se muestran: no son del juego.
+- Dónde: index.html (verAnuncioRosa), rosa.html (filtro de errores), sw.js (gya-cache-v773).
+
 ### 08/11/2026 — Usuarios: se marca quién vino del anuncio de Doña Rosa
 - Qué: el embudo decía «0 se registraron» pero había usuarios nuevos (ej. Mic4l0k4): solo contaba los registros hechos desde el cartel «Guardá tu partida» o al seguir desde Doña Rosa. Ahora, en 👥 Usuarios (solo Gonzalo), cada usuario cuyo respaldo trae gya_rosa_pasos (llegó desde el anuncio, no por ?rosa=1) muestra «📣 Vino del anuncio de Doña Rosa», y arriba «👥 Con perfil que vinieron del anuncio: N». No une a los que bajaron la app de Play (otro almacenamiento).
 - Dónde: index.html (lista de Usuarios, #usrDelAnuncio), sw.js (gya-cache-v772).

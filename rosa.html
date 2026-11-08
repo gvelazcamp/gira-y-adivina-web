@@ -19,7 +19,7 @@
     body:JSON.stringify({grupo:grupo,apodo:"r"+Date.now().toString(36)+Math.random().toString(36).slice(2,7),monedas_totales:0,ciudades_ganadas:0,mejor_racha:0,logros:0,estado_juego:datos,actualizado_en:new Date().toISOString()})}).catch(function(){});}catch(e){}}
   var ua=(navigator.userAgent||"").slice(0,200),vis=null;try{vis=localStorage.getItem("gya_rosa_visitante");}catch(e){}
   anotar("embudo_rosa_raw",{etapa:"rosa",vs:document.visibilityState,ua:ua,v:vis,q:location.search.slice(0,60),t:Date.now()});
-  var n=0;function err(m,f,l){if(++n>3)return;anotar("embudo_rosa_err",{m:String(m).slice(0,300),f:String(f||"").slice(-60),l:l||0,ua:ua,t:Date.now()});}
+  var n=0;function err(m,f,l){/* los del navegador de Instagram/Facebook no son del juego */if(/^Script error\.?$/.test(String(m))||/iabjs:|_AutofillCallbackHandler|Java object is gone/.test(String(m)+String(f||"")))return;if(++n>3)return;anotar("embudo_rosa_err",{m:String(m).slice(0,300),f:String(f||"").slice(-60),l:l||0,ua:ua,t:Date.now()});}
   window.addEventListener("error",function(e){err(e.message,e.filename,e.lineno);});
   window.addEventListener("unhandledrejection",function(e){err("promesa: "+(e.reason&&e.reason.message||e.reason));});
   /* Si a los 6 s Doña Rosa no apareció, también se anota. */
