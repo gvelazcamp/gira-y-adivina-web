@@ -21,6 +21,7 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 - Pizarra «VOTARON TERMO» con los que comentaron (sin cantidad): @silvina.martinezok, @matipienia, @santii.yz. Se cambian en `VOTARON` de `capitulo-2.html` sin regrabar la voz (la voz no dice nombres).
 - Si cobra, Doña Rosa paga parte de su primer mes de alquiler.
 - Pizarra «LOS QUE AYUDARON» (todos los que comentaron, voten lo que voten): hasta 6 nombres en 2 columnas de 3; con más de 6 la lista se desliza sola dentro de la pizarra (el cuadro no crece). Voz final (08/11, 45,6 s): «La mayoría comentó TERMO… Pepito probó terma… paga más de la mitad de su deuda. Jugá en girá y adiviná punto com», sin música de fondo; la última frase suena sobre el cierre (la escena dura 42,2 s y el cierre 4,4 s). Cierre de 4 s: `cierre.html`.
+- Final del capítulo 2 (08/11, voz de 54,9 s): «Cada vecino que se suma a seguir la historia la ayuda a cubrir la deuda más rápido, y después empezamos a arreglar su almacén. Seguí las historias de Doña Rosa.» En pantalla, una barra «DEUDA DE DOÑA ROSA» que se llena (más de la mitad con lo de Chelo y un poco más con cada 👤 vecino) y el botón «👤 Seguí la historia». No se piden «me gusta»: Instagram baja el alcance de lo que pide interacción directa; pedir que sigan la historia está bien.
 - Escena `capitulo-2.html` (voz de 45 s + cierre de 4 s = 49 s).
 
 ## Lo que sigue (plan acordado)
