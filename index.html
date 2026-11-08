@@ -6,10 +6,10 @@
 <style>html{background:#160B24}html.cargando body>*:not(#splash){visibility:hidden}</style>
 <script>/* Doña Rosa (08/11/2026): el que viene del anuncio (o de ?rosa=1) va primero a rosa.html, una página liviana
    que aparece en 1 o 2 segundos (este juego tarda unos 11 en un celular con 4G). ROSA_CAP tiene que ser igual a CAPITULO.id de rosa.js. */
-(function(){try{var q=new URLSearchParams(location.search),ROSA_CAP=q.get("cap")==="2"?2:1,ua=navigator.userAgent||"",ref=document.referrer||"";
+(function(){try{var q=new URLSearchParams(location.search),ROSA_CAP=/^[23]$/.test(q.get("cap")||"")?+q.get("cap"):1,ua=navigator.userAgent||"",ref=document.referrer||"";
   if(q.get("norosa")==="1")return;
-  /* ?cap=2: link directo al capítulo 2 (para el anuncio nuevo), sin cambiar el capítulo de los demás. */
-  var link=q.get("rosa")==="1"||q.get("cap")==="2",anuncio=!!q.get("fbclid")||/^(ig|instagram|fb|facebook)$/i.test(q.get("utm_source")||"")||/Instagram|FBAN|FBAV|FB_IAB|FBIOS/i.test(ua)||/instagram\.com|facebook\.com/i.test(ref);
+  /* ?cap=2 / ?cap=3: link directo a ese capítulo (para su anuncio), sin cambiar el capítulo de los demás. */
+  var link=q.get("rosa")==="1"||ROSA_CAP>1,anuncio=!!q.get("fbclid")||/^(ig|instagram|fb|facebook)$/i.test(q.get("utm_source")||"")||/Instagram|FBAN|FBAV|FB_IAB|FBIOS/i.test(ua)||/instagram\.com|facebook\.com/i.test(ref);
   if(anuncio){try{var K="sb_publishable_NHKQdADMpHSaSDW9WAlRGA_QLLJkeR7";fetch("https://qfeubudlnoogwzozywph.supabase.co/rest/v1/gya_ranking",{method:"POST",keepalive:true,headers:{apikey:K,Authorization:"Bearer "+K,"Content-Type":"application/json",Prefer:"return=minimal"},
     body:JSON.stringify({grupo:"embudo_rosa_raw",apodo:"i"+Date.now().toString(36)+Math.random().toString(36).slice(2,7),monedas_totales:0,ciudades_ganadas:0,mejor_racha:0,logros:0,estado_juego:{etapa:"juego",manda:!!(link||!localStorage.getItem("gya_rosa_cap"+ROSA_CAP)),ua:ua.slice(0,200),t:Date.now()},actualizado_en:new Date().toISOString()})}).catch(function(){});}catch(e){}}
   if(link||(anuncio&&!localStorage.getItem("gya_rosa_cap"+ROSA_CAP))){document.documentElement.style.background="#24384a";location.replace("rosa.html"+location.search);}}catch(e){}})();</script>
@@ -12195,9 +12195,9 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="rueda-de-letras-datos.js?v=4"></script>
 <script src="rueda-de-letras-diccionario.js?v=1"></script>
 <script src="rueda-de-letras.js?v=20"></script>
-<script src="palabra-secreta-datos.js?v=3"></script>
+<script src="palabra-secreta-datos.js?v=4"></script>
 <script src="palabra-secreta.js?v=38"></script>
-<script src="rosa.js?v=18"></script>
+<script src="rosa.js?v=19"></script>
 <link rel="stylesheet" href="palabras-cruzadas.css?v=8">
 <script src="palabras-cruzadas-datos.js?v=3"></script>
 <script src="palabras-cruzadas.js?v=18"></script>

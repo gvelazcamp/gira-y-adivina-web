@@ -396,6 +396,12 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa capítulo 3 cargado en el juego (solo con ?cap=3)
+- Qué: CAPITULO_3 en rosa.js: página 2, «Cacho me debe…», clave SIDRA, intentos Pepito LICOR, Nelly GRAPA, Juanchi TINTO (queda _I_RA: SIDRA o BIRRA), pista «Para brindar 🥂». BIRRA agregada a PALABRA_VALIDAS. index.html acepta ?cap=3 (ROSA_CAP). Cartel de rosa.html: «ALMACÉN DOÑA ROSA». El anuncio que corre sigue en el capítulo 1.
+- Por qué: Gonzalo — siguiente fiado, una bebida con duda.
+- Falta: voz y video del capítulo 3 (texto de ElevenLabs en promo/serie-dona-rosa/README.md).
+- Archivos: rosa.js (v19), palabra-secreta-datos.js (v4), index.html, sw.js (cache v779), rosa.html.
+
 ### 08/11/2026 — PENDIENTE: Doña Rosa capítulo 3 «El cobrador»
 - Qué: idea anotada, sin armar. Día 3, mismo almacén con cartel «ALMACÉN DOÑA ROSA»; era YERBA, cobró a Chelo y con los seguidores nuevos junta plata; llega el cobrador con maletín y ella le paga una parte. Detalle en promo/serie-dona-rosa/README.md.
 - Por qué: Gonzalo lo pidió para pensar el capítulo 3; se arma solo cuando lo pida.
