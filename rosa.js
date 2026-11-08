@@ -210,9 +210,9 @@
   function mostrar(){
     estilos();capa=document.createElement("div");capa.id="rosaCapa";capa.setAttribute("role","dialog");capa.setAttribute("aria-label","El almacén de Doña Rosa");
     document.body.appendChild(capa);pintar();document.addEventListener("keydown",teclado,true);
-    /* Instagram a veces carga la página por adelantado sin mostrarla: «llegó» cuenta solo cuando se ve. */
-    if(document.visibilityState!=="hidden")paso("llego");
-    else{const v=()=>{if(document.visibilityState!=="hidden"){document.removeEventListener("visibilitychange",v);paso("llego");}};document.addEventListener("visibilitychange",v);}
+    /* «Llegó» se cuenta apenas se muestra (08/11: el filtro «solo si se ve» dejó el número clavado desde la noche del 07/11;
+       el registro crudo de rosa.html guarda visibilityState para ver si Instagram la carga por adelantado). */
+    paso("llego");
   }
   /* Lo llama el inicio del juego (tutChequearBienvenida): si viene de rosa.html con «¡Sí, quiero jugar!», en vez del
      tutorial va directo a elegir nombre y avatar (si no tiene perfil) y después a Palabra Secreta. */
