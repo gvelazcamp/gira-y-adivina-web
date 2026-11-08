@@ -23,7 +23,7 @@
     gano:"¡La abriste! Ahora Doña Rosa puede cobrar el fiado y el almacén no cierra.",
     perdio:"Doña Rosa todavía no la puede abrir 😢 Mirá cómo sigue en el próximo capítulo."};
   const CAPITULO_2={id:2,clave:"YERBA",
-    intentos:[["Don Tito","PASTA"],["Nelly","TRIGO"],["Pepito","MENTA"]],
+    intentos:[["Don Tito","PASTA"],["Nelly","TRIGO"],["Pepito","TERMA"]],
     titulo:"Capítulo 2 · La libreta del fiado",
     hoja:"PÁGINA 1 · CHELO",          // título de la libreta
     icono:"🧉",                        // arriba a la derecha de la libreta (sin icono: candado 🔒/🔓)

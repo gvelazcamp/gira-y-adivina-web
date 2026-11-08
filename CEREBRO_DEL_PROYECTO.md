@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa capítulo 2: la tercera pista pasa a TERMA
+- Qué: pedido de Gonzalo: que la R quede en verde junto a la E y la A. Pepito ahora prueba TERMA (T gris, E verde, R verde, M gris, A verde; Gonzalo eligió TERMA por parecida a TERMO) en vez de MENTA, en la escena y en CAPITULO_2 de rosa.js (todavía no publicado en la página). La voz grabada decía «menta»: hay que regrabarla.
+- Dónde: promo/serie-dona-rosa/capitulo-2.html, README.md, rosa.js (CAPITULO_2).
+
 ### 08/11/2026 — Pruebas → Anuncio Doña Rosa: se lee bien en el celular
 - Qué: la ventana se salía por la derecha (tabla de errores y palabras muy anchas). Ahora entra en la pantalla: diagnóstico en renglones, errores como tarjetas con el celular resumido, y la tabla de palabras se parte en renglones. Los errores que mete el propio navegador de Instagram/Facebook (Script error., iabjs://…, _AutofillCallbackHandler, Java object is gone) no se guardan ni se muestran: no son del juego.
 - Dónde: index.html (verAnuncioRosa), rosa.html (filtro de errores), sw.js (gya-cache-v773).
