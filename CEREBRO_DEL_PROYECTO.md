@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa: «Guardá tu racha» al sacarla y Palabra Secreta desde el nivel 2
+- Qué: idea de Gonzalo. En la página liviana del anuncio, al sacar la palabra de Doña Rosa (1,2 s después) se abre «🎉 ¡Muy bien! ¿Guardamos tu racha?» (nombre, país, avatar; revisa que el nombre no esté usado). Como ahí no está el juego, queda pendiente (gya_rosa_reg_pend) y index.html crea el perfil al entrar (aplicarRegistroPendiente) y cuenta «se registraron». Doña Rosa cuenta como el nivel 1: el que la sacó entra a Palabra Secreta en el nivel 2 si nunca había jugado (PalabraSecreta.empezarEnNivel). El cartel ya no se repite al ganar en Palabra Secreta. Promo/REGLAS-PROMOCION.md: el registro se ofrece al ganar el juego del anuncio.
+- Dónde: rosa.js (v15), palabra-secreta.js (empezarEnNivel, v38), sw.js (gya-cache-v775), promo/REGLAS-PROMOCION.md.
+
 ### 08/11/2026 — Doña Rosa: botón «💡 Pista» en la libreta
 - Qué: idea de Gonzalo para que más gente se anime a escribir la primera palabra. Arriba a la izquierda de la libreta hay un botón «💡 Pista»; al tocarlo Doña Rosa lo dice en su globo y abajo aparece «💡 Pista: …». Capítulo 1: «Sirve para tomar mate 🧉»; capítulo 2 (sin publicar): «No puede faltar en el mate 🧉» (CAPITULO.pista). Se cuenta en el embudo («pidieron pista»). Entra sin deslizar en 390×680 y 360×600.
 - Dónde: rosa.js (v14), index.html (línea del embudo), sw.js (gya-cache-v774).

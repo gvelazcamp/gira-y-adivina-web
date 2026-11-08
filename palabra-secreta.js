@@ -512,6 +512,8 @@ const PalabraSecreta=(()=>{
   }
   function abrir(contenedor){salir();raiz=contenedor;avisoVisto=false;iniciarNivel();pantalla();tablero();relojUlt=0;relojFila=-1;relojInt=setInterval(relojTic,200);document.addEventListener("visibilitychange",alVisibilidad);window.addEventListener("resize",revisarHorizontal);iniciarMusicaJuego();ayuda();}
   function salir(){clearInterval(relojInt);relojInt=null;detenerEquipo();pararMicrofono();token++;animando=false;if((duelo||colaborativoLobby)&&typeof Duelo!=="undefined")Duelo.salir();duelo=false;colaborativoLobby=false;document.removeEventListener("visibilitychange",alVisibilidad);window.removeEventListener("resize",revisarHorizontal);detenerMusicaJuego();raiz=null;partida=null;borrador="";cursor=null;}
-  return{abrir,salir,tecla,indiceDia,palabraDia,evaluar,rachaActual,nivelActual:()=>datos.nivel,estadisticasGuardadas:()=>({...datos}),textoCompartir};
+  /* Doña Rosa (rosa.js): el que viene del anuncio y la sacó arranca en el nivel 2 si todavía no jugó acá. */
+  function empezarEnNivel(n){if(datos.nivel>=n||datos.jugadas)return false;datos.nivel=n;datos.partidaNivel=null;datos.ganadas=Math.max(1,datos.ganadas);datos.jugadas=Math.max(1,datos.jugadas);datos.racha=Math.max(1,datos.racha);datos.mejorRacha=Math.max(1,datos.mejorRacha);guardar();return true;}
+  return{abrir,salir,tecla,indiceDia,palabraDia,evaluar,rachaActual,empezarEnNivel,nivelActual:()=>datos.nivel,estadisticasGuardadas:()=>({...datos}),textoCompartir};
 })();
 window.PalabraSecreta=PalabraSecreta;
