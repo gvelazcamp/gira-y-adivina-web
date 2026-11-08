@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 08/11/2026 — Doña Rosa capítulo 2: escena final guardada en el proyecto
+- Qué: se reinició el entorno y se perdieron los archivos de trabajo. Se guarda en el repo la escena final del capítulo 2 (pizarra «LOS QUE AYUDARON» con 12 nombres, 2 columnas y deslizado solo con más de 6; tiempos y subtítulos de la voz «La mayoría comentó»; final «más de la mitad de su deuda») y el cierre de 4 s (cierre.html). Regla: lo que haga falta para rehacer un video va al repo, no solo al scratchpad.
+- Dónde: promo/serie-dona-rosa/capitulo-2.html, cierre.html, README.md.
+
 ### 08/11/2026 — Social: el cartel de redes entra sin deslizar
 - Qué: en 👥 Social la imagen «Próximamente en redes» empujaba el botón «Cerrar» fuera de la pantalla. Ahora la imagen se achica según el alto (max-height: calc(86dvh − 300px)) y entran la imagen, el texto y los dos botones sin deslizar (probado en 390×844, 412×780 y 360×640). No toca el deslizado de la página.
 - Dónde: index.html (#capaSocial), sw.js (gya-cache-v769).

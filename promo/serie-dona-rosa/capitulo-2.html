@@ -61,7 +61,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
 #votos ul{list-style:none;display:grid;grid-template-columns:1fr;gap:4px 18px;margin-top:10px;border-top:3px solid #ffffff40;padding-top:12px}
 #votos ul.dos{grid-template-columns:1fr 1fr}
 #votos li{font:800 32px Outfit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#votos ul.dos li{font-size:25px}
+#votos ul.dos{grid-template-rows:repeat(3,auto);grid-auto-flow:column;grid-template-columns:none;gap:4px 22px}#votos ul.dos li{font-size:25px}#votos h5{font-size:38px}#listaMarco{height:130px;overflow:hidden;margin-top:10px;padding-top:8px;border-top:3px solid #ffffff40}#listaMarco #lista{margin-top:0;border-top:0;padding-top:0}#votos ul.mueve{grid-template-rows:none;grid-auto-flow:row;grid-template-columns:1fr 1fr}
 .marco{position:absolute;left:0;right:0;top:450px;height:860px;overflow:hidden}#esc{top:0;height:860px}
 /* puerta que se abre */
 .puerta{background:#1a100a;perspective:600px}
@@ -92,7 +92,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
 #tabB{display:grid;grid-template-rows:repeat(6,96px);gap:10px;justify-content:center}#tabB .fila{grid-template-columns:170px repeat(5,96px)}#tabB .c{width:96px;height:96px;font-size:50px}
 </style></head><body><div id="e">
 <div class="cab"><b>EL ALMACÉN DE DOÑA ROSA</b><small>CAPÍTULO 2 · LA LIBRETA DEL FIADO</small></div>
-<div class="info"><div><small>DÍA 2 · CIERRA EN</small><b id="quedan">2 DÍAS</b><small style="margin-top:6px">VECINOS AYUDANDO</small></div><div id="votos"><h5>VOTARON <span>TERMO</span> <i id="candV" style="font-style:normal">🔒</i></h5><ul id="lista"></ul></div></div>
+<div class="info"><div><small>DÍA 2 · CIERRA EN</small><b id="quedan">2 DÍAS</b><small style="margin-top:6px">VECINOS AYUDANDO</small></div><div id="votos"><h5>LOS QUE <span>AYUDARON</span> <i id="candV" style="font-style:normal">🔒</i></h5><div id="listaMarco"><ul id="lista"></ul></div></div></div>
 <div class="marco"><div id="esc">
  <div class="techo"></div><div class="edif"></div>
  <div class="cartel"><div>ALMACÉN ROSA<small>DESDE 1985</small></div></div>
@@ -118,13 +118,13 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
 </div>
 <script>
 /* ====== LO QUE SE CAMBIA EN CADA CAPÍTULO ====== */
-const VOTARON=["@silvina.martinezok","@matipienia","@santii.yz"];   // los que comentaron TERMO (se cambian sin regrabar la voz)
+const VOTARON=["@silvina.martinezok","@matipienia","@santii.yz","@abrilu_113_","@misteryhoumans269","@ambaragustinaquiroga","@jas_mica6","@15_ele_15","@isx.013","@lufre2","@stadieaylen","@caceres_lautaro"];   // los que comentaron (se cambian sin regrabar la voz). Hasta 6: 3 por columna; más de 6: la lista se desliza sola
 const CLAVE_ANTERIOR="TERMO";
 const JUG=[["Don Tito","PASTA",["gris","gris","gris","gris","verde"]],["Nelly","TRIGO",["gris","amarilla","gris","gris","gris"]],["Pepito","MENTA",["gris","verde","gris","gris","verde"]]];   // pistas de YERBA
 /* ================================================ */
 document.querySelectorAll(".vent").forEach(v=>{const cols=["#d6403a","#F5B301","#2d7a8a","#7b4fa3","#3c9a5f"];for(let f=0;f<3;f++)for(let k=0;k<5;k++){const b=document.createElement("b");b.style.left=(14+k*38)+"px";b.style.top=(24+f*70)+"px";b.style.background=cols[(f+k)%5];v.appendChild(b);}});
 {const it=document.getElementById("int"),cols=["#d6403a","#F5B301","#2d7a8a","#7b4fa3","#3c9a5f","#e58a2a"];for(const [y,h] of [[150,70],[300,80]])for(let k=0;k<15;k++){const b=document.createElement("b");b.className="prod";b.style.left=(80+k*62)+"px";b.style.top=(y-h)+"px";b.style.height=h+"px";b.style.background=cols[(k*7+y)%6];it.insertBefore(b,it.firstChild);}}
-const ul=document.getElementById("lista");if(VOTARON.length>3)ul.classList.add("dos");VOTARON.forEach(n=>{const li=document.createElement("li");li.textContent=n;ul.appendChild(li);});
+const ul=document.getElementById("lista");if(VOTARON.length>6)ul.classList.add("dos","mueve");else if(VOTARON.length>3)ul.classList.add("dos");VOTARON.forEach(n=>{const li=document.createElement("li");li.textContent=n;ul.appendChild(li);});
 function fila(nombre){const d=document.createElement("div");d.className="fila";const n=document.createElement("div");n.className="n";n.textContent=nombre;d.appendChild(n);for(let i=0;i<5;i++){const c=document.createElement("div");c.className="c";d.appendChild(c);}return d;}
 const ANTES=[["Pepito","MATES",["amarilla","gris","amarilla","amarilla","gris"]],["Marta","PERRO",["gris","verde","verde","gris","verde"]],["Juanchi","VERDE",["gris","verde","verde","gris","gris"]]];   // tablero del capítulo 1, tal cual
 {const tA=document.getElementById("tabA");ANTES.forEach(([n,w,col])=>{const f=fila(n);[...f.querySelectorAll(".c")].forEach((c,i)=>{c.textContent=w[i];c.className="c "+col[i];});tA.appendChild(f);});tA.appendChild(fila("Doña Rosa"));tA.appendChild(fila(""));tA.appendChild(fila(""));}
@@ -154,6 +154,8 @@ function pintar(){
   const abierto=T>=TIEMPOS.abre;const ca=document.getElementById("candA");ca.textContent=abierto?"🔓":"🔒";
   ca.style.transform=!abierto&&T>=TIEMPOS.letras[0]?"rotate("+Math.sin(T*(T>=TIEMPOS.verde-0.6?34:10))*(T>=TIEMPOS.verde-0.6?16:5)+"deg)":abierto?"scale("+(1+0.35*Math.max(0,1-(T-TIEMPOS.abre)/0.5))+")":"";
   document.getElementById("candV").textContent=abierto?"🔓":"🔒";
+  /* Más de 6 nombres: la lista se desliza sola dentro de la pizarra (el cuadro no se agranda). */
+  if(ul.classList.contains("mueve")){const m=document.getElementById("listaMarco"),extra=Math.max(0,ul.scrollHeight-m.clientHeight+12),dur=extra/30,ciclo=dur+5;const t=(T%ciclo);const y=t<2?0:t<2+dur?(t-2)*30:extra;ul.style.transform="translateY("+(-y)+"px)";}
   const g=T>=TIEMPOS.gracias&&T<TIEMPOS.gracias+2.2?1+0.04*Math.sin((T-TIEMPOS.gracias)*8):1;document.getElementById("votos").style.transform="scale("+g+")";
   [...document.querySelectorAll("#lista li")].forEach((li,k)=>{li.style.color=T>=TIEMPOS.gracias+k*0.3&&T<TIEMPOS.gracias+2.4?"#F5C451":"";});
   /* página de Chelo: el polvo se va soplando, menos sobre la mercadería */
@@ -162,8 +164,8 @@ function pintar(){
   JUG.forEach(([n,w,col],k)=>{const t0=TIEMPOS["j"+k];nombres[k].style.opacity=T>=t0-0.3?1:0;filas[k].forEach((c,i)=>voltear(c,w[i],col[i],t0+i*0.18,t0+1.1+i*0.18));});
   for(let k=JUG.length;k<filas.length;k++){nombres[k].style.opacity=T>=TIEMPOS.pregunta?1:0;filas[k].forEach((c,i)=>{c.textContent=T>=TIEMPOS.pregunta?"?":"";c.className="c"+(T>=TIEMPOS.pregunta?" q":"");c.style.transform=T>=TIEMPOS.pregunta&&k===JUG.length?"scale("+(1+0.07*Math.sin(T*6+i))+")":"";});}
 }
-const TOTAL=45.0;
-TIEMPOS={camina:0.3,llega:2.1,abre_p:2.2,entra:2.8,adentro:3.8,piz:5.85,letras:[7.62,8.42,9.28,10.28,11.21],verde:11.45,abre:12.12,gracias:14.14,pagina:16.4,sopla:19.92,j0:25.84,j1:29.25,j2:32.9,pregunta:36.67};
-SUBS=[[0,1.43,"Es el <em>día dos</em>."],[1.43,3.6,"Doña Rosa, con la ayuda de sus <em>nuevos amigos</em>,"],[3.6,5.85,"va a intentar abrir el <em>candado</em>."],[5.85,7.62,"Ustedes votaron <em>TERMO</em>."],[7.62,8.42,"T…"],[8.42,9.28,"T… E…"],[9.28,10.28,"T… E… R…"],[10.28,11.21,"T… E… R… M…"],[11.21,12.04,"T… E… R… M… O…"],[12.04,13.0,"¡Se <em>abrió</em>!"],[13.0,14.14,"¡Era <em>TERMO</em>!"],[14.14,16.26,"<em>Gracias</em> a todos los que comentaron."],[16.26,19.92,"Pero después de tres meses, la libreta está llena de <em>polvo</em>."],[19.92,23.78,"Su primer cliente es <em>Chelo</em>: le debe <em>$ 30.000</em> de…"],[23.78,25.84,"algo que el polvo <em>no deja leer</em>."],[25.84,29.25,"<em>Don Tito</em> probó PASTA: solo la A, al final."],[29.25,32.9,"<em>Nelly</em> probó TRIGO: la R está, pero en otro lugar."],[32.9,36.67,"Y <em>Pepito</em> probó MENTA: la E y la A, en su lugar."],[36.67,37.78,"¿Qué le debe <em>Chelo</em>?"],[37.78,38.64,"<em>Comentalo.</em>"],[38.64,45,"Si cobra, Doña Rosa paga parte de su <em>primer mes</em> de alquiler."]];
+const TOTAL=46.0;
+TIEMPOS={camina:0.3,llega:2.1,abre_p:2.2,entra:2.8,adentro:3.8,piz:6.07,letras:[8.11,8.96,9.92,10.95,11.96],verde:12.1,abre:12.68,gracias:14.78,pagina:16.95,sopla:20.31,j0:26.49,j1:29.97,j2:33.72,pregunta:37.47};
+SUBS=[[0,1.52,"Es el <em>día dos</em>."],[1.52,4.1,"Doña Rosa, con la ayuda de sus <em>nuevos amigos</em>,"],[4.1,6.07,"va a intentar abrir el <em>candado</em>."],[6.07,8.11,"La mayoría comentó <em>TERMO</em>."],[8.11,8.96,"T…"],[8.96,9.92,"T… E…"],[9.92,10.95,"T… E… R…"],[10.95,11.96,"T… E… R… M…"],[11.96,12.68,"T… E… R… M… O…"],[12.68,13.64,"¡Se <em>abrió</em>!"],[13.64,14.78,"¡Era <em>TERMO</em>!"],[14.78,16.84,"<em>Gracias</em> a todos los que comentaron."],[16.84,20.31,"Pero después de tres meses, la libreta está llena de <em>polvo</em>."],[20.31,24.33,"Su primer cliente es <em>Chelo</em>: le debe <em>$ 30.000</em> de…"],[24.33,26.49,"algo que el polvo <em>no deja leer</em>."],[26.49,29.97,"<em>Don Tito</em> probó PASTA: solo la A, al final."],[29.97,33.72,"<em>Nelly</em> probó TRIGO: la R está, pero en otro lugar."],[33.72,37.47,"Y <em>Pepito</em> probó MENTA: la E y la A, en su lugar."],[37.47,38.59,"¿Qué le debe <em>Chelo</em>?"],[38.59,39.48,"<em>Comentalo.</em>"],[39.48,46,"Si cobra, Doña Rosa paga <em>más de la mitad</em> de su deuda."]];
 pintar();
 </script></body></html>

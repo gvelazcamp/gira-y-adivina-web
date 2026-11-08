@@ -20,6 +20,7 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 - Palabra: **YERBA**. Pistas (pedidas por Gonzalo): Don Tito PASTA (A verde al final), Nelly TRIGO (R amarilla), Pepito MENTA (E y A verdes). Queda _E__A con R. (TERMA no vale: T y M grises.)
 - Pizarra «VOTARON TERMO» con los que comentaron (sin cantidad): @silvina.martinezok, @matipienia, @santii.yz. Se cambian en `VOTARON` de `capitulo-2.html` sin regrabar la voz (la voz no dice nombres).
 - Si cobra, Doña Rosa paga parte de su primer mes de alquiler.
+- Pizarra «LOS QUE AYUDARON» (todos los que comentaron, voten lo que voten): hasta 6 nombres en 2 columnas de 3; con más de 6 la lista se desliza sola dentro de la pizarra (el cuadro no crece). Voz final: «La mayoría comentó TERMO… paga más de la mitad de su deuda» (46 s), sin música de fondo. Cierre de 4 s: `cierre.html`.
 - Escena `capitulo-2.html` (voz de 45 s + cierre de 4 s = 49 s).
 
 ## Lo que sigue (plan acordado)
