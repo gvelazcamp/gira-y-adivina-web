@@ -25,8 +25,9 @@ ver `serie-dona-rosa/README.md`).
 - Al seguir en el navegador: **sin pedir el nombre**, directo al juego (ej. Palabra Secreta), sin tutorial.
 
 ## 5. El registro se pide después, en el mejor momento
-- Al ganar su primera partida: «🎉 ¡Muy bien! ¿Guardamos tu racha?» con nombre + país + avatar en una sola ventana,
-  una sola vez, con «Ahora no, sigo jugando». Nunca bloquea.
+- Al ganar el juego del anuncio (ej. sacar la palabra de Doña Rosa): «🎉 ¡Muy bien! ¿Guardamos tu racha?» con nombre +
+  país + avatar en una sola ventana, una sola vez, con «Ahora no, sigo jugando». Nunca bloquea.
+- Lo que ganó en el anuncio cuenta como avance en el juego (Doña Rosa = nivel 1 de Palabra Secreta: sigue en el nivel 2).
 
 ## 6. Se mide cada paso
 - Embudo en Supabase (`gya_ranking`, un grupo por campaña, una fila por visitante y capítulo): llegó (solo si la página

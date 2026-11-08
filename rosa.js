@@ -177,7 +177,9 @@
       if(mios[mios.length-1]===CAPITULO.clave){fin="gano";paso("gano");}
       else if(mios.length>=3){fin="perdio";paso("perdio");}
       ls.set(K_VISTO,fin||"jugando");pintar();
-      if(fin==="gano"){try{if(typeof sonarSFX==="function")sonarSFX("aplausos");}catch(e){}}
+      if(fin==="gano"){try{if(typeof sonarSFX==="function")sonarSFX("aplausos");}catch(e){}
+        /* Gonzalo (08/11): al sacar Doña Rosa ya se ofrece guardar la racha (Doña Rosa cuenta como nivel 1 de Palabra Secreta). */
+        if(SOLA&&!tienePerfil()&&!ls.get("gya_rosa_reg_visto")){ls.set("gya_rosa_reg_visto","1");paso("reg_ofrecido");setTimeout(registroRapido,1200);}}
       return;
     }
     if(/^[A-ZÑ]$/.test(t)&&borrador.length<5){borrador+=t;pintar();}
@@ -212,7 +214,7 @@
       if((!tienePerfil()&&!ls.get("gya_rosa_directo"))||!window.Extensiones||document.readyState!=="complete")return;
       clearInterval(t);ls.del(K_IR);ls.del("gya_rosa_directo");
       if(ls.get("gya_rosa_sinperfil")&&tienePerfil()){ls.del("gya_rosa_sinperfil");paso("registro");}
-      setTimeout(()=>{try{Extensiones.abrirJuego("palabra-secreta");paso("palabra");}catch(e){}},400);
+      nivelDosPalabra();setTimeout(()=>{try{Extensiones.abrirJuego("palabra-secreta");paso("palabra");}catch(e){}},400);
     },500);
   }
   function mostrar(){
@@ -247,7 +249,7 @@
   function registroRapido(){
     if(tienePerfil()||document.getElementById("rosaReg"))return;
     let nombre="",pais=null,avatar=null,todos=false;
-    const lista=(typeof AVATARES!=="undefined"?AVATARES:[]).filter(a=>a!=="avatar-22");
+    const lista=(typeof AVATARES!=="undefined"?AVATARES:Array.from({length:21},(_,i)=>"avatar-"+String(i+1).padStart(2,"0")).concat(["avatar-33","avatar-42","avatar-43","avatar-44","avatar-45","avatar-46","avatar-47","avatar-48","avatar-49","avatar-50","avatar-51","avatar-52","avatar-53","avatar-54"])).filter(a=>a!=="avatar-22");
     const c=document.createElement("div");c.id="rosaReg";c.setAttribute("role","dialog");
     if(!document.getElementById("rosaRegEstilos")){const st=document.createElement("style");st.id="rosaRegEstilos";st.textContent=`
 #rosaReg{position:fixed;inset:0;z-index:2147482500;background:#0b0614c4;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:max(16px,env(safe-area-inset-top)) 14px 16px;font-family:Outfit,system-ui,sans-serif}
@@ -290,18 +292,42 @@
       const n=nombre.trim().slice(0,12);if(!n||!pais||!avatar)return;
       try{if(typeof nombrePerfilAutomatico==="function"&&nombrePerfilAutomatico(n)){msj("Elegí un nombre propio, distinto de "+n+".");return;}}catch(e){}
       const b=c.querySelector("#rrOk");b.disabled=true;b.textContent="Guardando…";
-      let libre=true;try{if(typeof nombrePerfilDisponible==="function")libre=await nombrePerfilDisponible(n);}catch(e){}
+      if(SOLA&&/^jugador\s*\d*$/i.test(n)){b.textContent="💾 Guardar mi partida";listo();msj("Elegí un nombre propio.");return;}
+      let libre=true;try{if(typeof nombrePerfilDisponible==="function")libre=await nombrePerfilDisponible(n);
+        else{const sb=typeof obtenerSupa==="function"?obtenerSupa():null;if(sb){const q=await sb.from("gya_ranking").select("apodo").in("grupo",["usuarios","global"]).ilike("apodo",String(n).replace(/[\\%_]/g,"\\$&")).limit(1);libre=!(q.data&&q.data.length);}}}catch(e){}
       if(!libre){b.textContent="💾 Guardar mi partida";listo();msj("Ese nombre ya lo usa otro jugador. Probá otro, por ej. "+n+"2.");return;}
+      /* En la página liviana no está el juego: se guarda pendiente y index.html crea el perfil al entrar (aplicarRegistroPendiente). */
+      if(SOLA){ls.set("gya_rosa_reg_pend",JSON.stringify({n,a:avatar,p:pais}));c.remove();
+        const g=capa&&capa.querySelector(".ro-globo");if(g)g.textContent="¡Gracias, "+n+"! 💜";return;}
       try{guardarPerfil(n,avatar,pais,"");try{mapaPaisForzado=null;sincronizarMundoActivo();}catch(e){}}catch(e){b.textContent="💾 Guardar mi partida";listo();msj("No se pudo guardar, probá de nuevo.");return;}
       c.remove();if(ls.get("gya_rosa_sinperfil")){ls.del("gya_rosa_sinperfil");}paso("registro");
       try{if(typeof mostrarToast==="function")mostrarToast("✅","¡Listo, "+n+"! Tu partida quedó guardada.");}catch(e){}
     }
     pintarR();document.body.appendChild(c);
   }
+  /* index.html: crea el perfil que se eligió en la página liviana (cuando ya cargó todo el juego). */
+  function aplicarRegistroPendiente(){
+    if(SOLA||!ls.get("gya_rosa_reg_pend"))return;
+    let n=0;const t=setInterval(()=>{
+      if(++n>240){clearInterval(t);return;}
+      if(typeof guardarPerfil!=="function"||document.readyState!=="complete")return;
+      clearInterval(t);let d=null;try{d=JSON.parse(ls.get("gya_rosa_reg_pend"));}catch(e){}ls.del("gya_rosa_reg_pend");
+      if(!d||!d.n||tienePerfil())return;
+      try{guardarPerfil(d.n,d.a,d.p,"");try{mapaPaisForzado=null;sincronizarMundoActivo();}catch(e){}ls.del("gya_rosa_sinperfil");paso("registro");
+        if(typeof mostrarToast==="function")mostrarToast("✅","¡Listo, "+d.n+"! Tu partida quedó guardada.");}catch(e){}
+    },500);
+  }
+  /* Doña Rosa cuenta como el nivel 1 de Palabra Secreta: el que la sacó arranca en el nivel 2 (si no había jugado). */
+  function nivelDosPalabra(){
+    try{if(!pasos().gano)return;if(window.PalabraSecreta&&PalabraSecreta.empezarEnNivel){PalabraSecreta.empezarEnNivel(2);return;}const K="gya_palabra_secreta";let d={};try{d=JSON.parse(localStorage.getItem(K)||"{}")||{};}catch(e){d={};}
+      if((d.nivel||1)>=2||(d.jugadas||0)>0)return;
+      d.nivel=2;d.partidaNivel=null;d.ganadas=Math.max(1,d.ganadas||0);d.jugadas=Math.max(1,d.jugadas||0);d.racha=Math.max(1,d.racha||0);d.mejorRacha=Math.max(1,d.mejorRacha||0);
+      localStorage.setItem(K,JSON.stringify(d));}catch(e){}
+  }
   function arrancar(){
     if(SOLA){mostrar();const ya=()=>setTimeout(precargarJuego,1500);if(document.readyState==="complete")ya();else window.addEventListener("load",ya);return;}
     if(q.get("norosa")==="1"){try{q.delete("norosa");const t=q.toString();history.replaceState(null,"",location.pathname+(t?"?"+t:""));}catch(e){}}
-    irAPalabra();vigilarRegistro();
+    aplicarRegistroPendiente();irAPalabra();vigilarRegistro();
     /* Si llegó por el anuncio y después se hizo el perfil, se anota su nombre. */
     setTimeout(()=>{const p=pasos();if(p.llego&&tienePerfil()&&p.nombre!==perfil.nombre)subir(p);},4000);
     if(!fuente||location.search.indexOf("norosa")>=0)return;
