@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — IDEA: Doña Rosa y el Puzzle (la foto de los nietos)
+- Qué: anotada en promo/serie-dona-rosa/IDEAS.md y README (reemplaza la de la foto de 1985).
+
 ### 09/11/2026 — IDEA: Doña Rosa y el Ahorcado (cartel de la oferta con tiza)
 - Qué: anotada en promo/serie-dona-rosa/IDEAS.md y README. Pizarra de tiza afuera, letras borradas, palabra ambigua (PASTA/PALTA) y juegan al ahorcado.
 

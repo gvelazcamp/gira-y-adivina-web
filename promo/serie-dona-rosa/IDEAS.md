@@ -28,9 +28,11 @@ El almacén hace un sorteo y Doña Rosa gira la ruleta. Aparece una frase con le
 ### 🔤 El cartel de la oferta → Ahorcado *(idea elegida)*
 Afuera del almacén está la pizarra de la oferta del día, escrita con tiza. Se borraron algunas letras y la palabra queda ambigua, para que se discuta (ej.: PA_TA → ¿PASTA o PALTA?, las dos son comida). Doña Rosa y un vecino juegan al ahorcado para descubrirla antes de que se complete el muñeco, y el público comenta cuál es la oferta.
 
+### 🧩 La foto de los nietos → Puzzle *(idea elegida)*
+Doña Rosa tiene colgada en la pared del almacén una foto de sus nietos. Se cae y se rompe, y ahí arranca a rearmarla como un rompecabezas. Las piezas se van poniendo de a poco y hay que adivinar qué muestra la foto (dónde están o qué están haciendo) antes de que se complete. El público comenta su respuesta.
+
 ## Otras ideas posibles (no elegidas todavía)
 - **Duelo de Conocimiento:** abre un súper nuevo en la esquina y su dueño desafía a Doña Rosa a un duelo de preguntas.
 - **Sopa Fugaz:** se cae el estante y hay que encontrar 3 productos entre el lío de letras.
 - **Frases en Giro:** el refrán de la abuela en un cuadro viejo, con palabras que faltan.
 - **Memoria en Giro:** ¿qué vecino se llevó qué cosa?
-- **Puzzle:** la foto rota de la inauguración del almacén en 1985.
