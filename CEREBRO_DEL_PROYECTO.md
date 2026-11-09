@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Doña Rosa: IDEAS.md con el resumen de todas las historias
+- Qué: promo/serie-dona-rosa/IDEAS.md resume, para contarlo, todas las historias (hechas e ideas) y a qué juego lleva cada una.
+
 ### 09/11/2026 — IDEA: Doña Rosa y la ruleta (sorteo del barrio)
 - Qué: anotada, sin armar. El almacén hace un sorteo, Doña Rosa gira la ruleta y hay una frase con letras tapadas para completar; lleva al juego principal.
 
