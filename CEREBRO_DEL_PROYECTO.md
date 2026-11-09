@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Doña Rosa: todos los videos guardados en el repo
+- Qué: regla de Gonzalo: todos los videos de Doña Rosa van a promo/serie-dona-rosa/videos/ (también las pruebas sin voz). Se sumaron el capítulo 3 y el diario del domingo sin voz.
+
 ### 09/11/2026 — Tutti Frutti de Doña Rosa: video con la voz
 - Qué: tutti-frutti.html ajustado a la voz de ElevenLabs (36 s): escena 32,3 s + cierre del Tutti Frutti 4,6 s. Video, voz y cierre en promo/serie-dona-rosa/videos/. Sin publicar hasta que Gonzalo lo pida.
 
