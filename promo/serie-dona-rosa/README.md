@@ -43,7 +43,8 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
   4. Lo que está en juego es **mucha plata para arreglar el local** (puede cerrar la historia de la deuda y abrir la de arreglar el almacén).
   5. La página del anuncio sería una versión liviana del Rosco con solo esa última palabra (1–2 s de carga), y después lleva a Rosco Rioplatense.
   - Nombre (Gonzalo, 09/11): el programa se llama **«El Gran Rosco Rioplatense»**, igual que nuestro juego (así el que lo ve sabe a qué jugar después). «Rosco» es palabra común; lo único que no se copia del programa real de la tele es su nombre, logo, decorado, música y presentador.
-  - Estado: IDEA para más adelante, no armar hasta que lo pida.
+  - Escena de prueba sin voz (09/11): `especial-tele.html` (sobre por abajo de la puerta → invitación → estudio con el rosco de letras → falta la Z: «Animal del campo, astuto y de cola larga», _ _ _ _ _ → pozo $ 500.000 para el almacén). Tiempos estimados.
+  - Estado: IDEA para más adelante; no publicar hasta que Gonzalo lo pida.
 
 ## Lo que sigue (plan acordado)
 1. **Capítulo 2:** «¡La descubrieron! Era TERMO». Se abre el candado 🔓 y la libreta muestra la primera página: «Me debe: _ _ _ _ _».
