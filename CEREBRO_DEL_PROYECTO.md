@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Doña Rosa: firma @gira_y_adivina
+- Qué: las escenas (capítulo 2 y 3, tele, diario, Tutti Frutti, Ahorcado) firman @gira_y_adivina (la cuenta real); el capítulo 2 se regrabó con la voz. El capítulo 1 (ya publicado) queda igual. Los videos de la tele y el Tutti Frutti se regraban cuando se vayan a publicar.
+
 ### 09/11/2026 — Social: imagen nueva y Instagram tocable
 - Qué: el cartel de Social usa la imagen nueva assets/social/promo-redes-v2.webp («Enterate todas las novedades en…», mismas esquinas redondeadas). Encima del logo de Instagram hay un link invisible (#socialIg) que abre https://www.instagram.com/girayadivina/. Nombre nuevo porque assets/ es cache-first.
 - Archivos: index.html, assets/social/promo-redes-v2.webp, sw.js (cache v789). La cuenta correcta es @gira_y_adivina (instagram.com/gira_y_adivina/), corregido el mismo día (cache v790).
