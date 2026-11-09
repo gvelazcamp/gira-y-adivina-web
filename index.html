@@ -5469,6 +5469,8 @@ function tiendaAdminPrepararItemsFijos(){
 }
 $("bSocial").onclick=$("bSocialGrande").onclick=()=>{
   $("socialCiudadInfo").textContent="Tu avance: "+miAvanceMapa()+". Acá ves por qué ciudad del juego va cada persona, no dónde vive.";
+  /* «Ver el avance de los jugadores» (la lista de TODOS los usuarios) es solo para Gonzalo (09/11): los demás ven el cartel y «Cerrar». */
+  $("socialContinuar").style.display=esGonzalo()?"":"none";
   $("capaSocial").classList.add("ver");
 };
 $("bLogrosMini").onclick=lgAbrir;
@@ -5630,6 +5632,7 @@ function haceCuanto(t){
   const d=Math.round(h/24);return d===1?"ayer":"hace "+d+" días";
 }
 function usrAbrir(){
+  if(!esGonzalo())return;   /* la lista de todos los usuarios es solo para Gonzalo */
   $("capaUsuarios").classList.add("ver");usrCargarLista.reintento=false;
   $("usrAgregar").style.display=esGonzalo()?"":"none";
   regRespaldoEscuchar();
