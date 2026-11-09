@@ -99,6 +99,8 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
 #deuda p{font:800 38px Outfit}#deuda p b{color:#F5C451}
 #vecinos{height:80px;margin-top:14px;font-size:58px;letter-spacing:6px}
 #seguir{display:inline-block;margin-top:18px;padding:18px 40px;border-radius:40px;background:linear-gradient(#ff4fa3,#E5197C);color:#fff;font:900 44px Outfit;box-shadow:0 8px 0 #8E0F4C;opacity:0}
+#regalo{position:absolute;left:60px;right:60px;top:470px;padding:20px 26px;border-radius:26px;background:linear-gradient(#ffe27a,#F5B301);border:5px solid #fff3c4;color:#3a1a00;font:900 33px/1.18 Outfit;text-align:center;box-shadow:0 0 0 7px #E5197C,0 18px 40px #000b;opacity:0;z-index:9}
+#regalo b{font-family:"Archivo Black",sans-serif;color:#c2185b}
 </style></head><body><div id="e">
 <div class="cab"><b>EL ALMACÉN DE DOÑA ROSA</b><small>CAPÍTULO 2 · LA LIBRETA DEL FIADO</small></div>
 <div class="info"><div><small>DÍA 2 · CIERRA EN</small><b id="quedan">2 DÍAS</b><small style="margin-top:6px">VECINOS AYUDANDO</small></div><div id="votos"><h5>LOS QUE <span>AYUDARON</span> <i id="candV" style="font-style:normal">🔒</i></h5><div id="listaMarco"><ul id="lista"></ul></div></div></div>
@@ -124,6 +126,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
  <div class="pag" id="pB"><h4>PÁGINA 1 · CHELO</h4><p class="deuda">Chelo me debe: <span class="tapado"></span></p><div id="tabB"></div><div id="polvoB"></div></div>
 </div>
 <div id="deuda"><h4>DEUDA DE DOÑA ROSA</h4><div class="barra"><i id="deudaFill"></i></div><p id="deudaTxt">Chelo y otros vecinos: <b>más de $ 30.000</b></p><div id="vecinos"></div><div id="seguir">👤 Seguí la historia</div></div>
+<div id="regalo">🎁 ¿Te registraste en el juego y lo resolviste?<br>Mandanos tu usuario y <b>Doña Rosa te regala 🪙 100 monedas</b> para usar en el juego.</div>
 <div id="sub"></div><div id="firma">@girayadivina</div>
 </div>
 <script>
@@ -173,6 +176,8 @@ function pintar(){
    const nv=T<TIEMPOS.vecinos?0:Math.min(8,1+Math.floor((T-TIEMPOS.vecinos)/0.8));document.getElementById("vecinos").textContent="👤".repeat(nv);
    const sg=document.getElementById("seguir");const b2=ease(cl((T-TIEMPOS.seguir)/0.4,0,1));sg.style.opacity=b2;sg.style.transform="scale("+(b2*(1+0.05*Math.sin(T*7)))+")";
    document.getElementById("piz").style.filter=a>0?"brightness("+(1-0.45*a)+")":"";}
+  /* Regalo de 100 monedas (Gonzalo, 09/11): aparece en el final, debajo de la deuda. */
+  {const rg=document.getElementById("regalo"),ra=ease(cl((T-TIEMPOS.vecinos-0.5)/0.4,0,1));rg.style.opacity=ra;rg.style.transform="scale("+(ra*(1+0.025*Math.sin(T*5)))+")";}
   const g=T>=TIEMPOS.gracias&&T<TIEMPOS.gracias+2.2?1+0.04*Math.sin((T-TIEMPOS.gracias)*8):1;document.getElementById("votos").style.transform="scale("+g+")";
   [...document.querySelectorAll("#lista li")].forEach((li,k)=>{li.style.color=T>=TIEMPOS.gracias+k*0.3&&T<TIEMPOS.gracias+2.4?"#F5C451":"";});
   /* página de Chelo: el polvo se va soplando, menos sobre la mercadería */
