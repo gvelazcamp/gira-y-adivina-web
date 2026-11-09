@@ -396,6 +396,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Invitar a amigos: 18 juegos (Puzzle en pareja y modos en equipo)
+- Qué: el selector suma Puzzle en pareja (puzzle.html crea la sala con el código de la invitación: parent.gyaPuzzleCrear; el invitado entra con gyaPuzzleInvitacion), Palabra Secreta / Sopa Fugaz / Palabras Cruzadas / Línea del tiempo en equipo, 100 Rioplatenses, Silabario, Frases en Giro, Memoria en Giro, Rueda de Letras (id «letras» → duelo «rueda»), Línea del tiempo y Moon Tap. La grilla se desliza adentro de la ventana. La partida principal sigue viajando como juego «rueda» (compatible con la versión anterior).
+- Falta: Duelo de Conocimiento (usa otro sistema de salas).
+- Archivos: index.html, puzzle.html (v52), puzzle.js (v52), sw.js (cache v786).
+
 ### 09/11/2026 — Invitar a un amigo eligiendo el juego
 - Qué: en «Mis amigos» (y en Usuarios de Gonzalo) «Invitar a jugar» abre «¿A qué querés invitar a X?» con Girá y Adiviná, Tutti Frutti, Palabra Secreta, Sopa Fugaz, Ahorcado y El Rosco. Rueda = invEnviar de siempre; Tutti = TuttiFrutti.crearParaInvitar (crea la sala y manda el código); los demás = Duelo.invitarCon(juego, sala, anfitrión). El aviso va por el tema MQTT de invitaciones con {juego, sala}; al invitado le aparece «X te invitó a jugar» con el ícono y nombre del juego, y al aceptar entra directo a esa sala.
 - Probado con conexión simulada: selector, envío del aviso y ventana del invitado. Falta probarlo entre dos celulares de verdad.

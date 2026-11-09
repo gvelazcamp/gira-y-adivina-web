@@ -837,10 +837,11 @@ async function entrarSala(c,ej,nuevo){
   pendientes=[];bloquearControles(true);menuModo();$('#win').classList.add('hide');$('#seguir').classList.add('hide');
   if(ej.d)await seguir(ej.d,true);
   updateStats();pintarChat();conectarRed();if(!coop.elegido&&!nuevo)abrirElegir();return guardarSala()}
-async function crearSala(){
+async function crearSala(cod){
   if(!supa()){estadoPj('Para jugar cooperativo necesitás internet');return}
   estadoPj('Creando la sala…');
-  const c=Array.from({length:5},()=>CHS[Math.floor(Math.random()*CHS.length)]).join('');
+  /* cod: código que eligió la invitación desde «Mis amigos» (09/11); si no, uno nuevo */
+  const c=(typeof cod==='string'&&/^[A-Z0-9]{5}$/.test(cod))?cod:Array.from({length:5},()=>CHS[Math.floor(Math.random()*CHS.length)]).join('');
   const ok=await entrarSala(c,{nombres:[],act:Date.now()},true);
   if(!ok){salirSala(null,false,true);estadoPj('No se pudo crear la sala. Revisá tu internet.');return}
   cerrarPj();verInvitar()}
@@ -1171,7 +1172,7 @@ if(ES_TV_PUZZLE){
   addEventListener('message',e=>{if(e.source===parent&&e.origin===location.origin)tvEntrada(e.data)});
   resize();tvPost('listo',{catalogo:tvCatalogo,guardado:ES_VER?false:!!leerGuardado()});
 }else{
-  resize();const d=leerGuardado();let inv=null;try{inv=parent.gyaPuzzleInvitacion;parent.gyaPuzzleInvitacion=null}catch(_){}if(inv){abrirPj();$('#pjCodigo').value=inv;unirse(inv)}else if(d)ofrecerSeguir(d);else newGame();
+  resize();const d=leerGuardado();let inv=null,crea=null;try{inv=parent.gyaPuzzleInvitacion;parent.gyaPuzzleInvitacion=null;crea=parent.gyaPuzzleCrear;parent.gyaPuzzleCrear=null}catch(_){}if(crea){newGame();crearSala(crea)}else if(inv){abrirPj();$('#pjCodigo').value=inv;unirse(inv)}else if(d)ofrecerSeguir(d);else newGame();
   /* "Cómo jugar" sale siempre al entrar (regla de Gonzalo), salvo con invitación. */
   if($('#pareja').classList.contains('hide'))verTuto();
 }

@@ -1550,7 +1550,7 @@ body:not(.tvhost) #horizontalAyuda{display:none}
 
 <div class="capa" id="capaInvJuego"><div class="caja" style="max-width:380px">
   <h2 style="font-size:1.35rem">¿A qué querés invitar a <span id="ijNombre" style="color:#F5C451"></span>?</h2>
-  <div id="ijGrilla" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0"></div>
+  <div id="ijGrilla" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0;max-height:58dvh;overflow-y:auto;padding:2px"></div>
   <button class="no" id="ijCancelar" style="width:100%;border-radius:14px;padding:12px;font-weight:700">Cancelar</button>
 </div></div>
 
@@ -9296,9 +9296,15 @@ function invConectar(){
 /* Invitar a un amigo eligiendo el juego (Gonzalo, 09/11). «rueda» = partida de Girá y Adiviná (invEnviar, como siempre);
    «tutti» = sala de Tutti Frutti; el resto son duelos 1 vs 1 de duelo-extensiones.js (Duelo.invitarCon). El aviso
    viaja por el mismo tema MQTT de invitaciones con {juego, sala}; el invitado entra directo a esa sala. */
-const INV_JUEGOS=[{id:"rueda",n:"Girá y Adiviná",i:"assets/logo.webp"},{id:"tutti",n:"Tutti Frutti",i:"logo-tutti-frutti.svg"},{id:"palabra",n:"Palabra Secreta",i:"assets/palabra-secreta/logo.webp"},
-  {id:"sopa",n:"Sopa Fugaz",i:"assets/sopa/logo.webp"},{id:"ahorcado",n:"Ahorcado",i:"logo-ahorcado-rioplatense.svg"},{id:"rosco",n:"El Rosco",i:"assets/rosco/logo.webp"}];
-const invJuegoDe=id=>INV_JUEGOS.find(j=>j.id===id)||INV_JUEGOS[0];
+const INV_JUEGOS=[{id:"gya",n:"Girá y Adiviná",i:"assets/logo.webp"},{id:"tutti",n:"Tutti Frutti",i:"logo-tutti-frutti.svg"},{id:"puzzle",n:"Puzzle en pareja",i:"logo-puzzle.svg"},
+  {id:"palabra",n:"Palabra Secreta",i:"assets/palabra-secreta/logo.webp"},{id:"palabra-colaborativa",n:"Palabra Secreta en equipo",i:"assets/palabra-secreta/logo.webp"},
+  {id:"cruzadas-colab",n:"Palabras Cruzadas en equipo",i:"assets/palabras-cruzadas/logo-v2.webp"},{id:"sopa",n:"Sopa Fugaz",i:"assets/sopa/logo.webp"},{id:"sopa-colab",n:"Sopa Fugaz en equipo",i:"assets/sopa/logo.webp"},
+  {id:"rosco",n:"El Rosco",i:"assets/rosco/logo.webp"},{id:"ahorcado",n:"Ahorcado",i:"logo-ahorcado-rioplatense.svg"},{id:"cien",n:"100 Rioplatenses",i:"logo-cien-rioplatenses.svg"},
+  {id:"silabario",n:"Silabario",i:"logo-silabario-rioplatense.svg"},{id:"frases",n:"Frases en Giro",i:"logo-frases-en-giro.svg"},{id:"memoria",n:"Memoria en Giro",i:"logo-memoria-en-giro.svg"},
+  {id:"letras",n:"Rueda de Letras",i:"logo-rueda-de-letras.svg",duelo:"rueda"},{id:"linea",n:"Línea del tiempo",i:"assets/linea-tiempo/logo.webp"},{id:"linea-colab",n:"Línea del tiempo en equipo",i:"assets/linea-tiempo/logo.webp"},
+  {id:"moon",n:"Moon Tap",i:"logo-moon-tap.webp"}];
+/* «rueda» (o sin juego) = partida de Girá y Adiviná: así llamaba la versión anterior a la partida principal. */
+const invJuegoDe=id=>INV_JUEGOS.find(j=>j.id===id)||INV_JUEGOS[0];   /* «rueda»/vacío → Girá y Adiviná */
 function invElegirJuego(apodoDestino){
   $("ijNombre").textContent=apodoDestino;const g=$("ijGrilla");g.innerHTML="";
   INV_JUEGOS.forEach(j=>{const b=document.createElement("button");b.className="no";b.style.cssText="padding:8px 4px;border-radius:16px;font-size:.78rem;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1.15";
@@ -9313,10 +9319,12 @@ function invPublicar(apodoDestino,datos){
 }
 function invEnviarJuego(apodoDestino,juego){
   ["capaAmigos","capaUsuarios","capaSocial"].forEach(id=>$(id).classList.remove("ver"));
-  if(juego==="rueda"){invEnviar(apodoDestino);return;}
+  if(juego==="gya"||juego==="rueda"){invEnviar(apodoDestino);return;}
   if(juego==="tutti"){if(window.TuttiFrutti)TuttiFrutti.crearParaInvitar(sala=>invPublicar(apodoDestino,{juego,sala}));return;}
-  const CH="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",sala=Array.from({length:4},()=>CH[Math.floor(Math.random()*CH.length)]).join("");
-  if(window.Duelo&&Duelo.invitarCon(juego,sala,true,apodoDestino))invPublicar(apodoDestino,{juego,sala});
+  const CH="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",cod=n=>Array.from({length:n},()=>CH[Math.floor(Math.random()*CH.length)]).join("");
+  if(juego==="puzzle"){const sala=cod(5);window.gyaPuzzleCrear=sala;if(window.Extensiones)Extensiones.abrirJuego("puzzle");invPublicar(apodoDestino,{juego,sala});return;}
+  const sala=cod(4),j=invJuegoDe(juego);
+  if(window.Duelo&&Duelo.invitarCon(j.duelo||juego,sala,true,apodoDestino))invPublicar(apodoDestino,{juego,sala});
 }
 function invEnviar(apodoDestino){
   $("capaUsuarios").classList.remove("ver");
@@ -9337,7 +9345,8 @@ $("invAceptar").onclick=()=>{
   $("capaUsuarios").classList.remove("ver");$("capaSocial").classList.remove("ver");$("capaMas").classList.remove("ver");$("capaAmigos").classList.remove("ver");
   const jg=p.juego||"rueda";
   if(jg==="tutti"){if(window.TuttiFrutti)TuttiFrutti.abrirInvitacion(p.sala,p.de);return;}
-  if(jg!=="rueda"){if(window.Duelo)Duelo.invitarCon(jg,p.sala,false,p.de);return;}
+  if(jg==="puzzle"){window.gyaPuzzleInvitacion=p.sala;if(window.Extensiones)Extensiones.abrirJuego("puzzle");return;}
+  if(jg!=="rueda"&&jg!=="gya"){const j=invJuegoDe(jg);if(window.Duelo)Duelo.invitarCon(j.duelo||jg,p.sala,false,p.de);return;}
   unirse(p.sala);
 };
 $("invRechazar").onclick=()=>{
@@ -12371,7 +12380,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="contra-reloj-rioplatense-online.js?v=12"></script>
 <script src="contra-reloj-rioplatense.js?v=12"></script>
 <script src="moon-tap.js?v=6"></script>
-<script src="puzzle.js?v=51"></script>
+<script src="puzzle.js?v=52"></script>
 <script src="pantalla-fija.js?v=12"></script>
 <link rel="stylesheet" href="compartir-resultado.css?v=1">
 <script src="compartir-resultado.js?v=6"></script>
