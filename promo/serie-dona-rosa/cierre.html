@@ -12,10 +12,13 @@ p{position:absolute;left:0;right:0;top:790px;font:900 46px Outfit;color:#FCEFD2}
 .url{position:absolute;left:80px;right:80px;top:1560px;padding:28px 0;border-radius:28px;background:#F5C451;color:#1d2f40;font:900 64px "Archivo Black",sans-serif}
 .ga{position:absolute;left:50%;bottom:50px;transform:translateX(-50%);width:200px}
 </style></head><body><div id="e">
-<img class="logo" src="../../assets/palabra-secreta/logo.webp" alt="">
+<img class="logo" id="logo" src="../../assets/palabra-secreta/logo.webp" alt="">
 <h1>¿TE ANIMÁS<br>A JUGAR VOS?</h1>
-<p>Jugá a Palabra Secreta en</p>
+<p id="juega">Jugá a Palabra Secreta en</p>
 <img class="giro" src="../../presentacion-y-locucion-extensiones/Giro/Giro_festejando_cuerpo.webp" alt="">
 <div class="url">www.girayadivina.com</div>
 <img class="ga" src="../../assets/logo.webp" alt="">
-</div></body></html>
+</div>
+<script>/* ?juego=rosco: cierre del especial en la tele (Gonzalo, 09/11) */
+if(new URLSearchParams(location.search).get("juego")==="rosco"){const l=document.getElementById("logo");l.src="../../assets/rosco/logo.webp";l.style.width="350px";l.style.top="130px";document.getElementById("juega").textContent="Jugá al Rosco Rioplatense en";}</script>
+</body></html>
