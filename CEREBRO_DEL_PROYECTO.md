@@ -396,6 +396,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Invitación de amigos por WhatsApp más linda
+- Qué: el link ahora es invitacion.html?amigo=<nombre> (página que redirige a index.html con el mismo ?amigo) con su propia vista previa: imagen assets/compartir/og-invitacion.jpg («¡Te invitaron a jugar!», Giro festejando, logo; se arma con promo/invitacion/og-invitacion.html) y título «🎮 ¡Te invitaron a jugar Girá y Adiviná!». Mensaje nuevo con negritas de WhatsApp y la firma de quien invita.
+- Ojo: WhatsApp guarda en memoria la vista previa de cada link; si se cambia la imagen, cambiarle el nombre.
+- Archivos: invitacion.html, assets/compartir/og-invitacion.jpg, promo/invitacion/og-invitacion.html, index.html, sw.js (cache v784).
+
 ### 09/11/2026 — Social: «👥 Mis amigos» para cada jugador (tipo Plato)
 - Qué: el cartel de Social tiene «Seguir ›» y «Volver». «Seguir» abre «👥 Mis amigos»: solo los amigos de ese jugador, con conectado/visto hace X y «Invitar a jugar» (invEnviar, igual que Gonzalo). «➕ Invitar amigos por WhatsApp» manda el link ?amigo=<nombre>; el que entra por ahí y tiene o crea su perfil queda amigo de los dos sin aceptar (tocar el link ya es aceptar). Amistades en gya_ranking grupo "amigos" (apodo «a|b» normalizado, estado_juego {a,b,ka,kb}) + copia local gya_amigos. Gonzalo sigue teniendo «Ver el avance de los jugadores» (todos).
 - Pendiente: buscar amigos por nombre (con solicitud y aceptación) si Gonzalo lo pide.
