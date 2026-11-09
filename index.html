@@ -5226,6 +5226,40 @@ function chequearCambioEstadoJuego(){
 estadoJuegoUltimaFirma=firmaEstadoJuego();
 setInterval(chequearCambioEstadoJuego,2500);
 setTimeout(()=>{empujarRanking();empujarUsuario();},4000);
+/* Regalos de monedas (Gonzalo, 09/11): al que resuelve un juego de Doña Rosa y le manda su usuario, Gonzalo le regala
+   monedas desde 👥 Usuarios (🎁). Queda una fila en gya_ranking (grupo "regalos", apodo r_<hora>) con {para, monedas};
+   el juego de esa persona la busca al abrir, suma las monedas UNA sola vez (marca en el celular y reclamado:true en el
+   servidor) y avisa. Son monedas del juego: si alguien se fabrica un regalo no es grave. */
+const REGALOS_GRUPO="regalos",K_REGALOS="gya_regalos_cobrados";
+async function regalosDe(supa){const r=await supa.from("gya_ranking").select("apodo,estado_juego,actualizado_en").eq("grupo",REGALOS_GRUPO).order("actualizado_en",{ascending:false}).limit(1000);
+  return((r&&r.data)||[]).map(f=>{let e=f.estado_juego;if(typeof e==="string"){try{e=JSON.parse(e);}catch(x){e=null;}}return{apodo:f.apodo,e:e||{},cuando:f.actualizado_en};});}
+async function regalarMonedas(para,n){
+  const supa=obtenerSupa();if(!supa||!esGonzalo()){mostrarToast("⚠️","Sin conexión con el servidor");return;}
+  let antes=[];try{antes=(await regalosDe(supa)).filter(x=>usrClave(x.e.para)===usrClave(para));}catch(e){}
+  const aviso=antes.length?"\n\nOjo: ya le regalaste "+antes.length+" vez/veces (la última el "+new Date(antes[0].cuando).toLocaleDateString("es-UY")+").":"";
+  if(!confirm("¿Regalarle "+n+" monedas a "+para+"?"+aviso))return;
+  let err=null;
+  try{const r=await supa.from("gya_ranking").upsert({grupo:REGALOS_GRUPO,apodo:"r_"+Date.now().toString(36),monedas_totales:n,ciudades_ganadas:0,mejor_racha:0,logros:0,
+    estado_juego:{para:String(para),monedas:n,de:"Doña Rosa",t:Date.now(),reclamado:false},actualizado_en:new Date().toISOString()},{onConflict:"grupo,apodo"});err=r&&r.error;}catch(e){err=e;}
+  mostrarToast(err?"⚠️":"🎁",err?"No se pudo regalar: "+String(err.message||err).slice(0,60):"Listo: "+para+" recibe "+n+" monedas la próxima vez que abra el juego.","Regalo");
+}
+async function reclamarRegalos(){
+  const supa=obtenerSupa();if(!supa||!perfilExiste())return;
+  try{
+    const mia=usrClave(perfil.nombre);let hechos={};try{hechos=JSON.parse(localStorage.getItem(K_REGALOS)||"{}")||{};}catch(e){}
+    for(const x of await regalosDe(supa)){
+      if(x.e.reclamado||hechos[x.apodo]||usrClave(x.e.para)!==mia)continue;
+      const n=Math.max(0,Math.min(1000,parseInt(x.e.monedas,10)||0));if(!n)continue;
+      hechos[x.apodo]=Date.now();try{localStorage.setItem(K_REGALOS,JSON.stringify(hechos));}catch(e){}
+      sumarMonedas(n);
+      mostrarToast("🎁","¡Doña Rosa te regaló "+n+" monedas! 🪙","Regalo");
+      try{await supa.from("gya_ranking").upsert({grupo:REGALOS_GRUPO,apodo:x.apodo,monedas_totales:n,ciudades_ganadas:0,mejor_racha:0,logros:0,
+        estado_juego:Object.assign({},x.e,{reclamado:true,cobrado:Date.now()}),actualizado_en:new Date().toISOString()},{onConflict:"grupo,apodo"});}catch(e){}
+    }
+  }catch(e){}
+}
+setTimeout(reclamarRegalos,6000);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")reclamarRegalos();});
 document.addEventListener("visibilitychange",()=>{
   if(document.visibilityState==="hidden"){empujarRanking();empujarUsuario();}
 });
@@ -5563,6 +5597,12 @@ async function usrCargarLista(){
           if(err)mostrarToast("⚠️","Sacado solo en tu celular (el servidor falló: "+String(err.message||err).slice(0,60)+")");
         };
         d.appendChild(x);
+        /* 🎁 solo para Gonzalo (09/11): regala 100 monedas al que resolvió un juego de Doña Rosa y le mandó su usuario. */
+        const g=document.createElement("button");
+        g.className="no";g.textContent="🎁";g.title="Regalar 100 monedas";
+        g.style.cssText="flex-shrink:0;margin-left:6px;padding:8px 11px;font-size:.85rem;border-radius:10px";
+        g.onclick=()=>regalarMonedas(f.apodo,100);
+        d.appendChild(g);
       }
     }
     cont.appendChild(d);
