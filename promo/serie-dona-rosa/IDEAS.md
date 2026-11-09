@@ -31,8 +31,10 @@ Afuera del almacén está la pizarra de la oferta del día, escrita con tiza. Se
 ### 🧩 La foto de los nietos → Puzzle *(idea elegida)*
 Doña Rosa tiene colgada en la pared del almacén una foto de sus nietos. Se abre la puerta, entra un viento fuerte y la foto se cae y se rompe; y ahí arranca a rearmarla como un rompecabezas. Las piezas se van poniendo de a poco y hay que adivinar qué muestra la foto (dónde están o qué están haciendo) antes de que se complete. El público comenta su respuesta.
 
+### 🔍 Se cayó el estante → Sopa Fugaz *(idea elegida)*
+Se cae un estante y toda la mercadería queda revuelta en el piso, como una sopa de letras chica. Doña Rosa ya encontró casi todo (las palabras aparecen tachadas) y le faltan 3 productos, cada uno con una pista: «algo para el mate», «algo para la ensalada», «algo para limpiar». Tiene que encontrarlos antes de que entre el primer cliente (cuenta regresiva, como el «fugaz» del juego). El público comenta las 3 palabras. No es el juego completo: solo la sopa chica con las 3 que faltan.
+
 ## Otras ideas posibles (no elegidas todavía)
 - **Duelo de Conocimiento:** abre un súper nuevo en la esquina y su dueño desafía a Doña Rosa a un duelo de preguntas.
-- **Sopa Fugaz:** se cae el estante y hay que encontrar 3 productos entre el lío de letras.
 - **Frases en Giro:** el refrán de la abuela en un cuadro viejo, con palabras que faltan.
 - **Memoria en Giro:** ¿qué vecino se llevó qué cosa?
