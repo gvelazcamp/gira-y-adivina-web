@@ -1479,8 +1479,9 @@ body:not(.tvhost) #horizontalAyuda{display:none}
     <!-- Sin deslizar (08/11/2026, Gonzalo): la imagen se achica para que entren el texto y los dos botones. -->
     <img src="assets/social/promo-redes.webp" alt="Girá y Adiviná Rioplatense en redes" style="display:block;max-width:100%;max-height:calc(86dvh - 300px);width:auto;height:auto;object-fit:contain;border-radius:14px;margin:0 auto 12px" loading="lazy">
     <p class="sub" id="socialCiudadInfo" style="margin:0 0 8px"></p>
+    <button class="btn-grande" id="socialAmigos" style="margin-bottom:10px">Seguir ›</button>
     <button class="btn-grande" id="socialContinuar" style="margin-bottom:10px">Ver el avance de los jugadores</button>
-    <button class="no" id="socialCerrar" style="width:100%;border-radius:12px;padding:13px;font-weight:700">Cerrar</button>
+    <button class="no" id="socialCerrar" style="width:100%;border-radius:12px;padding:13px;font-weight:700">Volver</button>
   </div>
 </div>
 
@@ -1536,6 +1537,15 @@ body:not(.tvhost) #horizontalAyuda{display:none}
   <p class="estado" id="usrEstado" style="margin-top:8px"></p>
   <button class="no" id="usrAgregar" style="display:none;width:100%;border-radius:14px;padding:12px;font-weight:700;margin-top:10px">➕ Agregar jugador a Social</button>
   <button class="no" id="usrCerrar" style="width:100%;border-radius:14px;padding:13px;font-weight:700;margin-top:10px">Cerrar</button>
+</div></div>
+
+<div class="capa" id="capaAmigos"><div class="caja rk-caja">
+  <h2>👥 Mis amigos<span id="amgTotal" class="usr-total" hidden></span></h2>
+  <p class="sub" style="margin:6px 0 14px">Los que invitaste vos o los que te invitaron. Desde acá los invitás a una partida.</p>
+  <div class="rk-lista" id="amgLista"></div>
+  <p class="estado" id="amgEstado" style="margin-top:8px"></p>
+  <button class="btn-grande" id="amgInvitarWpp" style="margin-top:10px">➕ Invitar amigos por WhatsApp</button>
+  <button class="no" id="amgVolver" style="width:100%;border-radius:14px;padding:13px;font-weight:700;margin-top:10px">Volver</button>
 </div></div>
 
 <div class="capa" id="capaInvitacion"><div class="caja" style="max-width:340px">
@@ -5468,7 +5478,7 @@ function tiendaAdminPrepararItemsFijos(){
   });
 }
 $("bSocial").onclick=$("bSocialGrande").onclick=()=>{
-  $("socialCiudadInfo").textContent="Tu avance: "+miAvanceMapa()+". Acá ves por qué ciudad del juego va cada persona, no dónde vive.";
+  $("socialCiudadInfo").textContent="Tu avance: "+miAvanceMapa()+". Tocá «Seguir» para ver a tus amigos e invitarlos a jugar.";
   /* «Ver el avance de los jugadores» (la lista de TODOS los usuarios) es solo para Gonzalo (09/11): los demás ven el cartel y «Cerrar». */
   $("socialContinuar").style.display=esGonzalo()?"":"none";
   $("capaSocial").classList.add("ver");
@@ -5479,6 +5489,67 @@ $("torneosCerrar").onclick=()=>$("capaTorneos").classList.remove("ver");
 $("torneosEntrar").onclick=torneoEntrar;
 $("socialCerrar").onclick=()=>$("capaSocial").classList.remove("ver");
 $("socialContinuar").onclick=()=>{$("capaSocial").classList.remove("ver");usrAbrir();};
+/* Mis amigos (Gonzalo, 09/11): cada jugador tiene su propia lista, tipo Plato. Se hacen amigos por el link de WhatsApp
+   (?amigo=<nombre>): el que entra por ese link y tiene (o crea) su perfil queda de amigo de los dos sin otra aceptación
+   (tocar el link ya es aceptar). Cada amistad es una fila en gya_ranking grupo "amigos" (apodo = los dos nombres
+   normalizados y ordenados), estado_juego {a, b, ka, kb}. Desde la lista se invita a una partida con invEnviar, como hace Gonzalo. */
+const AMIGOS_GRUPO="amigos",K_AMIGO_PEND="gya_amigo_pend",K_AMIGOS="gya_amigos";
+try{const qa=new URLSearchParams(location.search).get("amigo");if(qa)localStorage.setItem(K_AMIGO_PEND,qa.slice(0,40));}catch(e){}
+function amigosLocales(){try{return JSON.parse(localStorage.getItem(K_AMIGOS)||"[]")||[];}catch(e){return [];}}
+function amigosGuardarLocal(lista){try{localStorage.setItem(K_AMIGOS,JSON.stringify([...new Set(lista)].slice(0,500)));}catch(e){}}
+async function amigosAplicarPendiente(){
+  let otro=null;try{otro=localStorage.getItem(K_AMIGO_PEND);}catch(e){}
+  if(!otro||!perfilExiste())return;
+  const supa=obtenerSupa();if(!supa)return;
+  const yo=perfil.nombre,ky=usrClave(yo),ko=usrClave(otro);
+  if(!ko||ko===ky){try{localStorage.removeItem(K_AMIGO_PEND);}catch(e){}return;}
+  const [a,b]=ky<ko?[yo,otro]:[otro,yo];
+  try{const r=await supa.from("gya_ranking").upsert({grupo:AMIGOS_GRUPO,apodo:usrClave(a)+"|"+usrClave(b),monedas_totales:0,ciudades_ganadas:0,mejor_racha:0,logros:0,
+      estado_juego:{a,b,ka:usrClave(a),kb:usrClave(b),t:Date.now()},actualizado_en:new Date().toISOString()},{onConflict:"grupo,apodo"});
+    if(r&&r.error)return;}catch(e){return;}
+  try{localStorage.removeItem(K_AMIGO_PEND);}catch(e){}
+  amigosGuardarLocal(amigosLocales().concat([otro]));
+  mostrarToast("🤝","Ahora sos amigo de "+otro+". Lo ves en Social → Seguir.","Amigos");
+}
+setTimeout(amigosAplicarPendiente,5000);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")amigosAplicarPendiente();});
+async function amigosCargar(){
+  const cont=$("amgLista");cont.innerHTML="";$("amgEstado").textContent="Cargando…";
+  const supa=obtenerSupa(),ky=usrClave(perfil.nombre);let nombres=amigosLocales();
+  if(supa){try{
+    const q=campo=>supa.from("gya_ranking").select("estado_juego").eq("grupo",AMIGOS_GRUPO).filter("estado_juego->>"+campo,"eq",ky).limit(500);
+    const [r1,r2]=await Promise.all([q("ka"),q("kb")]);const srv=[];
+    ((r1&&r1.data)||[]).forEach(f=>srv.push(f.estado_juego&&f.estado_juego.b));((r2&&r2.data)||[]).forEach(f=>srv.push(f.estado_juego&&f.estado_juego.a));
+    nombres=nombres.concat(srv.filter(Boolean));amigosGuardarLocal(nombres);}catch(e){}}
+  const vistos=new Map();nombres.forEach(n=>{const k=usrClave(n);if(k&&k!==ky&&!vistos.has(k))vistos.set(k,n);});
+  const filas={};
+  if(supa&&vistos.size){try{const r=await supa.from("gya_ranking").select("apodo,avatar,actualizado_en").eq("grupo",USR_GRUPO).in("apodo",[...vistos.values()]);((r&&r.data)||[]).forEach(f=>filas[usrClave(f.apodo)]=f);}catch(e){}}
+  const AHORA=Date.now();
+  [...vistos.entries()].forEach(([k,n])=>{
+    const f=filas[k]||{},nom=f.apodo||n,t=f.actualizado_en?new Date(f.actualizado_en).getTime():0,online=t&&(AHORA-t)<180000;
+    const d=document.createElement("div");d.className="rk-fila";
+    d.innerHTML=(f.avatar?'<span class="rk-avatar-wrap"><img class="rk-avatar" src="assets/avatars/'+rkEsc(f.avatar)+'.webp" alt="">'+(online?'<span class="rk-online-dot"></span>':'')+'</span>':'')+
+      '<div class="rk-info"><b>'+rkEsc(nom)+'</b><span>'+(online?"🟢 Conectado":t?"⚪ Visto "+haceCuanto(t):"⚪ Todavía sin datos")+'</span></div>';
+    const b=document.createElement("button");b.className="no";b.textContent="Invitar a jugar";
+    b.style.cssText="flex-shrink:0;margin-left:8px;padding:8px 12px;font-size:.78rem;border-radius:10px";
+    b.onclick=()=>{$("capaAmigos").classList.remove("ver");invEnviar(nom);};
+    d.appendChild(b);cont.appendChild(d);
+  });
+  const tt=$("amgTotal");tt.textContent=vistos.size;tt.hidden=!vistos.size;
+  $("amgEstado").textContent=vistos.size?"":"Todavía no tenés amigos acá. Invitá a alguien por WhatsApp: cuando entre con tu link, aparece en esta lista.";
+}
+function amigosAbrir(){
+  $("capaSocial").classList.remove("ver");
+  if(!perfilExiste()){abrirPerfil(()=>amigosAbrir(),true);return;}
+  $("capaAmigos").classList.add("ver");amigosCargar();
+}
+$("socialAmigos").onclick=amigosAbrir;
+$("amgVolver").onclick=()=>{$("capaAmigos").classList.remove("ver");$("capaSocial").classList.add("ver");};
+$("amgInvitarWpp").onclick=()=>{
+  const url=location.origin+location.pathname+"?amigo="+encodeURIComponent(perfil.nombre);
+  const t="¡Sumate a Girá y Adiviná! Entrá con este link y quedamos como amigos para jugar partidas juntos 🎡\n"+url;
+  window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");
+};
 /* Social trae a todos los usuarios de a 1000 (Supabase devuelve como
    máximo 1000 filas por pedido: antes, los que quedaban más allá en orden
    alfabético no aparecían). Y en vez del respaldo completo de cada uno
@@ -8245,6 +8316,7 @@ function guardarPerfil(nombre,avatar,pais,ciudad){
   logroDesbloquear("avatar");
   empujarUsuario();
   empujarRanking();
+  setTimeout(()=>{try{amigosAplicarPendiente();}catch(e){}},2000);   /* entró por el link de un amigo y recién creó el perfil */
   setTimeout(()=>{try{regRespaldoPublicar();}catch(e){}},40000);
 }
 let avatarElegido=null,paisElegido=null,perfilCallback=null,previsualizandoPerfil=false,perfilObligatorio=false,perfilEdicionDirecta=false,perfilPasoActual="nombre";
@@ -9228,7 +9300,7 @@ $("invAceptar").onclick=()=>{
   const p=invPendiente;invPendiente=null;
   $("capaInvitacion").classList.remove("ver");
   if(!p||!p.sala)return;
-  $("capaUsuarios").classList.remove("ver");$("capaSocial").classList.remove("ver");$("capaMas").classList.remove("ver");
+  $("capaUsuarios").classList.remove("ver");$("capaSocial").classList.remove("ver");$("capaMas").classList.remove("ver");$("capaAmigos").classList.remove("ver");
   unirse(p.sala);
 };
 $("invRechazar").onclick=()=>{
