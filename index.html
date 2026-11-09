@@ -5546,8 +5546,9 @@ function amigosAbrir(){
 $("socialAmigos").onclick=amigosAbrir;
 $("amgVolver").onclick=()=>{$("capaAmigos").classList.remove("ver");$("capaSocial").classList.add("ver");};
 $("amgInvitarWpp").onclick=()=>{
-  const url=location.origin+location.pathname+"?amigo="+encodeURIComponent(perfil.nombre);
-  const t="¡Sumate a Girá y Adiviná! Entrá con este link y quedamos como amigos para jugar partidas juntos 🎡\n"+url;
+  /* invitacion.html tiene su propia vista previa linda en WhatsApp («¡Te invitaron a jugar!») y redirige al juego. */
+  const url=location.origin+location.pathname.replace(/[^/]*$/,"")+"invitacion.html?amigo="+encodeURIComponent(perfil.nombre);
+  const t="🎡 ¡Hola! Te invito a jugar conmigo a *Girá y Adiviná Rioplatense* 🇺🇾🇦🇷\n\nEntrá con mi link y quedamos como *amigos* para jugar partidas juntos 👇\n"+url+"\n\n— "+perfil.nombre+" 💜";
   window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");
 };
 /* Social trae a todos los usuarios de a 1000 (Supabase devuelve como
