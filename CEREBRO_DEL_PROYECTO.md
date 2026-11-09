@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — IDEA: Doña Rosa y el diario del domingo (Palabras Cruzadas)
+- Qué: anotada, sin armar. Doña Rosa hace el crucigrama del diario; un cliente le apuesta pagarle la deuda si lo completa; faltan 1–2 palabras y ayudan los seguidores. Regla: la protagonista es Doña Rosa y los clientes pueden tener cualquier nombre. Detalle en promo/serie-dona-rosa/README.md.
+
 ### 09/11/2026 — PENDIENTE: el especial en la tele podría ser el capítulo 4
 - Qué: el video «Doña Rosa en la tele» (El Gran Rosco Rioplatense, premio $ 200.000, comodín del público) queda guardado en promo/serie-dona-rosa/videos/ como posible capítulo 4. Gonzalo decide después; no publicar ni armar la página del anuncio hasta que lo pida.
 
