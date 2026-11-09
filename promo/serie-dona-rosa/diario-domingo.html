@@ -166,7 +166,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
 #seguir{top:1180px;white-space:nowrap}
 </style></head><body><div id="e">
 <div class="cab"><b>EL ALMACÉN DE DOÑA ROSA</b><small>ESPECIAL · EL DIARIO DEL DOMINGO</small></div>
-<div class="info"><div><small>APUESTA CON</small><b id="quien">DON RAMÓN</b><small style="margin-top:6px">SI LO COMPLETA, PAGA TODO</small></div><div id="votos"><h5>LOS QUE <span>AYUDARON</span> 💜</h5><div id="listaMarco"><ul id="lista"></ul></div></div></div>
+<div class="info"><div><small>APUESTA CON</small><b id="quien">DON RAMÓN</b><small style="margin-top:6px">MÁS SEGUIDORES + CRUCIGRAMA = PAGA TODO</small></div><div id="votos"><h5>LOS QUE <span>AYUDARON</span> 💜</h5><div id="listaMarco"><ul id="lista"></ul></div></div></div>
 <div class="marco"><div id="int">
  <div class="cartelIn"><div>ALMACÉN DOÑA ROSA<small>DESDE 1985</small></div></div>
  <div class="est" style="top:260px"></div><div class="est" style="top:410px"></div>
@@ -178,11 +178,11 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
  <div id="caja"><div class="pant">$</div><div class="botones"></div></div>
  <div id="diar"><b>EL DIARIO · DOMINGO</b><i></i><i></i><i></i></div>
  <div id="cob"><div class="mal"></div><div class="pier"></div><div class="zap"></div><div class="saco"></div><div class="cami"></div><div class="corb"></div><div class="cara"></div><div class="bigote"></div><div class="som"></div></div>
- <div id="globo2"></div><div id="globoR">¡Trato hecho! 🤝</div>
+ <div id="globo2"></div><div id="globoR">¡Por favor, gente,<br>síganme! 🙏</div>
 </div></div>
 <div id="cruci"><h4>CRUCIGRAMA<small>EL DIARIO DEL BARRIO · DOMINGO</small></h4><div id="grilla"></div></div>
 <div id="pista"><small>HORIZONTAL · 8 LETRAS</small><p>Se come con puré, y a la napolitana es un clásico.</p></div>
-<div id="seguir">👤 Seguí la historia</div>
+<div id="seguir">👤 Seguí a @girayadivina</div>
 <div id="sub"></div><div id="firma">@girayadivina</div>
 </div>
 <script>
@@ -199,7 +199,7 @@ const celdas={},orden=[];const gr=document.getElementById("grilla");
 function celda(f,c){const k=f+","+c;if(!celdas[k]){const d=document.createElement("div");d.className="cx";d.style.left=(c*72)+"px";d.style.top=(f*72)+"px";gr.appendChild(d);celdas[k]={d,l:""};}return celdas[k];}
 PUESTAS.forEach(([w,f,c,o],wi)=>[...w].forEach((l,i)=>{const x=celda(o==="h"?f:f+i,o==="h"?c+i:c);x.l=l;orden.push([x,wi]);}));
 const faltan=[...FALTA[0]].map((l,i)=>celda(FALTA[1],FALTA[2]+i));
-let T=0,SUBS=[],TIEMPOS={};
+let T=0,SUBS=[],TIEMPOS={diario:3.0,cliente:6.0,apuesta:8.5,trato:12.5,cruci:15.0,falta:18.0,pista:20.5,cruce:24.5,seguir:32.0};
 const cl=(x,a,b)=>Math.max(a,Math.min(b,x)),ease=t=>1-Math.pow(1-t,3),io=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 function ventana(a,z,fi,fo){return Math.min(ease(cl((T-a)/(fi||0.5),0,1)),ease(cl((z-T)/(fo||0.4),0,1)));}
 function pintar(){
@@ -209,7 +209,7 @@ function pintar(){
   document.getElementById("hojaIn").style.transform="rotateY("+(80*ease(cl((T-TIEMPOS.cliente)/0.7,0,1)))+"deg)";
   const cb=document.getElementById("cob"),ce=cl((T-TIEMPOS.cliente-0.3)/1.3,0,1);cb.style.opacity=cl((T-TIEMPOS.cliente-0.2)/0.3,0,1);cb.style.left=(870-110*io(ce))+"px";
   cb.style.transform="translateY("+(ce>0&&ce<1?-Math.abs(Math.sin(T*9))*10:-Math.abs(Math.sin(T*2.5))*3)+"px)";
-  const g2=document.getElementById("globo2");g2.innerHTML="Si completás el crucigrama,<br>te pago <b style='color:#c43'>todo lo que te debo</b>.";g2.style.opacity=T>=TIEMPOS.apuesta&&T<TIEMPOS.trato?1:0;g2.style.left="380px";g2.style.top="200px";
+  const g2=document.getElementById("globo2");g2.innerHTML="Si te siguen <b style='color:#2d7a8a'>más vecinos</b><br>en Girá y Adiviná y completás<br>el crucigrama, te pago <b style='color:#c43'>todo</b>.";g2.style.opacity=T>=TIEMPOS.apuesta&&T<TIEMPOS.trato?1:0;g2.style.left="400px";g2.style.top="120px";g2.style.whiteSpace="nowrap";g2.style.fontSize="30px";
   const gr2=document.getElementById("globoR");gr2.style.opacity=T>=TIEMPOS.trato&&T<TIEMPOS.cruci?1:0;gr2.style.transform="scale("+(1+0.05*Math.sin(T*8))+")";
   /* crucigrama */
   const cr=document.getElementById("cruci"),ca=ease(cl((T-TIEMPOS.cruci)/0.5,0,1));cr.style.opacity=ca;cr.style.transform="scale("+(0.85+0.15*ca)+")";
@@ -223,8 +223,8 @@ function pintar(){
   const sg=document.getElementById("seguir");const b2=ease(cl((T-TIEMPOS.seguir)/0.4,0,1));sg.style.opacity=b2;sg.style.transform="scale("+(b2*(1+0.05*Math.sin(T*7)))+")";
   if(ul.classList.contains("mueve")){const m=document.getElementById("listaMarco"),extra=Math.max(0,ul.scrollHeight-m.clientHeight+12),d2=extra/30,ciclo=d2+5;const t=(T%ciclo);const y=t<2?0:t<2+d2?(t-2)*30:extra;ul.style.transform="translateY("+(-y)+"px)";}
 }
-const TOTAL=33.0;   /* ESTIMADO sin voz */
-TIEMPOS={diario:3.0,cliente:6.0,apuesta:8.5,trato:12.0,cruci:14.0,falta:17.0,pista:19.5,cruce:23.5,seguir:31.0};
-SUBS=[[0,3.0,"Domingo en el almacén de <em>Doña Rosa</em>."],[3.0,6.0,"Entre cliente y cliente, hace el <em>crucigrama del diario</em>."],[6.0,8.5,"Entra <em>Don Ramón</em>, que le debe hace meses."],[8.5,12.0,"«Si completás el crucigrama, te pago <em>todo lo que te debo</em>.»"],[12.0,14.0,"¡<em>Trato hecho</em>!"],[14.0,17.0,"Doña Rosa completa <em>casi todo</em>…"],[17.0,19.5,"pero le falta <em>una palabra</em>."],[19.5,23.5,"Ocho letras: se come con puré, y <em>a la napolitana</em> es un clásico."],[23.5,26.0,"La <em>N</em> ya la tiene: se cruza con <em>TANGO</em>."],[26.0,28.5,"Si la saca, Don Ramón <em>paga toda su deuda</em>."],[28.5,31.0,"¿Cuál es? <em>Comentá</em> tu respuesta."],[31.0,33.0,"<em>Seguí las historias</em> de Doña Rosa."]];
+const TOTAL=34.0;   /* ESTIMADO sin voz */
+TIEMPOS={diario:3.0,cliente:6.0,apuesta:8.5,trato:12.5,cruci:15.0,falta:18.0,pista:20.5,cruce:24.5,seguir:32.0};
+SUBS=[[0,3.0,"Domingo en el almacén de <em>Doña Rosa</em>."],[3.0,6.0,"Entre cliente y cliente, hace el <em>crucigrama del diario</em>."],[6.0,8.5,"Entra <em>Don Ramón</em>, que le debe hace meses."],[8.5,10.5,"«Si te siguen <em>más vecinos</em> en Girá y Adiviná…"],[10.5,12.5,"…y completás el crucigrama, te pago <em>todo lo que te debo</em>.»"],[12.5,15.0,"«¡Por favor, gente, <em>síganme</em> para que Don Ramón me pague!»"],[15.0,18.0,"Doña Rosa completa <em>casi todo</em>…"],[18.0,20.5,"pero le falta <em>una palabra</em>."],[20.5,24.5,"Ocho letras: se come con puré, y <em>a la napolitana</em> es un clásico."],[24.5,27.0,"La <em>N</em> ya la tiene: se cruza con <em>TANGO</em>."],[27.0,29.5,"Si la saca y llegan los seguidores, Don Ramón <em>paga toda su deuda</em>."],[29.5,32.0,"¿Cuál es? <em>Comentá</em> tu respuesta."],[32.0,34.0,"<em>Seguí a @girayadivina</em> para ayudarla."]];
 pintar();
 </script></body></html>

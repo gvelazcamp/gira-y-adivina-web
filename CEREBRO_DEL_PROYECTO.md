@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Diario del domingo: la apuesta pide seguidores
+- Qué: Don Ramón paga si Doña Rosa completa el crucigrama y la siguen más vecinos en Girá y Adiviná (sin poner cantidad, pedido de Gonzalo); ella pide «¡Por favor, gente, síganme!». Final: «Seguí a @girayadivina para ayudarla». Prueba sin voz.
+
 ### 09/11/2026 — Diario del domingo: escena de prueba sin voz
 - Qué: promo/serie-dona-rosa/diario-domingo.html (Don Ramón apuesta su deuda; falta MILANESA, cruza con TANGO en la N) y cierre.html?juego=cruzadas (Palabras Cruzadas). Solo idea/prueba.
 
