@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Tutti Frutti de Doña Rosa: video con la voz
+- Qué: tutti-frutti.html ajustado a la voz de ElevenLabs (36 s): escena 32,3 s + cierre del Tutti Frutti 4,6 s. Video, voz y cierre en promo/serie-dona-rosa/videos/. Sin publicar hasta que Gonzalo lo pida.
+
 ### 09/11/2026 — Tutti Frutti: «Para matar el rato… ¿jugamos?» «¡Dale!»
 - Qué: en tutti-frutti.html Doña Rosa propone «Para matar el rato… ¿jugamos un Tutti Frutti?» y Don Ramón contesta «¡Dale!» antes de sortear la letra. Prueba sin voz.
 
