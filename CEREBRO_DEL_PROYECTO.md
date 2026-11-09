@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Cierre de Doña Rosa con el Rosco
+- Qué: cierre.html acepta `?juego=rosco` (logo de El Rosco y «Jugá al Rosco Rioplatense en»); lo usa el especial en la tele. Sin parámetro sigue Palabra Secreta.
+
 ### 09/11/2026 — Especial en la tele: comodín del público
 - Qué: especial-tele.html suma «👥 COMODÍN DEL PÚBLICO» (contesta lo que más comenten los que siguen a Girá y Adiviná) y termina con «Seguí a @girayadivina y comentá tu respuesta». Sigue siendo idea/prueba sin voz.
 
