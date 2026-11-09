@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — IDEA: Doña Rosa y Sopa Fugaz (se cayó el estante)
+- Qué: anotada en promo/serie-dona-rosa/IDEAS.md y README: sopa chica, faltan 3 productos con pista, antes de que entre el primer cliente.
+
 ### 09/11/2026 — IDEA: Doña Rosa y el Puzzle (la foto de los nietos)
 - Qué: anotada en promo/serie-dona-rosa/IDEAS.md y README (reemplaza la de la foto de 1985).
 
