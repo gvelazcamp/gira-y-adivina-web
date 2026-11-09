@@ -396,6 +396,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Invitar a un amigo eligiendo el juego
+- Qué: en «Mis amigos» (y en Usuarios de Gonzalo) «Invitar a jugar» abre «¿A qué querés invitar a X?» con Girá y Adiviná, Tutti Frutti, Palabra Secreta, Sopa Fugaz, Ahorcado y El Rosco. Rueda = invEnviar de siempre; Tutti = TuttiFrutti.crearParaInvitar (crea la sala y manda el código); los demás = Duelo.invitarCon(juego, sala, anfitrión). El aviso va por el tema MQTT de invitaciones con {juego, sala}; al invitado le aparece «X te invitó a jugar» con el ícono y nombre del juego, y al aceptar entra directo a esa sala.
+- Probado con conexión simulada: selector, envío del aviso y ventana del invitado. Falta probarlo entre dos celulares de verdad.
+- Archivos: index.html, duelo-extensiones.js (v29), tutti-frutti.js (v100), sw.js (cache v785).
+
 ### 09/11/2026 — Invitación de WhatsApp con íconos de juegos
 - Qué: la imagen de la vista previa suma una fila de íconos chicos (El Rosco, Palabra Secreta, Tutti Frutti, Palabras Cruzadas, Sopa Fugaz, Ahorcado) y «+20 juegos». Nombre nuevo og-invitacion-v2.jpg para que WhatsApp no muestre la vieja guardada.
 

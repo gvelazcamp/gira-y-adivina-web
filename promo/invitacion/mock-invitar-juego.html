@@ -1,0 +1,58 @@
+<!doctype html><html lang="es-UY"><head><meta charset="utf-8">
+<!-- Maqueta (09/11/2026): invitar a un amigo eligiendo el juego. Izquierda: Gonzalo elige el juego para Vale. Derecha: lo que le llega a Vale. -->
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:900px;height:900px;background:#0f0820;font-family:Outfit,sans-serif;color:#FCEFD2;display:flex;gap:40px;justify-content:center;align-items:center}
+.tel{position:relative;width:400px;height:790px;border-radius:44px;background:#1d1236;border:10px solid #000;overflow:hidden;box-shadow:0 20px 60px #0009}
+.col{display:flex;flex-direction:column;gap:12px}.et{text-align:center;font:900 22px Outfit;color:#F5C451}
+.fondo{position:absolute;inset:0;padding:40px 18px;filter:brightness(.45)}
+.caja{background:#271847;border:2px solid #ffffff1a;border-radius:24px;padding:18px}
+h2{font:900 30px "Archivo Black";color:#F5C451;text-align:center}
+.fila{display:flex;align-items:center;gap:10px;padding:12px;border:2px solid #ffffff1a;border-radius:16px;margin-top:12px}
+.fila img{width:46px;height:46px;border-radius:50%}
+.fila b{flex:1;font-size:18px}.fila small{display:block;font-size:13px;color:#7fe0a0}
+.fila span{padding:8px 12px;border-radius:10px;border:2px solid #ffffff33;font-size:13px}
+.pop{position:absolute;left:14px;right:14px;top:150px;background:#2b1a4f;border:2px solid #F5C451;border-radius:26px;padding:20px 16px;box-shadow:0 20px 50px #000c}
+.pop h3{font:900 22px "Archivo Black";text-align:center;color:#FCEFD2;line-height:1.15}.pop h3 em{font-style:normal;color:#F5C451}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.j{background:#ffffff12;border:2px solid #ffffff22;border-radius:16px;padding:8px 4px;text-align:center;font:800 12.5px Outfit}
+.j img{display:block;width:70px;height:70px;object-fit:contain;margin:0 auto 4px}
+.j.sel{border-color:#F5C451;background:#F5C45122;box-shadow:0 0 0 3px #F5C45155}
+.bot{display:block;margin-top:16px;padding:14px;border-radius:16px;background:linear-gradient(#ff4fa3,#E5197C);text-align:center;font:900 19px Outfit;box-shadow:0 6px 0 #8E0F4C}
+.bot2{display:block;margin-top:10px;padding:11px;border-radius:14px;border:2px solid #ffffff33;text-align:center;font:800 15px Outfit}
+.inv{position:absolute;left:18px;right:18px;top:200px;background:#2b1a4f;border:2px solid #F5C451;border-radius:26px;padding:24px 18px;text-align:center;box-shadow:0 20px 50px #000c}
+.inv .av{width:84px;height:84px;border-radius:50%;border:4px solid #F5C451;margin:0 auto}
+.inv h3{font:900 24px "Archivo Black";color:#F5C451;margin-top:12px}
+.inv p{font:700 18px/1.3 Outfit;margin-top:8px}.inv p b{color:#F5C451}
+.inv .juego{display:flex;align-items:center;justify-content:center;gap:12px;margin:16px auto 0;padding:10px 16px;border-radius:18px;background:#ffffff12;width:fit-content}
+.inv .juego img{width:64px;height:64px;object-fit:contain}.inv .juego b{font:900 22px "Archivo Black"}
+.btns{display:flex;gap:10px;margin-top:18px}.btns span{flex:1;padding:14px;border-radius:14px;font:900 17px Outfit}
+.si{background:linear-gradient(#5fd38a,#2e9a55);box-shadow:0 6px 0 #1f5a34}.no{border:2px solid #ffffff33}
+.notif{position:absolute;left:12px;right:12px;top:16px;background:#ffffffee;color:#1d1236;border-radius:18px;padding:10px 14px;font:800 14px/1.3 Outfit;display:flex;gap:10px;align-items:center;box-shadow:0 8px 20px #0008}
+.notif img{width:34px;height:34px;border-radius:8px}
+</style></head><body>
+<div class="col"><div class="et">1 · Gonzalo elige el juego</div><div class="tel">
+ <div class="fondo"><div class="caja"><h2>👥 Mis amigos</h2>
+  <div class="fila"><img src="../../assets/avatars/avatar-07.webp"><b>Vale<small>🟢 Conectada</small></b><span>Invitar a jugar</span></div>
+  <div class="fila"><img src="../../assets/avatars/avatar-03.webp"><b>Agustín<small>⚪ Visto hace 2 h</small></b><span>Invitar a jugar</span></div></div></div>
+ <div class="pop"><h3>¿A qué querés invitar<br>a <em>Vale</em>?</h3>
+  <div class="grid">
+   <div class="j"><img src="../../assets/logo.webp">Girá y Adiviná</div>
+   <div class="j sel"><img src="../../logo-tutti-frutti.svg">Tutti Frutti</div>
+   <div class="j"><img src="../../assets/palabra-secreta/logo.webp">Palabra Secreta</div>
+   <div class="j"><img src="../../logo-duelo-conocimiento.webp">Duelo de Conocimiento</div>
+   <div class="j"><img src="../../assets/sopa/logo.webp">Sopa Fugaz</div>
+   <div class="j"><img src="../../assets/rosco/logo.webp">El Rosco</div>
+  </div>
+  <span class="bot">📨 Invitar a Tutti Frutti</span><span class="bot2">Cancelar</span></div>
+</div></div>
+<div class="col"><div class="et">2 · Le llega a Vale</div><div class="tel">
+ <div class="fondo"><div class="caja" style="height:600px"><h2>🎡 Inicio</h2></div></div>
+ <div class="notif"><img src="../../logo-tutti-frutti.svg"><div>Girá y Adiviná<br><span style="font-weight:700">Gonzalo te invitó a jugar Tutti Frutti 🎮</span></div></div>
+ <div class="inv"><img class="av" src="../../assets/avatars/avatar-01.webp"><h3>🎮 ¡Te invitaron!</h3>
+  <p><b>Gonzalo</b> te invitó a jugar</p>
+  <div class="juego"><img src="../../logo-tutti-frutti.svg"><b>Tutti Frutti</b></div>
+  <div class="btns"><span class="no">No, gracias</span><span class="si">¡Jugar!</span></div></div>
+</div></div>
+</body></html>

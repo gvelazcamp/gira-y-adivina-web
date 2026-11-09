@@ -479,6 +479,8 @@ const Duelo=(()=>{
   function guardarPartida(d){if(!juego||!sala)return;try{if(d==null)localStorage.removeItem(claveEstado(juego,sala));else localStorage.setItem(claveEstado(juego,sala),JSON.stringify(d));}catch(e){}}
   function rivalActual(){return rival;}
   function salir(){cerrarChat();cbChau=null;if(cliente&&cliente.connected)mandar({tipo:"chau"});repintar=null;onListoJuego=null;rondaPendiente=null;cerrarCliente();cerrarCapa();quitarBadge();activo=false;rival=null;finalRival=null;cbRivalListo=null;cbRonda=null;cbProgreso=null;cbFinal=null;}
-  return{abrirInvitacion,hayInvitacion:()=>!!invitacion,invitacionPara:j=>!!(invitacion&&invitacion.juego===j),onRivalSeFue:cb=>{cbChau=cb;},mostrarLobby,enviarRonda,onRondaRecibida,enviarProgreso,onProgresoRival,rivalConectado,soyAnfitrion,salaActual,activarChat,enviarChat,proponer,onVoto:cb=>{if(chat)chat.cbVoto=cb;},abrirChat,leerPartida,guardarPartida,mostrarBadge,actualizarBadge,enviarFinal,mostrarResultado,estaActivo,rivalActual,salir};
+  /* Invitación desde «Mis amigos» (09/11): abre el juego y entra directo a la sala elegida, como anfitrión o invitado. */
+  function invitarCon(j,cod,host,de){if(!DUELO_EXT[j]||!/^[A-HJ-NP-Z2-9]{4}$/.test(cod))return false;invitacion={juego:j,sala:cod,de:String(de||"").slice(0,14),host:!!host};abrirInvitacion();return true;}
+  return{invitarCon,abrirInvitacion,hayInvitacion:()=>!!invitacion,invitacionPara:j=>!!(invitacion&&invitacion.juego===j),onRivalSeFue:cb=>{cbChau=cb;},mostrarLobby,enviarRonda,onRondaRecibida,enviarProgreso,onProgresoRival,rivalConectado,soyAnfitrion,salaActual,activarChat,enviarChat,proponer,onVoto:cb=>{if(chat)chat.cbVoto=cb;},abrirChat,leerPartida,guardarPartida,mostrarBadge,actualizarBadge,enviarFinal,mostrarResultado,estaActivo,rivalActual,salir};
 })();
 window.Duelo=Duelo;
