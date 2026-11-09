@@ -36,6 +36,7 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 - Texto para ElevenLabs (texto plano): «Día tres. Ayer la mayoría comentó yerba… y era yerba. Chelo le debía la yerba de todo el mes, y pagó. Con eso, y con cada vecino nuevo que sigue la historia, Doña Rosa juntó unos pesos. Y justo… golpean la puerta. Es el cobrador. Doña Rosa abre la caja y le entrega una parte de la plata. El cobrador mira la libreta… y le da tres días más. Pero todavía falta. Doña Rosa da vuelta la página. Página dos: Cacho. Cacho me debe… ¿Qué le debe Cacho? Es algo para tomar. Pepito dijo licor. Nelly, grapa. Juanchi, tinto. ¿Vos qué decís? ¿Qué bebida le debe? Comentá tu respuesta. Seguí las historias de Doña Rosa. Jugá en girá y adiviná punto com.»
 
 ## Ideas para mucho más adelante (Gonzalo; no armar hasta que lo pida)
+- **Posible capítulo 4 (Gonzalo, 09/11: «capaz sería un capítulo 4, después vemos»).** Video listo y guardado para siempre en `videos/Dona-Rosa-Especial-Tele.mp4`.
 - **Doña Rosa en la tele (08/11/2026, ampliada 09/11) — video «para joda», capítulo especial:**
   1. Doña Rosa en el mostrador (mismo almacén, cartel «ALMACÉN DOÑA ROSA»). Entra alguien / encuentra un **sobre**, lo abre: es la **invitación a un programa de TV** de preguntas.
   2. Corte al estudio de TV: Doña Rosa juega la ronda final con la rueda de letras (misma estructura visual de la serie: cabecera, pizarra de «Los que ayudaron», subtítulos grandes).
