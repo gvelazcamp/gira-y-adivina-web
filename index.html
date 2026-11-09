@@ -5578,12 +5578,14 @@ async function usrCargarLista(){
       b.className="no";b.textContent="Invitar";
       b.style.cssText="flex-shrink:0;padding:8px 12px;font-size:.78rem;border-radius:10px";
       b.onclick=()=>invEnviar(f.apodo);
-      d.appendChild(b);
+      /* Botones apilados (09/11): con ✕ y 🎁 de Gonzalo al costado, el nombre quedaba aplastado. */
+      const acc=document.createElement("div");acc.style.cssText="flex-shrink:0;display:flex;flex-direction:column;gap:6px;margin-left:8px";acc.appendChild(b);d.appendChild(acc);
       /* ✕ solo para Gonzalo: saca a esa persona de Social (no borra nada). */
       if(esGonzalo()){
+        const fila2=document.createElement("div");fila2.style.cssText="display:flex;gap:6px";
         const x=document.createElement("button");
         x.className="no";x.textContent="✕";x.title="Sacar de Social";
-        x.style.cssText="flex-shrink:0;margin-left:6px;padding:8px 11px;font-size:.85rem;border-radius:10px;color:#FF6B6B";
+        x.style.cssText="flex:1;padding:8px 0;font-size:.85rem;border-radius:10px;color:#FF6B6B";
         x.onclick=async()=>{
           if(!confirm("¿Sacar a "+f.apodo+" de Social?\nSolo deja de verse en la lista, no se borra nada."))return;
           usrOcultarLocal(f.apodo);d.remove();
@@ -5596,13 +5598,13 @@ async function usrCargarLista(){
           catch(e){err=e;}
           if(err)mostrarToast("⚠️","Sacado solo en tu celular (el servidor falló: "+String(err.message||err).slice(0,60)+")");
         };
-        d.appendChild(x);
+        fila2.appendChild(x);
         /* 🎁 solo para Gonzalo (09/11): regala 100 monedas al que resolvió un juego de Doña Rosa y le mandó su usuario. */
         const g=document.createElement("button");
         g.className="no";g.textContent="🎁";g.title="Regalar 100 monedas";
-        g.style.cssText="flex-shrink:0;margin-left:6px;padding:8px 11px;font-size:.85rem;border-radius:10px";
+        g.style.cssText="flex:1;padding:8px 0;font-size:.85rem;border-radius:10px";
         g.onclick=()=>regalarMonedas(f.apodo,100);
-        d.appendChild(g);
+        fila2.appendChild(g);acc.appendChild(fila2);
       }
     }
     cont.appendChild(d);

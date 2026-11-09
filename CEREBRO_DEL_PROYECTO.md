@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — 👥 Usuarios: botones apilados
+- Qué: con «Invitar», ✕ y 🎁 en fila, el nombre y los datos quedaban aplastados (una palabra por renglón en el celular). Ahora van apilados: «Invitar» arriba y ✕ 🎁 abajo.
+- Archivos: index.html (usrCargarLista), sw.js (cache v781).
+
 ### 09/11/2026 — Doña Rosa cap. 2: cartel del regalo de 100 monedas
 - Qué: en el final del video (desde «Cada vecino que se suma…»), arriba de la deuda: «🎁 ¿Te registraste en el juego y lo resolviste? Mandanos tu usuario y Doña Rosa te regala 🪙 100 monedas para usar en el juego». Solo en pantalla (la voz no cambia). Video regrabado en promo/serie-dona-rosa/videos/.
 
