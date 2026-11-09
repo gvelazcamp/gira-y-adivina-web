@@ -224,7 +224,7 @@ const LETRAS="ABCDEFGHIJLMNÑOPQRSTUVXYZ";   // la última (Z) queda sin contest
 const ul=document.getElementById("lista");if(VOTARON.length>6)ul.classList.add("dos","mueve");else if(VOTARON.length>3)ul.classList.add("dos");VOTARON.forEach(n=>{const li=document.createElement("li");li.textContent=n;ul.appendChild(li);});
 {const ll=document.getElementById("lluvia");for(let k=0;k<14;k++){const b=document.createElement("div");b.className="billeteC";b.textContent=k%3?"💵":"🪙";ll.appendChild(b);}}
 const rueda=document.getElementById("rueda");[...LETRAS].forEach((l,k)=>{const a=-Math.PI/2+k*2*Math.PI/LETRAS.length,d=document.createElement("div");d.className="le";d.textContent=l;d.style.left=(Math.cos(a)*285)+"px";d.style.top=(Math.sin(a)*285)+"px";rueda.appendChild(d);});
-let T=0,SUBS=[],TIEMPOS={};
+let T=0,SUBS=[],TIEMPOS={sobre:3.4,abre:5.82,estudio:12.4,contesta:13.0,ultima:16.47,defi:20.11,comodin:24.18,plata:30.1,seguir:36.43};
 const cl=(x,a,b)=>Math.max(a,Math.min(b,x)),ease=t=>1-Math.pow(1-t,3),io=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 function ventana(a,z,fi,fo){return Math.min(ease(cl((T-a)/(fi||0.5),0,1)),ease(cl((z-T)/(fo||0.4),0,1)));}
 function pintar(){
@@ -255,8 +255,8 @@ function pintar(){
   const sg=document.getElementById("seguir");const b2=ease(cl((T-TIEMPOS.seguir)/0.4,0,1));sg.style.opacity=b2;sg.style.transform="scale("+(b2*(1+0.05*Math.sin(T*7)))+")";
   if(ul.classList.contains("mueve")){const m=document.getElementById("listaMarco"),extra=Math.max(0,ul.scrollHeight-m.clientHeight+12),d2=extra/30,ciclo=d2+5;const t=(T%ciclo);const y=t<2?0:t<2+d2?(t-2)*30:extra;ul.style.transform="translateY("+(-y)+"px)";}
 }
-const TOTAL=34.0;   /* ESTIMADO sin voz */
-TIEMPOS={sobre:2.0,abre:4.6,estudio:11.0,contesta:11.8,ultima:16.4,defi:19.0,comodin:23.0,plata:29.0,seguir:31.5};
-SUBS=[[0,2.0,"Doña Rosa abre el almacén <em>como todos los días</em>…"],[2.0,4.6,"y por abajo de la puerta <em>entra un sobre</em>."],[4.6,6.8,"¡Es una <em>invitación</em>!"],[6.8,9.0,"La invitan a <em>El Gran Rosco Rioplatense</em>."],[9.0,11.0,"Si completa el rosco, gana <em>plata para su almacén</em>."],[11.0,14.0,"Doña Rosa contesta <em>todo</em>…"],[14.0,16.4,"letra por letra…"],[16.4,19.0,"Le falta <em>una sola palabra</em>… y está <em>muy confundida</em>."],[19.0,23.0,"Con la Z: animal del campo, <em>astuto y de cola larga</em>."],[23.0,26.0,"Doña Rosa usa el <em>comodín del público</em>:"],[26.0,29.0,"va a contestar lo que más comenten los que siguen a <em>Girá y Adiviná</em>."],[29.0,31.5,"Si la saca, se lleva <em>$ 200.000</em> para el almacén."],[31.5,34.0,"<em>Seguí a @girayadivina</em> y comentá tu respuesta."]];
+const TOTAL=39.35;   /* voz de ElevenLabs (09/11, 42,9 s): «Jugá al Rosco Rioplatense en girá y adiviná punto com» suena sobre el cierre (cierre.html?juego=rosco) */
+TIEMPOS={sobre:3.4,abre:5.82,estudio:12.4,contesta:13.0,ultima:16.47,defi:20.11,comodin:24.18,plata:30.1,seguir:36.43};
+SUBS=[[0,3.15,"Doña Rosa abre el almacén <em>como todos los días</em>…"],[3.15,5.7,"y por abajo de la puerta <em>entra un sobre</em>."],[5.7,7.0,"¡Es una <em>invitación</em>!"],[7.0,9.86,"La invitan a <em>El Gran Rosco Rioplatense</em>."],[9.86,12.84,"Si completa el rosco, gana <em>plata para su almacén</em>."],[12.84,14.8,"Doña Rosa contesta <em>todo</em>…"],[14.8,16.35,"letra por letra…"],[16.35,18.43,"Le falta <em>una sola palabra</em>…"],[18.43,20.0,"y está <em>muy confundida</em>."],[20.0,24.0,"Con la Z: animal del campo, <em>astuto y de cola larga</em>."],[24.0,26.5,"Doña Rosa usa el <em>comodín del público</em>:"],[26.5,30.0,"va a contestar lo que más comenten los que siguen a <em>Girá y Adiviná</em>."],[30.0,33.1,"Si la saca, se lleva <em>$ 200.000</em>."],[33.1,36.3,"¡Este premio ayudaría <em>muchísimo</em> al almacén de Doña Rosa!"],[36.3,39.35,"<em>Seguí a @girayadivina</em> y comentá tu respuesta."]];
 pintar();
 </script></body></html>
