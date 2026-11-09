@@ -396,6 +396,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Social: la lista de todos los usuarios, solo Gonzalo
+- Qué: Gonzalo creía que «Ver el avance de los jugadores» era solo suyo, pero no había ningún bloqueo: cualquier jugador veía la lista completa (con «Invitar»). Ahora el botón se oculta para los demás y usrAbrir() no abre si no es Gonzalo. Los demás ven el cartel de redes y «Cerrar».
+- Pendiente (Gonzalo, 09/11): Social propio para cada jugador, tipo Plato: botones «Seguir»/«Volver» en el cartel; «👥 Mis amigos» (solo sus amigos), invitar por WhatsApp (el que entra por su link queda de amigo), buscar por nombre, e invitar a partidas desde ahí. Falta que Gonzalo diga si el otro tiene que aceptar la solicitud.
+- Archivos: index.html, sw.js (cache v782).
+
 ### 09/11/2026 — 👥 Usuarios: botones apilados
 - Qué: con «Invitar», ✕ y 🎁 en fila, el nombre y los datos quedaban aplastados (una palabra por renglón en el celular). Ahora van apilados: «Invitar» arriba y ✕ 🎁 abajo.
 - Archivos: index.html (usrCargarLista), sw.js (cache v781).
