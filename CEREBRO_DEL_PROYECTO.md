@@ -396,8 +396,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Especial «Doña Rosa en la tele»: escena de prueba sin voz
+- Qué: promo/serie-dona-rosa/especial-tele.html, programa «El Gran Rosco Rioplatense», última letra Z. Solo idea/prueba, no se publica hasta que Gonzalo lo pida.
+
 ### 09/11/2026 — IDEA ampliada: Doña Rosa en la tele (video «para joda»)
-- Qué: en el mostrador encuentra un sobre con la invitación a un programa de TV inventado; juega la ronda final del rosco, falta una palabra y los seguidores la descifran; el premio es mucha plata para el local. Nombre propuesto «El Gran Abecedario» (falta que Gonzalo elija). Detalle en promo/serie-dona-rosa/README.md. No armar hasta que lo pida.
+- Qué: en el mostrador encuentra un sobre con la invitación a un programa de TV inventado; juega la ronda final del rosco, falta una palabra y los seguidores la descifran; el premio es mucha plata para el local. Nombre elegido por Gonzalo (09/11): «El Gran Rosco Rioplatense». Detalle en promo/serie-dona-rosa/README.md. No armar hasta que lo pida.
 
 ### 09/11/2026 — Doña Rosa cap. 2: 6 nombres más en «Los que ayudaron»
 - Qué: VOTARON de capitulo-2.html suma tizianobiscotti, pieri_alaggio, bringas.martina, oliverasalvadordiaz, bautistafigueira27 y lourdesmaureiramaciel (25 en total, con miia_canoo y emma887843 el 09/11); video regrabado y guardado en promo/serie-dona-rosa/videos/.

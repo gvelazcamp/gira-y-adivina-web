@@ -1,0 +1,250 @@
+<!doctype html><html lang="es-UY"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+<!-- Especial «Doña Rosa en la tele» (09/11/2026, idea de Gonzalo, video «para joda»). Mismo motor: T, pintar(), SUBS, TIEMPOS.
+     Primera versión sin voz: TIEMPOS estimados. El programa es inventado: «El Gran Rosco Rioplatense» (como nuestro juego). -->
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-family:Outfit,sans-serif}
+#e{position:relative;width:1080px;height:1920px;overflow:hidden;background:#24384a}
+.cab{position:absolute;left:0;right:0;top:0;height:140px;background:#1b2e3c;padding:28px 44px}
+.cab b{display:block;font:900 52px "Archivo Black";color:#FCEFD2;letter-spacing:1px}
+.cab small{display:block;font:800 24px Outfit;color:#9fb6c4;letter-spacing:2px;margin-top:4px}
+.info{position:absolute;left:40px;right:40px;top:160px;height:96px;background:#FCEFD2;border-radius:14px;display:flex;justify-content:space-between;align-items:center;padding:0 32px;color:#26323c}
+.info small{display:block;font:800 21px Outfit;letter-spacing:2px;color:#8a7a6a}
+.info b{display:block;font:900 40px "Archivo Black"}.info .der{text-align:right}.info .der b{color:#2d7a8a}
+/* escena */
+#esc{position:absolute;left:0;right:0;top:280px;height:1000px;background:linear-gradient(#bfe3d0 0,#cfe9d8 55%,#9fc79a 55%,#8fb98a 100%);overflow:hidden}
+.edif{position:absolute;left:150px;width:780px;top:140px;height:560px;background:#F3D9A4;border:8px solid #7a4a2a;border-bottom:0}
+.techo{position:absolute;left:120px;width:840px;top:96px;height:60px;background:#b4532f;border-radius:6px}
+.cartel{position:absolute;left:300px;width:480px;top:170px;height:90px;background:#2d5d7a;border:6px solid #f3e3c0;border-radius:10px;display:grid;place-items:center;font:900 46px "Archivo Black";color:#FCEFD2;letter-spacing:2px}
+.cartel small{display:block;font:800 18px Outfit;color:#cfe3ee;margin-top:-6px;text-align:center}
+.toldo{position:absolute;left:170px;width:740px;top:280px;height:80px;background:repeating-linear-gradient(90deg,#d6403a 0 62px,#f6efe2 62px 124px);clip-path:polygon(0 0,100% 0,100% 70%,96% 100%,92% 70%,88% 100%,84% 70%,80% 100%,76% 70%,72% 100%,68% 70%,64% 100%,60% 70%,56% 100%,52% 70%,48% 100%,44% 70%,40% 100%,36% 70%,32% 100%,28% 70%,24% 100%,20% 70%,16% 100%,12% 70%,8% 100%,4% 70%,0 100%)}
+.vent{position:absolute;top:400px;width:210px;height:220px;background:#6fa8c0;border:8px solid #7a4a2a}
+.vent i{position:absolute;left:10px;right:10px;height:8px;background:#7a4a2a}
+.vent b{position:absolute;width:26px;height:40px;border-radius:6px 6px 4px 4px}
+.puerta{position:absolute;left:450px;top:390px;width:180px;height:310px;background:#5b3a26;border:8px solid #7a4a2a}
+.puerta .aviso{position:absolute;left:18px;top:60px;width:130px;padding:8px 4px;background:#fff7e0;border:3px solid #c43;font:900 18px/1.1 Outfit;color:#c43;text-align:center;transform:rotate(-6deg)}
+.vereda{position:absolute;left:0;right:0;top:700px;height:90px;background:#d8cdb6;border-top:6px solid #b9ab8f}
+.calle{position:absolute;left:0;right:0;top:790px;height:210px;background:#6b6b6b}
+.calle i{position:absolute;top:95px;height:16px;width:110px;background:#f3e3c0}
+/* Doña Rosa */
+.rosa{position:absolute;width:120px;height:200px}#rosa{left:640px;top:520px}
+.rosa .pelo{position:absolute;left:24px;top:0;width:72px;height:64px;border-radius:50%;background:#c9c9cf}
+.rosa .rodete{position:absolute;left:44px;top:-22px;width:34px;height:30px;border-radius:50%;background:#c9c9cf}
+.rosa .cara{position:absolute;left:30px;top:16px;width:60px;height:62px;border-radius:50%;background:#f1c6a0}
+.rosa .cara::before,.rosa .cara::after{content:"";position:absolute;top:26px;width:8px;height:8px;border-radius:50%;background:#3a2a20}
+.rosa .cara::before{left:16px}.rosa .cara::after{right:16px}
+.rosa .cuerpo{position:absolute;left:14px;top:76px;width:92px;height:100px;border-radius:26px 26px 10px 10px;background:#7b4fa3}
+.rosa .delantal{position:absolute;left:32px;top:96px;width:56px;height:80px;border-radius:8px;background:#fff3dc}
+.rosa .pies{position:absolute;left:28px;top:174px;width:64px;height:20px;background:#3a2a20;border-radius:10px}
+/* pizarra con el tablero */
+#piz{position:absolute;left:110px;width:860px;top:300px;height:930px;background:#FFF8E6 repeating-linear-gradient(#FFF8E6 0 58px,#cfe0ee 58px 60px);border-left:14px solid #b4532f;border-radius:10px 22px 22px 10px;box-shadow:0 20px 50px #0009;opacity:0;transform:scale(.8)}
+#piz::before{content:"";position:absolute;left:70px;top:0;bottom:0;width:4px;background:#e58a8a}
+#piz h4{text-align:center;font:900 44px "Archivo Black";color:#7a2a1a;margin:26px 0 0;letter-spacing:2px}
+#piz .sub2{text-align:center;font:800 26px Outfit;color:#8a6a5a;margin:2px 0 16px}
+#piz .cand{position:absolute;right:28px;top:14px;font-size:72px}
+#tab{display:grid;grid-template-rows:repeat(6,104px);gap:14px;justify-content:center}
+.fila{display:grid;grid-template-columns:170px repeat(5,104px);gap:12px;align-items:center}
+.fila .n{font:900 30px "Archivo Black";color:#2d5d7a;text-align:right;padding-right:6px;white-space:nowrap}
+#globo{position:absolute;left:740px;top:390px;background:#fff;border-radius:30px;padding:16px 22px;font:900 34px/1.05 Outfit;color:#5b3a26;opacity:0;box-shadow:0 8px 20px #0004}
+.c{width:104px;height:104px;background:url(../../assets/palabra-secreta/casilla.webp) center/100% 100%;display:grid;place-items:center;font:900 54px "Archivo Black";color:#fff}
+.c.verde{background-image:url(../../assets/palabra-secreta/verde.webp)}.c.amarilla{background-image:url(../../assets/palabra-secreta/amarilla.webp);color:#3A2400}.c.gris{background-image:url(../../assets/palabra-secreta/gris.webp)}
+.c.q{color:#F5B301}
+#sub{position:absolute;left:46px;right:46px;top:1320px;height:420px;display:flex;align-items:center;justify-content:center;text-align:center;font:900 76px/1.06 "Archivo Black";color:#FCEFD2;text-transform:uppercase}
+#sub em{font-style:normal;color:#F5C451}
+#firma{position:absolute;left:44px;bottom:36px;font:800 24px Outfit;color:#9fb6c4}
+
+.info{height:270px;padding:0;background:none;gap:18px;align-items:stretch}
+.info>div:first-child{background:#FCEFD2;border-radius:14px;padding:22px 26px;width:300px;display:flex;flex-direction:column;justify-content:center}
+.info>div:first-child b{font-size:54px;color:#c43}
+#votos{flex:1;background:#2f4a33;border:8px solid #7a4a2a;border-radius:14px;padding:16px 24px;color:#FCEFD2;box-shadow:inset 0 0 30px #0006}
+#votos h5{font:900 40px "Archivo Black";color:#F5C451;letter-spacing:1px}
+#votos h5 span{color:#FCEFD2}
+#votos ul{list-style:none;display:grid;grid-template-columns:1fr;gap:4px 18px;margin-top:10px;border-top:3px solid #ffffff40;padding-top:12px}
+#votos ul.dos{grid-template-columns:1fr 1fr}
+#votos li{font:800 32px Outfit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#votos ul.dos{grid-template-rows:repeat(3,auto);grid-auto-flow:column;grid-template-columns:none;gap:4px 22px}#votos ul.dos li{font-size:25px}#votos h5{font-size:38px}#listaMarco{height:130px;overflow:hidden;margin-top:10px;padding-top:8px;border-top:3px solid #ffffff40}#listaMarco #lista{margin-top:0;border-top:0;padding-top:0}#votos ul.mueve{grid-template-rows:none;grid-auto-flow:row;grid-template-columns:1fr 1fr}
+.marco{position:absolute;left:0;right:0;top:450px;height:860px;overflow:hidden}#esc{top:0;height:860px}
+/* puerta que se abre */
+.puerta{background:#1a100a;perspective:600px}
+.hoja{position:absolute;inset:0;background:#5b3a26;transform-origin:left center}
+.hoja .aviso{left:18px;top:60px}#candP{position:absolute;right:-22px;top:150px;font-size:64px}
+/* adentro del almacén */
+#intM{opacity:0}#int{position:absolute;inset:0;background:#e9d3a6}
+#int .est{position:absolute;left:60px;right:60px;height:16px;background:#7a4a2a}
+#int .prod{position:absolute;width:44px;border-radius:8px 8px 4px 4px}
+#int .barra{position:absolute;left:0;right:0;top:560px;height:300px;background:#8a5530;border-top:26px solid #b4703e}
+#int .barra::after{content:"";position:absolute;left:40px;right:40px;top:40px;bottom:30px;border:6px solid #6b3f22;border-radius:8px}
+#lib{position:absolute;left:330px;top:440px;width:300px;height:130px;background:#b4532f;border-radius:10px 16px 16px 10px;border-left:18px solid #7a2a1a;box-shadow:0 10px 0 #5b3a26}
+#lib b{position:absolute;left:30px;top:30px;font:900 30px "Archivo Black";color:#FCEFD2;letter-spacing:1px}
+#lib i{position:absolute;right:-14px;top:36px;font-style:normal;font-size:60px}
+#lib .pv{position:absolute;inset:-6px;border-radius:12px;background:radial-gradient(circle at 20% 30%,#cfc6b8 0 6px,transparent 7px),radial-gradient(circle at 60% 20%,#cfc6b8 0 5px,transparent 6px),radial-gradient(circle at 80% 70%,#cfc6b8 0 7px,transparent 8px),radial-gradient(circle at 40% 75%,#cfc6b8 0 5px,transparent 6px),#bdb3a466}
+#rosaIn{left:700px;top:400px}
+.nube{position:absolute;width:90px;height:60px;border-radius:50%;background:#d8d0c2;opacity:0;filter:blur(4px)}
+/* libreta en grande */
+#piz{top:460px;height:830px}
+.pag{position:absolute;inset:0}
+.deuda{text-align:center;font:800 32px/1.25 Outfit;color:#5b3a26;margin:6px 0 18px}
+.deuda b{font:900 42px "Archivo Black";color:#c43}
+.tapado{display:inline-block;width:230px;height:46px;vertical-align:middle;border-radius:22px;background:radial-gradient(ellipse at 25% 50%,#a99f90 0 35%,transparent 65%),radial-gradient(ellipse at 70% 45%,#b8ad9c 0 40%,transparent 70%),radial-gradient(ellipse at 50% 55%,#c9bfae 0 50%,transparent 75%);filter:blur(2px)}
+#polvoB{position:absolute;inset:0;border-radius:10px 22px 22px 10px;background:radial-gradient(circle at 15% 20%,#9d927f 0 10px,transparent 11px),radial-gradient(circle at 70% 35%,#9d927f 0 8px,transparent 9px),radial-gradient(circle at 40% 65%,#9d927f 0 12px,transparent 13px),radial-gradient(circle at 85% 80%,#9d927f 0 9px,transparent 10px),#c9bfaecc;pointer-events:none}
+#tabA{display:grid;grid-template-rows:repeat(6,104px);gap:14px;justify-content:center}
+#tabA .fila{grid-template-columns:200px repeat(5,104px)}
+#candA{position:absolute;right:16px;top:10px;font-size:70px;line-height:1}
+#tabB{display:grid;grid-template-rows:repeat(6,96px);gap:10px;justify-content:center}#tabB .fila{grid-template-columns:170px repeat(5,96px)}#tabB .c{width:96px;height:96px;font-size:50px}
+
+/* Final (08/11): la deuda se va pagando y los vecinos que siguen la historia ayudan */
+#deuda{position:absolute;left:90px;right:90px;top:640px;padding:34px 36px 40px;background:#1b2e3c;border:6px solid #F5C451;border-radius:30px;text-align:center;color:#FCEFD2;opacity:0;box-shadow:0 24px 60px #000a}
+#deuda h4{font:900 50px "Archivo Black",sans-serif;color:#F5C451;letter-spacing:1px}
+#deuda .barra{position:relative;height:64px;margin:26px 0 14px;border-radius:32px;background:#ffffff1c;overflow:hidden;border:3px solid #ffffff30}
+#deuda .barra i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#3c9a5f,#5fd38a);border-radius:32px}
+#deuda p{font:800 38px Outfit}#deuda p b{color:#F5C451}
+#vecinos{height:80px;margin-top:14px;font-size:58px;letter-spacing:6px}
+#seguir{display:inline-block;margin-top:18px;padding:18px 40px;border-radius:40px;background:linear-gradient(#ff4fa3,#E5197C);color:#fff;font:900 44px Outfit;box-shadow:0 8px 0 #8E0F4C;opacity:0}
+
+/* ===== Capítulo 3: adentro del almacén, con el mostrador ===== */
+#int{background:#e9d3a6}
+#int .est{left:40px;right:300px}
+.cartelIn{position:absolute;left:220px;width:640px;top:26px;height:100px;background:#2d5d7a;border:6px solid #f3e3c0;border-radius:12px;display:grid;place-items:center;font:900 44px "Archivo Black";color:#FCEFD2;letter-spacing:2px;box-shadow:0 8px 0 #1b3a4c}
+.cartelIn small{display:block;font:800 17px Outfit;color:#cfe3ee;margin-top:-8px;text-align:center;letter-spacing:3px}
+#piso{position:absolute;left:0;right:0;top:620px;bottom:0;background:repeating-linear-gradient(90deg,#b98c5a 0 118px,#a87c4c 118px 120px)}
+#puertaIn{position:absolute;left:830px;top:200px;width:200px;height:420px;background:#1a100a;border:10px solid #7a4a2a;border-bottom:0;perspective:700px}
+#hojaIn{position:absolute;inset:0;background:#5b3a26;transform-origin:right center}
+#hojaIn::after{content:"";position:absolute;left:22px;top:200px;width:18px;height:18px;border-radius:50%;background:#e8c46a}
+#hojaIn i{position:absolute;left:30px;right:30px;top:40px;height:120px;background:#6fa8c0;border:6px solid #7a4a2a}
+#int .barra{width:780px;right:auto}
+#caja{position:absolute;left:80px;top:430px;width:210px;height:130px;background:#3a5d7a;border-radius:14px 14px 6px 6px;box-shadow:0 8px 0 #24384a}
+#caja .pant{position:absolute;left:24px;right:24px;top:16px;height:44px;background:#bfe3d0;border-radius:6px;font:900 30px "Archivo Black";color:#24384a;text-align:center;line-height:44px}
+#caja .botones{position:absolute;left:24px;right:24px;top:70px;height:40px;background:repeating-linear-gradient(90deg,#FCEFD2 0 26px,transparent 26px 34px);opacity:.8;border-radius:4px}
+#cajon{position:absolute;left:66px;top:540px;width:240px;height:60px;background:#2d4a60;border-radius:0 0 10px 10px;overflow:hidden}
+#cajon .plata{position:absolute;left:14px;right:14px;bottom:6px;height:0;background:repeating-linear-gradient(90deg,#5fb37a 0 40px,#4a9a64 40px 46px);border-radius:4px}
+#libM{position:absolute;left:340px;top:500px;width:220px;height:66px;background:#b4532f;border-radius:8px 12px 12px 8px;border-left:14px solid #7a2a1a;transform:skewX(-14deg);box-shadow:0 8px 0 #5b3a26}
+#libM b{position:absolute;left:34px;top:14px;font:900 30px "Archivo Black";color:#FCEFD2;transform:skewX(14deg)}
+#rosaIn{left:590px;top:390px}
+/* el cobrador */
+#cob{position:absolute;width:150px;height:270px;left:860px;top:340px;opacity:0}
+#cob .som{position:absolute;left:28px;top:-16px;width:94px;height:30px;background:#2b2b33;border-radius:10px 10px 4px 4px}
+#cob .som::before{content:"";position:absolute;left:-16px;right:-16px;bottom:-6px;height:12px;background:#2b2b33;border-radius:8px}
+#cob .cara{position:absolute;left:42px;top:10px;width:66px;height:70px;border-radius:50%;background:#e8b48e}
+#cob .cara::before,#cob .cara::after{content:"";position:absolute;top:28px;width:8px;height:8px;border-radius:50%;background:#2a1a10}
+#cob .cara::before{left:18px}#cob .cara::after{right:18px}
+#cob .bigote{position:absolute;left:58px;top:58px;width:34px;height:10px;background:#3a2a20;border-radius:0 0 10px 10px}
+#cob .saco{position:absolute;left:22px;top:80px;width:106px;height:120px;background:#5d6470;border-radius:26px 26px 8px 8px}
+#cob .cami{position:absolute;left:60px;top:80px;width:30px;height:60px;background:#f4f4f4;clip-path:polygon(0 0,100% 0,50% 100%)}
+#cob .corb{position:absolute;left:70px;top:88px;width:10px;height:56px;background:#b4302a;border-radius:2px 2px 6px 6px}
+#cob .pier{position:absolute;left:38px;top:198px;width:74px;height:62px;background:repeating-linear-gradient(90deg,#3c424c 0 32px,transparent 32px 42px)}
+#cob .zap{position:absolute;left:32px;top:256px;width:88px;height:14px;background:#1d1d22;border-radius:8px}
+#cob .mal{position:absolute;left:-40px;top:150px;width:84px;height:62px;background:#7a4a2a;border-radius:8px;border:4px solid #5b3a26}
+#cob .mal::before{content:"";position:absolute;left:24px;top:-18px;width:28px;height:16px;border:5px solid #5b3a26;border-bottom:0;border-radius:10px 10px 0 0}
+.bill{position:absolute;width:76px;height:40px;background:#5fb37a;border:3px solid #2f7a4a;border-radius:4px;font:900 22px "Archivo Black";color:#1f5a34;text-align:center;line-height:34px;opacity:0}
+.flota{position:absolute;font-size:52px;opacity:0}
+#toc{position:absolute;left:780px;top:120px;font:900 64px "Archivo Black";color:#c43;opacity:0;text-shadow:0 4px 0 #fff7e0}
+#globo2{position:absolute;left:470px;top:200px;max-width:440px;background:#fff;border-radius:30px;padding:18px 26px;font:900 36px/1.1 Outfit;color:#24384a;opacity:0;box-shadow:0 8px 20px #0004}
+#sello{position:absolute;left:300px;top:440px;padding:10px 26px;border:8px solid #c43;border-radius:12px;font:900 76px "Archivo Black";color:#c43;opacity:0;transform:rotate(-14deg);background:#fff8e6cc}
+#pC .deuda{margin-bottom:18px}.linea{display:inline-block;width:230px;border-bottom:4px dotted #8a6a5a;height:30px;vertical-align:middle}
+#tabC{display:grid;grid-template-rows:repeat(6,96px);gap:10px;justify-content:center}#tabC .fila{grid-template-columns:170px repeat(5,96px)}#tabC .c{width:96px;height:96px;font-size:50px}
+#seguir{position:absolute;left:50%;top:1232px;margin:0;transform-origin:center;translate:-50% 0;z-index:5}
+#duda{position:absolute;left:50%;top:1100px;translate:-50% 0;white-space:nowrap;padding:18px 36px;border-radius:28px;background:#1b2e3c;border:6px solid #F5C451;font:900 54px "Archivo Black";color:#FCEFD2;box-shadow:0 14px 34px #0009;opacity:0;z-index:4}#duda b{color:#F5C451}
+
+/* ===== Especial TV ===== */
+.info>div:first-child b{color:#3c9a5f;font-size:44px;white-space:nowrap}
+#sobre{position:absolute;left:880px;top:600px;width:120px;height:76px;background:#f6efe2;border:4px solid #c9b48a;border-radius:6px;opacity:0;z-index:3}
+#sobre::before{content:"";position:absolute;left:0;right:0;top:0;height:44px;background:#e9dcc0;clip-path:polygon(0 0,100% 0,50% 100%)}
+#sobre::after{content:"⭐";position:absolute;left:44px;top:22px;font-size:26px}
+#inv{position:absolute;left:110px;right:110px;top:560px;height:640px;opacity:0;z-index:6}
+#inv .env{position:absolute;left:0;right:0;bottom:0;height:420px;background:#f6efe2;border:8px solid #c9b48a;border-radius:20px;box-shadow:0 30px 60px #000a}
+#inv .flap{position:absolute;left:0;right:0;top:220px;height:240px;background:#e9dcc0;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top center;border-radius:20px 20px 0 0;z-index:2}
+#inv .carta{position:absolute;left:40px;right:40px;top:230px;height:400px;background:linear-gradient(#2a1450,#4a1f7a);border:8px solid #F5C451;border-radius:18px;text-align:center;color:#FCEFD2;padding:30px 24px;z-index:1}
+#inv .carta small{display:block;font:800 26px Outfit;letter-spacing:4px;color:#F5C451}
+#inv .carta p{font:800 32px/1.2 Outfit;margin-top:14px}
+#inv .carta b{display:block;font:900 54px/1.02 "Archivo Black";color:#F5C451;margin-top:14px;text-shadow:0 4px 0 #1a0a30}
+#inv .carta i{display:block;font-style:normal;font:800 28px Outfit;margin-top:16px;color:#bfe3d0}
+/* estudio */
+#tv{opacity:0}
+#estudio{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,#5a2a9a 0,#2a1450 55%,#120824 100%);overflow:hidden}
+.luz{position:absolute;top:-40px;width:220px;height:900px;background:linear-gradient(#ffffff40,transparent 80%);clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);transform-origin:top center}
+#logoTV{position:absolute;left:0;right:0;top:18px;text-align:center;font:900 46px "Archivo Black";color:#F5C451;letter-spacing:2px;text-shadow:0 5px 0 #7a2a1a}
+#logoTV small{display:block;font:900 26px "Archivo Black";color:#FCEFD2;letter-spacing:8px;margin-top:-4px;text-shadow:none}
+#rueda{position:absolute;left:540px;top:470px;width:0;height:0}
+.le{position:absolute;width:62px;height:62px;margin:-31px 0 0 -31px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#6fb3ff,#1f5fbf);border:4px solid #cfe3ff;font:900 32px/54px "Archivo Black";color:#fff;text-align:center;box-shadow:0 4px 10px #0008}
+.le.ok{background:radial-gradient(circle at 35% 30%,#7fe0a0,#2e9a55);border-color:#d6ffe4}
+#rosaTV{left:480px;top:360px;transform:scale(1.15)}
+#atril{position:absolute;left:400px;top:530px;width:280px;height:120px;background:linear-gradient(#F5C451,#c98f1a);border-radius:16px 16px 6px 6px;font:900 28px "Archivo Black";color:#3a1a00;text-align:center;line-height:120px;box-shadow:0 10px 0 #7a4a10}
+#reloj{position:absolute;right:40px;bottom:40px;width:150px;height:150px;border-radius:50%;background:#120824;border:8px solid #F5C451;font:900 64px/134px "Archivo Black";color:#FCEFD2;text-align:center}
+#pozo{position:absolute;left:24px;top:150px;padding:12px 20px;border-radius:20px;background:#120824;border:6px solid #3c9a5f;color:#FCEFD2;font:800 24px Outfit;letter-spacing:2px}
+#pozo b{display:block;font:900 38px "Archivo Black";color:#5fd38a;letter-spacing:0}
+#defi{position:absolute;left:70px;right:70px;top:560px;padding:34px 36px;background:#1b2e3c;border:6px solid #F5C451;border-radius:30px;text-align:center;color:#FCEFD2;opacity:0;box-shadow:0 24px 60px #000c;z-index:6}
+#defi small{display:block;font:900 44px "Archivo Black";color:#F5C451;letter-spacing:2px}
+#defi p{font:800 44px/1.2 Outfit;margin-top:14px}
+#defi .hue{margin-top:26px;font:900 64px "Archivo Black";letter-spacing:18px;color:#F5C451}
+#seguir{top:1232px}
+</style></head><body><div id="e">
+<div class="cab"><b>EL ALMACÉN DE DOÑA ROSA</b><small>ESPECIAL · DOÑA ROSA EN LA TELE</small></div>
+<div class="info"><div><small>EN JUEGO PARA EL ALMACÉN</small><b id="plata">$ 500.000</b><small style="margin-top:6px">SI COMPLETA EL ROSCO</small></div><div id="votos"><h5>LOS QUE <span>AYUDARON</span> 💜</h5><div id="listaMarco"><ul id="lista"></ul></div></div></div>
+<div class="marco" id="almM"><div id="int">
+ <div class="cartelIn"><div>ALMACÉN DOÑA ROSA<small>DESDE 1985</small></div></div>
+ <div class="est" style="top:260px"></div><div class="est" style="top:410px"></div>
+ <div id="piso"></div>
+ <div id="puertaIn"><div id="hojaIn"><i></i></div></div>
+ <div id="rosaIn" class="rosa"><div class="rodete"></div><div class="pelo"></div><div class="cara"></div><div class="cuerpo"></div><div class="delantal"></div><div class="pies"></div></div>
+ <div id="cajon"><div class="plata"></div></div>
+ <div class="barra"></div>
+ <div id="caja"><div class="pant">$</div><div class="botones"></div></div>
+ <div id="libM"><b>FIADO</b></div>
+ <div id="sobre"></div>
+ <div id="globo2"></div>
+</div></div>
+<div class="marco" id="tv"><div id="estudio">
+ <div class="luz" style="left:60px"></div><div class="luz" style="left:420px"></div><div class="luz" style="left:800px"></div>
+ <div id="logoTV">EL GRAN ROSCO<small>RIOPLATENSE</small></div>
+ <div id="rueda"></div>
+ <div id="rosaTV" class="rosa"><div class="rodete"></div><div class="pelo"></div><div class="cara"></div><div class="cuerpo"></div><div class="delantal"></div><div class="pies"></div></div>
+ <div id="atril">DOÑA ROSA</div>
+ <div id="pozo">POZO<b>$ 500.000</b></div>
+ <div id="reloj">20</div>
+</div></div>
+<div id="inv"><div class="env"></div><div class="carta"><small>✨ INVITACIÓN ✨</small><p>Señora Doña Rosa:<br>la esperamos en el estudio de</p><b>EL GRAN ROSCO RIOPLATENSE</b><i>Premio: plata para su almacén</i></div><div class="flap"></div></div>
+<div id="defi"><small>CON LA Z</small><p>Animal del campo, astuto y de cola larga.</p><div class="hue">_ _ _ _ _</div></div>
+<div id="seguir">👤 Seguí la historia</div>
+<div id="sub"></div><div id="firma">@girayadivina</div>
+</div>
+<script>
+/* ====== LO QUE SE CAMBIA ====== */
+const VOTARON=["@silvina.martinezok","@matipienia","@santii.yz","@abrilu_113_","@misteryhoumans269","@ambaragustinaquiroga","@jas_mica6"];   // PROVISORIO
+const LETRAS="ABCDEFGHIJLMNÑOPQRSTUVXYZ";   // la última (Z) queda sin contestar
+/* ============================== */
+{const it=document.getElementById("int"),cols=["#d6403a","#F5B301","#2d7a8a","#7b4fa3","#3c9a5f","#e58a2a"];for(const [y,h] of [[260,70],[410,80]])for(let k=0;k<11;k++){const b=document.createElement("b");b.className="prod";b.style.left=(70+k*62)+"px";b.style.top=(y-h)+"px";b.style.height=h+"px";b.style.background=cols[(k*7+y)%6];it.insertBefore(b,it.children[1]);}}
+const ul=document.getElementById("lista");if(VOTARON.length>6)ul.classList.add("dos","mueve");else if(VOTARON.length>3)ul.classList.add("dos");VOTARON.forEach(n=>{const li=document.createElement("li");li.textContent=n;ul.appendChild(li);});
+const rueda=document.getElementById("rueda");[...LETRAS].forEach((l,k)=>{const a=-Math.PI/2+k*2*Math.PI/LETRAS.length,d=document.createElement("div");d.className="le";d.textContent=l;d.style.left=(Math.cos(a)*285)+"px";d.style.top=(Math.sin(a)*285)+"px";rueda.appendChild(d);});
+let T=0,SUBS=[],TIEMPOS={};
+const cl=(x,a,b)=>Math.max(a,Math.min(b,x)),ease=t=>1-Math.pow(1-t,3),io=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function ventana(a,z,fi,fo){return Math.min(ease(cl((T-a)/(fi||0.5),0,1)),ease(cl((z-T)/(fo||0.4),0,1)));}
+function pintar(){
+  const s=SUBS.find(x=>T>=x[0]&&T<x[1]);document.getElementById("sub").innerHTML=s?"<span>"+s[2]+"</span>":"";
+  document.getElementById("rosaIn").style.transform="translateY("+(-Math.abs(Math.sin(T*3))*5)+"px)";
+  /* el sobre entra por abajo de la puerta */
+  const so=document.getElementById("sobre"),st=cl((T-TIEMPOS.sobre)/1.2,0,1);so.style.opacity=T>=TIEMPOS.sobre&&T<TIEMPOS.abre?1:0;so.style.left=(880-260*ease(st))+"px";so.style.transform="rotate("+(-8*st)+"deg)";
+  const g2=document.getElementById("globo2");g2.innerHTML="¿Y esto? 🤔";g2.style.opacity=T>=TIEMPOS.sobre+1.3&&T<TIEMPOS.abre?1:0;
+  /* la invitación: se abre la solapa y sube la carta */
+  const iv=document.getElementById("inv"),ia=ventana(TIEMPOS.abre,TIEMPOS.estudio,0.4,0.4);iv.style.opacity=ia;iv.style.transform="scale("+(0.85+0.15*ia)+")";
+  iv.querySelector(".flap").style.transform="rotateX("+(180*ease(cl((T-TIEMPOS.abre-0.4)/0.6,0,1)))+"deg)";iv.querySelector(".flap").style.opacity=T>=TIEMPOS.abre+0.7?0:1;
+  iv.querySelector(".carta").style.transform="translateY("+(220-220*ease(cl((T-TIEMPOS.abre-0.8)/0.8,0,1)))+"px)";
+  /* estudio */
+  const tv=cl((T-TIEMPOS.estudio)/0.6,0,1);document.getElementById("tv").style.opacity=tv;document.getElementById("almM").style.opacity=1-tv;
+  document.querySelectorAll(".luz").forEach((l,k)=>{l.style.transform="rotate("+(Math.sin(T*1.2+k*2)*18)+"deg)";});
+  document.getElementById("rosaTV").style.transform="scale(1.15) translateY("+(-Math.abs(Math.sin(T*3))*5)+"px)";
+  const les=[...document.querySelectorAll(".le")],n=LETRAS.length-1,dur=TIEMPOS.ultima-TIEMPOS.contesta;
+  les.forEach((d,k)=>{if(k<n){const tk=TIEMPOS.contesta+k*dur/n;d.className="le"+(T>=tk?" ok":"");d.style.transform=T>=tk&&T<tk+0.25?"scale(1.3)":"";}else{d.className="le";d.style.transform=T>=TIEMPOS.ultima?"scale("+(1.15+0.15*Math.sin(T*7))+")":"";d.style.boxShadow=T>=TIEMPOS.ultima?"0 0 "+(20+14*Math.sin(T*7))+"px #F5C451":"";}});
+  document.getElementById("reloj").textContent=T<TIEMPOS.contesta?20:Math.max(3,20-Math.floor((T-TIEMPOS.contesta)*1.2));
+  /* la definición que falta */
+  const df=document.getElementById("defi"),da=ventana(TIEMPOS.defi,99,0.4,0.4);df.style.opacity=da;df.style.transform="scale("+(0.9+0.1*da)+")";
+  document.getElementById("estudio").style.filter=da>0?"brightness("+(1-0.4*da)+")":"";
+  const pl=document.getElementById("plata");pl.style.transform="scale("+(1+0.2*Math.max(0,1-Math.abs(T-TIEMPOS.plata-0.3)/0.4))+")";pl.style.transformOrigin="left center";
+  const sg=document.getElementById("seguir");const b2=ease(cl((T-TIEMPOS.seguir)/0.4,0,1));sg.style.opacity=b2;sg.style.transform="scale("+(b2*(1+0.05*Math.sin(T*7)))+")";
+  if(ul.classList.contains("mueve")){const m=document.getElementById("listaMarco"),extra=Math.max(0,ul.scrollHeight-m.clientHeight+12),d2=extra/30,ciclo=d2+5;const t=(T%ciclo);const y=t<2?0:t<2+d2?(t-2)*30:extra;ul.style.transform="translateY("+(-y)+"px)";}
+}
+const TOTAL=32.0;   /* ESTIMADO sin voz */
+TIEMPOS={sobre:2.0,abre:4.6,estudio:11.0,contesta:11.8,ultima:16.4,defi:19.0,plata:25.0,seguir:30.0};
+SUBS=[[0,2.0,"Doña Rosa abre el almacén <em>como todos los días</em>…"],[2.0,4.6,"y por abajo de la puerta <em>entra un sobre</em>."],[4.6,6.8,"¡Es una <em>invitación</em>!"],[6.8,9.0,"La invitan a <em>El Gran Rosco Rioplatense</em>."],[9.0,11.0,"Si completa el rosco, gana <em>plata para su almacén</em>."],[11.0,14.0,"Doña Rosa contesta <em>todo</em>…"],[14.0,16.4,"letra por letra…"],[16.4,19.0,"y le falta <em>una sola palabra</em>."],[19.0,23.0,"Con la Z: animal del campo, <em>astuto y de cola larga</em>."],[23.0,25.0,"¿Cuál es?"],[25.0,27.5,"Si la saca, se lleva <em>$ 500.000</em> para el almacén."],[27.5,30.0,"<em>Ayudala</em> en los comentarios."],[30.0,32.0,"<em>Seguí las historias</em> de Doña Rosa."]];
+pintar();
+</script></body></html>
