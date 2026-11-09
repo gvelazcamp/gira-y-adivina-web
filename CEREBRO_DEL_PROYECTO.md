@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Doña Rosa cap. 2: cartel del regalo de 100 monedas
+- Qué: en el final del video (desde «Cada vecino que se suma…»), arriba de la deuda: «🎁 ¿Te registraste en el juego y lo resolviste? Mandanos tu usuario y Doña Rosa te regala 🪙 100 monedas para usar en el juego». Solo en pantalla (la voz no cambia). Video regrabado en promo/serie-dona-rosa/videos/.
+
 ### 09/11/2026 — Regalar monedas desde 👥 Usuarios (premio de Doña Rosa)
 - Qué: botón 🎁 (solo Gonzalo) en cada usuario de 👥 Usuarios: regala 100 monedas (avisa si ya le regaló antes). Se guarda en gya_ranking grupo "regalos" ({para, monedas}); el juego del que lo recibe lo cobra al abrir o al volver a la app, una sola vez (gya_regalos_cobrados + reclamado:true), y muestra «🎁 ¡Doña Rosa te regaló 100 monedas!».
 - Por qué: Gonzalo — premio para los que resuelven los juegos de Doña Rosa y le mandan su usuario.
