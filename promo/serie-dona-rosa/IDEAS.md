@@ -4,6 +4,8 @@ Doña Rosa tiene un almacén de barrio con deudas. En cada video le pasa algo qu
 
 Detalle técnico de cada una en `README.md` (misma carpeta). Videos en `videos/`.
 
+**Premio en cada juego (Gonzalo, 09/11):** «¿Lo resolviste? Mandanos por mensaje tu usuario de Girá y Adiviná y te regalamos 🪙 100 monedas». Gonzalo revisa en Social que el usuario exista y le regala desde 👥 Usuarios con el botón 🎁; al abrir el juego le aparece «🎁 ¡Doña Rosa te regaló 100 monedas!» (una sola vez por regalo).
+
 ## Lo que ya está
 - **Capítulos 1 a 3 → Palabra Secreta.** La libreta del fiado (TERMO), Chelo y la yerba (YERBA), el cobrador y la página de Cacho (SIDRA o BIRRA).
 - **Doña Rosa en la tele → Rosco** *(video con voz; posible capítulo 4).* La invitan a «El Gran Rosco Rioplatense», le falta la Z y usa el comodín del público. Premio: $ 200.000 para el almacén.

@@ -396,6 +396,12 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Regalar monedas desde 👥 Usuarios (premio de Doña Rosa)
+- Qué: botón 🎁 (solo Gonzalo) en cada usuario de 👥 Usuarios: regala 100 monedas (avisa si ya le regaló antes). Se guarda en gya_ranking grupo "regalos" ({para, monedas}); el juego del que lo recibe lo cobra al abrir o al volver a la app, una sola vez (gya_regalos_cobrados + reclamado:true), y muestra «🎁 ¡Doña Rosa te regaló 100 monedas!».
+- Por qué: Gonzalo — premio para los que resuelven los juegos de Doña Rosa y le mandan su usuario.
+- Riesgo aceptado: alguien con conocimientos podría fabricarse un regalo (son monedas del juego).
+- Archivos: index.html (regalarMonedas, reclamarRegalos), sw.js (cache v780).
+
 ### 09/11/2026 — IDEA: Doña Rosa y Girá y encajá (el primer pedido del mes)
 - Qué: anotada en promo/serie-dona-rosa/IDEAS.md y README. El público ordena el pedido jugando en el anuncio, comenta LISTO y sale en la pizarra «Los que ayudaron».
 
