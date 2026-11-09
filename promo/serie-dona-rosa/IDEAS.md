@@ -34,6 +34,9 @@ Doña Rosa tiene colgada en la pared del almacén una foto de sus nietos. Se abr
 ### 🔍 Se cayó el estante → Sopa Fugaz *(idea elegida)*
 Se cae un estante y toda la mercadería queda revuelta en el piso, como una sopa de letras chica. Doña Rosa ya encontró casi todo (las palabras aparecen tachadas) y le faltan 3 productos, cada uno con una pista: «algo para el mate», «algo para la ensalada», «algo para limpiar». Tiene que encontrarlos antes de que entre el primer cliente (cuenta regresiva, como el «fugaz» del juego). El público comenta las 3 palabras. No es el juego completo: solo la sopa chica con las 3 que faltan.
 
+### 🔷 El primer pedido del mes → Girá y encajá *(idea elegida)*
+Con lo que cobró del fiado, Doña Rosa hace su primer pedido para todo el mes. Llega un camioncito, se baja el repartidor con una libreta y ella firma el pedido. Pero le cuesta un montón acomodar toda la mercadería en los estantes: «¿Me ayudás a ordenar el pedido?». El público juega en el anuncio hasta acomodarlo todo y, cuando termina, comenta **LISTO**; todos los que comentan aparecen en la pizarra «Los que ayudaron» del próximo video. (Opcional: al terminar, el juego muestra un código corto para comentar junto con LISTO.)
+
 ## Otras ideas posibles (no elegidas todavía)
 - **Duelo de Conocimiento:** abre un súper nuevo en la esquina y su dueño desafía a Doña Rosa a un duelo de preguntas.
 - **Frases en Giro:** el refrán de la abuela en un cuadro viejo, con palabras que faltan.

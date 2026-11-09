@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — IDEA: Doña Rosa y Girá y encajá (el primer pedido del mes)
+- Qué: anotada en promo/serie-dona-rosa/IDEAS.md y README. El público ordena el pedido jugando en el anuncio, comenta LISTO y sale en la pizarra «Los que ayudaron».
+
 ### 09/11/2026 — Doña Rosa Ahorcado: imagen de muestra
 - Qué: promo/serie-dona-rosa/ahorcado-asset.html → videos/Dona-Rosa-Ahorcado-asset.png (pizarra de tiza con PA_TA, muñeco 3/6, Doña Rosa: «¿PASTA o PALTA?»).
 
