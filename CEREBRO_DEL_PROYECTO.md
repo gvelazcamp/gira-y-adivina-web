@@ -396,7 +396,7 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
-### 09/11/2026 — IDEA: Tutti Frutti con Doña Rosa y Don Ramón (¿vale o no vale TOMATE?)
+### 09/11/2026 — IDEA: Tutti Frutti con Doña Rosa y Don Ramón (el que gana paga la cita 💕) (¿vale o no vale TOMATE?)
 - Qué: escena de prueba sin voz promo/serie-dona-rosa/tutti-frutti.html y cierre.html?juego=tutti. En el video no se dice quién puso TOMATE; en la página del anuncio (pendiente) lo puso el rival del que elegís. Plan completo en promo/serie-dona-rosa/README.md. No publicar hasta que Gonzalo lo pida.
 
 ### 09/11/2026 — Diario del domingo: la apuesta pide seguidores
