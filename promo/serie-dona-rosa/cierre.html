@@ -20,5 +20,6 @@ p{position:absolute;left:0;right:0;top:790px;font:900 46px Outfit;color:#FCEFD2}
 <img class="ga" src="../../assets/logo.webp" alt="">
 </div>
 <script>/* ?juego=rosco: cierre del especial en la tele (Gonzalo, 09/11) */
+if(new URLSearchParams(location.search).get("juego")==="cruzadas"){const l=document.getElementById("logo");l.src="../../assets/palabras-cruzadas/logo-v2.webp";l.style.width="400px";document.getElementById("juega").textContent="Jugá a Palabras Cruzadas en";}
 if(new URLSearchParams(location.search).get("juego")==="rosco"){const l=document.getElementById("logo");l.src="../../assets/rosco/logo.webp";l.style.width="350px";l.style.top="130px";document.getElementById("juega").textContent="Jugá al Rosco Rioplatense en";}</script>
 </body></html>

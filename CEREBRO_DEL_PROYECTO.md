@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Diario del domingo: escena de prueba sin voz
+- Qué: promo/serie-dona-rosa/diario-domingo.html (Don Ramón apuesta su deuda; falta MILANESA, cruza con TANGO en la N) y cierre.html?juego=cruzadas (Palabras Cruzadas). Solo idea/prueba.
+
 ### 09/11/2026 — IDEA: Doña Rosa y el diario del domingo (Palabras Cruzadas)
 - Qué: anotada, sin armar. Doña Rosa hace el crucigrama del diario; un cliente le apuesta pagarle la deuda si lo completa; faltan 1–2 palabras y ayudan los seguidores. Regla: la protagonista es Doña Rosa y los clientes pueden tener cualquier nombre. Detalle en promo/serie-dona-rosa/README.md.
 
