@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — IDEA: Doña Rosa y la ruleta (sorteo del barrio)
+- Qué: anotada, sin armar. El almacén hace un sorteo, Doña Rosa gira la ruleta y hay una frase con letras tapadas para completar; lleva al juego principal.
+
 ### 09/11/2026 — IDEAS: Doña Rosa con Silabario (carta de amor) y 100 Rioplatenses (encuesta del barrio)
 - Qué: anotadas, sin armar. Silabario: Don Ramón le propone ser novios en una carta con sílabas desordenadas. 100 Rioplatenses: «¿qué no puede faltar en el almacén de Doña Rosa?», acertó 3 de 5. Otras ideas posibles (no elegidas): ruleta/sorteo del barrio, duelo contra el súper nuevo, Sopa Fugaz, Frases en Giro, Memoria, Ahorcado, Puzzle. Detalle en promo/serie-dona-rosa/README.md.
 
