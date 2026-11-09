@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Especial en la tele: comodín del público
+- Qué: especial-tele.html suma «👥 COMODÍN DEL PÚBLICO» (contesta lo que más comenten los que siguen a Girá y Adiviná) y termina con «Seguí a @girayadivina y comentá tu respuesta». Sigue siendo idea/prueba sin voz.
+
 ### 09/11/2026 — Especial «Doña Rosa en la tele»: escena de prueba sin voz
 - Qué: promo/serie-dona-rosa/especial-tele.html, programa «El Gran Rosco Rioplatense», última letra Z. Solo idea/prueba, no se publica hasta que Gonzalo lo pida.
 
