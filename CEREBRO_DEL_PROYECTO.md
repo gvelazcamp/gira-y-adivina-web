@@ -398,7 +398,7 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ### 09/11/2026 — Social: imagen nueva y Instagram tocable
 - Qué: el cartel de Social usa la imagen nueva assets/social/promo-redes-v2.webp («Enterate todas las novedades en…», mismas esquinas redondeadas). Encima del logo de Instagram hay un link invisible (#socialIg) que abre https://www.instagram.com/girayadivina/. Nombre nuevo porque assets/ es cache-first.
-- Archivos: index.html, assets/social/promo-redes-v2.webp, sw.js (cache v789).
+- Archivos: index.html, assets/social/promo-redes-v2.webp, sw.js (cache v789). La cuenta correcta es @gira_y_adivina (instagram.com/gira_y_adivina/), corregido el mismo día (cache v790).
 
 ### 09/11/2026 — 👥 Usuarios: botón 🔄 para actualizar
 - Qué: al lado del total, 🔄 vuelve a traer la lista del servidor sin cerrar la ventana (usrCargarLista).
