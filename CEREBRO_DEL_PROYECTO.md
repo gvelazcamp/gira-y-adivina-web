@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Especial en la tele: premio de $ 200.000
+- Qué: el premio pasa a $ 200.000 y, al decirlo, aparece un cartel que llama la atención («💰 ¡Este premio ayudaría muchísimo al almacén de Doña Rosa! 💰») con lluvia de billetes y monedas.
+
 ### 09/11/2026 — Especial en la tele: Doña Rosa confundida
 - Qué: al quedar la Z, el subtítulo dice «Le falta una sola palabra… y está muy confundida»; Doña Rosa se tambalea y aparece el globo «🤯 ¿¿¿Cuál era???».
 
