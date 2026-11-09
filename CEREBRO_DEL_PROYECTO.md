@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — 👥 Usuarios: cuántos de Argentina y de Uruguay
+- Qué: debajo del título (solo Gonzalo) «🇦🇷 N de Argentina · 🇺🇾 N de Uruguay», contando el país del perfil (gya_pais del respaldo) de los usuarios de la lista.
+
 ### 09/11/2026 — Doña Rosa: firma @gira_y_adivina
 - Qué: las escenas (capítulo 2 y 3, tele, diario, Tutti Frutti, Ahorcado) firman @gira_y_adivina (la cuenta real); el capítulo 2 se regrabó con la voz. El capítulo 1 (ya publicado) queda igual. Los videos de la tele y el Tutti Frutti se regraban cuando se vayan a publicar.
 

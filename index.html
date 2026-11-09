@@ -1535,6 +1535,7 @@ body:not(.tvhost) #horizontalAyuda{display:none}
 <div class="capa" id="capaUsuarios"><div class="caja rk-caja">
   <h2>👥 Usuarios<span id="usrTotal" class="usr-total" hidden></span><button type="button" id="usrRefrescar" class="no" title="Actualizar" style="margin-left:8px;padding:4px 10px;border-radius:12px;font-size:1rem;vertical-align:middle">🔄</button></h2>
   <p class="sub" style="margin:6px 0 14px">Todos los que jugaron, se hayan anotado al ranking o no.</p>
+  <p class="sub" id="usrPaises" hidden style="margin:-6px 0 10px;font-weight:800"></p>
   <p class="sub usr-embudo" id="usrEmbudo" hidden></p>
   <p class="sub usr-embudo" id="usrDelAnuncio" hidden></p>
   <div class="rk-lista" id="usrLista"></div>
@@ -5642,12 +5643,13 @@ async function usrCargarLista(){
   const AHORA=Date.now(),VENTANA_ONLINE_MS=3*60*1000;
   const rkPerfil=cargarRkPerfil();
   const misClaves=[normApodo(perfil.nombre),rkPerfil&&rkPerfil.apodo?normApodo(rkPerfil.apodo):null];
-  let delAnuncio=0;
+  let delAnuncio=0,deAR=0,deUY=0;
   (data||[]).forEach(f=>{
     let estado=f.estado_juego;if(typeof estado==="string"){try{estado=JSON.parse(estado);}catch(e){estado=null;}}
     /* Vino del anuncio de Doña Rosa: su respaldo trae el recorrido (gya_rosa_pasos) aunque se haya registrado por cualquier lado. */
     let rosaP=null;try{rosaP=JSON.parse(estado?.localStorage?.gya_rosa_pasos||"null");}catch(e){}
     const vinoAnuncio=!!(rosaP&&rosaP.llego&&rosaP.origen&&rosaP.origen!=="link");if(vinoAnuncio)delAnuncio++;
+    {const pp=estado?.localStorage?.gya_pais;if(pp==="argentina")deAR++;else if(pp==="uruguay")deUY++;}   /* país del perfil (Gonzalo, 09/11) */
     const online=f.actualizado_en&&(AHORA-new Date(f.actualizado_en).getTime())<VENTANA_ONLINE_MS&&estado?.presenciaMapa?.visible!==false;
     const avance=avanceMapaDeFila(f);
     const soyYo=misClaves.includes(normApodo(f.apodo));
@@ -5698,6 +5700,7 @@ async function usrCargarLista(){
     cont.appendChild(d);
   });
   {const n=(data&&data.length)||0,t=$("usrTotal");if(t){t.textContent=n;t.hidden=!n;}$("usrEstado").textContent=n?"":"Todavía no hay usuarios.";}
+  {const e=$("usrPaises");if(e){e.hidden=!esGonzalo()||!(deAR+deUY);e.textContent="🇦🇷 "+deAR+" de Argentina · 🇺🇾 "+deUY+" de Uruguay";}}
   {const e=$("usrDelAnuncio");if(e){e.hidden=!esGonzalo()||!delAnuncio;e.textContent="👥 Con perfil que vinieron del anuncio de Doña Rosa: "+delAnuncio+" (se registraron por cualquier lado, en este navegador)";}}
   /* Embudo del anuncio de Doña Rosa (rosa.js), solo para Gonzalo. */
   if(esGonzalo()&&window.DonaRosa)DonaRosa.resumen().then(c=>{const e=$("usrEmbudo");if(!e||!c||!c.llego)return;e.hidden=false;
