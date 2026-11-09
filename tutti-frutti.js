@@ -1191,6 +1191,12 @@ const TuttiFrutti=(()=>{
     Extensiones.abrirJuego("tutti-frutti");
     setTimeout(()=>{if(raiz)unirse(sala,de);},300);
   }
-  return{abrir,salir,abrirInvitacion,verDudas,_revisar:(c,v)=>revisar(c,v),_aprobarPalabra:(c,v)=>aprobarPalabra(c,v),_explicar:(c,v)=>explicar(c,v),_sugerir:(c,v)=>sugerir(c,v),enter:()=>{try{confirmarCampo();}catch(e){}},partidasJugadas:()=>{cargar();return partidas;}};
+  /* Invitación desde «Mis amigos» (09/11): abre el juego, crea la sala y devuelve el código para mandárselo al amigo. */
+  function crearParaInvitar(cb){
+    if(typeof Extensiones==="undefined")return;
+    Extensiones.abrirJuego("tutti-frutti");
+    setTimeout(()=>{if(!raiz)return;crearSala();if(cb&&on)cb(on.sala);},300);
+  }
+  return{abrir,salir,abrirInvitacion,crearParaInvitar,verDudas,_revisar:(c,v)=>revisar(c,v),_aprobarPalabra:(c,v)=>aprobarPalabra(c,v),_explicar:(c,v)=>explicar(c,v),_sugerir:(c,v)=>sugerir(c,v),enter:()=>{try{confirmarCampo();}catch(e){}},partidasJugadas:()=>{cargar();return partidas;}};
 })();
 window.TuttiFrutti=TuttiFrutti;

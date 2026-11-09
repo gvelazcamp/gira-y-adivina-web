@@ -1548,9 +1548,16 @@ body:not(.tvhost) #horizontalAyuda{display:none}
   <button class="no" id="amgVolver" style="width:100%;border-radius:14px;padding:13px;font-weight:700;margin-top:10px">Volver</button>
 </div></div>
 
+<div class="capa" id="capaInvJuego"><div class="caja" style="max-width:380px">
+  <h2 style="font-size:1.35rem">¿A qué querés invitar a <span id="ijNombre" style="color:#F5C451"></span>?</h2>
+  <div id="ijGrilla" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0"></div>
+  <button class="no" id="ijCancelar" style="width:100%;border-radius:14px;padding:12px;font-weight:700">Cancelar</button>
+</div></div>
+
 <div class="capa" id="capaInvitacion"><div class="caja" style="max-width:340px">
   <h2>🎮 ¡Te invitaron a jugar!</h2>
-  <p class="sub" style="margin:6px 0 16px"><b id="invDe"></b> te invitó a una partida en línea.</p>
+  <p class="sub" style="margin:6px 0 10px"><b id="invDe"></b> te invitó a jugar</p>
+  <div id="invJuego" style="display:flex;align-items:center;justify-content:center;gap:10px;margin:0 auto 16px;padding:8px 14px;border-radius:16px;background:#ffffff12;width:fit-content"><img id="invJuegoIco" src="assets/logo.webp" alt="" style="width:52px;height:52px;object-fit:contain"><b id="invJuegoNom" style="font-size:1.1rem">Girá y Adiviná</b></div>
   <div class="rk-acciones" style="margin-bottom:0">
     <button class="no" id="invRechazar">No, gracias</button>
     <button class="btn-grande" id="invAceptar" style="padding:9px 4px;font-size:.9rem">Aceptar</button>
@@ -5532,7 +5539,7 @@ async function amigosCargar(){
       '<div class="rk-info"><b>'+rkEsc(nom)+'</b><span>'+(online?"🟢 Conectado":t?"⚪ Visto "+haceCuanto(t):"⚪ Todavía sin datos")+'</span></div>';
     const b=document.createElement("button");b.className="no";b.textContent="Invitar a jugar";
     b.style.cssText="flex-shrink:0;margin-left:8px;padding:8px 12px;font-size:.78rem;border-radius:10px";
-    b.onclick=()=>{$("capaAmigos").classList.remove("ver");invEnviar(nom);};
+    b.onclick=()=>invElegirJuego(nom);
     d.appendChild(b);cont.appendChild(d);
   });
   const tt=$("amgTotal");tt.textContent=vistos.size;tt.hidden=!vistos.size;
@@ -5651,7 +5658,7 @@ async function usrCargarLista(){
       const b=document.createElement("button");
       b.className="no";b.textContent="Invitar";
       b.style.cssText="flex-shrink:0;padding:8px 12px;font-size:.78rem;border-radius:10px";
-      b.onclick=()=>invEnviar(f.apodo);
+      b.onclick=()=>invElegirJuego(f.apodo);
       /* Botones apilados (09/11): con ✕ y 🎁 de Gonzalo al costado, el nombre quedaba aplastado. */
       const acc=document.createElement("div");acc.style.cssText="flex-shrink:0;display:flex;flex-direction:column;gap:6px;margin-left:8px";acc.appendChild(b);d.appendChild(acc);
       /* ✕ solo para Gonzalo: saca a esa persona de Social (no borra nada). */
@@ -9274,6 +9281,7 @@ function invManejarMensaje(t,pl){
   if($("juego").style.display==="block")return;
   invPendiente=payload;
   $("invDe").textContent=payload.de;
+  {const j=invJuegoDe(payload.juego||"rueda");$("invJuegoIco").src=j.i;$("invJuegoNom").textContent=j.n;}
   $("capaInvitacion").classList.add("ver");
 }
 function invConectar(){
@@ -9285,13 +9293,38 @@ function invConectar(){
     mqInv.on("message",invManejarMensaje);
   },()=>{setTimeout(invConectar,15000);},c=>{mqInv=c;});
 }
+/* Invitar a un amigo eligiendo el juego (Gonzalo, 09/11). «rueda» = partida de Girá y Adiviná (invEnviar, como siempre);
+   «tutti» = sala de Tutti Frutti; el resto son duelos 1 vs 1 de duelo-extensiones.js (Duelo.invitarCon). El aviso
+   viaja por el mismo tema MQTT de invitaciones con {juego, sala}; el invitado entra directo a esa sala. */
+const INV_JUEGOS=[{id:"rueda",n:"Girá y Adiviná",i:"assets/logo.webp"},{id:"tutti",n:"Tutti Frutti",i:"logo-tutti-frutti.svg"},{id:"palabra",n:"Palabra Secreta",i:"assets/palabra-secreta/logo.webp"},
+  {id:"sopa",n:"Sopa Fugaz",i:"assets/sopa/logo.webp"},{id:"ahorcado",n:"Ahorcado",i:"logo-ahorcado-rioplatense.svg"},{id:"rosco",n:"El Rosco",i:"assets/rosco/logo.webp"}];
+const invJuegoDe=id=>INV_JUEGOS.find(j=>j.id===id)||INV_JUEGOS[0];
+function invElegirJuego(apodoDestino){
+  $("ijNombre").textContent=apodoDestino;const g=$("ijGrilla");g.innerHTML="";
+  INV_JUEGOS.forEach(j=>{const b=document.createElement("button");b.className="no";b.style.cssText="padding:8px 4px;border-radius:16px;font-size:.78rem;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1.15";
+    b.innerHTML='<img src="'+j.i+'" alt="" style="width:62px;height:62px;object-fit:contain">'+j.n;b.onclick=()=>{$("capaInvJuego").classList.remove("ver");invEnviarJuego(apodoDestino,j.id);};g.appendChild(b);});
+  $("capaInvJuego").classList.add("ver");
+}
+$("ijCancelar").onclick=()=>$("capaInvJuego").classList.remove("ver");
+function invPublicar(apodoDestino,datos){
+  const msg=JSON.stringify(Object.assign({tipo:"invitar",de:perfil.nombre,deAvatar:perfil.avatar||null,ts:Date.now()},datos));
+  const ir=()=>{try{mqInv.publish(invTema(apodoDestino),msg);mostrarToast("📨","Invitación a "+invJuegoDe(datos.juego).n+" enviada a "+apodoDestino+".");}catch(e){}};
+  if(mqInv&&mqInv.connected)ir();else{invConectar();let n=0;const t=setInterval(()=>{if(mqInv&&mqInv.connected){clearInterval(t);ir();}else if(++n>40){clearInterval(t);mostrarToast("⚠️","No se pudo mandar la invitación. Probá con otra red.");}},500);}
+}
+function invEnviarJuego(apodoDestino,juego){
+  ["capaAmigos","capaUsuarios","capaSocial"].forEach(id=>$(id).classList.remove("ver"));
+  if(juego==="rueda"){invEnviar(apodoDestino);return;}
+  if(juego==="tutti"){if(window.TuttiFrutti)TuttiFrutti.crearParaInvitar(sala=>invPublicar(apodoDestino,{juego,sala}));return;}
+  const CH="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",sala=Array.from({length:4},()=>CH[Math.floor(Math.random()*CH.length)]).join("");
+  if(window.Duelo&&Duelo.invitarCon(juego,sala,true,apodoDestino))invPublicar(apodoDestino,{juego,sala});
+}
 function invEnviar(apodoDestino){
   $("capaUsuarios").classList.remove("ver");
   $("setup").style.display="none";$("lobby").style.display="block";
   $("zonaCodigo").style.display="block";$("zonaEntrar").style.display="none";
   $("estado").textContent="Invitando a "+apodoDestino+"…";
   crearSalaHost(()=>{
-    try{mq.publish(invTema(apodoDestino),JSON.stringify({tipo:"invitar",de:perfil.nombre,deAvatar:perfil.avatar||null,sala,ts:Date.now()}));}catch(e){}
+    try{mq.publish(invTema(apodoDestino),JSON.stringify({tipo:"invitar",juego:"rueda",de:perfil.nombre,deAvatar:perfil.avatar||null,sala,ts:Date.now()}));}catch(e){}
     mostrarToast("📨","Invitación enviada a "+apodoDestino+".");
     $("estado").textContent="Esperando que "+apodoDestino+" acepte…";
   },()=>{$("estado").textContent="No se pudo conectar a internet para invitar. Probá con otra red (datos del celular).";});
@@ -9302,6 +9335,9 @@ $("invAceptar").onclick=()=>{
   $("capaInvitacion").classList.remove("ver");
   if(!p||!p.sala)return;
   $("capaUsuarios").classList.remove("ver");$("capaSocial").classList.remove("ver");$("capaMas").classList.remove("ver");$("capaAmigos").classList.remove("ver");
+  const jg=p.juego||"rueda";
+  if(jg==="tutti"){if(window.TuttiFrutti)TuttiFrutti.abrirInvitacion(p.sala,p.de);return;}
+  if(jg!=="rueda"){if(window.Duelo)Duelo.invitarCon(jg,p.sala,false,p.de);return;}
   unirse(p.sala);
 };
 $("invRechazar").onclick=()=>{
@@ -12307,7 +12343,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 </script>
 <script src="cuenta.js?v=7"></script>
 <script src="palabra-secreta-sala.js?v=2"></script>
-<script src="duelo-extensiones.js?v=28"></script>
+<script src="duelo-extensiones.js?v=29"></script>
 <script src="sopa-fugaz-datos.js?v=7"></script>
 <script src="sopa-fugaz.js?v=22"></script>
 <script src="rueda-de-letras-datos.js?v=4"></script>
@@ -12352,7 +12388,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="canta-la-cancion-datos.js?v=2"></script>
 <script src="canta-la-cancion.js?v=13"></script>
 <script src="tutti-frutti-datos.js?v=35"></script>
-<script src="tutti-frutti.js?v=99"></script>
+<script src="tutti-frutti.js?v=100"></script>
 <link rel="stylesheet" href="ahora-caigo.css?v=10">
 <script src="ahora-caigo-datos.js?v=2"></script>
 <script src="ahora-caigo.js?v=16"></script>
