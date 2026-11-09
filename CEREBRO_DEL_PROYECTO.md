@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Especial en la tele: video con la voz
+- Qué: especial-tele.html ajustado a la voz de ElevenLabs (42,9 s): escena 39,35 s + cierre del Rosco 4,6 s. Video, voz y cierre guardados en promo/serie-dona-rosa/videos/. Sigue sin publicarse hasta que Gonzalo lo pida.
+
 ### 09/11/2026 — Especial en la tele: premio de $ 200.000
 - Qué: el premio pasa a $ 200.000 y, al decirlo, aparece un cartel que llama la atención («💰 ¡Este premio ayudaría muchísimo al almacén de Doña Rosa! 💰») con lluvia de billetes y monedas.
 
