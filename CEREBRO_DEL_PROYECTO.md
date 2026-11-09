@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Doña Rosa cap. 2: 6 nombres más en «Los que ayudaron»
+- Qué: VOTARON de capitulo-2.html suma tizianobiscotti, pieri_alaggio, bringas.martina, oliverasalvadordiaz, bautistafigueira27 y lourdesmaureiramaciel (23 en total); video regrabado y guardado en promo/serie-dona-rosa/videos/.
+
 ### 08/11/2026 — IDEA para mucho más adelante: Doña Rosa en la tele (Rosco)
 - Qué: anotada, sin armar. Doña Rosa invitada a un programa de TV, recibe un sobre para jugar al Rosco, llega a la última palabra y los seguidores la completan → lleva la serie a otro juego. Detalle en promo/serie-dona-rosa/README.md («Ideas para mucho más adelante»).
 
