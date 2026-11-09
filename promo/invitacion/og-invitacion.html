@@ -1,5 +1,5 @@
 <!doctype html><html lang="es-UY"><head><meta charset="utf-8">
-<!-- Imagen 1200×630 de la vista previa de la invitación de amigos por WhatsApp (09/11/2026). Se exporta a assets/compartir/og-invitacion.jpg -->
+<!-- Imagen 1200×630 de la vista previa de la invitación de amigos por WhatsApp (09/11/2026). Se exporta a assets/compartir/og-invitacion-v2.jpg -->
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -7,21 +7,25 @@ html,body{width:1200px;height:630px;overflow:hidden}
 #e{position:relative;width:1200px;height:630px;background:radial-gradient(700px 520px at 30% 45%,#7b2fc0 0%,#3a1470 55%,#1a0a36 100%);font-family:Outfit,sans-serif;color:#FCEFD2;overflow:hidden}
 .rayos{position:absolute;left:-200px;top:-300px;width:1200px;height:1200px;background:repeating-conic-gradient(from 0deg at 50% 50%,#ffffff10 0 8deg,transparent 8deg 22deg);opacity:.7}
 .conf{position:absolute;width:16px;height:9px;border-radius:2px}
-.logo{position:absolute;left:58px;top:40px;width:250px}
+.logo{position:absolute;left:62px;top:26px;width:205px}
 .tag{position:absolute;left:330px;top:70px;padding:10px 22px;border-radius:30px;background:#E5197C;font:900 26px Outfit;letter-spacing:2px;box-shadow:0 6px 0 #8E0F4C}
-h1{position:absolute;left:60px;top:300px;width:720px;font:900 76px/1.0 "Archivo Black",sans-serif;color:#F5C451;text-shadow:0 6px 0 #5a1a00}
-p{position:absolute;left:62px;top:478px;width:700px;font:800 34px/1.25 Outfit}
+h1{position:absolute;left:60px;top:250px;width:720px;font:900 76px/1.0 "Archivo Black",sans-serif;color:#F5C451;text-shadow:0 6px 0 #5a1a00}
+p{position:absolute;left:62px;top:415px;width:700px;font:800 34px/1.25 Outfit}
 p b{color:#7fe0a0}
 .giro{position:absolute;right:40px;bottom:-10px;height:640px}
 .banderas{position:absolute;left:615px;top:72px;font-size:44px;letter-spacing:6px}
+.juegos{position:absolute;left:58px;top:518px;display:flex;gap:12px;align-items:center}
+.juegos img{width:82px;height:82px;object-fit:contain;padding:6px;border-radius:18px;background:#ffffff1a;border:2px solid #ffffff33;box-shadow:0 6px 14px #0006}
+.juegos span{font:900 26px Outfit;color:#F5C451;margin-left:4px}
 </style></head><body><div id="e">
 <div class="rayos"></div>
 <img class="logo" src="../../assets/logo.webp" alt="">
 <div class="tag">🎮 INVITACIÓN</div>
 <h1>¡Te invitaron<br>a jugar!</h1>
 <p>Sumate como <b>amigo</b> y juguemos<br>partidas juntos 🎡</p>
+<div class="juegos"><img src="../../assets/rosco/logo.webp"><img src="../../assets/palabra-secreta/logo.webp"><img src="../../logo-tutti-frutti.svg"><img src="../../assets/palabras-cruzadas/logo-v2.webp"><img src="../../logo-sopa-fugaz.svg"><img src="../../logo-ahorcado-rioplatense.svg"><span>+20 juegos</span></div>
 <img class="giro" src="../../presentacion-y-locucion-extensiones/Giro/Giro_festejando_cuerpo.webp" alt="">
 <div class="banderas">🇺🇾 🇦🇷</div>
 </div>
-<script>const C=["#F5C451","#5fd38a","#ff4fa3","#6fb3ff","#fff"],e=document.getElementById("e");for(let i=0;i<40;i++){const L=(i*137)%1180,T=(i*89)%600;if(L<800&&T>280&&T<580)continue;const d=document.createElement("i");d.className="conf";d.style.left=((i*137)%1180)+"px";d.style.top=((i*89)%600)+"px";d.style.background=C[i%5];d.style.transform="rotate("+(i*47%180)+"deg)";e.insertBefore(d,e.children[1]);}</script>
+<script>const C=["#F5C451","#5fd38a","#ff4fa3","#6fb3ff","#fff"],e=document.getElementById("e");for(let i=0;i<40;i++){const L=(i*137)%1180,T=(i*89)%600;if(L<820&&T>240&&T<620)continue;const d=document.createElement("i");d.className="conf";d.style.left=((i*137)%1180)+"px";d.style.top=((i*89)%600)+"px";d.style.background=C[i%5];d.style.transform="rotate("+(i*47%180)+"deg)";e.insertBefore(d,e.children[1]);}</script>
 </body></html>
