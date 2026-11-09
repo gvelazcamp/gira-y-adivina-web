@@ -42,7 +42,7 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
   3. Llega al final y **falta una sola palabra**: se muestra la definición y la letra, y los seguidores la tienen que descifrar en los comentarios.
   4. Lo que está en juego es **mucha plata para arreglar el local** (puede cerrar la historia de la deuda y abrir la de arreglar el almacén).
   5. La página del anuncio sería una versión liviana del Rosco con solo esa última palabra (1–2 s de carga), y después lleva a Rosco Rioplatense.
-  - Nombre: el programa es inventado, sin parecerse a ningún programa real (nombre, decorado y presentador propios). Propuestas: «El Gran Abecedario» (recomendada), «La Vuelta de Letras», «Letra por Letra». A la ronda le podemos seguir diciendo «el rosco», que es como se llama nuestro juego. Falta que Gonzalo elija.
+  - Nombre (Gonzalo, 09/11): el programa se llama **«El Gran Rosco Rioplatense»**, igual que nuestro juego (así el que lo ve sabe a qué jugar después). «Rosco» es palabra común; lo único que no se copia del programa real de la tele es su nombre, logo, decorado, música y presentador.
   - Estado: IDEA para más adelante, no armar hasta que lo pida.
 
 ## Lo que sigue (plan acordado)
