@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — PENDIENTE: el especial en la tele podría ser el capítulo 4
+- Qué: el video «Doña Rosa en la tele» (El Gran Rosco Rioplatense, premio $ 200.000, comodín del público) queda guardado en promo/serie-dona-rosa/videos/ como posible capítulo 4. Gonzalo decide después; no publicar ni armar la página del anuncio hasta que lo pida.
+
 ### 09/11/2026 — Especial en la tele: video con la voz
 - Qué: especial-tele.html ajustado a la voz de ElevenLabs (42,9 s): escena 39,35 s + cierre del Rosco 4,6 s. Video, voz y cierre guardados en promo/serie-dona-rosa/videos/. Sigue sin publicarse hasta que Gonzalo lo pida.
 
