@@ -25,10 +25,12 @@ Don Ramón le deja una carta con las sílabas desordenadas donde le propone ser 
 ### 🎡 El sorteo del barrio → la ruleta de Girá y Adiviná *(idea)*
 El almacén hace un sorteo y Doña Rosa gira la ruleta. Aparece una frase con letras tapadas que hay que completar. Lleva al juego principal.
 
+### 🔤 El cartel de la oferta → Ahorcado *(idea elegida)*
+Afuera del almacén está la pizarra de la oferta del día, escrita con tiza. Se borraron algunas letras y la palabra queda ambigua, para que se discuta (ej.: PA_TA → ¿PASTA o PALTA?, las dos son comida). Doña Rosa y un vecino juegan al ahorcado para descubrirla antes de que se complete el muñeco, y el público comenta cuál es la oferta.
+
 ## Otras ideas posibles (no elegidas todavía)
 - **Duelo de Conocimiento:** abre un súper nuevo en la esquina y su dueño desafía a Doña Rosa a un duelo de preguntas.
 - **Sopa Fugaz:** se cae el estante y hay que encontrar 3 productos entre el lío de letras.
 - **Frases en Giro:** el refrán de la abuela en un cuadro viejo, con palabras que faltan.
 - **Memoria en Giro:** ¿qué vecino se llevó qué cosa?
-- **Ahorcado:** el cartel de la oferta del día al que se le cayeron letras.
 - **Puzzle:** la foto rota de la inauguración del almacén en 1985.
