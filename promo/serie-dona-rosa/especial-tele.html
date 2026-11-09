@@ -178,11 +178,14 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
 #defi p{font:800 44px/1.2 Outfit;margin-top:14px}
 #defi .hue{margin-top:26px;font:900 64px "Archivo Black";letter-spacing:18px;color:#F5C451}
 #seguir{top:1180px;white-space:nowrap}
+#premio{position:absolute;left:50%;top:1010px;translate:-50% 0;white-space:nowrap;padding:22px 34px;border-radius:26px;background:linear-gradient(#ffe27a,#F5B301);border:6px solid #fff3c4;color:#3a1a00;font:900 34px/1.15 "Archivo Black";text-align:center;box-shadow:0 0 0 8px #E5197C,0 20px 50px #000c;opacity:0;z-index:7}
+#premio b{color:#c2185b}
+.billeteC{position:absolute;font-size:64px;opacity:0;z-index:7}
 #estudio #duda{position:absolute;left:600px;top:250px;padding:14px 22px;border-radius:26px;background:#fff;font:900 34px Outfit;color:#5b3a26;box-shadow:0 8px 20px #0006;opacity:0;white-space:nowrap}
 #comodin{display:inline-block;margin-top:22px;padding:14px 30px;border-radius:30px;background:linear-gradient(#ff4fa3,#E5197C);color:#fff;font:900 36px Outfit;box-shadow:0 7px 0 #8E0F4C;opacity:0}
 </style></head><body><div id="e">
 <div class="cab"><b>EL ALMACÉN DE DOÑA ROSA</b><small>ESPECIAL · DOÑA ROSA EN LA TELE</small></div>
-<div class="info"><div><small>EN JUEGO PARA EL ALMACÉN</small><b id="plata">$ 500.000</b><small style="margin-top:6px">SI COMPLETA EL ROSCO</small></div><div id="votos"><h5>LOS QUE <span>AYUDARON</span> 💜</h5><div id="listaMarco"><ul id="lista"></ul></div></div></div>
+<div class="info"><div><small>EN JUEGO PARA EL ALMACÉN</small><b id="plata">$ 200.000</b><small style="margin-top:6px">SI COMPLETA EL ROSCO</small></div><div id="votos"><h5>LOS QUE <span>AYUDARON</span> 💜</h5><div id="listaMarco"><ul id="lista"></ul></div></div></div>
 <div class="marco" id="almM"><div id="int">
  <div class="cartelIn"><div>ALMACÉN DOÑA ROSA<small>DESDE 1985</small></div></div>
  <div class="est" style="top:260px"></div><div class="est" style="top:410px"></div>
@@ -203,13 +206,14 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
  <div id="rosaTV" class="rosa"><div class="rodete"></div><div class="pelo"></div><div class="cara"></div><div class="cuerpo"></div><div class="delantal"></div><div class="pies"></div></div>
  <div id="duda">🤯 ¿¿¿Cuál era???</div>
  <div id="atril">DOÑA ROSA</div>
- <div id="pozo">POZO<b>$ 500.000</b></div>
+ <div id="pozo">POZO<b>$ 200.000</b></div>
  <div id="reloj">20</div>
 </div></div>
 <div id="inv"><div class="env"></div><div class="carta"><small>✨ INVITACIÓN ✨</small><p>Señora Doña Rosa:<br>la esperamos en el estudio de</p><b>EL GRAN ROSCO RIOPLATENSE</b><i>Premio: plata para su almacén</i></div><div class="flap"></div></div>
 <div id="defi"><small>CON LA Z</small><p>Animal del campo, astuto y de cola larga.</p><div class="hue">_ _ _ _ _</div><div id="comodin">👥 COMODÍN DEL PÚBLICO</div></div>
+<div id="premio">💰 ¡Este premio ayudaría <b>muchísimo</b><br>al almacén de Doña Rosa! 💰</div>
 <div id="seguir">👤 Seguí a @girayadivina</div>
-<div id="sub"></div><div id="firma">@girayadivina</div>
+<div id="lluvia"></div><div id="sub"></div><div id="firma">@girayadivina</div>
 </div>
 <script>
 /* ====== LO QUE SE CAMBIA ====== */
@@ -218,6 +222,7 @@ const LETRAS="ABCDEFGHIJLMNÑOPQRSTUVXYZ";   // la última (Z) queda sin contest
 /* ============================== */
 {const it=document.getElementById("int"),cols=["#d6403a","#F5B301","#2d7a8a","#7b4fa3","#3c9a5f","#e58a2a"];for(const [y,h] of [[260,70],[410,80]])for(let k=0;k<11;k++){const b=document.createElement("b");b.className="prod";b.style.left=(70+k*62)+"px";b.style.top=(y-h)+"px";b.style.height=h+"px";b.style.background=cols[(k*7+y)%6];it.insertBefore(b,it.children[1]);}}
 const ul=document.getElementById("lista");if(VOTARON.length>6)ul.classList.add("dos","mueve");else if(VOTARON.length>3)ul.classList.add("dos");VOTARON.forEach(n=>{const li=document.createElement("li");li.textContent=n;ul.appendChild(li);});
+{const ll=document.getElementById("lluvia");for(let k=0;k<14;k++){const b=document.createElement("div");b.className="billeteC";b.textContent=k%3?"💵":"🪙";ll.appendChild(b);}}
 const rueda=document.getElementById("rueda");[...LETRAS].forEach((l,k)=>{const a=-Math.PI/2+k*2*Math.PI/LETRAS.length,d=document.createElement("div");d.className="le";d.textContent=l;d.style.left=(Math.cos(a)*285)+"px";d.style.top=(Math.sin(a)*285)+"px";rueda.appendChild(d);});
 let T=0,SUBS=[],TIEMPOS={};
 const cl=(x,a,b)=>Math.max(a,Math.min(b,x)),ease=t=>1-Math.pow(1-t,3),io=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
@@ -245,11 +250,13 @@ function pintar(){
   document.getElementById("estudio").style.filter=da>0?"brightness("+(1-0.4*da)+")":"";
   const pl=document.getElementById("plata");pl.style.transform="scale("+(1+0.2*Math.max(0,1-Math.abs(T-TIEMPOS.plata-0.3)/0.4))+")";pl.style.transformOrigin="left center";
   const co=document.getElementById("comodin"),ca=ease(cl((T-TIEMPOS.comodin)/0.4,0,1));co.style.opacity=ca;co.style.transform="scale("+(ca*(1+0.06*Math.sin(T*8)))+")";co.style.filter=T>=TIEMPOS.comodin?"brightness("+(1+0.25*Math.abs(Math.sin(T*5)))+")":"";
+  const pr=document.getElementById("premio"),pa=ventana(TIEMPOS.plata,TIEMPOS.seguir,0.35,0.3);pr.style.opacity=pa;pr.style.transform="scale("+(pa*(1+0.07*Math.sin(T*9)))+") rotate("+(-3+Math.sin(T*5)*2)+"deg)";
+  [...document.querySelectorAll(".billeteC")].forEach((b,k)=>{const t=(T-TIEMPOS.plata-k*0.16)/1.6;b.style.opacity=t>0&&t<1&&T<TIEMPOS.seguir+0.3?1:0;b.style.left=(40+((k*167)%980))+"px";b.style.top=(420+cl(t,0,1)*880)+"px";b.style.transform="rotate("+(t*360*(k%2?1:-1))+"deg)";});
   const sg=document.getElementById("seguir");const b2=ease(cl((T-TIEMPOS.seguir)/0.4,0,1));sg.style.opacity=b2;sg.style.transform="scale("+(b2*(1+0.05*Math.sin(T*7)))+")";
   if(ul.classList.contains("mueve")){const m=document.getElementById("listaMarco"),extra=Math.max(0,ul.scrollHeight-m.clientHeight+12),d2=extra/30,ciclo=d2+5;const t=(T%ciclo);const y=t<2?0:t<2+d2?(t-2)*30:extra;ul.style.transform="translateY("+(-y)+"px)";}
 }
 const TOTAL=34.0;   /* ESTIMADO sin voz */
 TIEMPOS={sobre:2.0,abre:4.6,estudio:11.0,contesta:11.8,ultima:16.4,defi:19.0,comodin:23.0,plata:29.0,seguir:31.5};
-SUBS=[[0,2.0,"Doña Rosa abre el almacén <em>como todos los días</em>…"],[2.0,4.6,"y por abajo de la puerta <em>entra un sobre</em>."],[4.6,6.8,"¡Es una <em>invitación</em>!"],[6.8,9.0,"La invitan a <em>El Gran Rosco Rioplatense</em>."],[9.0,11.0,"Si completa el rosco, gana <em>plata para su almacén</em>."],[11.0,14.0,"Doña Rosa contesta <em>todo</em>…"],[14.0,16.4,"letra por letra…"],[16.4,19.0,"Le falta <em>una sola palabra</em>… y está <em>muy confundida</em>."],[19.0,23.0,"Con la Z: animal del campo, <em>astuto y de cola larga</em>."],[23.0,26.0,"Doña Rosa usa el <em>comodín del público</em>:"],[26.0,29.0,"va a contestar lo que más comenten los que siguen a <em>Girá y Adiviná</em>."],[29.0,31.5,"Si la saca, se lleva <em>$ 500.000</em> para el almacén."],[31.5,34.0,"<em>Seguí a @girayadivina</em> y comentá tu respuesta."]];
+SUBS=[[0,2.0,"Doña Rosa abre el almacén <em>como todos los días</em>…"],[2.0,4.6,"y por abajo de la puerta <em>entra un sobre</em>."],[4.6,6.8,"¡Es una <em>invitación</em>!"],[6.8,9.0,"La invitan a <em>El Gran Rosco Rioplatense</em>."],[9.0,11.0,"Si completa el rosco, gana <em>plata para su almacén</em>."],[11.0,14.0,"Doña Rosa contesta <em>todo</em>…"],[14.0,16.4,"letra por letra…"],[16.4,19.0,"Le falta <em>una sola palabra</em>… y está <em>muy confundida</em>."],[19.0,23.0,"Con la Z: animal del campo, <em>astuto y de cola larga</em>."],[23.0,26.0,"Doña Rosa usa el <em>comodín del público</em>:"],[26.0,29.0,"va a contestar lo que más comenten los que siguen a <em>Girá y Adiviná</em>."],[29.0,31.5,"Si la saca, se lleva <em>$ 200.000</em> para el almacén."],[31.5,34.0,"<em>Seguí a @girayadivina</em> y comentá tu respuesta."]];
 pintar();
 </script></body></html>
