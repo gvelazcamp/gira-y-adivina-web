@@ -1,0 +1,119 @@
+<!doctype html><html lang="es-UY"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@600;800;900&family=Caveat+Brush&display=swap" rel="stylesheet">
+<!-- Asset de idea «El cartel de la oferta → Ahorcado» (09/11/2026, Gonzalo). Imagen fija 1080×1920: pizarra de tiza afuera del almacén,
+     letras borradas (PA_TA: ¿PASTA o PALTA?) y el ahorcado dibujado con tiza. -->
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-family:Outfit,sans-serif}
+#e{position:relative;width:1080px;height:1920px;overflow:hidden;background:#24384a}
+.cab{position:absolute;left:0;right:0;top:0;height:140px;background:#1b2e3c;padding:28px 44px}
+.cab b{display:block;font:900 52px "Archivo Black";color:#FCEFD2;letter-spacing:1px}
+.cab small{display:block;font:800 24px Outfit;color:#9fb6c4;letter-spacing:2px;margin-top:4px}
+.info{position:absolute;left:40px;right:40px;top:160px;height:96px;background:#FCEFD2;border-radius:14px;display:flex;justify-content:space-between;align-items:center;padding:0 32px;color:#26323c}
+.info small{display:block;font:800 21px Outfit;letter-spacing:2px;color:#8a7a6a}
+.info b{display:block;font:900 40px "Archivo Black"}.info .der{text-align:right}.info .der b{color:#2d7a8a}
+/* escena */
+#esc{position:absolute;left:0;right:0;top:280px;height:1000px;background:linear-gradient(#bfe3d0 0,#cfe9d8 55%,#9fc79a 55%,#8fb98a 100%);overflow:hidden}
+.edif{position:absolute;left:150px;width:780px;top:140px;height:560px;background:#F3D9A4;border:8px solid #7a4a2a;border-bottom:0}
+.techo{position:absolute;left:120px;width:840px;top:96px;height:60px;background:#b4532f;border-radius:6px}
+.cartel{position:absolute;left:300px;width:480px;top:170px;height:90px;background:#2d5d7a;border:6px solid #f3e3c0;border-radius:10px;display:grid;place-items:center;font:900 46px "Archivo Black";color:#FCEFD2;letter-spacing:2px}
+.cartel small{display:block;font:800 18px Outfit;color:#cfe3ee;margin-top:-6px;text-align:center}
+.toldo{position:absolute;left:170px;width:740px;top:280px;height:80px;background:repeating-linear-gradient(90deg,#d6403a 0 62px,#f6efe2 62px 124px);clip-path:polygon(0 0,100% 0,100% 70%,96% 100%,92% 70%,88% 100%,84% 70%,80% 100%,76% 70%,72% 100%,68% 70%,64% 100%,60% 70%,56% 100%,52% 70%,48% 100%,44% 70%,40% 100%,36% 70%,32% 100%,28% 70%,24% 100%,20% 70%,16% 100%,12% 70%,8% 100%,4% 70%,0 100%)}
+.vent{position:absolute;top:400px;width:210px;height:220px;background:#6fa8c0;border:8px solid #7a4a2a}
+.vent i{position:absolute;left:10px;right:10px;height:8px;background:#7a4a2a}
+.vent b{position:absolute;width:26px;height:40px;border-radius:6px 6px 4px 4px}
+.puerta{position:absolute;left:450px;top:390px;width:180px;height:310px;background:#5b3a26;border:8px solid #7a4a2a}
+.puerta .aviso{position:absolute;left:18px;top:60px;width:130px;padding:8px 4px;background:#fff7e0;border:3px solid #c43;font:900 18px/1.1 Outfit;color:#c43;text-align:center;transform:rotate(-6deg)}
+.vereda{position:absolute;left:0;right:0;top:700px;height:90px;background:#d8cdb6;border-top:6px solid #b9ab8f}
+.calle{position:absolute;left:0;right:0;top:790px;height:210px;background:#6b6b6b}
+.calle i{position:absolute;top:95px;height:16px;width:110px;background:#f3e3c0}
+/* Doña Rosa */
+.rosa{position:absolute;width:120px;height:200px}#rosa{left:640px;top:520px}
+.rosa .pelo{position:absolute;left:24px;top:0;width:72px;height:64px;border-radius:50%;background:#c9c9cf}
+.rosa .rodete{position:absolute;left:44px;top:-22px;width:34px;height:30px;border-radius:50%;background:#c9c9cf}
+.rosa .cara{position:absolute;left:30px;top:16px;width:60px;height:62px;border-radius:50%;background:#f1c6a0}
+.rosa .cara::before,.rosa .cara::after{content:"";position:absolute;top:26px;width:8px;height:8px;border-radius:50%;background:#3a2a20}
+.rosa .cara::before{left:16px}.rosa .cara::after{right:16px}
+.rosa .cuerpo{position:absolute;left:14px;top:76px;width:92px;height:100px;border-radius:26px 26px 10px 10px;background:#7b4fa3}
+.rosa .delantal{position:absolute;left:32px;top:96px;width:56px;height:80px;border-radius:8px;background:#fff3dc}
+.rosa .pies{position:absolute;left:28px;top:174px;width:64px;height:20px;background:#3a2a20;border-radius:10px}
+/* pizarra con el tablero */
+#piz{position:absolute;left:110px;width:860px;top:300px;height:930px;background:#FFF8E6 repeating-linear-gradient(#FFF8E6 0 58px,#cfe0ee 58px 60px);border-left:14px solid #b4532f;border-radius:10px 22px 22px 10px;box-shadow:0 20px 50px #0009;opacity:0;transform:scale(.8)}
+#piz::before{content:"";position:absolute;left:70px;top:0;bottom:0;width:4px;background:#e58a8a}
+#piz h4{text-align:center;font:900 44px "Archivo Black";color:#7a2a1a;margin:26px 0 0;letter-spacing:2px}
+#piz .sub2{text-align:center;font:800 26px Outfit;color:#8a6a5a;margin:2px 0 16px}
+#piz .cand{position:absolute;right:28px;top:14px;font-size:72px}
+#tab{display:grid;grid-template-rows:repeat(6,104px);gap:14px;justify-content:center}
+.fila{display:grid;grid-template-columns:170px repeat(5,104px);gap:12px;align-items:center}
+.fila .n{font:900 30px "Archivo Black";color:#2d5d7a;text-align:right;padding-right:6px;white-space:nowrap}
+#globo{position:absolute;left:740px;top:390px;background:#fff;border-radius:30px;padding:16px 22px;font:900 34px/1.05 Outfit;color:#5b3a26;opacity:0;box-shadow:0 8px 20px #0004}
+.c{width:104px;height:104px;background:url(../../assets/palabra-secreta/casilla.webp) center/100% 100%;display:grid;place-items:center;font:900 54px "Archivo Black";color:#fff}
+.c.verde{background-image:url(../../assets/palabra-secreta/verde.webp)}.c.amarilla{background-image:url(../../assets/palabra-secreta/amarilla.webp);color:#3A2400}.c.gris{background-image:url(../../assets/palabra-secreta/gris.webp)}
+.c.q{color:#F5B301}
+#sub{position:absolute;left:46px;right:46px;top:1320px;height:420px;display:flex;align-items:center;justify-content:center;text-align:center;font:900 76px/1.06 "Archivo Black";color:#FCEFD2;text-transform:uppercase}
+#sub em{font-style:normal;color:#F5C451}
+#firma{position:absolute;left:44px;bottom:36px;font:800 24px Outfit;color:#9fb6c4}
+
+.info{height:270px;padding:0;background:none;gap:18px;align-items:stretch}
+.info>div:first-child{background:#FCEFD2;border-radius:14px;padding:22px 26px;width:300px;display:flex;flex-direction:column;justify-content:center}
+.info>div:first-child b{font-size:54px;color:#c43}
+#votos{flex:1;background:#2f4a33;border:8px solid #7a4a2a;border-radius:14px;padding:16px 24px;color:#FCEFD2;box-shadow:inset 0 0 30px #0006}
+#votos h5{font:900 40px "Archivo Black";color:#F5C451;letter-spacing:1px}
+#votos h5 span{color:#FCEFD2}
+#votos ul{list-style:none;display:grid;grid-template-columns:1fr;gap:4px 18px;margin-top:10px;border-top:3px solid #ffffff40;padding-top:12px}
+#votos ul.dos{grid-template-columns:1fr 1fr}
+#votos li{font:800 32px Outfit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#votos ul.dos{grid-template-rows:repeat(3,auto);grid-auto-flow:column;grid-template-columns:none;gap:4px 22px}#votos ul.dos li{font-size:25px}#votos h5{font-size:38px}#listaMarco{height:130px;overflow:hidden;margin-top:10px;padding-top:8px;border-top:3px solid #ffffff40}#listaMarco #lista{margin-top:0;border-top:0;padding-top:0}#votos ul.mueve{grid-template-rows:none;grid-auto-flow:row;grid-template-columns:1fr 1fr}
+.marco{position:absolute;left:0;right:0;top:450px;height:860px;overflow:hidden}#esc{top:0;height:860px}
+
+.info>div:first-child b{color:#c43}
+#esc{top:0;height:1080px}.marco{height:1080px}
+.vereda{top:700px;height:380px}.calle{display:none}
+.cartel{font-size:34px}
+#rosa{left:720px;top:600px;transform:scale(1.3);transform-origin:bottom center}
+#piz{display:none}
+#pizarra{position:absolute;left:70px;top:760px;width:600px;height:640px;background:radial-gradient(ellipse at 40% 35%,#2f4236,#1d2a22 70%);border:22px solid #8a5530;border-radius:10px;box-shadow:0 26px 50px #0009,inset 0 0 40px #0008;font-family:"Caveat Brush",cursive;color:#f4f1e8;text-align:center}
+#pizarra::before,#pizarra::after{content:"";position:absolute;bottom:-150px;width:22px;height:160px;background:#7a4a2a}
+#pizarra::before{left:60px;transform:rotate(8deg)}#pizarra::after{right:60px;transform:rotate(-8deg)}
+.tit{font-size:58px;margin-top:14px;letter-spacing:2px;text-decoration:underline wavy #f4f1e888}
+.pal{display:flex;justify-content:center;gap:16px;margin-top:10px}
+.pal span{width:78px;font-size:104px;line-height:110px;border-bottom:6px solid #f4f1e8cc}
+.pal .borr{color:transparent;position:relative}
+.pal .borr::after{content:"";position:absolute;left:-12px;right:-12px;top:14px;bottom:4px;border-radius:40%;background:radial-gradient(ellipse,#f4f1e855,#f4f1e822 55%,transparent 75%);filter:blur(3px)}
+.precio{font-size:52px;margin-top:6px}
+.precio i{display:inline-block;width:120px;height:36px;vertical-align:middle;border-radius:40%;background:radial-gradient(ellipse,#f4f1e855,transparent 70%);filter:blur(3px)}
+#horca{position:absolute;left:44px;bottom:30px;width:230px;height:230px}
+#horca i{position:absolute;background:#f4f1e8;border-radius:4px}
+#horca b{position:absolute;border:5px solid #f4f1e8}
+.usadas{position:absolute;right:40px;bottom:50px;width:250px;font-size:44px;text-align:left;line-height:1.15}
+.usadas s{text-decoration-thickness:4px;margin-right:14px}
+.mancha{position:absolute;border-radius:50%;background:radial-gradient(ellipse,#f4f1e81f,transparent 70%);filter:blur(4px)}
+#globoR{position:absolute;left:640px;top:800px;background:#fff;border-radius:30px;padding:18px 26px;font:900 40px/1.1 Outfit;color:#5b3a26;box-shadow:0 8px 20px #0004;white-space:nowrap}
+#globoR::after{content:"";position:absolute;left:150px;bottom:-24px;border:14px solid transparent;border-top-color:#fff}
+#sub{top:1560px;height:280px}
+</style></head><body><div id="e">
+<div class="cab"><b>EL ALMACÉN DE DOÑA ROSA</b><small>ESPECIAL · LA OFERTA DEL DÍA</small></div>
+<div class="info"><div><small>AHORCADO · ERRORES</small><b>3 / 6</b><small style="margin-top:6px">FALTA UNA LETRA</small></div><div id="votos"><h5>LOS QUE <span>AYUDARON</span> 💜</h5><div id="listaMarco"><ul id="lista" class="dos"><li>@silvina.martinezok</li><li>@santii.yz</li><li>@jas_mica6</li><li>@matipienia</li><li>@abrilu_113_</li><li>@isx.013</li></ul></div></div></div>
+<div class="marco"><div id="esc">
+ <div class="techo"></div><div class="edif"></div>
+ <div class="cartel"><div>ALMACÉN DOÑA ROSA<small>DESDE 1985</small></div></div>
+ <div class="toldo"></div>
+ <div class="vent" style="left:200px"><i style="top:70px"></i><i style="top:140px"></i></div>
+ <div class="vent" style="left:670px"><i style="top:70px"></i><i style="top:140px"></i></div>
+ <div class="puerta"><div class="aviso">ABIERTO</div></div>
+ <div class="vereda"></div>
+ <div id="rosa" class="rosa"><div class="rodete"></div><div class="pelo"></div><div class="cara"></div><div class="cuerpo"></div><div class="delantal"></div><div class="pies"></div></div>
+</div></div>
+<div id="pizarra">
+ <div class="mancha" style="left:60px;top:200px;width:200px;height:90px"></div><div class="mancha" style="left:380px;top:60px;width:160px;height:70px"></div>
+ <div class="tit">OFERTA DEL DÍA</div>
+ <div class="pal"><span>P</span><span>A</span><span class="borr">S</span><span>T</span><span>A</span></div>
+ <div class="precio">$ <i></i> el kilo</div>
+ <div id="horca"><i style="left:10px;bottom:0;width:150px;height:8px"></i><i style="left:40px;bottom:0;width:8px;height:220px"></i><i style="left:40px;top:0;width:130px;height:8px"></i><i style="left:160px;top:0;width:6px;height:40px"></i>
+  <b style="left:138px;top:40px;width:50px;height:50px;border-radius:50%"></b><i style="left:160px;top:92px;width:6px;height:70px"></i><i style="left:162px;top:100px;width:6px;height:52px;transform-origin:top;transform:rotate(40deg)"></i></div>
+ <div class="usadas">Ya probaron:<br><s>R</s><s>M</s><s>C</s></div>
+</div>
+<div id="globoR">¿PASTA o PALTA? 🤔</div>
+<div id="sub"><span>¿Qué dice la <em>oferta</em>?<br><em>Comentalo.</em></span></div>
+<div id="firma">@girayadivina</div>
+</div></body></html>

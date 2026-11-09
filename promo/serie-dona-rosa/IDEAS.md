@@ -26,7 +26,7 @@ Don Ramón le deja una carta con las sílabas desordenadas donde le propone ser 
 El almacén hace un sorteo y Doña Rosa gira la ruleta. Aparece una frase con letras tapadas que hay que completar. Lleva al juego principal.
 
 ### 🔤 El cartel de la oferta → Ahorcado *(idea elegida)*
-Afuera del almacén está la pizarra de la oferta del día, escrita con tiza. Se borraron algunas letras y la palabra queda ambigua, para que se discuta (ej.: PA_TA → ¿PASTA o PALTA?, las dos son comida). Doña Rosa y un vecino juegan al ahorcado para descubrirla antes de que se complete el muñeco, y el público comenta cuál es la oferta.
+Afuera del almacén está la pizarra de la oferta del día, escrita con tiza. Se borraron algunas letras y la palabra queda ambigua, para que se discuta (ej.: PA_TA → ¿PASTA o PALTA?, las dos son comida). Doña Rosa y un vecino juegan al ahorcado para descubrirla antes de que se complete el muñeco, y el público comenta cuál es la oferta. Imagen de muestra: `videos/Dona-Rosa-Ahorcado-asset.png` (escena `ahorcado-asset.html`).
 
 ### 🧩 La foto de los nietos → Puzzle *(idea elegida)*
 Doña Rosa tiene colgada en la pared del almacén una foto de sus nietos. Se abre la puerta, entra un viento fuerte y la foto se cae y se rompe; y ahí arranca a rearmarla como un rompecabezas. Las piezas se van poniendo de a poco y hay que adivinar qué muestra la foto (dónde están o qué están haciendo) antes de que se complete. El público comenta su respuesta.

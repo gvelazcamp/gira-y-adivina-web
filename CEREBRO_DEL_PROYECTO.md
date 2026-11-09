@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Doña Rosa Ahorcado: imagen de muestra
+- Qué: promo/serie-dona-rosa/ahorcado-asset.html → videos/Dona-Rosa-Ahorcado-asset.png (pizarra de tiza con PA_TA, muñeco 3/6, Doña Rosa: «¿PASTA o PALTA?»).
+
 ### 09/11/2026 — IDEA: Doña Rosa y Sopa Fugaz (se cayó el estante)
 - Qué: anotada en promo/serie-dona-rosa/IDEAS.md y README: sopa chica, faltan 3 productos con pista, antes de que entre el primer cliente.
 
