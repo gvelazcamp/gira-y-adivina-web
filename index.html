@@ -1477,7 +1477,11 @@ body:not(.tvhost) #horizontalAyuda{display:none}
 <div class="capa" id="capaSocial">
   <div class="caja" style="max-width:420px;padding:16px">
     <!-- Sin deslizar (08/11/2026, Gonzalo): la imagen se achica para que entren el texto y los dos botones. -->
-    <img src="assets/social/promo-redes.webp" alt="Girá y Adiviná Rioplatense en redes" style="display:block;max-width:100%;max-height:calc(86dvh - 300px);width:auto;height:auto;object-fit:contain;border-radius:14px;margin:0 auto 12px" loading="lazy">
+    <!-- Imagen nueva (09/11/2026); tocar el logo de Instagram abre @girayadivina. -->
+    <div style="position:relative;width:fit-content;max-width:100%;margin:0 auto 12px">
+    <img src="assets/social/promo-redes-v2.webp" alt="Girá y Adiviná Rioplatense en redes" style="display:block;max-width:100%;max-height:calc(86dvh - 300px);width:auto;height:auto;object-fit:contain;border-radius:14px;margin:0" loading="lazy">
+      <a id="socialIg" href="https://www.instagram.com/girayadivina/" target="_blank" rel="noopener" aria-label="Instagram de Girá y Adiviná" style="position:absolute;left:41%;top:79%;width:17.5%;height:10%;border-radius:22%"></a>
+    </div>
     <p class="sub" id="socialCiudadInfo" style="margin:0 0 8px"></p>
     <button class="btn-grande" id="socialAmigos" style="margin-bottom:10px">Seguir ›</button>
     <button class="btn-grande" id="socialContinuar" style="margin-bottom:10px">Ver el avance de los jugadores</button>
@@ -2770,7 +2774,7 @@ function precargarPantallas(){
   const urls=new Set();
   try{document.querySelectorAll("#capaTienda *").forEach(el=>{const m=(el.getAttribute("style")||"").match(/url\(['"]?([^'")]+)/);if(m)urls.add(m[1]);if(el.tagName==="IMG"&&el.getAttribute("src"))urls.add(el.getAttribute("src"));});}catch(e){}
   try{if(typeof EXTENSIONES!=="undefined")EXTENSIONES.forEach(x=>{if(x.icono)urls.add(x.icono);});}catch(e){}
-  urls.add("assets/social/promo-redes.webp");
+  urls.add("assets/social/promo-redes-v2.webp");
   const cola=[...urls].filter(u=>u&&!/^data:/.test(u));
   const uno=()=>{const u=cola.shift();if(!u)return;const im=new Image();im.decoding="async";im.onload=im.onerror=()=>setTimeout(uno,30);im.src=u;};
   for(let k=0;k<4;k++)uno();
