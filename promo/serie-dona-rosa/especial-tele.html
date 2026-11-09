@@ -178,6 +178,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
 #defi p{font:800 44px/1.2 Outfit;margin-top:14px}
 #defi .hue{margin-top:26px;font:900 64px "Archivo Black";letter-spacing:18px;color:#F5C451}
 #seguir{top:1180px;white-space:nowrap}
+#estudio #duda{position:absolute;left:600px;top:250px;padding:14px 22px;border-radius:26px;background:#fff;font:900 34px Outfit;color:#5b3a26;box-shadow:0 8px 20px #0006;opacity:0;white-space:nowrap}
 #comodin{display:inline-block;margin-top:22px;padding:14px 30px;border-radius:30px;background:linear-gradient(#ff4fa3,#E5197C);color:#fff;font:900 36px Outfit;box-shadow:0 7px 0 #8E0F4C;opacity:0}
 </style></head><body><div id="e">
 <div class="cab"><b>EL ALMACÉN DE DOÑA ROSA</b><small>ESPECIAL · DOÑA ROSA EN LA TELE</small></div>
@@ -200,6 +201,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#1f3a4a;font-fam
  <div id="logoTV">EL GRAN ROSCO<small>RIOPLATENSE</small></div>
  <div id="rueda"></div>
  <div id="rosaTV" class="rosa"><div class="rodete"></div><div class="pelo"></div><div class="cara"></div><div class="cuerpo"></div><div class="delantal"></div><div class="pies"></div></div>
+ <div id="duda">🤯 ¿¿¿Cuál era???</div>
  <div id="atril">DOÑA ROSA</div>
  <div id="pozo">POZO<b>$ 500.000</b></div>
  <div id="reloj">20</div>
@@ -233,7 +235,8 @@ function pintar(){
   /* estudio */
   const tv=cl((T-TIEMPOS.estudio)/0.6,0,1);document.getElementById("tv").style.opacity=tv;document.getElementById("almM").style.opacity=1-tv;
   document.querySelectorAll(".luz").forEach((l,k)=>{l.style.transform="rotate("+(Math.sin(T*1.2+k*2)*18)+"deg)";});
-  document.getElementById("rosaTV").style.transform="scale(1.15) translateY("+(-Math.abs(Math.sin(T*3))*5)+"px)";
+  const cf=T>=TIEMPOS.ultima&&T<TIEMPOS.defi+0.3;document.getElementById("rosaTV").style.transform="scale(1.15) translateY("+(-Math.abs(Math.sin(T*3))*5)+"px) rotate("+(cf?Math.sin(T*9)*7:0)+"deg)";
+  const du=document.getElementById("duda"),dv=ventana(TIEMPOS.ultima+0.3,TIEMPOS.defi+0.3,0.3,0.3);du.style.opacity=dv;du.style.transform="scale("+(0.8+0.2*dv)+") rotate("+(Math.sin(T*6)*3)+"deg)";
   const les=[...document.querySelectorAll(".le")],n=LETRAS.length-1,dur=TIEMPOS.ultima-TIEMPOS.contesta;
   les.forEach((d,k)=>{if(k<n){const tk=TIEMPOS.contesta+k*dur/n;d.className="le"+(T>=tk?" ok":"");d.style.transform=T>=tk&&T<tk+0.25?"scale(1.3)":"";}else{d.className="le";d.style.transform=T>=TIEMPOS.ultima?"scale("+(1.15+0.15*Math.sin(T*7))+")":"";d.style.boxShadow=T>=TIEMPOS.ultima?"0 0 "+(20+14*Math.sin(T*7))+"px #F5C451":"";}});
   document.getElementById("reloj").textContent=T<TIEMPOS.contesta?20:Math.max(3,20-Math.floor((T-TIEMPOS.contesta)*1.2));
@@ -247,6 +250,6 @@ function pintar(){
 }
 const TOTAL=34.0;   /* ESTIMADO sin voz */
 TIEMPOS={sobre:2.0,abre:4.6,estudio:11.0,contesta:11.8,ultima:16.4,defi:19.0,comodin:23.0,plata:29.0,seguir:31.5};
-SUBS=[[0,2.0,"Doña Rosa abre el almacén <em>como todos los días</em>…"],[2.0,4.6,"y por abajo de la puerta <em>entra un sobre</em>."],[4.6,6.8,"¡Es una <em>invitación</em>!"],[6.8,9.0,"La invitan a <em>El Gran Rosco Rioplatense</em>."],[9.0,11.0,"Si completa el rosco, gana <em>plata para su almacén</em>."],[11.0,14.0,"Doña Rosa contesta <em>todo</em>…"],[14.0,16.4,"letra por letra…"],[16.4,19.0,"y le falta <em>una sola palabra</em>."],[19.0,23.0,"Con la Z: animal del campo, <em>astuto y de cola larga</em>."],[23.0,26.0,"Doña Rosa usa el <em>comodín del público</em>:"],[26.0,29.0,"va a contestar lo que más comenten los que siguen a <em>Girá y Adiviná</em>."],[29.0,31.5,"Si la saca, se lleva <em>$ 500.000</em> para el almacén."],[31.5,34.0,"<em>Seguí a @girayadivina</em> y comentá tu respuesta."]];
+SUBS=[[0,2.0,"Doña Rosa abre el almacén <em>como todos los días</em>…"],[2.0,4.6,"y por abajo de la puerta <em>entra un sobre</em>."],[4.6,6.8,"¡Es una <em>invitación</em>!"],[6.8,9.0,"La invitan a <em>El Gran Rosco Rioplatense</em>."],[9.0,11.0,"Si completa el rosco, gana <em>plata para su almacén</em>."],[11.0,14.0,"Doña Rosa contesta <em>todo</em>…"],[14.0,16.4,"letra por letra…"],[16.4,19.0,"Le falta <em>una sola palabra</em>… y está <em>muy confundida</em>."],[19.0,23.0,"Con la Z: animal del campo, <em>astuto y de cola larga</em>."],[23.0,26.0,"Doña Rosa usa el <em>comodín del público</em>:"],[26.0,29.0,"va a contestar lo que más comenten los que siguen a <em>Girá y Adiviná</em>."],[29.0,31.5,"Si la saca, se lleva <em>$ 500.000</em> para el almacén."],[31.5,34.0,"<em>Seguí a @girayadivina</em> y comentá tu respuesta."]];
 pintar();
 </script></body></html>
