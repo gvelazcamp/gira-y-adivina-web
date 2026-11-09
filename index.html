@@ -1529,7 +1529,7 @@ body:not(.tvhost) #horizontalAyuda{display:none}
 </div></div>
 
 <div class="capa" id="capaUsuarios"><div class="caja rk-caja">
-  <h2>👥 Usuarios<span id="usrTotal" class="usr-total" hidden></span></h2>
+  <h2>👥 Usuarios<span id="usrTotal" class="usr-total" hidden></span><button type="button" id="usrRefrescar" class="no" title="Actualizar" style="margin-left:8px;padding:4px 10px;border-radius:12px;font-size:1rem;vertical-align:middle">🔄</button></h2>
   <p class="sub" style="margin:6px 0 14px">Todos los que jugaron, se hayan anotado al ranking o no.</p>
   <p class="sub usr-embudo" id="usrEmbudo" hidden></p>
   <p class="sub usr-embudo" id="usrDelAnuncio" hidden></p>
@@ -5495,6 +5495,9 @@ $("bTorneos").onclick=torneosAbrir;
 $("torneosCerrar").onclick=()=>$("capaTorneos").classList.remove("ver");
 $("torneosEntrar").onclick=torneoEntrar;
 $("socialCerrar").onclick=()=>$("capaSocial").classList.remove("ver");
+/* 🔄 al lado del total (Gonzalo, 09/11): vuelve a traer la lista del servidor sin cerrar la ventana. */
+$("usrRefrescar").onclick=async()=>{const b=$("usrRefrescar");if(b.disabled)return;b.disabled=true;b.style.transition="transform .8s";b.style.transform="rotate(360deg)";
+  try{await usrCargarLista();}catch(e){}setTimeout(()=>{b.style.transition="none";b.style.transform="";b.disabled=false;},800);};
 $("socialContinuar").onclick=()=>{$("capaSocial").classList.remove("ver");usrAbrir();};
 /* Mis amigos (Gonzalo, 09/11): cada jugador tiene su propia lista, tipo Plato. Se hacen amigos por el link de WhatsApp
    (?amigo=<nombre>): el que entra por ese link y tiene (o crea) su perfil queda de amigo de los dos sin otra aceptación

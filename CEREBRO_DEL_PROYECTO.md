@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — 👥 Usuarios: botón 🔄 para actualizar
+- Qué: al lado del total, 🔄 vuelve a traer la lista del servidor sin cerrar la ventana (usrCargarLista).
+
 ### 09/11/2026 — Invitar a amigos: 18 juegos (Puzzle en pareja y modos en equipo)
 - Qué: el selector suma Puzzle en pareja (puzzle.html crea la sala con el código de la invitación: parent.gyaPuzzleCrear; el invitado entra con gyaPuzzleInvitacion), Palabra Secreta / Sopa Fugaz / Palabras Cruzadas / Línea del tiempo en equipo, 100 Rioplatenses, Silabario, Frases en Giro, Memoria en Giro, Rueda de Letras (id «letras» → duelo «rueda») y Línea del tiempo. Moon Tap NO (está oculto; se sacó el mismo día). La grilla se desliza adentro de la ventana. La partida principal sigue viajando como juego «rueda» (compatible con la versión anterior).
 - Falta: Duelo de Conocimiento (usa otro sistema de salas).
