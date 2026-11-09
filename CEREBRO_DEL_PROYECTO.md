@@ -396,6 +396,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 09/11/2026 — Social: «👥 Mis amigos» para cada jugador (tipo Plato)
+- Qué: el cartel de Social tiene «Seguir ›» y «Volver». «Seguir» abre «👥 Mis amigos»: solo los amigos de ese jugador, con conectado/visto hace X y «Invitar a jugar» (invEnviar, igual que Gonzalo). «➕ Invitar amigos por WhatsApp» manda el link ?amigo=<nombre>; el que entra por ahí y tiene o crea su perfil queda amigo de los dos sin aceptar (tocar el link ya es aceptar). Amistades en gya_ranking grupo "amigos" (apodo «a|b» normalizado, estado_juego {a,b,ka,kb}) + copia local gya_amigos. Gonzalo sigue teniendo «Ver el avance de los jugadores» (todos).
+- Pendiente: buscar amigos por nombre (con solicitud y aceptación) si Gonzalo lo pide.
+- Archivos: index.html (amigosAplicarPendiente, amigosCargar, amigosAbrir, capaAmigos), sw.js (cache v783).
+
 ### 09/11/2026 — Social: la lista de todos los usuarios, solo Gonzalo
 - Qué: Gonzalo creía que «Ver el avance de los jugadores» era solo suyo, pero no había ningún bloqueo: cualquier jugador veía la lista completa (con «Invitar»). Ahora el botón se oculta para los demás y usrAbrir() no abre si no es Gonzalo. Los demás ven el cartel de redes y «Cerrar».
 - Pendiente (Gonzalo, 09/11): Social propio para cada jugador, tipo Plato: botones «Seguir»/«Volver» en el cartel; «👥 Mis amigos» (solo sus amigos), invitar por WhatsApp (el que entra por su link queda de amigo), buscar por nombre, e invitar a partidas desde ahí. Falta que Gonzalo diga si el otro tiene que aceptar la solicitud.
