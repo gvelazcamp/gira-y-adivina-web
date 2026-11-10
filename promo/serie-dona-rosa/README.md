@@ -68,6 +68,7 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 6. Para que una palabra dure hasta el último intento, elegir pistas que dejen tantas opciones como intentos (ej.: con _ARRO quedan BARRO, CARRO, JARRO).
 
 ## Cómo se hace cada capítulo
+- **Regla (Gonzalo, 10/11):** cuando Gonzalo manda una captura con alguien nuevo que comentó, se lo suma a la pizarra «Los que ayudaron» del próximo video sin preguntar, se regraba y se le manda el video.
 - Instagram: la cuenta es **@gira_y_adivina** (con guiones bajos). Desde el capítulo 2 los videos firman así; el capítulo 1 quedó con «@girayadivina».
 - Gonzalo pasa: la palabra más votada, 3 o 4 nombres de los que comentaron y el audio grabado en ElevenLabs (voz César Rodríguez) con el texto que le pasa Claude (texto plano, sin etiquetas).
 - Claude ajusta la escena (`capitulo-N.html`, mismo motor: `T`, `pintar()`, `SUBS`, `TIEMPOS`), toma los tiempos de la voz con `ffmpeg silencedetect`, graba cuadros con Playwright (1080×1920, 30 fps), une voz + música bajita + cierre, y verifica que los colores de cada intento coincidan con la clave.
