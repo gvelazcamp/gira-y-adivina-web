@@ -783,6 +783,8 @@ const TuttiFrutti=(()=>{
     if(micActivo&&micInicioPendiente){micInicioPendiente=false;escucharMicrofono();}
     relojOnline();
   }
+  /* La próxima categoría en orden (hacia adelante, dando la vuelta) que todavía no tiene palabra válida. */
+  function siguienteIncompleta(i){const n=on.cats.length;for(let d=1;d<n;d++){const j=(i+d)%n;if(!valida(on.mias[j]))return j;}return (i+1)%n;}
   function irACampo(k){on.pend=[k,...on.pend.filter(x=>x!==k)];pintarCampo();}
   /* Con todo completo no se manda BASTA solo: se muestran las respuestas
      para corregir la que sea (tocándola) y recién después ¡BASTA!. */
@@ -814,19 +816,20 @@ const TuttiFrutti=(()=>{
     const v=(q("tfInput").value||"").trim();
     /* Vacío: "Siguiente" pasa a la categoría que sigue sin trabar (se puede
        volver después); si ya está todo completo, va a la revisión y al BASTA. */
-    if(!v&&on.cats.length>1){guardarCampo();if(todoCompleto()){on.pend=[];revision();return;}irACampo((on.pend[0]+1)%on.cats.length);return;}
+    if(!v&&on.cats.length>1){guardarCampo();if(todoCompleto()){on.pend=[];revision();return;}irACampo(siguienteIncompleta(on.pend[0]));return;}
     if(v.length<2||N(v)[0]!==on.letra){
       q("tfMsg").textContent=v?"Tiene que empezar con "+on.letra:"Escribí una palabra con "+on.letra;
       if(v&&typeof sonidoErrorExt==="function")sonidoErrorExt();
       const inp=q("tfInput");inp.classList.remove("tf-mal");void inp.offsetWidth;inp.classList.add("tf-mal");return;
     }
-    const cat=on.cats[on.pend[0]];
+    const cat=on.cats[on.pend[0]],actual=on.pend[0];
     guardarCampo();on.hist=(on.hist||[]).filter(x=>x!==on.pend[0]);on.hist.push(on.pend[0]);on.pend.shift();
     if(typeof bip==="function")bip(880,.06,"sine",.04);
     /* Terminó cuando todas las categorías tienen una palabra válida, aunque
        se hayan completado salteando o volviendo con Anterior. */
     if(!on.pend.length||todoCompleto()){on.pend=[];revision();return;}
-    pintarCampo();
+    /* Sigue en orden hacia adelante (Gonzalo, 10/11): antes volvía a la que se había salteado. */
+    irACampo(siguienteIncompleta(actual));
     revisar(cat,v).then(ok=>{if(ok===false&&on&&on.fase==="jugando"){const m=raiz&&raiz.querySelector("#tfMsg");if(m&&(!m.textContent||m.textContent.startsWith("✅")))m.textContent="⚠️ «"+v+"» no la encontré como "+NOM_CAT[cat]+". Al final la pueden votar.";}});
   }
   function relojOnline(){
