@@ -783,8 +783,9 @@ const TuttiFrutti=(()=>{
     if(micActivo&&micInicioPendiente){micInicioPendiente=false;escucharMicrofono();}
     relojOnline();
   }
-  /* La próxima categoría en orden (hacia adelante, dando la vuelta) que todavía no tiene palabra válida. */
-  function siguienteIncompleta(i){const n=on.cats.length;for(let d=1;d<n;d++){const j=(i+d)%n;if(!valida(on.mias[j]))return j;}return (i+1)%n;}
+  /* «Siguiente» va SIEMPRE a la categoría que sigue en el orden (completa o no, dando la vuelta al final): el jugador
+     decide adónde ir; nunca salta solo a otra (Gonzalo, 10/11). */
+  function siguienteIncompleta(i){return (i+1)%on.cats.length;}
   function irACampo(k){on.pend=[k,...on.pend.filter(x=>x!==k)];pintarCampo();}
   /* Con todo completo no se manda BASTA solo: se muestran las respuestas
      para corregir la que sea (tocándola) y recién después ¡BASTA!. */
