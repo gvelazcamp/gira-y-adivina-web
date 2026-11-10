@@ -397,7 +397,7 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 ## Registro de cambios
 
 ### 10/11/2026 — Tutti Frutti: «Siguiente» sigue para adelante
-- Qué: al completar una categoría, «Siguiente» volvía a la que se había salteado (ej. Apellido vacío → completaba Cosa → volvía a Apellido). Ahora va a la próxima en orden que falte (siguienteIncompleta); las salteadas se retoman recién al dar la vuelta. Vacío + «Siguiente» también salta a la próxima que falte.
+- Qué: al completar una categoría, «Siguiente» volvía a la que se había salteado (ej. Apellido vacío → completaba Cosa → volvía a Apellido). Ahora va SIEMPRE a la que sigue en el orden (completa o no; al final da la vuelta), el jugador decide (corregido el mismo día a pedido de Gonzalo, tutti v102).
 - Archivos: tutti-frutti.js (v101), sw.js (cache v792).
 
 ### 10/11/2026 — Doña Rosa cap. 2: suma @alidreamsuru (26 nombres) + regla
