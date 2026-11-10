@@ -400,7 +400,7 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 - Qué: al completar una categoría, «Siguiente» volvía a la que se había salteado (ej. Apellido vacío → completaba Cosa → volvía a Apellido). Ahora va SIEMPRE a la que sigue en el orden (completa o no; al final da la vuelta), el jugador decide (corregido el mismo día a pedido de Gonzalo, tutti v102).
 - Archivos: tutti-frutti.js (v101), sw.js (cache v792).
 
-### 10/11/2026 — Doña Rosa cap. 2: suma @alidreamsuru (26 nombres) + regla
+### 10/11/2026 — Doña Rosa cap. 2: suma @alidreamsuru, @jazz_barretto y @sofii_aguirreeee (28 nombres) + regla
 - Regla de Gonzalo: los comentaristas nuevos que manda en capturas se suman siempre a la pizarra del próximo video, sin preguntar.
 
 ### 09/11/2026 — 👥 Usuarios: cuántos de Argentina y de Uruguay
