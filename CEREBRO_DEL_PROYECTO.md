@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 10/11/2026 — Doña Rosa cap. 2: suma @alidreamsuru (26 nombres) + regla
+- Regla de Gonzalo: los comentaristas nuevos que manda en capturas se suman siempre a la pizarra del próximo video, sin preguntar.
+
 ### 09/11/2026 — 👥 Usuarios: cuántos de Argentina y de Uruguay
 - Qué: debajo del título (solo Gonzalo) «🇦🇷 N de Argentina · 🇺🇾 N de Uruguay», contando el país del perfil (gya_pais del respaldo) de los usuarios de la lista.
 
