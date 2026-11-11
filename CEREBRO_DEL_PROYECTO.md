@@ -396,6 +396,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — Palabra Secreta: salvavidas de racha y aviso «se corta hoy»
+- Qué: idea del análisis «para que vuelvan a jugar» (Claude + ChatGPT); Gonzalo eligió solo esta. La racha cuenta días seguidos sacando al menos una palabra. (1) Si la racha sigue viva y hoy todavía no sacó ninguna: mensaje «🔥 Tu racha de N días se corta hoy» y en la línea de stats «⚠️ ¡se corta hoy!». (2) Si ayer no jugó (cortada por un solo día), al cerrar la ayuda aparece «🛟 ¡Se cortó tu racha!» con «Salvarla · 500 🪙» (uno por semana, lunes a domingo) o «No, empezar de nuevo»; se ofrece una vez por día. Con 2 o más días sin jugar no hay salvavidas. Datos nuevos en gya_palabra_secreta: salvavidasSemana, salvavidasOfrecido.
+- Probado: 5 casos (salvar con monedas, sin monedas, ya usado en la semana, se corta hoy, 2 días sin jugar).
+- Archivos: palabra-secreta.js (v42), index.html, sw.js (cache v802).
+
 ### 11/11/2026 — Rosco con voz: «Lo dije bien» ya no acepta cualquier cosa
 - Qué: en la prueba del Rosco con audio (Claude, pedido por el buzón) se vio que «⚖️ Lo dije bien: que valga» convertía cualquier respuesta en acierto (dije «zapallo» y valió). Ahora, jugando solo: (1) el botón solo aparece si lo que oyó el micrófono se parece a la respuesta (mismo sonido al empezar y no más de la mitad distinta, o una letra de diferencia; «zapallo» por DURAZNO no, «burga» por MURGA sí); (2) al tocarlo muestra «La respuesta era «X». ¿Es lo que dijiste?» con «✅ Sí, eso dije» (acierto) y «❌ No, me equivoqué» (error). «Fue ruido» sigue igual y no muestra la palabra. La Sala TV (apelar a votación) no se tocó.
 - Pendiente (opcional, ofrecido a Gonzalo): apelar en «Jugar con un amigo» del Rosco (hoy un error del micrófono cuenta directo).
