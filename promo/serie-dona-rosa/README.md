@@ -26,14 +26,21 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 - Final del capítulo 2 (08/11, voz de 54,9 s): «Cada vecino que se suma a seguir la historia la ayuda a cubrir la deuda más rápido, y después empezamos a arreglar su almacén. Seguí las historias de Doña Rosa.» En pantalla, una barra «DEUDA DE DOÑA ROSA» que se llena (más de la mitad con lo de Chelo y un poco más con cada 👤 vecino) y el botón «👤 Seguí la historia». No se piden «me gusta»: Instagram baja el alcance de lo que pide interacción directa; pedir que sigan la historia está bien.
 - Escena `capitulo-2.html` (voz de 45 s + cierre de 4 s = 49 s).
 
-## Capítulo 3 · El cobrador (idea de Gonzalo, 08/11/2026 — PENDIENTE, no armar hasta que lo pida)
+## Capítulo 3 · La colecta (11/11/2026, el que se publica)
+- Gonzalo armó la voz y una primera versión (V4); se rearmó con las escenas del proyecto: `capitulo-3-colecta.html`. Video `videos/Dona-Rosa-Capitulo-3.mp4` (59,25 s), voz `videos/Dona-Rosa-Capitulo-3-voz.mp3`.
+- Historia: la fila de descuentos de Doña Rosa crece con cada seguidor (seguí y comentá «YO»), la colecta para salvar el almacén, Uruguay 37 – 37 Argentina («¿de qué país se sumarán más clientes?»), ofertas (yerba −20 %, arroz −15 %) y un producto tapado.
+- Tablero (libreta + casillas de siempre, 7 letras): Pepito CAMPERA, Nelly GRANJAS, Juanchi GRANITA → **GRANOLA** (faltan la O y la L, «dos letras por descubrir»).
+- La fila aparece 3 veces con distinto sentido (crece / Uruguay vs Argentina / final con «¿VOS?»); en la V4 se repetía de más.
+- Pendiente: la página del anuncio `?cap=3` todavía tiene la palabra del cobrador (SIDRA, 5 letras); para GRANOLA hay que adaptar rosa.js a 7 letras.
+
+## Capítulo «El cobrador» (idea anterior para el 3, quedó para más adelante) (idea de Gonzalo, 08/11/2026 — PENDIENTE, no armar hasta que lo pida)
 - «Día 3». Mismo almacén de siempre, ahora con el cartel «ALMACÉN DOÑA ROSA» arriba del mostrador (queda fijo para todos los capítulos que siguen).
 - Arranca con «Ayer ustedes dijeron…»: era **YERBA**. Con eso Doña Rosa le pudo cobrar a Chelo, y con lo que suman los seguidores nuevos junta plata.
 - Justo en ese momento golpean la puerta: entra **el cobrador** con maletín. Doña Rosa saca la plata de la caja y le entrega una parte. La barra «DEUDA DE DOÑA ROSA» baja, pero todavía falta.
 - Coherencia: el capítulo 2 decía «CIERRA EN 2 DÍAS» → el 3 dice «CIERRA EN 1 DÍA». El cobrador le da unos días más (si no, en el 4 cierra).
 - Palabra (Gonzalo, 08/11): página 2 de la libreta, **«Cacho me debe…»** (Cacho es uno de los «otros vecinos» del capítulo 2). Clave **SIDRA**; intentos Pepito LICOR, Nelly GRAPA, Juanchi TINTO → queda _I_RA y la duda es SIDRA o **BIRRA** (las dos dan exactamente los mismos colores). Pista «Para brindar 🥂» (sirve para las dos). En el video no se nombra BIRRA (Gonzalo, 08/11): al final pregunta «¿Qué bebida le debe?». BIRRA se agregó al diccionario de Palabra Secreta para que escribirla no la descarte.
 - Ya cargado en el juego: `CAPITULO_3` en rosa.js, se abre solo con `https://girayadivina.com/?cap=3`. El cartel de la página del anuncio ahora dice «ALMACÉN DOÑA ROSA» en todos los capítulos.
-- Escena: `capitulo-3.html` (adentro del almacén: cartel «ALMACÉN DOÑA ROSA», mostrador con caja y libreta, puerta del fondo por donde entra el cobrador con maletín). Primera versión sin voz (08/11) con tiempos estimados (42,6 s); al llegar la voz se ajustan TIEMPOS/SUBS con silencedetect.
+- Escena: `capitulo-3.html` (prueba sin voz: `videos/Dona-Rosa-Cobrador-sin-voz.mp4`; adentro del almacén: cartel «ALMACÉN DOÑA ROSA», mostrador con caja y libreta, puerta del fondo por donde entra el cobrador con maletín). Primera versión sin voz (08/11) con tiempos estimados (42,6 s); al llegar la voz se ajustan TIEMPOS/SUBS con silencedetect.
 - Falta: la voz de Gonzalo (texto abajo) y los nombres de los que comentaron el capítulo 2 (VOTARON es provisorio, tiene los del capítulo 1).
 - Texto para ElevenLabs (texto plano): «Día tres. Ayer la mayoría comentó yerba… y era yerba. Chelo le debía la yerba de todo el mes, y pagó. Con eso, y con cada vecino nuevo que sigue la historia, Doña Rosa juntó unos pesos. Y justo… golpean la puerta. Es el cobrador. Doña Rosa abre la caja y le entrega una parte de la plata. El cobrador mira la libreta… y le da tres días más. Pero todavía falta. Doña Rosa da vuelta la página. Página dos: Cacho. Cacho me debe… ¿Qué le debe Cacho? Es algo para tomar. Pepito dijo licor. Nelly, grapa. Juanchi, tinto. ¿Vos qué decís? ¿Qué bebida le debe? Comentá tu respuesta. Seguí las historias de Doña Rosa. Jugá en girá y adiviná punto com.»
 

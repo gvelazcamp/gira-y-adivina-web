@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — Doña Rosa capítulo 3 «La colecta» rearmado con nuestras escenas
+- Qué: con la voz que armó Gonzalo (V4), escena nueva promo/serie-dona-rosa/capitulo-3-colecta.html: almacén original, fila de descuentos que crece con los nombres de los comentaristas (22 en pantalla + «¿VOS?»), ofertas, la colecta, Uruguay 37 – 37 Argentina, y el tablero de siempre con GRANOLA (CAMPERA, GRANJAS, GRANITA). Video y voz en promo/serie-dona-rosa/videos/. La prueba del «cobrador» pasó a Dona-Rosa-Cobrador-sin-voz.mp4.
+- Pendiente: ?cap=3 en rosa.js sigue con SIDRA; para GRANOLA (7 letras) hay que adaptar la página del anuncio.
+
 ### 11/11/2026 — PENDIENTE: Palabra Secreta sin deslizar en celulares chicos
 - Gonzalo no quiere que haya que deslizar. En 360×740 «Jugar con un amigo» y «Jugar colaborativo» quedan ~60 px debajo de la pantalla (en 390×844 y más grandes entra todo). Buscar una solución más adelante SIN tocar el deslizado (regla: nada de overflow/overscroll/touch-action en html/body): achicar márgenes/celdas en pantallas bajas, o juntar los dos botones en uno.
 
