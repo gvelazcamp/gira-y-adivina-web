@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — Palabra Secreta: botón 💡 Pista
+- Qué: en todos los niveles (no en duelo ni colaborativo) hay «💡 Pista gratis» (amarillo) al lado de Enviar: pone en su lugar una letra que todavía no estaba en verde (al azar) y queda fija en cada fila (se marca como la letra regalada del contrarreloj; Borrar no la saca). La primera pista de cada palabra es gratis; las siguientes cuestan 300 monedas (pide confirmación y avisa si no alcanzan). partida.pistas guarda las posiciones.
+- Archivos: palabra-secreta.js (v39), sw.js (cache v796).
+
 ### 10/11/2026 — Tutti Frutti: «Siguiente» sigue para adelante
 - Qué: al completar una categoría, «Siguiente» volvía a la que se había salteado (ej. Apellido vacío → completaba Cosa → volvía a Apellido). Ahora va SIEMPRE a la que sigue en el orden (completa o no; al final da la vuelta), el jugador decide (corregido el mismo día a pedido de Gonzalo, tutti v102).
 - Archivos: tutti-frutti.js (v101), sw.js (cache v792).
