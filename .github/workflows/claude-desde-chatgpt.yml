@@ -1,0 +1,47 @@
+name: Claude Code - tareas desde ChatGPT
+
+# Solo se activa para solicitudes del propietario que mencionan @claude.
+# Los cambios de Claude deben quedar en una rama, pendientes de aprobación.
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: claude-issue-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  desarrollar:
+    if: >-
+      (github.event_name == 'issues' &&
+       github.event.issue.user.login == 'gvelazcamp' &&
+       contains(github.event.issue.body, '@claude')) ||
+      (github.event_name == 'issue_comment' &&
+       github.event.comment.user.login == 'gvelazcamp' &&
+       github.event.issue.pull_request == null &&
+       contains(github.event.comment.body, '@claude'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Ejecutar Claude Code
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --max-turns 16
