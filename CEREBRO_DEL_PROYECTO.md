@@ -396,6 +396,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — Rosco con voz: «Lo dije bien» ya no acepta cualquier cosa
+- Qué: en la prueba del Rosco con audio (Claude, pedido por el buzón) se vio que «⚖️ Lo dije bien: que valga» convertía cualquier respuesta en acierto (dije «zapallo» y valió). Ahora, jugando solo: (1) el botón solo aparece si lo que oyó el micrófono se parece a la respuesta (mismo sonido al empezar y no más de la mitad distinta, o una letra de diferencia; «zapallo» por DURAZNO no, «burga» por MURGA sí); (2) al tocarlo muestra «La respuesta era «X». ¿Es lo que dijiste?» con «✅ Sí, eso dije» (acierto) y «❌ No, me equivoqué» (error). «Fue ruido» sigue igual y no muestra la palabra. La Sala TV (apelar a votación) no se tocó.
+- Pendiente (opcional, Gonzalo dijo que lo pensaba): apelar en «Jugar con un amigo» del Rosco (hoy un error del micrófono cuenta directo).
+- Archivos: rosco-rioplatense.js (v94), index.html, sw.js (cache v801).
+
 ### 11/11/2026 — Palabra Secreta en duelo: colores del rival y los dos tableros al final
 - Qué: salió del duelo Claude contra ChatGPT (HACHA, 4–3). (1) En el globito del rival, al lado de «2/6», se ve la fila de colores de su último intento, sin letras. (2) La tarjeta final muestra los dos tableros de colores lado a lado. (3) Debajo de cada nombre dice «en 3 intentos» o «no la encontró», para no tener que hacer la cuenta 7 − intentos. Los colores viajan como texto «epaae» (exacta/presente/ausente) en el progreso y en el final; con un celular viejo que no los manda, solo se ve lo de antes.
 - Probado: duelo online con dos celulares (servidor de prueba local).
