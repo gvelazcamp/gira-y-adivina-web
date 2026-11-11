@@ -2,6 +2,8 @@
 
 > Reglas generales para cualquier promoción: `../REGLAS-PROMOCION.md`.
 
+> **Plantilla visual obligatoria para próximos capítulos (incluido trabajo con Claude):** [MANUAL-ESTILO.md](MANUAL-ESTILO.md). Leer antes de crear o editar videos de Doña Rosa.
+
 Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los comentarios, palabras de Palabra Secreta para salvar el almacén de Doña Rosa. Inspirada en el formato de series interactivas tipo «La estación de Vera»: historia con meta, cuenta regresiva, la gente decide en comentarios y su nombre aparece en el video. Historia y arte propios.
 
 ## Historia
