@@ -449,7 +449,7 @@ const TuttiFrutti=(()=>{
     const c=on.cli;on=null;if(c)setTimeout(()=>{try{c.end(true);}catch(e){}},300);
     actualizarChat();
   }
-  function difundirSala(){mandar({t:"sala",jug:on.jug,ganadas:on.ganadas,rg:on.rg||{},cats:on.cats,tiempo:on.tiempo,fase:on.fase});}
+  function difundirSala(){mandar({t:"sala",jug:on.jug,ganadas:on.ganadas,rg:on.rg||{},re:on.re||{},cats:on.cats,tiempo:on.tiempo,fase:on.fase});}
   function textoInvitacion(){return "¡Juguemos Tutti Frutti en Girá y Adiviná! 🍓 Tocá para unirte: "+linkInvitacion()+" (código "+on.sala+")";}
   function copiarInvitacion(){
     const t=textoInvitacion(),ok=()=>estado("✅ Invitación copiada. Pegala en el chat.");
@@ -613,7 +613,13 @@ const TuttiFrutti=(()=>{
   function actualizarChat(){
     const ver=!!(on&&raiz&&!on.bots&&on.fase!=="jugando");
     if(!ver){if(chatBtn)chatBtn.hidden=true;cerrarChat();if(!on)noLeidos=0;return;}
-    if(!chatBtn){chatBtn=document.createElement("button");chatBtn.type="button";chatBtn.className="tf-chat-btn";chatBtn.setAttribute("aria-label","Chat");chatBtn.innerHTML='💬<i hidden></i>';chatBtn.onclick=abrirChat;document.body.appendChild(chatBtn);}
+    if(!chatBtn){chatBtn=document.createElement("button");chatBtn.type="button";chatBtn.className="tf-chat-btn";chatBtn.setAttribute("aria-label","Chat");chatBtn.innerHTML='💬<span> Chat</span><i hidden></i>';chatBtn.onclick=abrirChat;}
+    /* Que no tape nombres ni puntos: en las pantallas va arriba a la izquierda
+       (enfrente de «✕ Salir»); en la sala del anfitrión, debajo de la lista. */
+    const arriba=raiz.querySelector(".qns-pantalla"),lista=!arriba&&raiz.querySelector("#tfJugs");
+    chatBtn.classList.toggle("tf-chat-arriba",!!arriba);chatBtn.classList.toggle("tf-chat-en-lista",!!lista);
+    const dest=arriba||(lista&&lista.parentNode)||document.body;
+    if(lista){if(chatBtn.previousElementSibling!==lista)lista.after(chatBtn);}else if(chatBtn.parentNode!==dest)dest.appendChild(chatBtn);
     chatBtn.hidden=!!chatPanel;const i=chatBtn.querySelector("i");i.hidden=!noLeidos;i.textContent=noLeidos>9?"9+":noLeidos;
   }
   function abrirChat(){
@@ -651,7 +657,7 @@ const TuttiFrutti=(()=>{
       if(!on.jug.some(j=>j.pid===m.pid)){if(on.jug.length>=MAXJ)return;on.jug.push({pid:m.pid,nombre:String(m.nombre||"Jugador").slice(0,14)});}
       difundirSala();pintarJugadores();
     }else if(m.t==="sala"&&!on.host){
-      on.jug=Array.isArray(m.jug)?m.jug:[];on.ganadas=m.ganadas||{};on.rg=m.rg||{};on.cats=m.cats||on.cats;on.tiempo=m.tiempo||on.tiempo;pintarJugadores();
+      on.jug=Array.isArray(m.jug)?m.jug:[];on.ganadas=m.ganadas||{};on.rg=m.rg||{};on.re=m.re||{};on.cats=m.cats||on.cats;on.tiempo=m.tiempo||on.tiempo;pintarJugadores();
     }else if(m.t==="chau"){
       const eraHost=!on.host&&on.jug[0]&&on.jug[0].pid===m.pid,quien=(on.jug.find(j=>j.pid===m.pid)||{}).nombre;
       if(quien&&!eraHost&&typeof mostrarToast==="function")mostrarToast("🚪",quien+" salió de la partida.","Se fue "+quien);
@@ -716,7 +722,7 @@ const TuttiFrutti=(()=>{
       /* Las objeciones para quitar puntos también se retiraron. */
       return;
     }else if(m.t==="final"){
-      on.ganadas=m.ganadas||on.ganadas;on.rg=m.rg||{};on.jug=m.jug||on.jug;on.tot=m.tot||on.tot;mostrarFinal();
+      on.ganadas=m.ganadas||on.ganadas;on.rg=m.rg||{};on.re=m.re||{};on.jug=m.jug||on.jug;on.tot=m.tot||on.tot;mostrarFinal();
     }else if(m.t==="resultado"&&m.n===on.n&&!on.host){
       on.resps=m.resps||{};on.ganador=m.ganador;on.ganadas=m.ganadas||on.ganadas;on.jug=m.jug||on.jug;on.marcas=m.marcas||{};reforzarMarcas();mostrarResultado();
     }
@@ -984,10 +990,11 @@ const TuttiFrutti=(()=>{
         on.jug.forEach(j=>on.ganadas[j.pid]=(on.ganadas[j.pid]||0)+sumar(pr[j.pid]));
         /* La ronda la gana el que más sumó (si empatan, se la llevan los dos). */
         const max=Math.max(...on.jug.map(j=>sumar(pr[j.pid])));
-        if(max>0)on.jug.forEach(j=>{if(sumar(pr[j.pid])===max)on.rg[j.pid]=(on.rg[j.pid]||0)+1;});
+        const top=max>0?on.jug.filter(j=>sumar(pr[j.pid])===max):[];on.re=on.re||{};
+        top.forEach(j=>{on.rg[j.pid]=(on.rg[j.pid]||0)+1;if(top.length>1)on.re[j.pid]=(on.re[j.pid]||0)+1;});
         difundirSala();
       };
-      q("tfOtra").onclick=e=>{if(e&&e.currentTarget){if(e.currentTarget.disabled)return;e.currentTarget.disabled=true;}cerrar();if((on.rj||1)>=(on.tot||RONDAS)){mandar({t:"final",n:on.n,ganadas:on.ganadas,rg:on.rg,jug:on.jug,tot:on.tot||RONDAS});return;}nuevaRonda();};
+      q("tfOtra").onclick=e=>{if(e&&e.currentTarget){if(e.currentTarget.disabled)return;e.currentTarget.disabled=true;}cerrar();if((on.rj||1)>=(on.tot||RONDAS)){mandar({t:"final",n:on.n,ganadas:on.ganadas,rg:on.rg,re:on.re||{},jug:on.jug,tot:on.tot||RONDAS});return;}nuevaRonda();};
     }
   }
   /* Popup para anular (o devolver) cualquier respuesta escrita de la ronda. */
@@ -1104,13 +1111,15 @@ const TuttiFrutti=(()=>{
     if(!raiz||!on||on.fase!=="resultado")return;
     const pr=puntosRonda();
     raiz.querySelectorAll(".tf-cel[data-a]").forEach(b=>{const a=b.dataset.a,i=Number(b.dataset.i),ok=marca(a,i),v=(on.resps[a]||[])[i];
-      b.querySelector(".tf-pts").textContent="+"+(v?pr[a][i]:0);
       const ex=extraDe(a,i),sm=b.querySelector(".tf-sum b");if(sm)sm.textContent=ex||0;
       const ap=b.querySelector(".tf-apelar");if(ap&&on.bots)ap.textContent=ex==null?"🙋 Apelar":"🙋 "+ex+" pts";
       const su=b.querySelector(".tf-sum");if(su)su.classList.toggle("tf-sum-off",!puedeSumar(a,i));
       const an=!!v&&anulada(a,i),salv=!!v&&!ok&&!an&&(vale(a,i)||ex>0);
       b.classList.toggle("tf-anulada",an);b.classList.toggle("tf-salvada",salv);b.classList.toggle("tf-dudosa",!!v&&!ok&&!salv&&!an);
       const mk=b.querySelector(".tf-marca.mal");if(mk)mk.textContent=salv?"✓":"⚠️";
+      /* El porqué de cada puntaje, al lado de los puntos (sugerencia de ChatGPT, 11/11/2026). */
+      const p=v?pr[a][i]:0,porque=!v?"vacía":an?"anulada":penalizado(a)?"penalizado":(!ok&&!salv)?"no vale":salv?"salvada":p===20?"nadie más":p===5?"repetida":"única";
+      b.querySelector(".tf-pts").textContent="+"+p+" · "+porque;
     });
     const sumR=pid=>sumar(pr[pid]||[]);
     raiz.querySelectorAll("[data-tot]").forEach(el=>{el.textContent=sumR(el.dataset.tot);});
@@ -1164,6 +1173,8 @@ const TuttiFrutti=(()=>{
       caja.innerHTML=filas.length?`<table><tr><th>Categoría</th><th>Palabra</th><th>Veces</th></tr>${filas.map(f=>`<tr><td>${esc(f.cat||"")}</td><td><b>${esc(f.palabra)}</b><small>${esc(f.jugador||"")} · ${esc(String(f.ultima||"").slice(0,10).split("-").reverse().join("/"))}</small></td><td>${Number(f.veces)||1}</td></tr>`).join("")}</table>`:"Todavía no hay palabras en amarillo.";
     }catch(e){caja.textContent="No se pudo cargar (¿sin internet?).";}
   }
+  /* «2 ganadas · 1 empate»: on.rg cuenta los empates para los dos (así se ordena), on.re cuántos de esos fueron empate. */
+  function rondasTxt(pid){const e=(on.re||{})[pid]||0,g=(on.rg[pid]||0)-e;return g+" "+(g===1?"ganada":"ganadas")+(e?" · "+e+" "+(e===1?"empate":"empates"):"");}
   /* Final del mejor de 3: gana el que ganó más rondas; si empatan, el de más puntos. */
   function mostrarFinal(){
     detenerMusica();cerrarApelaciones();
@@ -1173,18 +1184,18 @@ const TuttiFrutti=(()=>{
     if(ganan.includes(yo())||orden[0][0].pid===on.pid){if(typeof bip==="function")[523,659,784,1047].forEach((f,i)=>setTimeout(()=>bip(f,.22,"triangle",.05),i*140));}
     if(on.host){partidas++;guardar();}
     pantalla(`<div class="mg-panel imp-panel imp-fin"><img class="tf-trofeo" src="${ARTE("trofeo")}" alt="" draggable="false"><h3>${ganan.length>1?"¡Empate entre "+esc(ganan.join(" y "))+"!":"¡Ganó "+esc(ganan[0])+"!"}</h3>
-      <p class="imp-ayuda">${on.tot||RONDAS} rondas: gana el que ganó más rondas (si empatan, el de más puntos).</p>
-      <ol class="kar-podio">${orden.map(([j,rg,p],k)=>`<li style="--c:#E5197C"><span>${k+1}</span><i>${esc((j.nombre||"?")[0].toUpperCase())}</i><b>${esc(j.nombre)}${j.pid===on.pid?" (vos)":""}</b><em>${rg} ${rg===1?"ronda":"rondas"} · ${p} pts</em></li>`).join("")}</ol>
+      <p class="imp-ayuda">${on.tot||RONDAS} rondas jugadas: gana el que ganó más rondas (un empate cuenta para los dos; si siguen iguales, el de más puntos).</p>
+      <ol class="kar-podio">${orden.map(([j,rg,p],k)=>`<li style="--c:#E5197C"><span>${k+1}</span><i>${esc((j.nombre||"?")[0].toUpperCase())}</i><b>${esc(j.nombre)}${j.pid===on.pid?" (vos)":""}</b><em>${rondasTxt(j.pid)} · ${p} pts</em></li>`).join("")}</ol>
       ${salieronHtml()}
       ${on.host?`<button type="button" class="mg-principal" id="tfRevancha">🔄 Revancha</button>`:`<p class="imp-ayuda">Esperando que el anfitrión arranque la revancha…</p>`}</div>`);
     if(window.CompartirResultado){const yoRow=orden.find(o=>o[0].pid===on.pid),pos=orden.indexOf(yoRow)+1,gane=ganan.includes((yoRow&&yoRow[0].nombre)||"");raiz.querySelector(".imp-fin")?.appendChild(CompartirResultado.boton(()=>({juego:"Tutti Frutti",logo:ARTE("logo"),archivo:"tutti-frutti",
       titulo:gane?"¡GANÉ EL TUTTI FRUTTI!":ganan.length>1?"¡EMPATE!":"GANÓ "+String(ganan[0]||"").toUpperCase(),sub:(on.tot||RONDAS)+" rondas · "+orden.length+" jugadores",
-      cifras:[["🏅",pos+"°","mi puesto"],["🏆",yoRow?yoRow[1]:0,"rondas ganadas"],["⭐",yoRow?yoRow[2]:0,"puntos"]],
+      cifras:[["🏅",pos+"°","mi puesto"],["🏆",yoRow?yoRow[1]-((on.re||{})[yoRow[0].pid]||0):0,"rondas ganadas"],["⭐",yoRow?yoRow[2]:0,"puntos"]],
       captura:[{el:raiz.querySelector(".imp-fin .tf-trofeo"),factor:.8},{el:raiz.querySelector(".imp-fin .kar-podio"),factor:1.3}],
       filas:orden.map(([j,rg,pt],k)=>({emoji:["🥇","🥈","🥉"][k]||"🎖️",texto:(j.nombre||"?")+(j.pid===on.pid?" (yo)":""),valor:pt+" pts",estado:k===0?"ok":""})),
       texto:"🍓 Tutti Frutti · "+(gane?"¡gané!":"salí "+pos+"°")+" · "+(yoRow?yoRow[2]:0)+" puntos."})));}
     if(on.host)q("tfRevancha").onclick=e=>{const b=e&&e.currentTarget;if(b){if(b.disabled)return;b.disabled=true;}
-      const revancha=()=>{if(!on)return;on.ganadas={};on.rg={};on.rj=0;on.tot=RONDAS;difundirSala();nuevaRonda();};
+      const revancha=()=>{if(!on)return;on.ganadas={};on.rg={};on.re={};on.rj=0;on.tot=RONDAS;difundirSala();nuevaRonda();};
       /* contra la máquina, cada revancha es una partida nueva: gasta 1 ficha */
       if(on.bots&&window.Fichas&&!Fichas.usar("tutti-frutti",revancha)){if(b)b.disabled=false;return;}
       revancha();};
