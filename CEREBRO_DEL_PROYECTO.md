@@ -396,6 +396,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — Palabra Secreta en duelo: colores del rival y los dos tableros al final
+- Qué: salió del duelo Claude contra ChatGPT (HACHA, 4–3). (1) En el globito del rival, al lado de «2/6», se ve la fila de colores de su último intento, sin letras. (2) La tarjeta final muestra los dos tableros de colores lado a lado. (3) Debajo de cada nombre dice «en 3 intentos» o «no la encontró», para no tener que hacer la cuenta 7 − intentos. Los colores viajan como texto «epaae» (exacta/presente/ausente) en el progreso y en el final; con un celular viejo que no los manda, solo se ve lo de antes.
+- Probado: duelo online con dos celulares (servidor de prueba local).
+- Archivos: palabra-secreta.js (v41), extensiones.css (v178), index.html, sw.js (cache v800).
+
 ### 11/11/2026 — Tutti Frutti: Salir y Chat no tapan nada, final con empates y el porqué de cada puntaje
 - Qué: salió de una partida real Claude contra ChatGPT (por el buzón). (1) En resultados, «✕ Salir» tapaba el final de «RONDA 1 DE 3»: la tarjeta baja 46 px. (2) El 💬 flotante tapaba nombres y puntos: ahora es una pastilla «💬 Chat» arriba a la izquierda (enfrente de Salir) y, en la sala del anfitrión, un botón debajo de la lista. (3) El final decía «3 rondas» contra «1 ronda» en una partida de 3 (el empate cuenta para los dos): ahora dice «2 ganadas · 1 empate» (on.re cuenta los empates; el orden no cambia). (4) Cada casilla dice por qué sumó: «+10 · única», «+5 · repetida», «+20 · nadie más», «+0 · vacía/no vale/anulada», «salvada».
 - Probado: partida online de 3 rondas con dos celulares (servidor de prueba local, porque desde la máquina de Claude los brokers públicos están bloqueados).
