@@ -5704,7 +5704,7 @@ async function usrCargarLista(){
   {const e=$("usrDelAnuncio");if(e){e.hidden=!esGonzalo()||!delAnuncio;e.textContent="👥 Con perfil que vinieron del anuncio de Doña Rosa: "+delAnuncio+" (se registraron por cualquier lado, en este navegador)";}}
   /* Embudo del anuncio de Doña Rosa (rosa.js), solo para Gonzalo. */
   if(esGonzalo()&&window.DonaRosa)DonaRosa.resumen().then(c=>{const e=$("usrEmbudo");if(!e||!c||!c.llego)return;e.hidden=false;
-    e.textContent="📣 Anuncio Doña Rosa: "+c.llego+" llegaron · "+c.jugo+" jugaron · "+c.pista+" pidieron pista · "+c.gano+" la sacaron · "+c.quiere+" quieren seguir · "+c.play+" fueron a Google Play · "+c.registro+" se registraron · "+c.palabra+" entraron a Palabra Secreta · "+c.ps_jugo+" jugaron Palabra Secreta · "+c.reg_ofrecido+" vieron «Guardá tu partida»";});
+    e.textContent="📣 Anuncio Doña Rosa · Capítulo 2: "+c.llego+" llegaron · "+c.jugo+" jugaron · "+c.pista+" pidieron pista · "+c.gano+" la sacaron · "+c.quiere+" quieren seguir · "+c.play+" fueron a Google Play · "+c.registro+" se registraron · "+c.palabra+" entraron a Palabra Secreta · "+c.ps_jugo+" jugaron Palabra Secreta · "+c.reg_ofrecido+" vieron «Guardá tu partida»";});
   /* Si yo tengo perfil pero no aparezco, me registro de nuevo y recargo
      una vez; si falla, se muestra el motivo para poder arreglarlo. */
   const meVeo=(data||[]).some(f=>misClaves.includes(normApodo(f.apodo)));
@@ -6727,17 +6727,17 @@ const MENUS_CON_X={capaRuleta:"rwCerrar",capaTienda:"tnCerrar",capaLogros:"lgCer
 try{$("bIdiomaTxt").textContent="Idioma / Language: "+(window.GYA_IDIOMA==="en"?"English":"Español");}catch(e){}
 $("bIdioma").onclick=()=>{if(typeof gyaCambiarIdioma==="function")gyaCambiarIdioma(window.GYA_IDIOMA==="en"?"es":"en");};
 $("bMasOpciones").onclick=()=>{actualizarAccesoPruebas();$("capaMas").classList.add("ver");};
-$("bPruebas").onclick=()=>{$("capaPruebas").classList.add("ver");const e=$("pruebasAnuncio");if(e&&window.DonaRosa)DonaRosa.resumen().then(c=>{if(!c)return;e.textContent="Jugaron: "+c.anuncio.jugo+" · llegaron: "+c.anuncio.llego;});};
+$("bPruebas").onclick=()=>{$("capaPruebas").classList.add("ver");const e=$("pruebasAnuncio");if(e&&window.DonaRosa)DonaRosa.resumen().then(c=>{if(!c)return;e.textContent="Cap. 2 · Jugaron: "+c.anuncio.jugo+" · llegaron: "+c.anuncio.llego;});};
 $("bPruebaAnuncio").onclick=()=>{if(!esGonzalo())return;verAnuncioRosa();};
 /* 📣 Anuncio Doña Rosa: cuántos vinieron de la publicidad y qué palabras pusieron (con nombre si se hicieron perfil). */
-async function verAnuncioRosa(){
+async function verAnuncioRosa(capitulo=2){
   const viejo=document.querySelector(".anuncio-rosa");if(viejo)viejo.remove();
   const c=document.createElement("div");c.className="pf-confirmar fallas-reg anuncio-rosa";c.style.overflowX="hidden";
   c.innerHTML='<div class="mg-panel pf-caja" style="max-width:min(520px,calc(100vw - 24px));box-sizing:border-box;overflow-x:hidden"><h3>📣 Anuncio Doña Rosa</h3><div class="tf-dudas-lista">Cargando…</div><button type="button" data-x="1">Cerrar</button></div>';
   document.body.appendChild(c);
   c.addEventListener("click",e=>{if(e.target===c||e.target.closest("button[data-x]"))c.remove();});
   const caja=c.querySelector(".tf-dudas-lista");
-  const res=window.DonaRosa?await DonaRosa.resumen():null;
+  const res=window.DonaRosa?await DonaRosa.resumen(capitulo):null;
   if(!res){caja.textContent="No se pudo cargar (¿sin internet?).";return;}
   const a=res.anuncio,l=res.lista.filter(x=>x.palabras.length);
   const fin={gano:"✅ la sacó",perdio:"❌ no la sacó"};
@@ -6757,8 +6757,11 @@ async function verAnuncioRosa(){
       '<p>🔎 <b>Errores del juego:</b> '+errs.length+(errs.length?'':' ✅')+'</p>'+
       errs.map(e=>'<div style="margin:6px 0;padding:8px 10px;border-radius:10px;background:#ffffff10"><small>'+rkEsc(e.m||"")+(e.f?' · '+rkEsc(e.f)+':'+e.l:'')+'<br>📱 '+rkEsc(cel(e.ua))+'</small></div>').join("")+'</div>';
   }}catch(e){}
-  caja.innerHTML=diag+'<p class="imp-ayuda"><b>Llegaron: '+a.llego+' · Jugaron: '+a.jugo+'</b></p>'+
-    (l.length?'<table style="width:100%;table-layout:fixed;overflow-wrap:anywhere"><tr><th>Quién</th><th>Palabras</th></tr>'+l.map(x=>'<tr><td><b>'+rkEsc(x.nombre||"(sin nombre)")+'</b><small>Cap. '+x.cap+' · '+rkEsc(fin[x.fin]||"")+(x.registro?" · se registró":"")+'</small></td><td>'+rkEsc(x.palabras.join(", "))+'</td></tr>').join("")+'</table>':'<p>Todavía nadie puso palabras (se guardan desde hoy).</p>');
+  caja.innerHTML='<p class="imp-ayuda"><b>Capítulo '+capitulo+(capitulo===2?' · anuncio actual':' · historial')+': '+a.llego+' llegaron · '+a.jugo+' jugaron</b></p>'+
+    (l.length?'<table style="width:100%;table-layout:fixed;overflow-wrap:anywhere"><tr><th>Quién</th><th>Palabras</th></tr>'+l.map(x=>'<tr><td><b>'+rkEsc(x.nombre||"(sin nombre)")+'</b><small>Cap. '+x.cap+' · '+rkEsc(fin[x.fin]||"")+(x.registro?" · se registró":"")+'</small></td><td>'+rkEsc(x.palabras.join(", "))+'</td></tr>').join("")+'</table>':'<p>Todavía nadie puso palabras en este capítulo.</p>')+
+    '<button type="button" class="no" id="rosaCambiarCap" style="width:100%;margin:12px 0;padding:10px;border-radius:12px">Ver capítulo '+(capitulo===2?'1 · historial':'2 · actual')+'</button>'+
+    '<small style="display:block;opacity:.75;margin:8px 0">Diagnóstico técnico de aperturas y errores: incluye todos los capítulos.</small>'+diag;
+  const cambiar=caja.querySelector("#rosaCambiarCap");if(cambiar)cambiar.onclick=()=>verAnuncioRosa(capitulo===2?1:2);
 }
 $("bPruebaFallasReg").onclick=()=>{if(!esGonzalo())return;$("capaPruebas").classList.remove("ver");$("capaMas").classList.remove("ver");verFallasRegistro();};
 $("bPruebaContraReloj").onclick=()=>{if(!esGonzalo())return;$("capaPruebas").classList.remove("ver");$("capaMas").classList.remove("ver");if(window.Extensiones){Extensiones.abrirJuego("contra-reloj-rioplatense");setTimeout(()=>{if(window.ContraRelojRioplatense)ContraRelojRioplatense.prueba();},300);}};
@@ -12369,7 +12372,7 @@ document.addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"|
 <script src="rueda-de-letras.js?v=20"></script>
 <script src="palabra-secreta-datos.js?v=4"></script>
 <script src="palabra-secreta.js?v=38"></script>
-<script src="rosa.js?v=19"></script>
+<script src="rosa.js?v=20"></script>
 <link rel="stylesheet" href="palabras-cruzadas.css?v=8">
 <script src="palabras-cruzadas-datos.js?v=3"></script>
 <script src="palabras-cruzadas.js?v=18"></script>
