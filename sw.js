@@ -1,4 +1,4 @@
-const CACHE_NAME = "gya-cache-v794";
+const CACHE_NAME = "gya-cache-v795";
 // Máximo que se espera a la red (HTML/JS) antes de abrir con la copia guardada.
 const ESPERA_RED_MS = 2000;
 // Imágenes, audios y videos van en una caché APARTE que NO se borra cuando se
@@ -64,6 +64,13 @@ self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
 
   const url = new URL(e.request.url);
+  /* Los GET de la base de datos deben ir siempre a la red. Antes se
+     consideraban "librerías externas" y quedaban guardados en caché:
+     el botón de actualizar podía devolver los mismos perfiles y métricas. */
+  if (/\.supabase\.co$/i.test(url.hostname) && url.pathname.startsWith("/rest/v1/")) {
+    e.respondWith(fetch(e.request, { cache: "no-store" }));
+    return;
+  }
   // Imágenes y audios también cuentan como "asset" aunque estén en la raíz
   // (los logos de Extensiones: logo-*.svg/.webp/.png). Antes iban por "red
   // primero, sin caché" y cada vez que se abría Extensiones se volvían a
