@@ -396,6 +396,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — Palabra Secreta: Palabra del día y «Desafiá a un amigo con esta palabra»
+- Qué: de lo que coincidieron Claude y ChatGPT para que vuelvan (Gonzalo: «hacer esto»). (1) Botón «🗓️ Del día» arriba (al lado de 📊 y ?, sin agregar alto): la misma palabra para todos (palabraDia), 6 intentos, sin pista ni ficha, no toca el nivel pero ganarla suma a la racha; se guarda en gya_palabra_secreta.dia y si ya la jugó muestra «🗓️ ✅ 2/6». Al terminar: «📲 Compartir la del día» (texto con 🟩🟨⬛ sin letras + link ps.html?dia=1) y «Volver a mi nivel». (2) En el final de cada palabra: «🤝 Desafiá a un amigo con esta palabra» → link ps.html?reto=<código> (palabra codificada, nombre y en cuántos intentos la sacó). El amigo juega esa misma palabra y al final ve «La sacaste en 2 · Claude: 1 · Claude te ganó esta vez», con «🤝 Desafiá a otro amigo». ps.html ahora pasa los parámetros al juego; palabra-secreta.js los lee al cargar (LINK0) porque Extensiones borra la dirección antes de abrir.
+- Probado: del día (jugar, compartir, botón ✅), desafío (compartir, el amigo abre el link, compara). Sin alto extra en 360×740 y 390×844.
+- Archivos: palabra-secreta.js (v45), extensiones.css (v180), ps.html, index.html, sw.js (cache v808).
+
 ### 11/11/2026 — Anuncio de Doña Rosa: el cartel de registro también en el centro
 - Qué: Gonzalo quiere todos los carteles del anuncio como popup adelante del juego, en el centro. El de registro («¿Querés saber la palabra?» / «100 monedas») estaba arriba: ahora va centrado (si no entra en pantallas chicas, se desliza dentro del cartel).
 - Archivos: rosa.js (v24), index.html, rosa.html, sw.js (cache v807).

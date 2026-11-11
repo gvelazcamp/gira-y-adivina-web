@@ -19,6 +19,6 @@
 </head>
 <body>
 <p>Abriendo Palabra Secreta… <a href="index.html?ext=palabra-secreta">Tocá acá si no abre</a></p>
-<script>location.replace("index.html?ext=palabra-secreta");</script>
+<script>location.replace("index.html?ext=palabra-secreta"+location.search.replace(/^\?/,"&"));</script>
 </body>
 </html>
