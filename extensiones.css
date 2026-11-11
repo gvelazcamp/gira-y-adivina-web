@@ -1463,3 +1463,8 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .ps-salida-caja p{margin:0 0 14px;line-height:1.35}
 .ps-salida-caja button{display:block;width:100%;border:0;border-radius:14px;padding:13px;font-weight:900;font-size:1rem;margin-top:8px;cursor:pointer}
 .ps-salida-si{background:#E5197C;color:#fff}.ps-salida-no{background:#3A2650;color:#F6EFE2;border:1px solid #FFFFFF22!important}
+
+/* Palabra Secreta: botón «Palabra del día» (arriba, al lado de 📊 y ?, sin agregar alto) y «Desafiá a un amigo» (11/11/2026). */
+.ps-top button#psDia{width:auto;height:auto;min-height:30px;border-radius:15px;padding:0 10px;white-space:nowrap;font-size:.72rem;background:#F5B30122;border:1px solid #F5B301;color:#F5B301;margin-left:auto}
+.ps-top button#psDia.ps-dia-hecho{background:#2E9E5B33;border-color:#37D6C0;color:#9FF0D8}
+.ps-final-caja button.ps-reto-btn{background:#2E9E5B;color:#fff}
