@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — Anuncio de Doña Rosa: el cartel de registro también en el centro
+- Qué: Gonzalo quiere todos los carteles del anuncio como popup adelante del juego, en el centro. El de registro («¿Querés saber la palabra?» / «100 monedas») estaba arriba: ahora va centrado (si no entra en pantallas chicas, se desliza dentro del cartel).
+- Archivos: rosa.js (v24), index.html, rosa.html, sw.js (cache v807).
+
 ### 11/11/2026 — Anuncio de Doña Rosa: motivo para registrarse (ganó o perdió) y final en cartel central
 - Qué: (1) Al que gana (iPhone/compu, sin perfil): el cartel de registro dice «🎁 Doña Rosa te regala 🪙 100 monedas para el juego si te registrás ahora» y el botón «🎁 Registrarme y recibir 🪙 100». Las monedas se cobran una sola vez por celular (gya_rosa_regalo_pend → gya_rosa_regalo_dado) cuando se crea el perfil en el juego (cobrarRegalo, con aviso «¡Regalo!»). (2) Al que pierde: «🤫 ¿Querés saber la palabra? Registrate y Doña Rosa te la cuenta» (sale solo a los 1,2 s y también como botón en el final); al registrarse ve «🤫 La palabra era YERBA». Si ya tiene perfil, la ve directo. El registro sigue pidiendo nombre, país y avatar (Gonzalo los necesita). En Android no cambia: el camino sigue siendo la app. (3) El final («¡Casi!» / «Doña Rosa cobró») pasa a ser un cartel en el centro (antes quedaba abajo), aparece a los 0,7 s.
 - Probado: perder → registrarse → ve la palabra; ganar → registrarse → en el juego 650 → 750 monedas (sin regalo queda en 650) y no se repite al recargar.
