@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — Comentaristas automáticos para la pizarra de Doña Rosa
+- Qué: Gonzalo tiene un robot (repo gvelazcamp/instagram-prueba-privada, armado con ChatGPT, usa instagrapi —no oficial—) que responde comentarios del último reel. Ahora además guarda comentaristas.json (por reel: usuario, comentario, fecha; sin la cuenta propia) y lo commitea al repo. De ahí salen los nombres para «Los que ayudaron».
+
 ### 11/11/2026 — Anuncio ?cap=3: el tablero de «La colecta» (GRANOLA)
 - Qué: CAPITULO_3 de rosa.js pasa a ser «La colecta»: clave GRANOLA (7 letras), intentos Pepito CAMPERA, Nelly GRANJAS, Juanchi GRANITA, pista «Va con yogur en el desayuno 🥣». rosa.js acepta palabras de cualquier largo (LARGO = largo de la clave; con 5 letras sigue validando con el diccionario de Palabra Secreta, con 7 acepta cualquier palabra porque ese diccionario es de 5). La idea del cobrador (SIDRA) quedó para más adelante.
 - Probado en 360×740 y 390×844: entra sin deslizar; al sacarla aparece «¡Lo descubriste!» y el registro.
