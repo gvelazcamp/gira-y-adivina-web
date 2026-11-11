@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — Rosco: repasar las palabras que fallaste
+- Qué: lo que coincidieron Claude y ChatGPT. Las palabras falladas o sin responder se guardan (gya del Rosco → repaso, hasta 12). En el resultado aparece «🔁 Repasar las que fallé (N)» y en el menú «🔁 Repasar tus N pendientes» (así hay un motivo para volver). El repaso es una vuelta corta solo con esas palabras (15 s por letra, mínimo 30), aparte del récord, del nivel y de los logros; las que se vuelven a fallar quedan para la próxima. Si se tocó «Repasar» después de pasar de nivel, el nivel nuevo se respeta.
+- Archivos: rosco-rioplatense.js (v95), index.html, sw.js (cache v809).
+
 ### 11/11/2026 — Palabra Secreta: Palabra del día y «Desafiá a un amigo con esta palabra»
 - Qué: de lo que coincidieron Claude y ChatGPT para que vuelvan (Gonzalo: «hacer esto»). (1) Botón «🗓️ Del día» arriba (al lado de 📊 y ?, sin agregar alto): la misma palabra para todos (palabraDia), 6 intentos, sin pista ni ficha, no toca el nivel pero ganarla suma a la racha; se guarda en gya_palabra_secreta.dia y si ya la jugó muestra «🗓️ ✅ 2/6». Al terminar: «📲 Compartir la del día» (texto con 🟩🟨⬛ sin letras + link ps.html?dia=1) y «Volver a mi nivel». (2) En el final de cada palabra: «🤝 Desafiá a un amigo con esta palabra» → link ps.html?reto=<código> (palabra codificada, nombre y en cuántos intentos la sacó). El amigo juega esa misma palabra y al final ve «La sacaste en 2 · Claude: 1 · Claude te ganó esta vez», con «🤝 Desafiá a otro amigo». ps.html ahora pasa los parámetros al juego; palabra-secreta.js los lee al cargar (LINK0) porque Extensiones borra la dirección antes de abrir.
 - Probado: del día (jugar, compartir, botón ✅), desafío (compartir, el amigo abre el link, compara). Sin alto extra en 360×740 y 390×844.
