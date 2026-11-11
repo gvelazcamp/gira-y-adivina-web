@@ -578,14 +578,25 @@ const PalabraSecreta=(()=>{
     }});
   }
   function abrir(contenedor){salir();raiz=contenedor;avisoVisto=false;iniciarNivel();pantalla();tablero();relojUlt=0;relojFila=-1;relojInt=setInterval(relojTic,200);document.addEventListener("visibilitychange",alVisibilidad);window.addEventListener("resize",revisarHorizontal);iniciarMusicaJuego();ayuda();}
-  /* Al salir (Gonzalo, 11/11/2026): un aviso corto, una vez por día, para que vuelva mañana por la racha. */
+  /* Al salir (Gonzalo, 11/11/2026): un cartel con botones, una vez por día y solo con racha, para que vuelva.
+     Aparece en el inicio o en el menú de Extensiones, nunca encima de otro juego que se haya abierto. */
   function avisoSalida(){
-    try{const hoy=indiceDia(),n=datos.racha;if(n<=0||datos.avisoSalida===hoy||typeof mostrarToast!=="function")return;
-      const dias=k=>k+" día"+(k===1?"":"s");
-      if(datos.ultimoGanado===hoy)mostrarToast("🔥","Llevás "+dias(n)+" de racha. ¡Volvé mañana por el día "+(n+1)+"!","¡Nos vemos mañana!");
-      else if(datos.ultimoGanado===hoy-1)mostrarToast("⚠️","Tu racha de "+dias(n)+" se corta hoy. ¡Volvé antes de medianoche!","¡No pierdas la racha!");
-      else return;
-      datos.avisoSalida=hoy;guardar();}catch(e){}
+    try{const hoy=indiceDia(),n=datos.racha;if(n<=0||datos.avisoSalida===hoy)return;
+      const gano=datos.ultimoGanado===hoy,riesgo=datos.ultimoGanado===hoy-1;if(!gano&&!riesgo)return;
+      setTimeout(()=>{
+        if(raiz||document.querySelector(".ps-salida"))return;
+        const sh=document.getElementById("extShell"),tit=document.getElementById("extTitulo");
+        if(sh&&!sh.hidden&&tit&&!/^Jugá más juegos/.test(tit.textContent))return; // abrió otro juego
+        datos.avisoSalida=hoy;guardar();
+        const dias=k=>k+" día"+(k===1?"":"s");
+        const c=document.createElement("div");c.className="ps-salida";c.setAttribute("role","dialog");c.setAttribute("aria-modal","true");
+        c.innerHTML='<div class="ps-salida-caja"><img src="'+ARTE("racha")+'" alt="" draggable="false"><h3>'+(gano?"🔥 ¡Nos vemos mañana!":"⚠️ ¡No pierdas la racha!")+'</h3><p>'+(gano?"Llevás <b>"+dias(n)+"</b> de racha. Volvé mañana para llegar al día <b>"+(n+1)+"</b>.":"Tu racha de <b>"+dias(n)+"</b> se corta hoy si no sacás una palabra.")+'</p>'+
+          '<button type="button" class="ps-salida-si" data-r="'+(gano?"ok":"jugar")+'">'+(gano?"Aceptar":"🎮 Volver a jugar")+'</button><button type="button" class="ps-salida-no" data-r="'+(gano?"jugar":"ok")+'">'+(gano?"🎮 Jugar otra palabra":"Salir igual")+'</button></div>';
+        c.addEventListener("click",e=>{const b=e.target.closest("button[data-r]");if(!b)return;c.remove();
+          if(b.dataset.r==="jugar"&&window.Extensiones)Extensiones.abrirJuego("palabra-secreta");});
+        document.body.appendChild(c);c.querySelector(".ps-salida-si").focus({preventScroll:true});
+      },350);
+    }catch(e){}
   }
   function salir(){const avisar=!!(raiz&&partida&&!duelo&&!colaborativo);clearInterval(relojInt);relojInt=null;detenerEquipo();pararMicrofono();token++;animando=false;if((duelo||colaborativoLobby)&&typeof Duelo!=="undefined")Duelo.salir();duelo=false;colaborativoLobby=false;document.removeEventListener("visibilitychange",alVisibilidad);window.removeEventListener("resize",revisarHorizontal);detenerMusicaJuego();raiz=null;partida=null;borrador="";cursor=null;if(avisar)avisoSalida();}
   /* Doña Rosa (rosa.js): el que viene del anuncio y la sacó arranca en el nivel 2 si todavía no jugó acá. */

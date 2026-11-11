@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — Palabra Secreta: el aviso al salir pasa a ser un cartel con botones
+- Qué: Gonzalo quería un popup para aceptar o volver, no un aviso que se va solo. Al salir (una vez por día, solo con racha) aparece en el inicio o en el menú de Extensiones (nunca encima de otro juego): si ya sacó una palabra hoy, «🔥 ¡Nos vemos mañana!» con «Aceptar» / «🎮 Jugar otra palabra»; si todavía no, «⚠️ ¡No pierdas la racha!» con «🎮 Volver a jugar» / «Salir igual». «Jugar» vuelve a abrir Palabra Secreta. Estilos .ps-salida en extensiones.css.
+- Archivos: palabra-secreta.js (v44), extensiones.css (v179), index.html, sw.js (cache v804).
+
 ### 11/11/2026 — Palabra Secreta: aviso al salir para que vuelva mañana
 - Qué: al salir de Palabra Secreta (no en duelo ni colaborativo), un aviso corto (mostrarToast), una vez por día y solo si hay racha: si ya sacó una palabra hoy, «🔥 ¡Nos vemos mañana! Llevás N días de racha. ¡Volvé mañana por el día N+1!»; si todavía no, «⚠️ ¡No pierdas la racha! Tu racha de N días se corta hoy. ¡Volvé antes de medianoche!». Sin racha no aparece nada. Nada nuevo en el inicio (Gonzalo no quiere más popups ahí). Dato nuevo: avisoSalida en gya_palabra_secreta.
 - Archivos: palabra-secreta.js (v43), index.html, sw.js (cache v803).
