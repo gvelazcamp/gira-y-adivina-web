@@ -580,6 +580,15 @@ const RoscoRioplatense=(()=>{
     hud();enfocar();
     if(duelo)Duelo.enviarProgreso({aciertos:conteo("acierto"),total:items.length});
   }
+  /* ¿Lo que oyó el micrófono se parece a la respuesta (puede haber entendido mal)? Mismo sonido al
+     empezar y no más de la mitad de letras distintas, o una contiene a la otra. «zapallo» por DURAZNO: no. */
+  function parecidoVoz(d,crudo){
+    const partes=String(crudo||"").split(/\s+/).map(normalizar).filter(x=>x.length>=2);partes.push(normalizar(crudo));
+    return [d.palabra,...(d.alternativas||[])].some(r=>{const o=sonidoEspanol(normalizar(r));
+      return partes.some(p=>{const s=sonidoEspanol(p);if(s.length<2||!o)return false;
+        if((s.length>=3&&o.includes(s))||s.includes(o))return true;
+        return (s[0]===o[0]&&distancia(s,o)<=Math.ceil(o.length/2))||(o.length>=4&&distancia(s,o)<=1);});});
+  }
   function revisarErrorVozG(d,crudo){
     const i=actual;fase="revision";detenerVoz();$("#rrEntrada").value="";sonido(false);mensaje("Oí «"+crudo+"»","error");hud();
     const cerrar=()=>{$("#rrPanel").hidden=true;};
@@ -590,10 +599,16 @@ const RoscoRioplatense=(()=>{
     panel("❌ ¡Uy, no era!","El micrófono escuchó «"+crudo+"». El reloj está en pausa. ¿Qué pasó?",[
       ["🔊 Fue ruido: volver a preguntar",()=>{cerrar();if(!raiz||fase!=="revision")return;
         estados[i]="pendiente";respuestas[i]="";destino=i;mensaje("🔁 Otra vez la "+d.letra);detenerGiro();}],
-      ["⚖️ Lo dije bien: que valga",()=>{cerrar();if(!raiz||fase!=="revision")return;
-        estados[i]="acierto";respuestas[i]=crudo;fase="respuesta";espera=ROSCO_CONFIG.pausaMs;sonido(true);
-        if(raiz.classList.contains("rr-estudio"))window.GiroRoscoPiloto?.reaccion?.("acierto");
-        mensaje("✅ Apelada · +100 puntos · "+d.palabra,"acierto");if(typeof objSumar==="function")objSumar("roscoLetras",1);hud();}],
+      /* «Lo dije bien» (11/11/2026, prueba Claude–ChatGPT: valía cualquier cosa, hasta «zapallo»):
+         solo aparece si lo que oyó se parece a la respuesta, y antes de valer muestra la palabra
+         correcta y pregunta si es lo que dijo. Ya no se puede volver a «Fue ruido» después de verla. */
+      ...(parecidoVoz(d,crudo)?[["⚖️ Lo dije bien: que valga",()=>{cerrar();if(!raiz||fase!=="revision")return;
+        panel("⚖️ ¿Es lo que dijiste?","La respuesta era «"+d.palabra+"». Si es lo que dijiste, vale. Si no, cuenta como error.",[
+          ["✅ Sí, eso dije",()=>{cerrar();if(!raiz||fase!=="revision")return;
+            estados[i]="acierto";respuestas[i]=crudo;fase="respuesta";espera=ROSCO_CONFIG.pausaMs;sonido(true);
+            if(raiz.classList.contains("rr-estudio"))window.GiroRoscoPiloto?.reaccion?.("acierto");
+            mensaje("✅ Apelada · +100 puntos · "+d.palabra,"acierto");if(typeof objSumar==="function")objSumar("roscoLetras",1);hud();}],
+          ["❌ No, me equivoqué",()=>seguirConError()]]);}]]:[]),
       ["Seguir",()=>seguirConError()]]);
   }
   function pasar(){
