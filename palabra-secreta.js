@@ -19,7 +19,7 @@ const PalabraSecreta=(()=>{
   }
   function detenerMusicaJuego(){try{if(audioMusica&&!audioMusica.paused)audioMusica.pause();}catch(e){}}
   function alVisibilidad(){if(document.hidden)detenerMusicaJuego();else if(micActivo){if(!micRecon)escucharMicrofono();}else iniciarMusicaJuego();}
-  function cargar(){try{const d=JSON.parse(localStorage.getItem(CLAVE)||"null");if(d&&typeof d==="object")return{diaria:d.diaria||null,nivel:Number.isInteger(d.nivel)&&d.nivel>0?d.nivel:1,partidaNivel:d.partidaNivel||null,racha:Number(d.racha)||0,mejorRacha:Number(d.mejorRacha)||0,ganadas:Number(d.ganadas)||0,jugadas:Number(d.jugadas)||0,distribucion:Array.isArray(d.distribucion)?d.distribucion.slice(0,6):[0,0,0,0,0,0],ultimoGanado:Number(d.ultimoGanado)||0,ayudaVista:!!d.ayudaVista,salvavidasSemana:Number.isFinite(d.salvavidasSemana)?d.salvavidasSemana:-1,salvavidasOfrecido:Number(d.salvavidasOfrecido)||0};}catch(e){}return{diaria:null,nivel:1,partidaNivel:null,racha:0,mejorRacha:0,ganadas:0,jugadas:0,distribucion:[0,0,0,0,0,0],ultimoGanado:0,ayudaVista:false,salvavidasSemana:-1,salvavidasOfrecido:0};}
+  function cargar(){try{const d=JSON.parse(localStorage.getItem(CLAVE)||"null");if(d&&typeof d==="object")return{diaria:d.diaria||null,nivel:Number.isInteger(d.nivel)&&d.nivel>0?d.nivel:1,partidaNivel:d.partidaNivel||null,racha:Number(d.racha)||0,mejorRacha:Number(d.mejorRacha)||0,ganadas:Number(d.ganadas)||0,jugadas:Number(d.jugadas)||0,distribucion:Array.isArray(d.distribucion)?d.distribucion.slice(0,6):[0,0,0,0,0,0],ultimoGanado:Number(d.ultimoGanado)||0,ayudaVista:!!d.ayudaVista,salvavidasSemana:Number.isFinite(d.salvavidasSemana)?d.salvavidasSemana:-1,salvavidasOfrecido:Number(d.salvavidasOfrecido)||0,avisoSalida:Number(d.avisoSalida)||0};}catch(e){}return{diaria:null,nivel:1,partidaNivel:null,racha:0,mejorRacha:0,ganadas:0,jugadas:0,distribucion:[0,0,0,0,0,0],ultimoGanado:0,ayudaVista:false,salvavidasSemana:-1,salvavidasOfrecido:0,avisoSalida:0};}
   function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify(datos));}catch(e){}}
   function indiceDia(fecha=new Date()){const p=Object.fromEntries(new Intl.DateTimeFormat("en-US",{timeZone:"America/Montevideo",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(fecha).map(x=>[x.type,x.value]));return Math.floor(Date.UTC(Number(p.year),Number(p.month)-1,Number(p.day))/86400000);}
   function palabraDia(dia=indiceDia()){return PALABRA_SECRETAS[dia%PALABRA_SECRETAS.length];}
@@ -578,7 +578,16 @@ const PalabraSecreta=(()=>{
     }});
   }
   function abrir(contenedor){salir();raiz=contenedor;avisoVisto=false;iniciarNivel();pantalla();tablero();relojUlt=0;relojFila=-1;relojInt=setInterval(relojTic,200);document.addEventListener("visibilitychange",alVisibilidad);window.addEventListener("resize",revisarHorizontal);iniciarMusicaJuego();ayuda();}
-  function salir(){clearInterval(relojInt);relojInt=null;detenerEquipo();pararMicrofono();token++;animando=false;if((duelo||colaborativoLobby)&&typeof Duelo!=="undefined")Duelo.salir();duelo=false;colaborativoLobby=false;document.removeEventListener("visibilitychange",alVisibilidad);window.removeEventListener("resize",revisarHorizontal);detenerMusicaJuego();raiz=null;partida=null;borrador="";cursor=null;}
+  /* Al salir (Gonzalo, 11/11/2026): un aviso corto, una vez por día, para que vuelva mañana por la racha. */
+  function avisoSalida(){
+    try{const hoy=indiceDia(),n=datos.racha;if(n<=0||datos.avisoSalida===hoy||typeof mostrarToast!=="function")return;
+      const dias=k=>k+" día"+(k===1?"":"s");
+      if(datos.ultimoGanado===hoy)mostrarToast("🔥","Llevás "+dias(n)+" de racha. ¡Volvé mañana por el día "+(n+1)+"!","¡Nos vemos mañana!");
+      else if(datos.ultimoGanado===hoy-1)mostrarToast("⚠️","Tu racha de "+dias(n)+" se corta hoy. ¡Volvé antes de medianoche!","¡No pierdas la racha!");
+      else return;
+      datos.avisoSalida=hoy;guardar();}catch(e){}
+  }
+  function salir(){const avisar=!!(raiz&&partida&&!duelo&&!colaborativo);clearInterval(relojInt);relojInt=null;detenerEquipo();pararMicrofono();token++;animando=false;if((duelo||colaborativoLobby)&&typeof Duelo!=="undefined")Duelo.salir();duelo=false;colaborativoLobby=false;document.removeEventListener("visibilitychange",alVisibilidad);window.removeEventListener("resize",revisarHorizontal);detenerMusicaJuego();raiz=null;partida=null;borrador="";cursor=null;if(avisar)avisoSalida();}
   /* Doña Rosa (rosa.js): el que viene del anuncio y la sacó arranca en el nivel 2 si todavía no jugó acá. */
   function empezarEnNivel(n){if(datos.nivel>=n||datos.jugadas)return false;datos.nivel=n;datos.partidaNivel=null;datos.ganadas=Math.max(1,datos.ganadas);datos.jugadas=Math.max(1,datos.jugadas);datos.racha=Math.max(1,datos.racha);datos.mejorRacha=Math.max(1,datos.mejorRacha);guardar();return true;}
   return{abrir,salir,tecla,indiceDia,palabraDia,evaluar,rachaActual,empezarEnNivel,nivelActual:()=>datos.nivel,estadisticasGuardadas:()=>({...datos}),textoCompartir};
