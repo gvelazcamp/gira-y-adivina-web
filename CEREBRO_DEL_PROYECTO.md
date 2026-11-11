@@ -396,6 +396,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — Anuncio de Doña Rosa: motivo para registrarse (ganó o perdió) y final en cartel central
+- Qué: (1) Al que gana (iPhone/compu, sin perfil): el cartel de registro dice «🎁 Doña Rosa te regala 🪙 100 monedas para el juego si te registrás ahora» y el botón «🎁 Registrarme y recibir 🪙 100». Las monedas se cobran una sola vez por celular (gya_rosa_regalo_pend → gya_rosa_regalo_dado) cuando se crea el perfil en el juego (cobrarRegalo, con aviso «¡Regalo!»). (2) Al que pierde: «🤫 ¿Querés saber la palabra? Registrate y Doña Rosa te la cuenta» (sale solo a los 1,2 s y también como botón en el final); al registrarse ve «🤫 La palabra era YERBA». Si ya tiene perfil, la ve directo. El registro sigue pidiendo nombre, país y avatar (Gonzalo los necesita). En Android no cambia: el camino sigue siendo la app. (3) El final («¡Casi!» / «Doña Rosa cobró») pasa a ser un cartel en el centro (antes quedaba abajo), aparece a los 0,7 s.
+- Probado: perder → registrarse → ve la palabra; ganar → registrarse → en el juego 650 → 750 monedas (sin regalo queda en 650) y no se repite al recargar.
+- Archivos: rosa.js (v23), index.html, rosa.html, sw.js (cache v806).
+
 ### 11/11/2026 — Anuncio de Doña Rosa: el tablero invita a tocar (primera vez)
 - Qué: de 1179 que llegan del anuncio solo 143 juegan. Para que toquen el tablero, la primera vez que entran (gya_rosa_invita_visto) y antes de escribir: Doña Rosa dice «¡Tocá las letras y probá! 👇»; la fila «Vos» brilla con las letras que ya se saben (verdes de los intentos de los vecinos) en verde clarito y un cartelito «💡 Estas letras ya las sabés»; la tecla de la primera letra de la clave queda en dorado (Gonzalo: «que vaya a la Y»); una mano 👆 toca la fila y después esa tecla y se va a los ~5 s. Todo se apaga al tocar cualquier tecla. Sirve para los tres capítulos.
 - Para medir: comparar «llegaron» contra «jugaron» en 👥 Usuarios antes y después.

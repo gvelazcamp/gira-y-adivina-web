@@ -182,6 +182,12 @@
 .ro-si{display:block;width:100%;text-align:center;text-decoration:none;border:0;border-radius:14px;padding:14px;background:linear-gradient(#ff4fa3,#E5197C);color:#fff;font:900 1.05rem Outfit;cursor:pointer;box-shadow:0 4px 0 #8E0F4C}
 .ro-no{margin-top:8px;border:0;background:none;color:#9fb6c4;font:800 .85rem Outfit;text-decoration:underline;cursor:pointer}
 /* Pantallas bajas (el navegador de Instagram ocupa parte de arriba y de abajo): que entre el teclado entero sin deslizar. */
+@keyframes roPopFondo{from{opacity:0}to{opacity:1}}
+.ro-pop{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;background:#0b0614b0;animation:roPopFondo .35s ease-out .7s both}
+.ro-pop .ro-panel{width:100%;margin:0;max-height:90dvh;overflow-y:auto;box-shadow:0 20px 50px #000a;animation:roInvBote .4s ease-out .7s both}
+.ro-pop.ya,.ro-pop.ya .ro-panel{animation:none}
+.ro-revela{margin:8px 0 4px!important;padding:8px 10px;border-radius:12px;background:#FFF3C4;color:#5b3a26!important;font:800 1rem Outfit!important}
+.ro-revela b{font-family:'Archivo Black',sans-serif;letter-spacing:2px;color:#2E9E5B}
 @keyframes roInvPulso{0%,100%{box-shadow:0 0 0 0 #F5B30100}50%{box-shadow:0 0 0 5px #F5B301aa}}
 @keyframes roInvBote{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
 @keyframes roInvTap{0%,100%{transform:scale(1)}50%{transform:scale(.82)}}
@@ -202,7 +208,7 @@
   /* Invitación a tocar (Gonzalo, 11/11/2026; solo la primera vez y antes de escribir): Doña Rosa dice «¡Tocá las
      letras y probá!», la fila «Vos» brilla con las letras que ya se saben en verde clarito, la tecla de la primera
      letra de la clave queda marcada y una mano 👆 toca la fila y después esa tecla. Se apaga al tocar cualquier tecla. */
-  let invita=false,mano=null;
+  let invita=false,mano=null,popVisto=false;
   const K_INVITA="gya_rosa_invita_visto";
   const sabidas=()=>{const r=Array(LARGO).fill("");CAPITULO.intentos.forEach(([,w])=>{const c=evaluar(w,CAPITULO.clave);[...w].forEach((l,i)=>{if(c[i]==="verde")r[i]=l;});});return r;};
   function apagarInvita(){if(!invita)return;invita=false;if(mano){const m=mano;mano=null;m.style.opacity="0";setTimeout(()=>m.remove(),500);}}
@@ -230,15 +236,21 @@
     /* Android (en la página liviana): primero se ofrece seguir en la app de Google Play; el navegador queda como segunda opción. */
     const seguir=ANDROID?'<p>¿Querés seguir jugando a <b>Palabra Secreta</b>? Una palabra nueva cada vez, gratis.</p><a class="ro-si" id="roPlay" href="'+URL_APP+'">▶ Seguí jugando en la app</a><p class="ro-nota">Si ya tenés la app, se abre directo con tu partida. Si no, la bajás gratis de Google Play.</p><button type="button" class="ro-no" id="roSi">Seguir en el navegador</button>'
       :'<p>¿Querés seguir jugando a <b>Palabra Secreta</b>? Una palabra nueva cada vez, gratis.</p><button type="button" class="ro-si" id="roSi">🔤 ¡Sí, quiero jugar!</button><button type="button" class="ro-no" id="roNo">Ahora no</button>';
-    const panel=fin?'<div class="ro-panel"><h3>'+(abierto?(CAPITULO.ganoTitulo||"🎉 ¡Salvaste a Doña Rosa!"):"¡Casi!")+'</h3><p>'+(abierto?CAPITULO.gano:CAPITULO.perdio)+'</p>'+seguir+'</div>':"";
+    const sabe=fin==="perdio"&&(tienePerfil()||!!ls.get("gya_rosa_reg_pend"));
+    const revela=fin==="perdio"?(sabe?'<p class="ro-revela">🤫 La palabra era <b>'+CAPITULO.clave+'</b></p>':(!ANDROID?'<button type="button" class="ro-si" id="roRevela">🤫 ¿Querés saber la palabra? Registrate</button>':'')):'';
+    /* Gonzalo (11/11): el final es un cartel en el centro (antes quedaba abajo de la libreta). Aparece a los 0,7 s
+       para que se vea la última fila; si se vuelve a pintar (por ejemplo después de registrarse) ya no se anima. */
+    const panel=fin?'<div class="ro-pop'+(popVisto?' ya':'')+'"><div class="ro-panel"><h3>'+(abierto?(CAPITULO.ganoTitulo||"🎉 ¡Salvaste a Doña Rosa!"):"¡Casi!")+'</h3><p>'+(abierto?CAPITULO.gano:CAPITULO.perdio)+'</p>'+revela+seguir+'</div></div>':"";
+    if(fin)popVisto=true;
     capa.innerHTML='<div class="ro-cab"><div><small>'+CAPITULO.titulo+'</small><b>EL ALMACÉN DE DOÑA ROSA</b></div>'+(fin?'':'<button type="button" class="ro-x env" data-t="OK">Probar</button>')+'</div>'+
       '<div class="ro-esc"><div class="ro-edif"></div><div class="ro-cartel">ALMACÉN DOÑA ROSA</div><div class="ro-toldo"></div><div class="ro-puerta"></div><div class="ro-aviso'+(abierto?" ok":"")+'">'+(abierto?"¡ABIERTO!":"CIERRA<br>PRONTO")+'</div>'+rosaHtml()+'<div class="ro-globo'+(inv?" ro-inv-globo":"")+'">'+(abierto?"¡Gracias, vecino! 💜":fin?"Ay… ¿cuál era? 😢":inv?"¡Tocá las letras y probá! 👇":verPista&&CAPITULO.pista?"💡 "+CAPITULO.pista:CAPITULO.pedido)+'</div></div>'+
       '<div class="ro-lib">'+(!fin&&CAPITULO.pista?'<button type="button" class="ro-pista'+(verPista?' si':'')+'" id="roPista">💡 Pista</button>':'')+'<span class="ro-cand">'+(CAPITULO.icono||(abierto?"🔓":"🔒"))+'</span><h4>'+(CAPITULO.hoja||"LIBRETA DEL FIADO")+'</h4>'+(CAPITULO.sub?'<p class="ro-sub">'+CAPITULO.sub+'</p>':'')+'<div class="ro-tab">'+filas+'</div></div>'+
       '<p class="ro-msj" id="roMsj">'+(fin?"":"Tenés "+libres+" intento"+(libres===1?"":"s")+". Palabra de "+LARGO+" letras.")+'</p>'+tec+(!fin&&mios.length?'<div class="ro-salir"><button type="button" class="ro-no" id="roSaltar">Saltar e ir al juego</button></div>':'')+panel;
     const sal=capa.querySelector("#roSaltar");if(sal)sal.onclick=()=>cerrar(false);
     capa.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>tecla_(b.dataset.t));
-    const si=capa.querySelector("#roSi");if(si){si.onclick=()=>cerrar(true);si.focus({preventScroll:true});setTimeout(()=>{try{capa&&capa.scrollTo({top:capa.scrollHeight,behavior:"smooth"});}catch(e){}},600);}
+    const si=capa.querySelector("#roSi");if(si){si.onclick=()=>cerrar(true);si.focus({preventScroll:true});}
     const no=capa.querySelector("#roNo");if(no)no.onclick=()=>cerrar(false);
+    const rv=capa.querySelector("#roRevela");if(rv)rv.onclick=()=>registroRapido("perdio");
     /* Pista: la dice Doña Rosa en su globo (se cuenta en el embudo). */
     const pi=capa.querySelector("#roPista");if(pi)pi.onclick=()=>{verPista=true;paso("pista");pintar();mensaje("💡 Pista: "+CAPITULO.pista);};
     const pl=capa.querySelector("#roPlay");if(pl)pl.onclick=()=>{paso("play");ls.set(K_VISTO,fin||"play");};
@@ -254,7 +266,9 @@
       if(!mios.length)paso("jugo");
       mios.push(borrador);borrador="";{const p=pasos();p.palabras=mios.slice();subir(p);}
       if(mios[mios.length-1]===CAPITULO.clave){fin="gano";paso("gano");}
-      else if(mios.length>=3){fin="perdio";paso("perdio");}
+      else if(mios.length>=3){fin="perdio";paso("perdio");
+        /* Gonzalo (11/11): al que pierde, «¿Querés saber la palabra? Registrate y te la cuento». */
+        if(SOLA&&!ANDROID&&!tienePerfil()&&!ls.get("gya_rosa_reg_visto")){ls.set("gya_rosa_reg_visto","1");paso("reg_ofrecido");setTimeout(()=>registroRapido("perdio"),1200);}}
       ls.set(K_VISTO,fin||"jugando");pintar();
       if(fin==="gano"){try{if(typeof sonarSFX==="function")sonarSFX("aplausos");}catch(e){}
         /* Gonzalo (08/11): al sacar Doña Rosa ya se ofrece guardar la racha (Doña Rosa cuenta como nivel 1 de Palabra Secreta). */
@@ -299,7 +313,7 @@
     },500);
   }
   function mostrar(){
-    estilos();capa=document.createElement("div");capa.id="rosaCapa";capa.setAttribute("role","dialog");capa.setAttribute("aria-label","El almacén de Doña Rosa");
+    popVisto=false;estilos();capa=document.createElement("div");capa.id="rosaCapa";capa.setAttribute("role","dialog");capa.setAttribute("aria-label","El almacén de Doña Rosa");
     document.body.appendChild(capa);pintar();document.addEventListener("keydown",teclado,true);invitar();
     /* «Llegó» se cuenta apenas se muestra (08/11: el filtro «solo si se ve» dejó el número clavado desde la noche del 07/11;
        el registro crudo de rosa.html guarda visibilityState para ver si Instagram la carga por adelantado). */
@@ -327,8 +341,17 @@
     try{if(SOLA||tienePerfil()||!pasos().llego||ls.get("gya_rosa_reg_visto"))return;}catch(e){return;}
     ls.set("gya_rosa_reg_visto","1");paso("reg_ofrecido");setTimeout(registroRapido,1300);
   }
-  function registroRapido(){
+  /* 100 monedas de regalo de Doña Rosa al que se registra después de ganar (Gonzalo, 11/11). Una sola vez por celular:
+     en la página liviana queda pendiente y lo cobra index.html al crear el perfil. */
+  function cobrarRegalo(){
+    try{if(!ls.get("gya_rosa_regalo_pend")||ls.get("gya_rosa_regalo_dado")||typeof meta==="undefined"||typeof guardarMeta!=="function")return;
+      ls.del("gya_rosa_regalo_pend");ls.set("gya_rosa_regalo_dado","1");meta.monedas=(Number(meta.monedas)||0)+100;guardarMeta();
+      try{if(typeof refrescarMonedas==="function")refrescarMonedas();}catch(e){}
+      setTimeout(()=>{try{if(typeof mostrarToast==="function")mostrarToast("🎁","Doña Rosa te regaló 🪙 100 monedas para el juego.","¡Regalo!");}catch(e){}},2800);}catch(e){}
+  }
+  function registroRapido(modo){
     if(tienePerfil()||document.getElementById("rosaReg"))return;
+    const perdio=modo==="perdio",regalo=!perdio&&!ls.get("gya_rosa_regalo_dado");
     let nombre="",pais=null,avatar=null,todos=false;
     const lista=(typeof AVATARES!=="undefined"?AVATARES:Array.from({length:21},(_,i)=>"avatar-"+String(i+1).padStart(2,"0")).concat(["avatar-33","avatar-42","avatar-43","avatar-44","avatar-45","avatar-46","avatar-47","avatar-48","avatar-49","avatar-50","avatar-51","avatar-52","avatar-53","avatar-54"])).filter(a=>a!=="avatar-22");
     const c=document.createElement("div");c.id="rosaReg";c.setAttribute("role","dialog");
@@ -355,11 +378,11 @@
 .rr-no{margin-top:9px;border:0;background:none;font:800 .85rem Outfit;color:#9fb6c4;text-decoration:underline;cursor:pointer}`;document.head.appendChild(st);}
     const pintarR=()=>{
       const avs=(todos?lista:lista.slice(0,12)).map(a=>'<button type="button" data-a="'+a+'" class="'+(a===avatar?"si":"")+'"><img src="assets/avatars/'+a+'.webp" alt=""></button>').join("");
-      c.innerHTML='<div class="rr-caja"><h3>🎉 ¡Muy bien!</h3><p>¿Guardamos tu racha? Poné tu nombre y elegí tu avatar: así no perdés tu partida.</p>'+
+      c.innerHTML='<div class="rr-caja"><h3>'+(perdio?"🤫 ¿Querés saber la palabra?":"🎉 ¡Muy bien!")+'</h3><p>'+(perdio?"Registrate y Doña Rosa te la cuenta. Poné tu nombre, tu país y tu avatar.":regalo?"🎁 <b>Doña Rosa te regala 🪙 100 monedas</b> para el juego si te registrás ahora. Poné tu nombre, tu país y tu avatar.":"¿Guardamos tu racha? Poné tu nombre y elegí tu avatar: así no perdés tu partida.")+'</p>'+
         '<input class="rr-nom" id="rrNom" maxlength="12" placeholder="Tu nombre" autocomplete="nickname">'+
         '<div class="rr-lbl">PAÍS</div><div class="rr-paises"><button type="button" data-p="uruguay" class="'+(pais==="uruguay"?"si":"")+'">🇺🇾 Uruguay</button><button type="button" data-p="argentina" class="'+(pais==="argentina"?"si":"")+'">🇦🇷 Argentina</button></div>'+
         '<div class="rr-lbl">AVATAR</div><div class="rr-avs">'+avs+'</div>'+(todos?'':'<button type="button" class="rr-mas" id="rrMas">Ver más avatares ▾</button>')+
-        '<div class="rr-msj" id="rrMsj"></div><button type="button" class="rr-ok" id="rrOk">💾 Guardar mi partida</button><button type="button" class="rr-no" id="rrNo">Ahora no, sigo jugando</button></div>';
+        '<div class="rr-msj" id="rrMsj"></div><button type="button" class="rr-ok" id="rrOk">'+TXT_OK+'</button><button type="button" class="rr-no" id="rrNo">Ahora no, sigo jugando</button></div>';
       const inp=c.querySelector("#rrNom");inp.value=nombre;inp.oninput=()=>{nombre=inp.value;listo();};
       c.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{pais=b.dataset.p;pintarR();});
       c.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{avatar=b.dataset.a;pintarR();});
@@ -367,21 +390,25 @@
       c.querySelector("#rrNo").onclick=()=>c.remove();
       c.querySelector("#rrOk").onclick=guardar;listo();
     };
+    const TXT_OK=perdio?"🤫 Registrarme y ver la palabra":regalo?"🎁 Registrarme y recibir 🪙 100":"💾 Guardar mi partida";
     const listo=()=>{const b=c.querySelector("#rrOk");if(b)b.disabled=!(nombre.trim()&&pais&&avatar);};
     const msj=t=>{const e=c.querySelector("#rrMsj");if(e)e.textContent=t;};
     async function guardar(){
       const n=nombre.trim().slice(0,12);if(!n||!pais||!avatar)return;
       try{if(typeof nombrePerfilAutomatico==="function"&&nombrePerfilAutomatico(n)){msj("Elegí un nombre propio, distinto de "+n+".");return;}}catch(e){}
       const b=c.querySelector("#rrOk");b.disabled=true;b.textContent="Guardando…";
-      if(SOLA&&/^jugador\s*\d*$/i.test(n)){b.textContent="💾 Guardar mi partida";listo();msj("Elegí un nombre propio.");return;}
+      if(SOLA&&/^jugador\s*\d*$/i.test(n)){b.textContent=TXT_OK;listo();msj("Elegí un nombre propio.");return;}
       let libre=true;try{if(typeof nombrePerfilDisponible==="function")libre=await nombrePerfilDisponible(n);
         else{const sb=typeof obtenerSupa==="function"?obtenerSupa():null;if(sb){const q=await sb.from("gya_ranking").select("apodo").in("grupo",["usuarios","global"]).ilike("apodo",String(n).replace(/[\\%_]/g,"\\$&")).limit(1);libre=!(q.data&&q.data.length);}}}catch(e){}
-      if(!libre){b.textContent="💾 Guardar mi partida";listo();msj("Ese nombre ya lo usa otro jugador. Probá otro, por ej. "+n+"2.");return;}
+      if(!libre){b.textContent=TXT_OK;listo();msj("Ese nombre ya lo usa otro jugador. Probá otro, por ej. "+n+"2.");return;}
       /* En la página liviana no está el juego: se guarda pendiente y index.html crea el perfil al entrar (aplicarRegistroPendiente). */
+      if(regalo)ls.set("gya_rosa_regalo_pend","1");
       if(SOLA){ls.set("gya_rosa_reg_pend",JSON.stringify({n,a:avatar,p:pais}));c.remove();
-        const g=capa&&capa.querySelector(".ro-globo");if(g)g.textContent="¡Gracias, "+n+"! 💜";return;}
-      try{guardarPerfil(n,avatar,pais,"");try{mapaPaisForzado=null;sincronizarMundoActivo();}catch(e){}}catch(e){b.textContent="💾 Guardar mi partida";listo();msj("No se pudo guardar, probá de nuevo.");return;}
-      c.remove();if(ls.get("gya_rosa_sinperfil")){ls.del("gya_rosa_sinperfil");}paso("registro");
+        if(perdio&&capa){pintar();const g=capa.querySelector(".ro-globo");if(g)g.textContent="Era "+CAPITULO.clave+" 🤫 ¡Gracias, "+n+"!";
+          setTimeout(()=>{try{const r=capa&&capa.querySelector(".ro-revela");if(r)r.scrollIntoView({block:"center",behavior:"smooth"});}catch(e){}},200);return;}
+        const g=capa&&capa.querySelector(".ro-globo");if(g)g.textContent="¡Gracias, "+n+"!"+(regalo?" 🎁 Tus 100 monedas te esperan en el juego.":" 💜");return;}
+      try{guardarPerfil(n,avatar,pais,"");try{mapaPaisForzado=null;sincronizarMundoActivo();}catch(e){}}catch(e){b.textContent=TXT_OK;listo();msj("No se pudo guardar, probá de nuevo.");return;}
+      c.remove();if(ls.get("gya_rosa_sinperfil")){ls.del("gya_rosa_sinperfil");}paso("registro");cobrarRegalo();if(perdio&&capa)pintar();
       try{if(typeof mostrarToast==="function")mostrarToast("✅","¡Listo, "+n+"! Tu partida quedó guardada.");}catch(e){}
     }
     pintarR();document.body.appendChild(c);
@@ -395,7 +422,7 @@
       clearInterval(t);let d=null;try{d=JSON.parse(ls.get("gya_rosa_reg_pend"));}catch(e){}ls.del("gya_rosa_reg_pend");
       if(!d||!d.n||tienePerfil())return;
       try{guardarPerfil(d.n,d.a,d.p,"");try{mapaPaisForzado=null;sincronizarMundoActivo();}catch(e){}ls.del("gya_rosa_sinperfil");paso("registro");
-        if(typeof mostrarToast==="function")mostrarToast("✅","¡Listo, "+d.n+"! Tu partida quedó guardada.");}catch(e){}
+        if(typeof mostrarToast==="function")mostrarToast("✅","¡Listo, "+d.n+"! Tu partida quedó guardada.");cobrarRegalo();}catch(e){}
     },500);
   }
   /* Doña Rosa cuenta como el nivel 1 de Palabra Secreta: el que la sacó arranca en el nivel 2 (si no había jugado). */
