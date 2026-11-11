@@ -356,9 +356,9 @@
     const lista=(typeof AVATARES!=="undefined"?AVATARES:Array.from({length:21},(_,i)=>"avatar-"+String(i+1).padStart(2,"0")).concat(["avatar-33","avatar-42","avatar-43","avatar-44","avatar-45","avatar-46","avatar-47","avatar-48","avatar-49","avatar-50","avatar-51","avatar-52","avatar-53","avatar-54"])).filter(a=>a!=="avatar-22");
     const c=document.createElement("div");c.id="rosaReg";c.setAttribute("role","dialog");
     if(!document.getElementById("rosaRegEstilos")){const st=document.createElement("style");st.id="rosaRegEstilos";st.textContent=`
-#rosaReg{position:fixed;inset:0;z-index:2147482500;background:#0b0614c4;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:max(16px,env(safe-area-inset-top)) 14px 16px;font-family:Outfit,system-ui,sans-serif}
+#rosaReg{position:fixed;inset:0;z-index:2147482500;background:#0b0614c4;display:flex;align-items:safe center;justify-content:center;overflow-y:auto;padding:max(16px,env(safe-area-inset-top)) 14px 16px;font-family:Outfit,system-ui,sans-serif}
 #rosaReg *{box-sizing:border-box}
-.rr-caja{width:100%;max-width:420px;margin-top:4vh;background:linear-gradient(#2a1846,#1c1030);border:2px solid #F5C451;border-radius:22px;padding:18px 16px 14px;color:#FCEFD2;text-align:center;box-shadow:0 20px 50px #000a}
+.rr-caja{width:100%;max-width:420px;margin:auto 0;background:linear-gradient(#2a1846,#1c1030);border:2px solid #F5C451;border-radius:22px;padding:18px 16px 14px;color:#FCEFD2;text-align:center;box-shadow:0 20px 50px #000a}
 .rr-caja h3{margin:0;font:900 1.35rem "Archivo Black",sans-serif;color:#F5C451}
 .rr-caja p{margin:6px 0 12px;font:700 .95rem/1.3 Outfit;color:#E4D8EB}
 .rr-nom{width:100%;background:#ffffff12;border:1px solid #ffffff2a;border-radius:14px;padding:12px;color:#fff;font:800 1.05rem Outfit;outline:none}
