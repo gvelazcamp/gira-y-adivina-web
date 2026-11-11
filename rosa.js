@@ -182,6 +182,16 @@
 .ro-si{display:block;width:100%;text-align:center;text-decoration:none;border:0;border-radius:14px;padding:14px;background:linear-gradient(#ff4fa3,#E5197C);color:#fff;font:900 1.05rem Outfit;cursor:pointer;box-shadow:0 4px 0 #8E0F4C}
 .ro-no{margin-top:8px;border:0;background:none;color:#9fb6c4;font:800 .85rem Outfit;text-decoration:underline;cursor:pointer}
 /* Pantallas bajas (el navegador de Instagram ocupa parte de arriba y de abajo): que entre el teclado entero sin deslizar. */
+@keyframes roInvPulso{0%,100%{box-shadow:0 0 0 0 #F5B30100}50%{box-shadow:0 0 0 5px #F5B301aa}}
+@keyframes roInvBote{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
+@keyframes roInvTap{0%,100%{transform:scale(1)}50%{transform:scale(.82)}}
+.ro-fila.ro-inv{position:relative;border-radius:10px;animation:roInvPulso 1.1s ease-in-out infinite}
+.ro-c .ro-fant{color:#8FF5B9;opacity:.8;text-shadow:0 0 6px #2E9E5B}
+.ro-inv-etq{position:absolute;left:50%;top:-15px;transform:translateX(-50%);z-index:3;background:#F5B301;color:#3A2400;font:900 .68rem Outfit,sans-serif;padding:3px 9px;border-radius:99px;box-shadow:0 3px 10px #0005;white-space:nowrap;animation:roInvBote .45s ease-out}
+.ro-globo.ro-inv-globo{background:#FFF3C4;animation:roInvBote .5s ease-out}
+.ro-tec button.ro-inv-tecla{background:#F5B301!important;color:#3A2400!important;animation:roInvPulso 1.1s ease-in-out infinite}
+.ro-mano{position:fixed;z-index:2147483647;font-size:44px;pointer-events:none;transition:left .8s ease-in-out,top .8s ease-in-out,opacity .5s;filter:drop-shadow(0 4px 6px #0007)}
+.ro-mano.tap{animation:roInvTap .35s ease-in-out 2}
 @media (max-height:760px){.ro-esc{zoom:.72}.ro-c{max-height:40px;font-size:1.05rem}.ro-tec button{height:40px}.ro-lib{margin-top:6px;padding-top:6px}.ro-msj{margin-top:4px}}
 @media (max-height:640px){.ro-esc{zoom:.55}.ro-c{max-height:34px;font-size:.95rem}.ro-tec button{height:36px}.ro-tab{gap:3px}.ro-fila{gap:4px}}
 `;
@@ -189,21 +199,40 @@
   }
   function rosaHtml(){return '<div class="ro-rosa"><i style="left:9px;top:-6px;width:12px;height:11px;background:#c9c9cf"></i><i style="left:5px;top:0;width:24px;height:22px;background:#c9c9cf"></i><i style="left:7px;top:5px;width:20px;height:20px;background:#f1c6a0"></i><i style="left:3px;top:24px;width:28px;height:30px;border-radius:9px 9px 4px 4px;background:#7b4fa3"></i><i style="left:9px;top:30px;width:16px;height:24px;border-radius:4px;background:#fff3dc"></i></div>';}
   const FILA_ESTILO=LARGO===5?"":' style="grid-template-columns:54px repeat('+LARGO+',1fr);gap:4px;font-size:.85em"';
+  /* Invitación a tocar (Gonzalo, 11/11/2026; solo la primera vez y antes de escribir): Doña Rosa dice «¡Tocá las
+     letras y probá!», la fila «Vos» brilla con las letras que ya se saben en verde clarito, la tecla de la primera
+     letra de la clave queda marcada y una mano 👆 toca la fila y después esa tecla. Se apaga al tocar cualquier tecla. */
+  let invita=false,mano=null;
+  const K_INVITA="gya_rosa_invita_visto";
+  const sabidas=()=>{const r=Array(LARGO).fill("");CAPITULO.intentos.forEach(([,w])=>{const c=evaluar(w,CAPITULO.clave);[...w].forEach((l,i)=>{if(c[i]==="verde")r[i]=l;});});return r;};
+  function apagarInvita(){if(!invita)return;invita=false;if(mano){const m=mano;mano=null;m.style.opacity="0";setTimeout(()=>m.remove(),500);}}
+  function invitar(){
+    if(!capa||fin||mios.length||borrador||ls.get(K_INVITA))return;
+    ls.set(K_INVITA,"1");
+    setTimeout(()=>{if(!capa||fin||mios.length||borrador)return;invita=true;pintar();
+      const fila=capa.querySelector(".ro-fila.ro-inv"),cel=fila&&fila.querySelector(".ro-c"),tec=capa.querySelector(".ro-inv-tecla");if(!cel||!tec)return;
+      const m=document.createElement("div");m.className="ro-mano";m.textContent="👆";m.style.left=(innerWidth-70)+"px";m.style.top=(innerHeight-130)+"px";document.body.appendChild(m);mano=m;
+      const ir=(el,ms)=>setTimeout(()=>{if(mano!==m||!el.isConnected)return;const r=el.getBoundingClientRect();m.classList.remove("tap");m.style.left=(r.left+r.width/2-14)+"px";m.style.top=(r.top+r.height/2-4)+"px";setTimeout(()=>{if(mano===m)m.classList.add("tap");},850);},ms);
+      ir(cel,700);ir(capa.querySelector(".ro-inv-tecla"),2300);
+      setTimeout(()=>{if(mano===m){mano=null;m.style.opacity="0";setTimeout(()=>m.remove(),500);}},5200);
+    },600);
+  }
   function pintar(){
     if(!capa)return;
     const todas=CAPITULO.intentos.map(([n,w])=>({n,w,c:evaluar(w,CAPITULO.clave)})).concat(mios.map(w=>({n:"Vos",w,c:evaluar(w,CAPITULO.clave),vos:1})));
     const libres=CAPITULO.intentos.length+3-todas.length,abierto=fin==="gano";
     let filas="";
     todas.forEach(f=>{filas+='<div class="ro-fila'+(f.vos?" vos":"")+'"'+FILA_ESTILO+'><span class="n">'+f.n+'</span>'+[...f.w].map((l,i)=>'<span class="ro-c '+f.c[i]+'">'+l+'</span>').join("")+'</div>';});
-    for(let k=0;k<libres;k++){const act=k===0&&!fin;filas+='<div class="ro-fila vos"'+FILA_ESTILO+'><span class="n">'+(act?"Vos ✍️":"Vos")+'</span>'+[...Array(LARGO).keys()].map(i=>'<span class="ro-c'+(act&&i===borrador.length?" act":"")+'">'+(act?(borrador[i]||""):"")+'</span>').join("")+'</div>';}
-    const tecla=t=>'<button type="button" data-t="'+t+'">'+t+'</button>';
+    const inv=invita&&!fin&&!mios.length&&!borrador,sab=inv?sabidas():null;
+    for(let k=0;k<libres;k++){const act=k===0&&!fin;filas+='<div class="ro-fila vos'+(act&&inv?" ro-inv":"")+'"'+FILA_ESTILO+'>'+(act&&inv&&sab.some(Boolean)?'<span class="ro-inv-etq">💡 Estas letras ya las sabés</span>':'')+'<span class="n">'+(act?"Vos ✍️":"Vos")+'</span>'+[...Array(LARGO).keys()].map(i=>'<span class="ro-c'+(act&&i===borrador.length?" act":"")+'">'+(act?(borrador[i]||(inv&&sab[i]?'<b class="ro-fant">'+sab[i]+'</b>':"")):"")+'</span>').join("")+'</div>';}
+    const tecla=t=>'<button type="button" data-t="'+t+'"'+(inv&&t===CAPITULO.clave[0]?' class="ro-inv-tecla"':'')+'>'+t+'</button>';
     const tec=fin?"":'<div class="ro-tec"><div>'+[..."QWERTYUIOP"].map(tecla).join("")+'</div><div>'+[..."ASDFGHJKLÑ"].map(tecla).join("")+'</div><div><button type="button" class="ancho" data-t="⌫">⌫ Borrar</button>'+[..."ZXCVBNM"].map(tecla).join("")+'<button type="button" class="ancho env" data-t="OK">Probar</button></div></div>';
     /* Android (en la página liviana): primero se ofrece seguir en la app de Google Play; el navegador queda como segunda opción. */
     const seguir=ANDROID?'<p>¿Querés seguir jugando a <b>Palabra Secreta</b>? Una palabra nueva cada vez, gratis.</p><a class="ro-si" id="roPlay" href="'+URL_APP+'">▶ Seguí jugando en la app</a><p class="ro-nota">Si ya tenés la app, se abre directo con tu partida. Si no, la bajás gratis de Google Play.</p><button type="button" class="ro-no" id="roSi">Seguir en el navegador</button>'
       :'<p>¿Querés seguir jugando a <b>Palabra Secreta</b>? Una palabra nueva cada vez, gratis.</p><button type="button" class="ro-si" id="roSi">🔤 ¡Sí, quiero jugar!</button><button type="button" class="ro-no" id="roNo">Ahora no</button>';
     const panel=fin?'<div class="ro-panel"><h3>'+(abierto?(CAPITULO.ganoTitulo||"🎉 ¡Salvaste a Doña Rosa!"):"¡Casi!")+'</h3><p>'+(abierto?CAPITULO.gano:CAPITULO.perdio)+'</p>'+seguir+'</div>':"";
     capa.innerHTML='<div class="ro-cab"><div><small>'+CAPITULO.titulo+'</small><b>EL ALMACÉN DE DOÑA ROSA</b></div>'+(fin?'':'<button type="button" class="ro-x env" data-t="OK">Probar</button>')+'</div>'+
-      '<div class="ro-esc"><div class="ro-edif"></div><div class="ro-cartel">ALMACÉN DOÑA ROSA</div><div class="ro-toldo"></div><div class="ro-puerta"></div><div class="ro-aviso'+(abierto?" ok":"")+'">'+(abierto?"¡ABIERTO!":"CIERRA<br>PRONTO")+'</div>'+rosaHtml()+'<div class="ro-globo">'+(abierto?"¡Gracias, vecino! 💜":fin?"Ay… ¿cuál era? 😢":verPista&&CAPITULO.pista?"💡 "+CAPITULO.pista:CAPITULO.pedido)+'</div></div>'+
+      '<div class="ro-esc"><div class="ro-edif"></div><div class="ro-cartel">ALMACÉN DOÑA ROSA</div><div class="ro-toldo"></div><div class="ro-puerta"></div><div class="ro-aviso'+(abierto?" ok":"")+'">'+(abierto?"¡ABIERTO!":"CIERRA<br>PRONTO")+'</div>'+rosaHtml()+'<div class="ro-globo'+(inv?" ro-inv-globo":"")+'">'+(abierto?"¡Gracias, vecino! 💜":fin?"Ay… ¿cuál era? 😢":inv?"¡Tocá las letras y probá! 👇":verPista&&CAPITULO.pista?"💡 "+CAPITULO.pista:CAPITULO.pedido)+'</div></div>'+
       '<div class="ro-lib">'+(!fin&&CAPITULO.pista?'<button type="button" class="ro-pista'+(verPista?' si':'')+'" id="roPista">💡 Pista</button>':'')+'<span class="ro-cand">'+(CAPITULO.icono||(abierto?"🔓":"🔒"))+'</span><h4>'+(CAPITULO.hoja||"LIBRETA DEL FIADO")+'</h4>'+(CAPITULO.sub?'<p class="ro-sub">'+CAPITULO.sub+'</p>':'')+'<div class="ro-tab">'+filas+'</div></div>'+
       '<p class="ro-msj" id="roMsj">'+(fin?"":"Tenés "+libres+" intento"+(libres===1?"":"s")+". Palabra de "+LARGO+" letras.")+'</p>'+tec+(!fin&&mios.length?'<div class="ro-salir"><button type="button" class="ro-no" id="roSaltar">Saltar e ir al juego</button></div>':'')+panel;
     const sal=capa.querySelector("#roSaltar");if(sal)sal.onclick=()=>cerrar(false);
@@ -217,6 +246,7 @@
   function mensaje(t){const m=capa&&capa.querySelector("#roMsj");if(m)m.textContent=t;}
   function tecla_(t){
     if(fin||!capa)return;
+    apagarInvita();
     if(t==="⌫"){borrador=borrador.slice(0,-1);pintar();return;}
     if(t==="OK"){
       if(borrador.length<LARGO){mensaje("Faltan letras: son "+LARGO+".");return;}
@@ -242,7 +272,7 @@
     else if(k==="Enter"){e.preventDefault();tecla_("OK");}
     else if(/^[a-zñA-ZÑ]$/.test(k)){e.preventDefault();tecla_(k.toUpperCase());}
   }
-  function cerrar(quiere){
+  function cerrar(quiere){apagarInvita();
     if(!capa)return;
     document.removeEventListener("keydown",teclado,true);
     capa.remove();capa=null;ls.set(K_VISTO,fin||"salteado");
@@ -270,7 +300,7 @@
   }
   function mostrar(){
     estilos();capa=document.createElement("div");capa.id="rosaCapa";capa.setAttribute("role","dialog");capa.setAttribute("aria-label","El almacén de Doña Rosa");
-    document.body.appendChild(capa);pintar();document.addEventListener("keydown",teclado,true);
+    document.body.appendChild(capa);pintar();document.addEventListener("keydown",teclado,true);invitar();
     /* «Llegó» se cuenta apenas se muestra (08/11: el filtro «solo si se ve» dejó el número clavado desde la noche del 07/11;
        el registro crudo de rosa.html guarda visibilityState para ver si Instagram la carga por adelantado). */
     paso("llego");
