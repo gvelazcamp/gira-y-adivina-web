@@ -1454,3 +1454,12 @@ body.pf-activo #extAtras,body.pf-activo #extCerrar,body.pf-activo .ext-volver{vi
 .ps-ayuda-ley{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:center;text-align:left;max-width:300px;margin:10px auto}
 .ps-ayuda-ley .ps-ejemplo{margin:0!important}
 .ps-ayuda-retos{font-size:.88em;opacity:.9}
+
+/* Palabra Secreta: cartel al salir para volver por la racha (11/11/2026). */
+.ps-salida{position:fixed;inset:0;z-index:12000;display:grid;place-items:center;padding:16px;background:#0B0614CC}
+.ps-salida-caja{width:min(100%,340px);background:#24163A;border:2px solid #F5B301;border-radius:22px;padding:18px 18px 16px;text-align:center;color:#F6EFE2;box-shadow:0 14px 40px #000A}
+.ps-salida-caja img{width:72px;height:72px;object-fit:contain}
+.ps-salida-caja h3{margin:6px 0 6px;color:#F5B301;font-family:'Archivo Black',sans-serif;font-size:1.2rem}
+.ps-salida-caja p{margin:0 0 14px;line-height:1.35}
+.ps-salida-caja button{display:block;width:100%;border:0;border-radius:14px;padding:13px;font-weight:900;font-size:1rem;margin-top:8px;cursor:pointer}
+.ps-salida-si{background:#E5197C;color:#fff}.ps-salida-no{background:#3A2650;color:#F6EFE2;border:1px solid #FFFFFF22!important}
