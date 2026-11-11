@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — PENDIENTE: Palabra Secreta sin deslizar en celulares chicos
+- Gonzalo no quiere que haya que deslizar. En 360×740 «Jugar con un amigo» y «Jugar colaborativo» quedan ~60 px debajo de la pantalla (en 390×844 y más grandes entra todo). Buscar una solución más adelante SIN tocar el deslizado (regla: nada de overflow/overscroll/touch-action en html/body): achicar márgenes/celdas en pantallas bajas, o juntar los dos botones en uno.
+
 ### 11/11/2026 — Palabra Secreta: la pista no agranda la pantalla
 - Qué: «💡 Pista gratis / Pista · 300 🪙» se partía en dos renglones y bajaba todo 16 px. Ahora dice «💡 Pista» (gratis) y «💡 300🪙» (las siguientes), en un renglón: misma altura que antes de la pista (medido en 360×740, 390×844 y 412×915).
 - Archivos: palabra-secreta.js (v40), sw.js (cache v797).
