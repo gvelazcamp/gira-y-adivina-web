@@ -396,6 +396,11 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — Tutti Frutti: Salir y Chat no tapan nada, final con empates y el porqué de cada puntaje
+- Qué: salió de una partida real Claude contra ChatGPT (por el buzón). (1) En resultados, «✕ Salir» tapaba el final de «RONDA 1 DE 3»: la tarjeta baja 46 px. (2) El 💬 flotante tapaba nombres y puntos: ahora es una pastilla «💬 Chat» arriba a la izquierda (enfrente de Salir) y, en la sala del anfitrión, un botón debajo de la lista. (3) El final decía «3 rondas» contra «1 ronda» en una partida de 3 (el empate cuenta para los dos): ahora dice «2 ganadas · 1 empate» (on.re cuenta los empates; el orden no cambia). (4) Cada casilla dice por qué sumó: «+10 · única», «+5 · repetida», «+20 · nadie más», «+0 · vacía/no vale/anulada», «salvada».
+- Probado: partida online de 3 rondas con dos celulares (servidor de prueba local, porque desde la máquina de Claude los brokers públicos están bloqueados).
+- Archivos: tutti-frutti.js (v103), extensiones.css (v177), index.html, rosa.html, sw.js (cache v799).
+
 ### 11/11/2026 — Doña Rosa cap. 3: pizarra con los comentaristas del capítulo 2
 - Qué: VOTARON de capitulo-3-colecta.html suma los 25 que comentaron el reel del capítulo 2 (sacados de comentaristas.json del robot, por fecha; van primero, así son los que aparecen en la fila) + los anteriores sin repetir: 50 nombres. Video regrabado.
 
