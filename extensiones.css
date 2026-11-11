@@ -286,6 +286,11 @@ body.ext-abierta{overflow:hidden}
 .rr-res-fila span small{display:block;font-size:.58rem;color:#B9A9CC;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rr-res-ok{color:#37D6C0;font-weight:800;overflow-wrap:anywhere}.rr-res-mal{color:#FF7E8B;font-weight:800;overflow-wrap:anywhere}.rr-res-nada{color:#8F80A3;font-weight:800}
 .dl-extra{max-height:36dvh;overflow-y:auto;margin:6px 0 10px}.dl-extra .rr-resumen{max-height:none;margin:0}
+/* Palabra Secreta en duelo: fila de colores del rival en el globito y los dos tableros en el final. */
+.ps-mini{display:flex;gap:2px;margin:2px 0}.ps-mini i{width:9px;height:9px;border-radius:2px;background:#4A3A5C}.ps-mini .ps-m-e{background:#248467}.ps-mini .ps-m-p{background:#BB8A1D}
+#dlBadgeValor{display:flex;align-items:center;gap:6px}#dlBadgeValor .ps-mini{margin:0}
+.ps-dl-tabs{display:flex;justify-content:center;gap:28px}.ps-dl-col{display:flex;flex-direction:column;align-items:center}.ps-dl-col b{color:#fff;font-size:.85rem}.ps-dl-col small{color:#D7C8E5;font-size:.72rem;margin-bottom:4px}
+.ps-dl-tabs .ps-mini{gap:3px;margin:1.5px 0}.ps-dl-tabs .ps-mini i{width:16px;height:16px;border-radius:3px}
 /* ¿Qué número soy? */
 .qns-nota{background:#1F6FB233;border:1px solid #1F6FB277;border-radius:12px;padding:10px 12px}
 .qns-rangos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}.mg-panel .qns-rangos button{margin:0}.mg-panel .qns-rangos button.activo{background:#F5B301;color:#1A0F26}

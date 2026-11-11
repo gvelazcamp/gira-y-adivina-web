@@ -519,11 +519,28 @@ const PalabraSecreta=(()=>{
   /* Duelo 1 vs 1: los dos adivinan la MISMA palabra (no la del día).
      Puntos = 7 − intentos si la encontrás (0 si no): gana quien la saca en menos intentos. */
   const ptsDuelo=()=>partida.gano?7-partida.intentos.length:0;
+  /* Los colores de cada fila viajan sin letras ("epaae": exacta/presente/ausente), así el rival
+     ve cómo venís sin que le sirva de pista. Gonzalo, 11/11/2026 (después del duelo Claude–ChatGPT). */
+  const filasColores=()=>partida.intentos.map(x=>x.colores.map(c=>c[0]).join(""));
+  const filaOk=f=>typeof f==="string"&&/^[epa]{4,7}$/.test(f);
+  const miniFila=f=>'<i class="ps-mini">'+[...f].map(c=>'<i class="ps-m-'+c+'"></i>').join("")+'</i>';
+  function badgeRival(p){
+    Duelo.actualizarBadge((p.gano?"✓ ":"")+(Number(p.n)||0)+"/6");
+    const b=document.getElementById("dlBadgeValor"),fs=Array.isArray(p.filas)?p.filas.filter(filaOk):[];
+    if(b&&fs.length)b.insertAdjacentHTML("beforeend",miniFila(fs[fs.length-1]));
+  }
+  /* Tarjeta final: los dos tableros de colores lado a lado y en cuántos intentos la sacó cada uno. */
+  function tablerosDuelo(fr){
+    const col=(quien,gano,n,filas)=>'<div class="ps-dl-col"><b>'+quien+'</b><small>'+(gano?"en "+n+" intento"+(n===1?"":"s"):"no la encontró")+'</small>'+filas.map(miniFila).join("")+'</div>';
+    const r=Duelo.rivalActual&&Duelo.rivalActual(),nom=String((r&&r.nombre)||"Rival").replace(/[&<>"]/g,"");
+    const suyo=fr?col(nom,fr.valor>0,Number(fr.n)||(fr.valor>0?7-fr.valor:6),Array.isArray(fr.filas)?fr.filas.filter(filaOk):[]):'<div class="ps-dl-col"><b>'+nom+'</b><small>jugando…</small></div>';
+    return '<div class="ps-dl-tabs">'+col("Vos",partida.gano,partida.intentos.length,filasColores())+suyo+'</div>';
+  }
   function progresoDuelo(){
-    Duelo.enviarProgreso({n:partida.intentos.length,gano:partida.gano});
+    Duelo.enviarProgreso({n:partida.intentos.length,gano:partida.gano,filas:filasColores()});
     if(partida.terminada){
-      Duelo.enviarFinal({valor:ptsDuelo()});
-      setTimeout(()=>Duelo.mostrarResultado({valor:ptsDuelo()},{etiqueta:"puntos: 7 − intentos (0 si no la encontrás)",onVolver:()=>{duelo=false;if(raiz){iniciarNivel();tablero();mensaje("");}}}),900);
+      Duelo.enviarFinal({valor:ptsDuelo(),n:partida.intentos.length,filas:filasColores()});
+      setTimeout(()=>Duelo.mostrarResultado({valor:ptsDuelo()},{etiqueta:"puntos: 7 − intentos (0 si no la encontrás)",extra:tablerosDuelo,onVolver:()=>{duelo=false;if(raiz){iniciarNivel();tablero();mensaje("");}}}),900);
     }
   }
   function iniciarDuelo(){
@@ -531,7 +548,7 @@ const PalabraSecreta=(()=>{
     if(typeof Duelo==="undefined")return;
     Duelo.mostrarLobby("Palabra Secreta","palabra",{detalle:"Los dos adivinan la <b>misma palabra</b>, cada uno en su tablero. Gana el que la descubre en <b>menos intentos</b>.",onListo:soyHost=>{
       const arrancar=w=>{duelo=true;partida=nueva(w);borrador="";cursor=null;Duelo.mostrarBadge();Duelo.actualizarBadge("0/6");if(raiz){raiz.querySelector("#psAyudaPanel").hidden=true;tablero();mensaje("👥 Duelo: misma palabra para los dos.");}};
-      Duelo.onProgresoRival(p=>Duelo.actualizarBadge((p.gano?"✓ ":"")+(Number(p.n)||0)+"/6"));
+      Duelo.onProgresoRival(p=>{if(p&&typeof p==="object")badgeRival(p);});
       if(soyHost){const w=elegirPalabra();Duelo.enviarRonda({palabra:w});arrancar(w);}
       else Duelo.onRondaRecibida(d=>{if(typeof d.palabra==="string"&&d.palabra.length===5)arrancar(d.palabra.toUpperCase());});
     }});
