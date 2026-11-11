@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — Palabra Secreta: la pista no agranda la pantalla
+- Qué: «💡 Pista gratis / Pista · 300 🪙» se partía en dos renglones y bajaba todo 16 px. Ahora dice «💡 Pista» (gratis) y «💡 300🪙» (las siguientes), en un renglón: misma altura que antes de la pista (medido en 360×740, 390×844 y 412×915).
+- Archivos: palabra-secreta.js (v40), sw.js (cache v797).
+
 ### 11/11/2026 — Palabra Secreta: botón 💡 Pista
 - Qué: en todos los niveles (no en duelo ni colaborativo) hay «💡 Pista gratis» (amarillo) al lado de Enviar: pone en su lugar una letra que todavía no estaba en verde (al azar) y queda fija en cada fila (se marca como la letra regalada del contrarreloj; Borrar no la saca). La primera pista de cada palabra es gratis; las siguientes cuestan 300 monedas (pide confirmación y avisa si no alcanzan). partida.pistas guarda las posiciones.
 - Archivos: palabra-secreta.js (v39), sw.js (cache v796).
