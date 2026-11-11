@@ -37,17 +37,19 @@
   /* Capítulo 3 (08/11, Gonzalo): llegó el cobrador; página 2 de la libreta, ¿qué le debe Cacho? Una bebida con duda:
      con estos intentos queda _I_RA → SIDRA o BIRRA (las dos dan los mismos colores; BIRRA se agregó al diccionario
      para que escribirla no la descarte). Pista que sirve para las dos. */
-  const CAPITULO_3={id:3,clave:"SIDRA",
-    intentos:[["Pepito","LICOR"],["Nelly","GRAPA"],["Juanchi","TINTO"]],
-    titulo:"Capítulo 3 · El cobrador",
-    pista:"Para brindar 🥂",
-    hoja:"PÁGINA 2 · CACHO",
-    icono:"🥂",
-    sub:"Cacho me debe…",
-    pedido:"¿Qué me debe Cacho? Es algo para tomar 🤔",
-    ganoTitulo:"🎉 ¡Doña Rosa cobró!",
-    gano:"¡Era SIDRA! Cacho paga y Doña Rosa sigue cubriendo su deuda antes de que vuelva el cobrador.",
-    perdio:"Todavía no se sabe qué le debe Cacho 😢 Mirá cómo sigue en el próximo capítulo."};
+  /* Capítulo 3 · La colecta (11/11, Gonzalo): el mismo tablero del video. Palabra de 7 letras: GRANOLA
+     (Pepito CAMPERA, Nelly GRANJAS, Juanchi GRANITA → faltan la O y la L). La idea anterior del cobrador (SIDRA) quedó para más adelante. */
+  const CAPITULO_3={id:3,clave:"GRANOLA",
+    intentos:[["Pepito","CAMPERA"],["Nelly","GRANJAS"],["Juanchi","GRANITA"]],
+    titulo:"Capítulo 3 · La colecta",
+    pista:"Va con yogur en el desayuno 🥣",
+    hoja:"DESCUENTOS",
+    icono:"🏷️",
+    sub:"¿Qué producto está tapado?",
+    pedido:"¿Qué producto tapé? Son 7 letras 🤔",
+    ganoTitulo:"🎉 ¡Lo descubriste!",
+    gano:"¡Era GRANOLA! Ya tenés tu lugar en la fila de descuentos de Doña Rosa. Seguí la historia: ¿de qué país se sumarán más clientes?",
+    perdio:"Todavía no se sabe qué producto está tapado 😢 Mirá cómo sigue en el próximo capítulo."};
   /* Capítulo activo: el 1 para todos; el 2 y el 3 con el link ?cap=2 / ?cap=3 (anuncio de ese capítulo). Se recuerda en el
      celular para que el juego completo (index.html) siga contando en el capítulo correcto. */
   const CAPS={1:CAPITULO_1,2:CAPITULO_2,3:CAPITULO_3};
@@ -126,9 +128,11 @@
 
   /* --- Pantalla --- */
   const ARTE=n=>"assets/palabra-secreta/"+n+".webp";
-  function evaluar(w,s){const r=Array(5).fill("gris"),resto=[...s];for(let i=0;i<5;i++)if(w[i]===s[i]){r[i]="verde";resto[i]=null;}
-    for(let i=0;i<5;i++)if(r[i]==="gris"){const k=resto.indexOf(w[i]);if(k>=0){r[i]="amarilla";resto[k]=null;}}return r;}
-  const valida=w=>{try{return (typeof PALABRA_VALIDAS!=="undefined"&&PALABRA_VALIDAS.has(w))||(typeof PALABRA_SECRETAS!=="undefined"&&PALABRA_SECRETAS.includes(w));}catch(e){return true;}};
+  /* Largo de la palabra del capítulo (5 en los capítulos 1 y 2, 7 en el 3). */
+  const LARGO=CAPITULO.clave.length;
+  function evaluar(w,s){const n=s.length,r=Array(n).fill("gris"),resto=[...s];for(let i=0;i<n;i++)if(w[i]===s[i]){r[i]="verde";resto[i]=null;}
+    for(let i=0;i<n;i++)if(r[i]==="gris"){const k=resto.indexOf(w[i]);if(k>=0){r[i]="amarilla";resto[k]=null;}}return r;}
+  const valida=w=>{if(w.length!==5)return /^[A-ZÑ]+$/.test(w);try{return (typeof PALABRA_VALIDAS!=="undefined"&&PALABRA_VALIDAS.has(w))||(typeof PALABRA_SECRETAS!=="undefined"&&PALABRA_SECRETAS.includes(w));}catch(e){return true;}};
   let capa=null,mios=[],borrador="",fin=null,verPista=false;
   function estilos(){
     if(document.getElementById("rosaEstilos"))return;
@@ -184,13 +188,14 @@
     document.head.appendChild(st);
   }
   function rosaHtml(){return '<div class="ro-rosa"><i style="left:9px;top:-6px;width:12px;height:11px;background:#c9c9cf"></i><i style="left:5px;top:0;width:24px;height:22px;background:#c9c9cf"></i><i style="left:7px;top:5px;width:20px;height:20px;background:#f1c6a0"></i><i style="left:3px;top:24px;width:28px;height:30px;border-radius:9px 9px 4px 4px;background:#7b4fa3"></i><i style="left:9px;top:30px;width:16px;height:24px;border-radius:4px;background:#fff3dc"></i></div>';}
+  const FILA_ESTILO=LARGO===5?"":' style="grid-template-columns:54px repeat('+LARGO+',1fr);gap:4px;font-size:.85em"';
   function pintar(){
     if(!capa)return;
     const todas=CAPITULO.intentos.map(([n,w])=>({n,w,c:evaluar(w,CAPITULO.clave)})).concat(mios.map(w=>({n:"Vos",w,c:evaluar(w,CAPITULO.clave),vos:1})));
     const libres=CAPITULO.intentos.length+3-todas.length,abierto=fin==="gano";
     let filas="";
-    todas.forEach(f=>{filas+='<div class="ro-fila'+(f.vos?" vos":"")+'"><span class="n">'+f.n+'</span>'+[...f.w].map((l,i)=>'<span class="ro-c '+f.c[i]+'">'+l+'</span>').join("")+'</div>';});
-    for(let k=0;k<libres;k++){const act=k===0&&!fin;filas+='<div class="ro-fila vos"><span class="n">'+(act?"Vos ✍️":"Vos")+'</span>'+[0,1,2,3,4].map(i=>'<span class="ro-c'+(act&&i===borrador.length?" act":"")+'">'+(act?(borrador[i]||""):"")+'</span>').join("")+'</div>';}
+    todas.forEach(f=>{filas+='<div class="ro-fila'+(f.vos?" vos":"")+'"'+FILA_ESTILO+'><span class="n">'+f.n+'</span>'+[...f.w].map((l,i)=>'<span class="ro-c '+f.c[i]+'">'+l+'</span>').join("")+'</div>';});
+    for(let k=0;k<libres;k++){const act=k===0&&!fin;filas+='<div class="ro-fila vos"'+FILA_ESTILO+'><span class="n">'+(act?"Vos ✍️":"Vos")+'</span>'+[...Array(LARGO).keys()].map(i=>'<span class="ro-c'+(act&&i===borrador.length?" act":"")+'">'+(act?(borrador[i]||""):"")+'</span>').join("")+'</div>';}
     const tecla=t=>'<button type="button" data-t="'+t+'">'+t+'</button>';
     const tec=fin?"":'<div class="ro-tec"><div>'+[..."QWERTYUIOP"].map(tecla).join("")+'</div><div>'+[..."ASDFGHJKLÑ"].map(tecla).join("")+'</div><div><button type="button" class="ancho" data-t="⌫">⌫ Borrar</button>'+[..."ZXCVBNM"].map(tecla).join("")+'<button type="button" class="ancho env" data-t="OK">Probar</button></div></div>';
     /* Android (en la página liviana): primero se ofrece seguir en la app de Google Play; el navegador queda como segunda opción. */
@@ -200,7 +205,7 @@
     capa.innerHTML='<div class="ro-cab"><div><small>'+CAPITULO.titulo+'</small><b>EL ALMACÉN DE DOÑA ROSA</b></div>'+(fin?'':'<button type="button" class="ro-x env" data-t="OK">Probar</button>')+'</div>'+
       '<div class="ro-esc"><div class="ro-edif"></div><div class="ro-cartel">ALMACÉN DOÑA ROSA</div><div class="ro-toldo"></div><div class="ro-puerta"></div><div class="ro-aviso'+(abierto?" ok":"")+'">'+(abierto?"¡ABIERTO!":"CIERRA<br>PRONTO")+'</div>'+rosaHtml()+'<div class="ro-globo">'+(abierto?"¡Gracias, vecino! 💜":fin?"Ay… ¿cuál era? 😢":verPista&&CAPITULO.pista?"💡 "+CAPITULO.pista:CAPITULO.pedido)+'</div></div>'+
       '<div class="ro-lib">'+(!fin&&CAPITULO.pista?'<button type="button" class="ro-pista'+(verPista?' si':'')+'" id="roPista">💡 Pista</button>':'')+'<span class="ro-cand">'+(CAPITULO.icono||(abierto?"🔓":"🔒"))+'</span><h4>'+(CAPITULO.hoja||"LIBRETA DEL FIADO")+'</h4>'+(CAPITULO.sub?'<p class="ro-sub">'+CAPITULO.sub+'</p>':'')+'<div class="ro-tab">'+filas+'</div></div>'+
-      '<p class="ro-msj" id="roMsj">'+(fin?"":"Tenés "+libres+" intento"+(libres===1?"":"s")+". Palabra de 5 letras.")+'</p>'+tec+(!fin&&mios.length?'<div class="ro-salir"><button type="button" class="ro-no" id="roSaltar">Saltar e ir al juego</button></div>':'')+panel;
+      '<p class="ro-msj" id="roMsj">'+(fin?"":"Tenés "+libres+" intento"+(libres===1?"":"s")+". Palabra de "+LARGO+" letras.")+'</p>'+tec+(!fin&&mios.length?'<div class="ro-salir"><button type="button" class="ro-no" id="roSaltar">Saltar e ir al juego</button></div>':'')+panel;
     const sal=capa.querySelector("#roSaltar");if(sal)sal.onclick=()=>cerrar(false);
     capa.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>tecla_(b.dataset.t));
     const si=capa.querySelector("#roSi");if(si){si.onclick=()=>cerrar(true);si.focus({preventScroll:true});setTimeout(()=>{try{capa&&capa.scrollTo({top:capa.scrollHeight,behavior:"smooth"});}catch(e){}},600);}
@@ -214,7 +219,7 @@
     if(fin||!capa)return;
     if(t==="⌫"){borrador=borrador.slice(0,-1);pintar();return;}
     if(t==="OK"){
-      if(borrador.length<5){mensaje("Faltan letras: son 5.");return;}
+      if(borrador.length<LARGO){mensaje("Faltan letras: son "+LARGO+".");return;}
       if(!valida(borrador)){mensaje("Esa palabra no está en el diccionario.");return;}
       if(!mios.length)paso("jugo");
       mios.push(borrador);borrador="";{const p=pasos();p.palabras=mios.slice();subir(p);}
@@ -228,7 +233,7 @@
         if(SOLA&&!ANDROID&&!tienePerfil()&&!ls.get("gya_rosa_reg_visto")){ls.set("gya_rosa_reg_visto","1");paso("reg_ofrecido");setTimeout(registroRapido,1200);}}
       return;
     }
-    if(/^[A-ZÑ]$/.test(t)&&borrador.length<5){borrador+=t;pintar();}
+    if(/^[A-ZÑ]$/.test(t)&&borrador.length<LARGO){borrador+=t;pintar();}
   }
   function teclado(e){
     if(!capa||fin||e.ctrlKey||e.metaKey||e.altKey)return;
