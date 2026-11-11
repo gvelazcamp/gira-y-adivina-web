@@ -94,9 +94,10 @@ const RoscoRioplatense=(()=>{
   function cargar(){
     try{const d=JSON.parse(localStorage.getItem(CLAVE));if(d&&typeof d==="object")return{
       mejor:numero(d.mejor),nivelMax:Math.max(1,Math.floor(numero(d.nivelMax,1))),
-      ultimas:d.ultimas&&typeof d.ultimas==="object"?d.ultimas:{}
+      ultimas:d.ultimas&&typeof d.ultimas==="object"?d.ultimas:{},
+      repaso:Array.isArray(d.repaso)?d.repaso.filter(x=>typeof x==="string").slice(0,12):[]
     };}catch(e){}
-    return{mejor:0,nivelMax:1,ultimas:{}};
+    return{mejor:0,nivelMax:1,ultimas:{},repaso:[]};
   }
   function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify(datos));}catch(e){}}
   function configNivel(n){
@@ -635,6 +636,7 @@ const RoscoRioplatense=(()=>{
     capa.removeAttribute("role");capa.removeAttribute("aria-modal");capa.removeAttribute("aria-label");
     config=configNivel(nivel);
     const acciones=[["Jugar nivel "+nivel,iniciar]];
+    if(datos.repaso&&datos.repaso.length)acciones.push([datos.repaso.length===1?"🔁 Repasar tu palabra pendiente":"🔁 Repasar tus "+datos.repaso.length+" pendientes",iniciarRepaso]);
     if(nivel>1)acciones.push(["Practicar desde el nivel 1",()=>{nivel=1;iniciar();}]);
     acciones.push(["Jugar con un amigo 👥",iniciarDuelo]);
     panel("El Rosco Rioplatense",config.letras+" letras y "+config.segundos+" segundos. Leé cada pista y escribí la palabra: tenés un intento por letra. Pasar la deja para después. El reloj se pausa al girar. Acertá al menos "+Math.ceil(config.letras*ROSCO_CONFIG.proporcionAvance)+" y respondé todas para avanzar. Jugás gratis, sin gastar vidas ni monedas. Mejor: "+datos.mejor+" puntos.",acciones,"personaje");
@@ -653,6 +655,15 @@ const RoscoRioplatense=(()=>{
       return fila+'</div>';
     }).join("")+'</div>';
   }
+  /* Repaso de errores (11/11/2026, lo que coincidieron Claude y ChatGPT): las palabras que fallaste o te quedaron
+     se guardan (hasta 12). Al terminar y en el menú aparece «🔁 Repasar…»: una vuelta corta solo con esas, aparte
+     del récord, del nivel y de los logros. Las que volvés a fallar quedan para la próxima. */
+  let repaso=false;
+  function iniciarRepaso(){
+    const lista=(datos.repaso||[]).map(p=>ROSCO_DATOS.find(d=>d.palabra===p)).filter(Boolean).sort((a,b)=>a.letra.localeCompare(b.letra));
+    if(!lista.length){datos.repaso=[];guardar();mostrarMenu();return;}
+    repaso=true;duelo=false;items=lista;config={...configNivel(nivel),letras:lista.length,segundos:Math.max(30,lista.length*15)};arrancarRonda();
+  }
   function terminar(){
     if(fase==="fin")return;
     if(pruebaG)pararVozG();else detenerVoz();fase="fin";actual=-1;$("#rrEntrada").blur();
@@ -666,6 +677,12 @@ const RoscoRioplatense=(()=>{
       Duelo.mostrarResultado({valor:aciertos},{etiqueta:"aciertos sobre "+items.length,extra:fr=>tablaRespuestas(mias,fr&&Array.isArray(fr.respuestas)?fr.respuestas.map(x=>String(x||"").slice(0,30)):null,(Duelo.rivalActual()||{}).nombre),onVolver:()=>{duelo=false;abrir(raiz.parentElement);}});
       return;
     }
+    if(repaso){
+      repaso=false;datos.repaso=items.filter((d,i)=>estados[i]!=="acierto").map(d=>d.palabra);guardar();hud();
+      const q=datos.repaso.length;
+      panel(q?"🔁 Repaso terminado":"🔁 ¡Repaso perfecto!",aciertos+" de "+items.length+" bien."+(q?(q===1?" Te queda 1 para la próxima.":" Te quedan "+q+" para la próxima."):" Ya las sabés todas 💪"),[["Continuar",mostrarMenu]]);return;
+    }
+    {const nuevas=items.filter((d,i)=>estados[i]!=="acierto").map(d=>d.palabra);datos.repaso=[...new Set([...nuevas,...(datos.repaso||[])])].slice(0,12);}
     const avanzar=faltan===0&&aciertos>=Math.ceil(items.length*ROSCO_CONFIG.proporcionAvance);
     datos.mejor=Math.max(datos.mejor,puntos);if(avanzar)datos.nivelMax=Math.max(datos.nivelMax,nivel+1);guardar();
     if(aciertos===items.length&&typeof logroDesbloquear==="function"){
@@ -674,7 +691,7 @@ const RoscoRioplatense=(()=>{
     hud();
     const continuar=()=>{nivel=avanzar?nivel+1:nivel;mostrarMenu();};
     panel(faltan?"¡Se terminó el tiempo!":errores?"Rosco terminado":"¡Rosco perfecto!",
-      aciertos+" aciertos · "+errores+" errores · "+faltan+" sin responder · "+puntos+" puntos"+(bonus?" ("+bonus+" por tiempo)":"")+" · Récord: "+datos.mejor+(avanzar?" · Nivel "+(nivel+1)+" desbloqueado":""),[["Continuar",continuar]]);
+      aciertos+" aciertos · "+errores+" errores · "+faltan+" sin responder · "+puntos+" puntos"+(bonus?" ("+bonus+" por tiempo)":"")+" · Récord: "+datos.mejor+(avanzar?" · Nivel "+(nivel+1)+" desbloqueado":""),[["Continuar",continuar]].concat(datos.repaso.length?[["🔁 Repasar las que fallé ("+datos.repaso.length+")",()=>{nivel=avanzar?nivel+1:nivel;iniciarRepaso();}]]:[]));
     const capa=$("#rrPanel");capa.classList.add("rr-resultado-capa");
     capa.setAttribute("role","dialog");capa.setAttribute("aria-modal","true");capa.setAttribute("aria-label","Resultados del Rosco");
     $(".rr-panel").classList.add("rr-resultado");
