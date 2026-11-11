@@ -396,6 +396,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — Doña Rosa cap. 3: pizarra con los comentaristas del capítulo 2
+- Qué: VOTARON de capitulo-3-colecta.html suma los 25 que comentaron el reel del capítulo 2 (sacados de comentaristas.json del robot, por fecha; van primero, así son los que aparecen en la fila) + los anteriores sin repetir: 50 nombres. Video regrabado.
+
 ### 11/11/2026 — Comentaristas automáticos para la pizarra de Doña Rosa
 - Qué: Gonzalo tiene un robot (repo gvelazcamp/instagram-prueba-privada, armado con ChatGPT, usa instagrapi —no oficial—) que responde comentarios del último reel. Ahora además guarda comentaristas.json (por reel: usuario, comentario, fecha; sin la cuenta propia) y lo commitea al repo. De ahí salen los nombres para «Los que ayudaron».
 
