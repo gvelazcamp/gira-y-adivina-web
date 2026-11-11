@@ -94,14 +94,34 @@
       if(!sb){if((subir.n=(subir.n||0)+1)<=20)setTimeout(()=>subir(pasos()),3000);return;}
       await sb.from("gya_ranking").upsert({grupo:GRUPO,apodo:visitante()+(CAPITULO.id>1?"_c"+CAPITULO.id:""),monedas_totales:0,ciudades_ganadas:0,mejor_racha:0,logros:0,estado_juego:p,actualizado_en:new Date().toISOString()},{onConflict:"grupo,apodo"});}catch(e){}
   }
-  /* Resumen para Gonzalo (👥 Usuarios). */
-  async function resumen(){
+  /* Resumen para Gonzalo (👥 Usuarios). Cap. 2 actual; Cap. 1 sigue disponible como historial.
+     Cada consulta filtra el capítulo en Supabase y pagina de a 1000: la API
+     puede limitar una consulta a 1000 filas aunque se pida limit(5000). */
+  async function resumen(capitulo=2){
     const sb=typeof obtenerSupa==="function"?obtenerSupa():null;if(!sb)return null;
-    try{const r=await sb.from("gya_ranking").select("estado_juego,actualizado_en").eq("grupo",GRUPO).limit(5000);if(r.error)return null;
+    try{
+      const filas=[];
+      for(let desde=0;;desde+=1000){
+        const r=await sb.from("gya_ranking").select("estado_juego,actualizado_en")
+          .eq("grupo",GRUPO).eq("estado_juego->>cap",String(capitulo))
+          .order("apodo",{ascending:true}).range(desde,desde+999);
+        if(r.error)return null;
+        const lote=r.data||[];filas.push(...lote);
+        if(lote.length<1000)break;
+      }
       const c={llego:0,jugo:0,pista:0,gano:0,perdio:0,quiere:0,play:0,registro:0,palabra:0,ps_jugo:0,reg_ofrecido:0};
-      c.anuncio={llego:0,jugo:0};c.lista=[];for(const f of r.data||[]){const e=f.estado_juego||{};for(const k in c)if(e[k])c[k]++;if(e.origen==="meta"||e.origen==="utm"||e.origen==="app"){if(e.llego)c.anuncio.llego++;if(e.jugo)c.anuncio.jugo++;c.lista.push({cap:e.cap||1,nombre:e.nombre||"",palabras:e.palabras||[],fin:e.gano?"gano":e.perdio?"perdio":"",registro:!!e.registro,fecha:f.actualizado_en||""});}}
+      c.anuncio={llego:0,jugo:0};c.lista=[];
+      for(const f of filas){
+        const e=f.estado_juego||{};
+        for(const k in c)if(e[k])c[k]++;
+        if(e.origen==="meta"||e.origen==="utm"||e.origen==="app"){
+          if(e.llego)c.anuncio.llego++;if(e.jugo)c.anuncio.jugo++;
+          c.lista.push({cap:e.cap||1,nombre:e.nombre||"",palabras:e.palabras||[],fin:e.gano?"gano":e.perdio?"perdio":"",registro:!!e.registro,fecha:f.actualizado_en||""});
+        }
+      }
       c.lista.sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
-      return c;}catch(e){return null;}
+      return c;
+    }catch(e){return null;}
   }
 
   /* --- Pantalla --- */
