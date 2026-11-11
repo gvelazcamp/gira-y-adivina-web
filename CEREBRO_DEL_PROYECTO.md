@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 11/11/2026 — Palabra Secreta: aviso al salir para que vuelva mañana
+- Qué: al salir de Palabra Secreta (no en duelo ni colaborativo), un aviso corto (mostrarToast), una vez por día y solo si hay racha: si ya sacó una palabra hoy, «🔥 ¡Nos vemos mañana! Llevás N días de racha. ¡Volvé mañana por el día N+1!»; si todavía no, «⚠️ ¡No pierdas la racha! Tu racha de N días se corta hoy. ¡Volvé antes de medianoche!». Sin racha no aparece nada. Nada nuevo en el inicio (Gonzalo no quiere más popups ahí). Dato nuevo: avisoSalida en gya_palabra_secreta.
+- Archivos: palabra-secreta.js (v43), index.html, sw.js (cache v803).
+
 ### 11/11/2026 — Palabra Secreta: salvavidas de racha y aviso «se corta hoy»
 - Qué: idea del análisis «para que vuelvan a jugar» (Claude + ChatGPT); Gonzalo eligió solo esta. La racha cuenta días seguidos sacando al menos una palabra. (1) Si la racha sigue viva y hoy todavía no sacó ninguna: mensaje «🔥 Tu racha de N días se corta hoy» y en la línea de stats «⚠️ ¡se corta hoy!». (2) Si ayer no jugó (cortada por un solo día), al cerrar la ayuda aparece «🛟 ¡Se cortó tu racha!» con «Salvarla · 500 🪙» (uno por semana, lunes a domingo) o «No, empezar de nuevo»; se ofrece una vez por día. Con 2 o más días sin jugar no hay salvavidas. Datos nuevos en gya_palabra_secreta: salvavidasSemana, salvavidasOfrecido.
 - Probado: 5 casos (salvar con monedas, sin monedas, ya usado en la semana, se corta hoy, 2 días sin jugar).
