@@ -77,6 +77,7 @@ Plan de Gonzalo (06/11/2026). Serie diaria donde los seguidores adivinan, en los
 6. Para que una palabra dure hasta el último intento, elegir pistas que dejen tantas opciones como intentos (ej.: con _ARRO quedan BARRO, CARRO, JARRO).
 
 ## Cómo se hace cada capítulo
+- **Lista automática de comentaristas (11/11):** el robot de Instagram (repo `gvelazcamp/instagram-prueba-privada`, workflow «Comenta - Instagram automático», 5 veces por día) guarda en `comentaristas.json` quién comentó cada reel. Para la pizarra del próximo video, leer ese archivo y sumar a los que falten (además de las capturas que mande Gonzalo).
 - **Regla (Gonzalo, 10/11):** cuando Gonzalo manda una captura con alguien nuevo que comentó, se lo suma a la pizarra «Los que ayudaron» del próximo video sin preguntar, se regraba y se le manda el video.
 - Instagram: la cuenta es **@gira_y_adivina** (con guiones bajos). Desde el capítulo 2 los videos firman así; el capítulo 1 quedó con «@girayadivina».
 - Gonzalo pasa: la palabra más votada, 3 o 4 nombres de los que comentaron y el audio grabado en ElevenLabs (voz César Rodríguez) con el texto que le pasa Claude (texto plano, sin etiquetas).
