@@ -396,6 +396,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ## Registro de cambios
 
+### 12/11/2026 — Rosco: se sacó «Repasar las que fallé»
+- Qué: el repaso de errores (PR #474, del 11/11) se sacó entero. Gonzalo: parecía una segunda oportunidad para ganar y no va con el Rosco («si les gusta van a volver»). Queda como idea, si algún día se quiere: una racha diaria de partidas de Rosco.
+- Archivos: rosco-rioplatense.js (v96), index.html, sw.js (cache v810).
+
 ### 11/11/2026 — Palabra Secreta: Palabra del día y «Desafiá a un amigo con esta palabra»
 - Qué: de lo que coincidieron Claude y ChatGPT para que vuelvan (Gonzalo: «hacer esto»). (1) Botón «🗓️ Del día» arriba (al lado de 📊 y ?, sin agregar alto): la misma palabra para todos (palabraDia), 6 intentos, sin pista ni ficha, no toca el nivel pero ganarla suma a la racha; se guarda en gya_palabra_secreta.dia y si ya la jugó muestra «🗓️ ✅ 2/6». Al terminar: «📲 Compartir la del día» (texto con 🟩🟨⬛ sin letras + link ps.html?dia=1) y «Volver a mi nivel». (2) En el final de cada palabra: «🤝 Desafiá a un amigo con esta palabra» → link ps.html?reto=<código> (palabra codificada, nombre y en cuántos intentos la sacó). El amigo juega esa misma palabra y al final ve «La sacaste en 2 · Claude: 1 · Claude te ganó esta vez», con «🤝 Desafiá a otro amigo». ps.html ahora pasa los parámetros al juego; palabra-secreta.js los lee al cargar (LINK0) porque Extensiones borra la dirección antes de abrir.
 - Probado: del día (jugar, compartir, botón ✅), desafío (compartir, el amigo abre el link, compara). Sin alto extra en 360×740 y 390×844.
