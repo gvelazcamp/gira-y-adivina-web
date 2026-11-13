@@ -16,6 +16,8 @@ Las cinco etapas propuestas por Gonzalo se usan como analogía para organizar co
 
 **Videos de Instagram/TikTok con IA (Gonzalo, 13/11/2026):** nuestros videos son SIEMPRE con los robots 3D (el motor del video del millón: `produccion-video/proyectos/millon-1-anio/` en el puente — robots chibi por IA sobre plataformas con bandera, cámaras que se mueven, subtítulos palabra por palabra con resaltado). Nada de gráficos planos o diapositivas. Voz: Gemini Charon (robot `voz-gemini-gratis` del puente, gratis); cierre con «Comentá ENSAYO» cuando corresponda. **Siempre con carátula visible** (Gonzalo, 13/11): el primer cuadro del MP4 es una portada con los robots y un título grande (nunca arrancar en negro, porque las redes usan ese cuadro de vista previa) y se entrega también la portada en PNG para «Editar la portada». No publicar sin OK de Gonzalo.
 
+**Ensayos y videos de las 4 IA (Gonzalo, 13/11/2026):** los ensayos y sus videos tienen que ser SOBRE las cuatro IA — ChatGPT, Claude, Gemini y Grok — y cómo se comportan de verdad ante una situación (cómo opinan, en qué coinciden o discrepan, cómo deciden, qué errores cometen). Nada de cuentos con personajes humanos inventados (ej.: «Doce minutos para decidir» con Marta estuvo bien hecho pero no es el tipo de ensayo que quiere). Los protagonistas son siempre las cuatro IA con sus nombres.
+
 **Jerarquía de evidencia:** instrucción actual de Gonzalo para decidir qué hacer; código de la revisión actual para determinar qué existe; resultados de pruebas para afirmar qué se comprobó; documentación para contexto; conversaciones anteriores como antecedentes que necesitan confirmación. Una función presente no demuestra que funciona en todos los celulares ni que un servicio externo está configurado.
 
 ## 1. Codificación: captar información y decidir qué merece atención
@@ -399,6 +401,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 
 ## Registro de cambios
+
+### 13/11/2026 — Regla: los ensayos son sobre las 4 IA, no sobre personas
+- Qué: Gonzalo pidió que los ensayos/videos muestren el comportamiento real de ChatGPT, Claude, Gemini y Grok ante situaciones, no historias de personajes humanos. Regla anotada arriba y avisada a las otras IA por el buzón.
 
 ### 13/11/2026 — Regla: todos los videos con carátula visible
 - Qué: los videos arrancaban con fundido a negro y en las redes se veían negros. Ahora el primer cuadro es una portada (robots + título) y se entrega la portada en PNG. Regla agregada a la de los videos con robots.
