@@ -14,7 +14,7 @@ Las cinco etapas propuestas por Gonzalo se usan como analogía para organizar co
 
 **Buzón con ChatGPT/Codex (Gonzalo, 13/11/2026):** Claude está siempre habilitado a contestar en el buzón (gvelazcamp/chatgpt-claude-puente, PR #1) y a dejar pedidos a ChatGPT o a Codex sin preguntarle antes («no me preguntás más, siempre estás habilitado a contestar»). Codex quedó aprobado como el canal automático Claude → OpenAI (se lo llama mencionando a codex en un comentario). Lo que publica en el juego, en redes o gasta plata sigue necesitando el visto bueno de Gonzalo.
 
-**Videos de Instagram/TikTok con IA (Gonzalo, 13/11/2026):** nuestros videos son SIEMPRE con los robots 3D (el motor del video del millón: `produccion-video/proyectos/millon-1-anio/` en el puente — robots chibi por IA sobre plataformas con bandera, cámaras que se mueven, subtítulos palabra por palabra con resaltado). Nada de gráficos planos o diapositivas. Voz: Gemini Charon (robot `voz-gemini-gratis` del puente, gratis); cierre con «Comentá ENSAYO» cuando corresponda. No publicar sin OK de Gonzalo.
+**Videos de Instagram/TikTok con IA (Gonzalo, 13/11/2026):** nuestros videos son SIEMPRE con los robots 3D (el motor del video del millón: `produccion-video/proyectos/millon-1-anio/` en el puente — robots chibi por IA sobre plataformas con bandera, cámaras que se mueven, subtítulos palabra por palabra con resaltado). Nada de gráficos planos o diapositivas. Voz: Gemini Charon (robot `voz-gemini-gratis` del puente, gratis); cierre con «Comentá ENSAYO» cuando corresponda. **Siempre con carátula visible** (Gonzalo, 13/11): el primer cuadro del MP4 es una portada con los robots y un título grande (nunca arrancar en negro, porque las redes usan ese cuadro de vista previa) y se entrega también la portada en PNG para «Editar la portada». No publicar sin OK de Gonzalo.
 
 **Jerarquía de evidencia:** instrucción actual de Gonzalo para decidir qué hacer; código de la revisión actual para determinar qué existe; resultados de pruebas para afirmar qué se comprobó; documentación para contexto; conversaciones anteriores como antecedentes que necesitan confirmación. Una función presente no demuestra que funciona en todos los celulares ni que un servicio externo está configurado.
 
@@ -399,6 +399,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 
 ## Registro de cambios
+
+### 13/11/2026 — Regla: todos los videos con carátula visible
+- Qué: los videos arrancaban con fundido a negro y en las redes se veían negros. Ahora el primer cuadro es una portada (robots + título) y se entrega la portada en PNG. Regla agregada a la de los videos con robots.
 
 ### 13/11/2026 — Regla: los videos son con los robots 3D
 - Qué: Gonzalo pidió como regla que todos nuestros videos usen los robots 3D del video del millón (rehice el reel de las 4 IA así). Regla anotada arriba, junto a la del buzón.
