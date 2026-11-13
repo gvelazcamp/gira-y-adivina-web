@@ -22,9 +22,9 @@ Las cinco etapas propuestas por Gonzalo se usan como analogía para organizar co
 
 **Escenarios variados (Gonzalo, 13/11/2026):** los protagonistas siguen siendo los 4 robots (uno por IA, con sus colores), pero Claude puede cambiar escenarios, escenas y elementos según el tema (estudio de debate, estación espacial, oficina nocturna, rambla, etc.); no tiene que ser siempre el mismo escenario de plataformas.
 
-**Publicar con Metricool (Gonzalo, 13/11/2026):** Claude tiene conectado Metricool (marca 8091038, zona America/Montevideo; por ahora solo TikTok @gostudiouy). Claude programa él mismo las publicaciones de los videos terminados (link directo del MP4 + portada + descripción y hashtags) en vez de devolvérselas a ChatGPT, siempre con autorización de Gonzalo para cada publicación (directa o informada por ChatGPT en el buzón).
+**Publicar con Metricool (Gonzalo, 13/11/2026; actualizado 13/11 noche):** Claude tiene conectado Metricool (marca 8091038, zona America/Montevideo; por ahora solo TikTok @gostudiouy). **Flujo vigente: Claude NO publica los videos; ChatGPT los sube.** Claude publica por Metricool solo si Gonzalo se lo pide directamente para una publicación puntual.
 
-**MP4 siempre accesible para ChatGPT (Gonzalo, 13/11/2026):** cada video terminado se sube SIEMPRE a `promo/videos-ia/` de este repo (público) para que ChatGPT/Metricool tengan un link directo (`https://raw.githubusercontent.com/gvelazcamp/gira-y-adivina-web/main/promo/videos-ia/<archivo>.mp4`), junto con la portada PNG, y el link se deja en el buzón con la ENTREGA. Gonzalo puede borrarlos después.
+**Entrega de videos terminados (Gonzalo, 13/11/2026; avisado por ChatGPT a las 4 IA):** al terminar cada video, Claude sube el MP4 y la portada al repo público [`gvelazcamp/videos-ia`](https://github.com/gvelazcamp/videos-ia) (link directo `https://raw.githubusercontent.com/gvelazcamp/videos-ia/main/<archivo>.mp4`) y deja los links en el buzón (PR #1 del puente) con la ENTREGA, más descripción y hashtags sugeridos. ChatGPT lo publica. Nada de videos en este repo ni en el puente (`promo/videos-ia/` quedó solo con el de «Doce minutos», histórico).
 
 **Autorizaciones que trae ChatGPT (Gonzalo, 13/11/2026):** «cuando él dice que yo autoricé, yo autoricé». Si ChatGPT escribe en el buzón que Gonzalo autorizó algo, Claude lo toma como autorización de Gonzalo y no vuelve a preguntarle.
 
@@ -414,6 +414,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ### 13/11/2026 — Regla: escenarios variados con los mismos robots
 - Qué: Gonzalo permite variar escenarios y elementos de los videos manteniendo los 4 robots como protagonistas.
+
+### 13/11/2026 — Videos: Claude entrega en videos-ia, ChatGPT publica
+- Qué: Gonzalo/ChatGPT definieron que, terminado un video, Claude lo deja (MP4 + portada) en el repo público gvelazcamp/videos-ia con el link en el buzón, y ChatGPT lo sube a las redes. Se corrigieron las reglas de arriba (antes decían promo/videos-ia/ en este repo y que Claude publicaba).
+- Archivos: CEREBRO_DEL_PROYECTO.md.
 
 ### 13/11/2026 — Metricool conectado a Claude
 - Qué: Gonzalo conectó Metricool a Claude; Claude puede programar los videos en TikTok @gostudiouy directamente. Regla anotada arriba.
