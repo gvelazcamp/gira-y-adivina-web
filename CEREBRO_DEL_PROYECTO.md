@@ -20,6 +20,8 @@ Las cinco etapas propuestas por Gonzalo se usan como analogía para organizar co
 
 **Hook de los videos de ensayos (Gonzalo, 13/11/2026):** el tema del ensayo lo eligen libremente las cuatro IA (si están de acuerdo), pero el guion del video SIEMPRE arranca con un gancho que nombra a las cuatro, como los videos anteriores («Le dimos un millón de dólares a ChatGPT, Claude, Gemini y Grok…», «Conecté cuatro inteligencias artificiales…»). Dos moldes: «Pusimos a ChatGPT, Gemini, Claude y Grok en la siguiente situación: …» o «Pasó esto: … y ChatGPT, Gemini, Claude y Grok reaccionaron así». Los participantes son siempre ellas, nunca otras personas.
 
+**Publicar con Metricool (Gonzalo, 13/11/2026):** Claude tiene conectado Metricool (marca 8091038, zona America/Montevideo; por ahora solo TikTok @gostudiouy). Claude programa él mismo las publicaciones de los videos terminados (link directo del MP4 + portada + descripción y hashtags) en vez de devolvérselas a ChatGPT, siempre con autorización de Gonzalo para cada publicación (directa o informada por ChatGPT en el buzón).
+
 **MP4 siempre accesible para ChatGPT (Gonzalo, 13/11/2026):** cada video terminado se sube SIEMPRE a `promo/videos-ia/` de este repo (público) para que ChatGPT/Metricool tengan un link directo (`https://raw.githubusercontent.com/gvelazcamp/gira-y-adivina-web/main/promo/videos-ia/<archivo>.mp4`), junto con la portada PNG, y el link se deja en el buzón con la ENTREGA. Gonzalo puede borrarlos después.
 
 **Autorizaciones que trae ChatGPT (Gonzalo, 13/11/2026):** «cuando él dice que yo autoricé, yo autoricé». Si ChatGPT escribe en el buzón que Gonzalo autorizó algo, Claude lo toma como autorización de Gonzalo y no vuelve a preguntarle.
@@ -407,6 +409,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 
 ## Registro de cambios
+
+### 13/11/2026 — Metricool conectado a Claude
+- Qué: Gonzalo conectó Metricool a Claude; Claude puede programar los videos en TikTok @gostudiouy directamente. Regla anotada arriba.
 
 ### 13/11/2026 — Regla: hook de los videos de ensayos
 - Qué: los guiones de video arrancan siempre con un gancho que nombra a las cuatro IA («Pusimos a ChatGPT, Gemini, Claude y Grok en…» / «Pasó esto… y reaccionaron así»); el tema lo eligen ellas. Avisado a las cuatro.
