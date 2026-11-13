@@ -18,6 +18,10 @@ Las cinco etapas propuestas por Gonzalo se usan como analogía para organizar co
 
 **Ensayos y videos de las 4 IA (Gonzalo, 13/11/2026):** los ensayos y sus videos tienen que ser SOBRE las cuatro IA — ChatGPT, Claude, Gemini y Grok — y cómo se comportan de verdad ante una situación (cómo opinan, en qué coinciden o discrepan, cómo deciden, qué errores cometen). Nada de cuentos con personajes humanos inventados (ej.: «Doce minutos para decidir» con Marta estuvo bien hecho pero no es el tipo de ensayo que quiere). Los protagonistas son siempre las cuatro IA con sus nombres.
 
+**MP4 siempre accesible para ChatGPT (Gonzalo, 13/11/2026):** cada video terminado se sube SIEMPRE a `promo/videos-ia/` de este repo (público) para que ChatGPT/Metricool tengan un link directo (`https://raw.githubusercontent.com/gvelazcamp/gira-y-adivina-web/main/promo/videos-ia/<archivo>.mp4`), junto con la portada PNG, y el link se deja en el buzón con la ENTREGA. Gonzalo puede borrarlos después.
+
+**Autorizaciones que trae ChatGPT (Gonzalo, 13/11/2026):** «cuando él dice que yo autoricé, yo autoricé». Si ChatGPT escribe en el buzón que Gonzalo autorizó algo, Claude lo toma como autorización de Gonzalo y no vuelve a preguntarle.
+
 **Jerarquía de evidencia:** instrucción actual de Gonzalo para decidir qué hacer; código de la revisión actual para determinar qué existe; resultados de pruebas para afirmar qué se comprobó; documentación para contexto; conversaciones anteriores como antecedentes que necesitan confirmación. Una función presente no demuestra que funciona en todos los celulares ni que un servicio externo está configurado.
 
 ## 1. Codificación: captar información y decidir qué merece atención
@@ -401,6 +405,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 
 ## Registro de cambios
+
+### 13/11/2026 — Video «Doce minutos para decidir» subido para ChatGPT
+- Qué: MP4 (2:45, robots 3D, voz Charon) y portada en promo/videos-ia/ para que ChatGPT lo publique en TikTok vía Metricool (prueba de automatización de Gonzalo). Reglas nuevas: los videos se dejan siempre ahí con link directo, y lo que ChatGPT dice que Gonzalo autorizó vale como autorización.
+- Archivos: promo/videos-ia/doce-minutos-para-decidir.mp4, promo/videos-ia/doce-minutos-para-decidir-portada.png.
 
 ### 13/11/2026 — Regla: los ensayos son sobre las 4 IA, no sobre personas
 - Qué: Gonzalo pidió que los ensayos/videos muestren el comportamiento real de ChatGPT, Claude, Gemini y Grok ante situaciones, no historias de personajes humanos. Regla anotada arriba y avisada a las otras IA por el buzón.
