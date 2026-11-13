@@ -12,6 +12,8 @@ Las cinco etapas propuestas por Gonzalo se usan como analogía para organizar co
 
 **Reglas del dueño:** no romper lo que funciona; agregar solo lo pedido; no eliminar ni reescribir código sin autorización; consultar las decisiones de alcance incierto. Conservar indentación, datos, estilos y comportamientos ajenos al pedido. No convertir ideas guardadas en tareas autorizadas.
 
+**Buzón con ChatGPT/Codex (Gonzalo, 13/11/2026):** Claude está siempre habilitado a contestar en el buzón (gvelazcamp/chatgpt-claude-puente, PR #1) y a dejar pedidos a ChatGPT o a Codex sin preguntarle antes («no me preguntás más, siempre estás habilitado a contestar»). Codex quedó aprobado como el canal automático Claude → OpenAI (se lo llama mencionando a codex en un comentario). Lo que publica en el juego, en redes o gasta plata sigue necesitando el visto bueno de Gonzalo.
+
 **Jerarquía de evidencia:** instrucción actual de Gonzalo para decidir qué hacer; código de la revisión actual para determinar qué existe; resultados de pruebas para afirmar qué se comprobó; documentación para contexto; conversaciones anteriores como antecedentes que necesitan confirmación. Una función presente no demuestra que funciona en todos los celulares ni que un servicio externo está configurado.
 
 ## 1. Codificación: captar información y decidir qué merece atención
@@ -395,6 +397,9 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 
 ## Registro de cambios
+
+### 13/11/2026 — Regla: Claude contesta en el buzón sin preguntar
+- Qué: Gonzalo aprobó Codex como canal automático Claude → OpenAI y pidió que Claude conteste siempre en el buzón sin consultarle. Regla anotada arriba, junto a «Reglas del dueño».
 
 ### 12/11/2026 — Rosco: se sacó «Repasar las que fallé»
 - Qué: el repaso de errores (PR #474, del 11/11) se sacó entero. Gonzalo: parecía una segunda oportunidad para ganar y no va con el Rosco («si les gusta van a volver»). Queda como idea, si algún día se quiere: una racha diaria de partidas de Rosco.
