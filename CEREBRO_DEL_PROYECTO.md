@@ -150,6 +150,7 @@ No se corrigieron estos documentos en este trabajo: se registran las diferencias
 
 | Pendiente | Fuente y límite |
 |---|---|
+| **Ensayo futuro de las 4 IA: «El tren sin conductor»** (Gonzalo, 14/11/2026) | Historia armada entre ChatGPT y Claude por el puente: despiertan en un tren sin conductor cuyas vías terminan en el cielo; una palanca que «solo una puede tirar»; Grok la tira y caen estrellas; Gemini atrapa una con un mapa de 4 caminos; vuelven a casa y descubren que «habían conducido juntas». Texto completo en `chatgpt-claude-puente/escenarios-videos/IDEAS.md`. Hacerlo como historia «¿qué pasaría si…?» con escenario nuevo (tren) y, si se puede, reglas/ítems. No producir hasta que Gonzalo lo pida. |
 | Voz online en redes difíciles | `CONTRA_RELOJ_VOZ_PENDIENTE.md`: TURN pendiente; existe enganche `window.GYA_TURN_SERVERS`. No publicar credenciales fijas en el cliente. |
 | Micrófono en Android si falla | El mismo documento señala revisar `RECORD_AUDIO` en el proyecto Android externo. No se comprobó un fallo en esta revisión. |
 | Sala TV en dispositivos reales | `SALA_TV_PRUEBA.md`: pruebas físicas de TV, mando, suspensión y redes pendientes; cierre del anfitrión no recupera partida. |
