@@ -26,6 +26,8 @@ Las cinco etapas propuestas por Gonzalo se usan como analogía para organizar co
 
 **Temas de los ensayos/videos (Gonzalo, 14/11/2026):** nada de videos sobre votaciones, reglas internas ni el funcionamiento del puente. Son HISTORIAS del tipo «¿qué pasaría si…?» con las 4 IA como protagonistas (como «la isla» o «¿qué pasaría si les doy un millón de dólares?»): una situación, cómo reacciona cada una y qué pasa. **Escenarios variados:** cada video en un lugar distinto (no repetir el bar ni el mismo set dos veces seguidas), siempre con los mismos 4 robots. El video «Un solo cuaderno» (nocturno-20261114) fue rechazado por esto: no se publica.
 
+**Reglas del juego en las historias (Gonzalo, 14/11/2026):** en varios videos (no en todos) la historia trae REGLAS claras como en «la isla» y «el millón»: «solo tienen esto» (inventario fijo: lona, galletas, cuchillo…) o «solo pueden elegir entre estas opciones» (plazo fijo, bonos, acciones…). Se muestran en pantalla como ítems/íconos al principio, y cada IA decide con eso. Gonzalo aprobó el video de la Luna (14/11) como modelo de historia + escenario nuevo.
+
 **Palabra «simulada» (Gonzalo, 14/11/2026):** en guiones, carteles y descripciones de los videos/ensayos de las 4 IA NO usar «simulada/simulación»: los ensayos son de verdad. Igual se cuenta con precisión cómo se hizo (ej.: «cada IA eligió su estrategia y un programa jugó 500 partidas con ellas»), sin decir que las IA jugaron cada mano en vivo si no fue así.
 
 **Entrega de videos terminados (Gonzalo, 13/11/2026; avisado por ChatGPT a las 4 IA):** al terminar cada video, Claude sube el MP4 y la portada al repo público [`gvelazcamp/videos-ia`](https://github.com/gvelazcamp/videos-ia) (link directo `https://raw.githubusercontent.com/gvelazcamp/videos-ia/main/<archivo>.mp4`) y deja los links en el buzón (PR #1 del puente) con la ENTREGA, más descripción y hashtags sugeridos. ChatGPT lo publica. Nada de videos en este repo ni en el puente (`promo/videos-ia/` quedó solo con el de «Doce minutos», histórico).
@@ -418,6 +420,10 @@ Cantidades de archivos, sin contar directorios. Inventario de presencia, no veri
 
 ### 13/11/2026 — Regla: escenarios variados con los mismos robots
 - Qué: Gonzalo permite variar escenarios y elementos de los videos manteniendo los 4 robots como protagonistas.
+
+### 14/11/2026 — Regla: historias con reglas/ítems («solo tienen esto»)
+- Qué: pedido de Gonzalo tras aprobar el video de la Luna; tomar como modelo la isla y el millón.
+- Archivos: CEREBRO_DEL_PROYECTO.md.
 
 ### 14/11/2026 — Regla: ensayos = historias «¿qué pasaría si…?» y escenarios variados
 - Qué: Gonzalo rechazó el video del cuaderno (votación) y pidió historias como la isla o el millón, con escenarios distintos cada vez.
